@@ -1,0 +1,55 @@
+{
+  "name": "@reliverse/prompts",
+  "version": "0.6.0",
+  "description": "A modern, type-safe, crash-resistant prompt library designed to be simple and beautiful.",
+  "scripts": {
+    "appts": "bun typecheck && bun lint && bun format",
+    "lint": "eslint --cache --fix .",
+    "format": "biome check --write .",
+    "pub": "unbuild && bun publish",
+    "build": "unbuild",
+    "dev": "bun test",
+    "knip": "knip"
+  },
+  "type": "module",
+  "sideEffects": false,
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/reliverse/prompts.git"
+  },
+  "module": "dist/main.mjs",
+  "exports": null,
+  "dist": {
+    "reliverse": "dist/main.mjs"
+  },
+  "bugs": {
+    "url": "https://github.com/reliverse/prompts/issues",
+    "email": "blefnk@gmail.com"
+  },
+  "files": ["package.json", "dist", "README.md", "LICENSE.md"],
+  "homepage": "https://github.com/reliverse/prompts",
+  "keywords": ["cli", "reliverse"],
+  "license": "MIT",
+  "dependencies": {
+    "@clack/prompts": "^0.7.0",
+    "@sinclair/typebox": "^0.33.17",
+    "@types/prompts": "^2.4.9",
+    "nypm": "^0.3.12",
+    "prompts": "^2.4.2"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "1.9.4",
+    "@eslint/js": "^9.14.0",
+    "@types/bun": "^1.1.13",
+    "@types/eslint__js": "^8.42.3",
+    "@types/node": "^22.9.0",
+    "eslint": "^9.14.0",
+    "eslint-plugin-perfectionist": "^3.9.1",
+    "knip": "^5.36.2",
+    "mock-stdin": "^1.0.0",
+    "typescript": "^5.6.3",
+    "typescript-eslint": "^8.13.0",
+    "unbuild": "^2.0.0",
+    "vitest": "^2.1.4"
+  }
+}
