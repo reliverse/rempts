@@ -1,4 +1,6 @@
-node_modules
-.eslintcache
+dist/
 .DS_Store
-dist
+.eslintcache
+node_modules/
+addons/premium/
+addons/**/premium/

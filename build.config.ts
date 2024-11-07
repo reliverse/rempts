@@ -1,6 +1,8 @@
 import { defineBuildConfig } from "unbuild";
 
 export default defineBuildConfig({
+  externals: ["picocolors"],
+  declaration: true,
   entries: [
     {
       outDir: "dist",
@@ -8,19 +10,12 @@ export default defineBuildConfig({
       input: "src",
       format: "esm",
       ext: "js",
-      esbuild: {
-        target: "es2022",
-      },
     },
   ],
-
   rollup: {
     emitCJS: false,
     esbuild: {
       target: "es2022",
     },
   },
-
-  declaration: true,
-  externals: ["picocolors"],
 });

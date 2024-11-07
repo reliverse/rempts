@@ -21,9 +21,10 @@
   },
   "include": [
     "src/**/*.ts",
+    "test/**/*.ts",
+    "build.paths.ts",
     "build.config.ts",
-    "eslint.config.js",
-    "test/**/*.ts"
+    "eslint.config.js"
   ],
   "exclude": ["dist", "node_modules"]
 }

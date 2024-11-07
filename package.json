@@ -4,14 +4,18 @@
   "description": "A modern, type-safe, crash-resistant library for creating seamless, typesafe prompts in CLI applications. Designed for simplicity and elegance, it enables intuitive and robust user interactions.",
   "scripts": {
     "appts": "bun typecheck && bun lint && bun format",
+    "build": "unbuild && bun build.paths.ts",
     "lint": "eslint --cache --fix .",
     "format": "biome check --write .",
     "pub": "unbuild && bun publish",
-    "build": "unbuild",
-    "dev": "bun test",
+    "dev": "bun test/example.ts",
+    "check": "bun test",
     "knip": "knip"
   },
   "type": "module",
+  "paths": {
+    "~/*": ["./src/*"]
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/reliverse/prompts.git"
@@ -35,7 +39,9 @@
     "@clack/prompts": "^0.7.0",
     "@sinclair/typebox": "^0.33.17",
     "@types/prompts": "^2.4.9",
+    "fs-extra": "^11.2.0",
     "nypm": "^0.3.12",
+    "pathe": "^1.1.2",
     "prompts": "^2.4.2"
   },
   "devDependencies": {
@@ -43,6 +49,7 @@
     "@eslint/js": "^9.14.0",
     "@types/bun": "^1.1.13",
     "@types/eslint__js": "^8.42.3",
+    "@types/fs-extra": "^11.0.4",
     "@types/node": "^22.9.0",
     "eslint": "^9.14.0",
     "eslint-plugin-perfectionist": "^3.9.1",

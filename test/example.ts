@@ -1,44 +1,8 @@
-# @reliverse/prompts
-
-A modern, type-safe, crash-resistant library for creating seamless, typesafe prompts in CLI applications. Designed for simplicity and elegance, it enables intuitive and robust user interactions.
-
-## Installation
-
-Install via your preferred package manager:
-
-```sh
-bun add @reliverse/prompts # instead of bun you can use: npm, pnpm, or yarn (deno support is coming soon)
-```
-
-## Key Features
-
-- **Type Safety**: Built with TypeScript, ensuring robust types and preventing runtime errors.
-- **Schema Validation**: Define and validate inputs using schemas for reliable data handling.
-- **Flexibility**: Supports various prompt types including text, password, number, select, and multiselect.
-- **Crash Resilience**: Structured to handle cancellations and errors gracefully, keeping your application stable.
-
-## Prompt Types
-
-- **Text**: Simple text input.
-- **Password**: Secure, hidden input for passwords.
-- **Number**: Numeric input with validation.
-- **Confirm**: Yes/No prompt.
-- **Select**: Dropdown selection from multiple choices.
-- **Multiselect**: Multiple choice selection from a list.
-  
-## Validation
-
-Each prompt can include custom validation logic to provide immediate feedback to the user.
-
-## Usage Example
-
-[./test/example.ts](https://github.com/reliverse/prompts/blob/main/test/example.ts)
-
-```ts
-import { prompts } from "@reliverse/prompts";
 import { Type, type Static } from "@sinclair/typebox";
 
-import { installDependencies } from "~/utils/installDependencies";
+import { prompts } from "~/main";
+
+import { installDependencies } from "./utils/installDependencies";
 
 async function main() {
   // Wrapping everything in a try-catch block for a single error handler
@@ -227,4 +191,3 @@ await main().catch((error) => {
   );
   process.exit(1);
 });
-```
