@@ -25,5 +25,5 @@
     "eslint.config.js",
     "test/**/*.ts"
   ],
-  "exclude": ["dist"]
+  "exclude": ["dist", "node_modules"]
 }

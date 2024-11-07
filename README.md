@@ -1,13 +1,13 @@
 # @reliverse/prompts
 
-A modern, type-safe, crash-resistant prompt library designed to be simple and beautiful. This library, developed in TypeScript and bundled with tsup and terser, provides an easy-to-use, flexible interface for creating interactive prompts in both Bun and other JavaScript environments.
+A modern, type-safe, crash-resistant library for creating seamless, typesafe prompts in CLI applications. Designed for simplicity and elegance, it enables intuitive and robust user interactions.
 
 ## Installation
 
 Install via your preferred package manager:
 
 ```sh
-bun add @reliverse/prompts # instead of bun you can use: npm, pnpm, or yarn (deno support is planned)
+bun add @reliverse/prompts # instead of bun you can use: npm, pnpm, or yarn (deno support is coming soon)
 ```
 
 ## Key Features
@@ -79,8 +79,8 @@ async function main() {
     });
   } catch (error) {
     console.error(
-      "Password prompt was aborted or something went wrong.",
-      error,
+      "\nPassword prompt was aborted or something went wrong.",
+      // error, // Uncomment if you want to show the error to your users.
     );
   }
 

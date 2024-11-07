@@ -5,6 +5,9 @@ import { stdin as input, stdout as output } from "node:process";
 import readline from "node:readline/promises";
 import color from "picocolors";
 
+// export type { Static } from "@sinclair/typebox";
+// export { Type } from "@sinclair/typebox";
+
 type Choice = {
   title: string;
   value: any;

@@ -1,7 +1,7 @@
 {
   "name": "@reliverse/prompts",
-  "version": "0.6.0",
-  "description": "A modern, type-safe, crash-resistant prompt library designed to be simple and beautiful.",
+  "version": "0.9.2",
+  "description": "A modern, type-safe, crash-resistant library for creating seamless, typesafe prompts in CLI applications. Designed for simplicity and elegance, it enables intuitive and robust user interactions.",
   "scripts": {
     "appts": "bun typecheck && bun lint && bun format",
     "lint": "eslint --cache --fix .",
@@ -12,21 +12,22 @@
     "knip": "knip"
   },
   "type": "module",
-  "sideEffects": false,
   "repository": {
     "type": "git",
     "url": "git+https://github.com/reliverse/prompts.git"
   },
-  "module": "dist/main.mjs",
-  "exports": null,
-  "dist": {
-    "reliverse": "dist/main.mjs"
+  "main": "./dist/main.js",
+  "types": "./dist/main.d.ts",
+  "module": "./dist/main.js",
+  "exports": {
+    "import": "./dist/main.js",
+    "types": "./dist/main.d.ts"
   },
   "bugs": {
     "url": "https://github.com/reliverse/prompts/issues",
     "email": "blefnk@gmail.com"
   },
-  "files": ["package.json", "dist", "README.md", "LICENSE.md"],
+  "files": ["package.json", "README.md", "LICENSE.md", "dist"],
   "homepage": "https://github.com/reliverse/prompts",
   "keywords": ["cli", "reliverse"],
   "license": "MIT",
