@@ -1,7 +1,6 @@
 import { defineBuildConfig } from "unbuild";
 
 export default defineBuildConfig({
-  externals: ["picocolors"],
   declaration: true,
   entries: [
     {

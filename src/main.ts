@@ -16,6 +16,8 @@ import { passwordPrompt } from "~/components/password";
 import { selectPrompt } from "~/components/select";
 import { textPrompt } from "~/components/text";
 
+export { createSpinner } from "~/components/spinner";
+
 export async function prompts<T extends TSchema>(
   options: PromptOptions<T>,
 ): Promise<Record<(typeof options)["id"], Static<T>>> {

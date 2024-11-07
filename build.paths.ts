@@ -3,17 +3,25 @@ import path from "pathe";
 
 const distDir = path.resolve(__dirname, "dist");
 
-// Function to replace '~' with '.' in import paths
-function replaceImportPaths(content: string): string {
+function replaceImportPaths(
+  content: string,
+  fileDir: string,
+  rootDir: string,
+): string {
   return content.replace(
-    /from\s+['"]~(\/[^'"]*)['"]/g,
-    (_: string, p1: string) => {
-      return `from ".${p1}"`;
+    /(from\s+['"])~(\/[^'"]*)(['"])/g,
+    (match, prefix, importPath, suffix) => {
+      const relativePathToRoot = path.relative(fileDir, rootDir) || ".";
+      let newPath = path.join(relativePathToRoot, importPath);
+      newPath = newPath.replace(/\\/g, "/");
+      if (!newPath.startsWith(".")) {
+        newPath = `./${newPath}`;
+      }
+      return `${prefix}${newPath}${suffix}`;
     },
   );
 }
 
-// Function to process files recursively
 async function processFiles(dir: string) {
   const files = fs.readdirSync(dir);
 
@@ -22,30 +30,24 @@ async function processFiles(dir: string) {
     const stat = fs.statSync(filePath);
 
     if (stat.isDirectory()) {
-      // Recursively process nested directories
       await processFiles(filePath);
-    } else if (filePath.endsWith(".js")) {
-      // Read the file content
+    } else if (filePath.endsWith(".js") || filePath.endsWith(".d.ts")) {
       const content = fs.readFileSync(filePath, "utf8");
 
-      // Replace the import paths
-      const updatedContent = replaceImportPaths(content);
+      const updatedContent = replaceImportPaths(
+        content,
+        path.dirname(filePath),
+        distDir,
+      );
 
-      // Write back if content changed
       if (content !== updatedContent) {
         fs.writeFileSync(filePath, updatedContent, "utf8");
-        console.log(`Updated imports in: ${filePath}`);
       }
     }
   }
 }
 
-// Run the script starting from the main file
-processFiles(distDir)
-  .then(() => {
-    console.log("Import paths updated successfully in the dist folder.");
-  })
-  .catch((error) => {
-    console.error("An error occurred:", error);
-    process.exit(1);
-  });
+processFiles(distDir).catch((error) => {
+  console.error("An error occurred:", error);
+  process.exit(1);
+});
