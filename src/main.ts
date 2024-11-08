@@ -1,9 +1,3 @@
-// ✨ @reliverse/prompts: Prototype Edition
-// 📚 @see docs: https://docs.reliverse.org
-// 👉 Production Edition code at GitHub:
-// 🧩 https://github.com/reliverse/prompts
-// 📦 https://npmjs.com/package/@reliverse/prompts
-
 import type { TSchema, Static } from "@sinclair/typebox";
 
 import type { PromptOptions } from "~/types";

@@ -26,7 +26,8 @@
     "addons/**/*.ts",
     "build.paths.ts",
     "build.config.ts",
-    "eslint.config.js"
+    "eslint.config.js",
+    "vitest.config.ts"
   ],
   "exclude": ["dist", "node_modules"]
 }

@@ -37,6 +37,7 @@ async function main() {
     type: "text",
     title: "Enter your username",
     schema: schema.properties.username,
+    color: "green",
   });
 
   // Initialize `passwordResult` to avoid uninitialized variable errors.

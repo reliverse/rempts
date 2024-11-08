@@ -1,5 +1,6 @@
 dist/
 .DS_Store
+merged.txt
 .eslintcache
 node_modules/
 addons/premium/
