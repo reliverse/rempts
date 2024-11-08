@@ -12,7 +12,7 @@ import { colorize } from "~/utils/colorize";
 export async function multiselectPrompt<T extends TSchema>(
   options: PromptOptions<T>,
 ): Promise<Static<T>> {
-  const { title, choices, schema, color: titleColor } = options;
+  const { title, choices, schema, titleColor } = options;
   if (!choices || choices.length === 0) {
     throw new Error("Choices are required for multiselect prompt.");
   }

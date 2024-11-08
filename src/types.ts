@@ -2,6 +2,7 @@ import type { TSchema } from "@sinclair/typebox";
 
 export type ColorName =
   | "dim"
+  | "inverse"
   | "black"
   | "red"
   | "green"
@@ -17,7 +18,7 @@ export type ColorName =
   | "grey"
   | "none";
 
-export type Variant = "box";
+export type Variant = "box" | "doubleBox" | "banner" | "underline" | "none"; 
 
 export type Choice = {
   title: string;
@@ -41,12 +42,22 @@ export type PromptOptions<T extends TSchema = any> = {
   type: PromptType;
   id: string;
   title: string;
+  titleColor?: ColorName;
+  titleTypography?: "bold" | "strikethrough" | "underline" | "italic";
+  titleVariant?: Variant;
+  message?: string;
+  msgColor?: ColorName;
+  msgTypography?: "bold" | "strikethrough" | "underline" | "italic";
+  msgVariant?: Variant;
   hint?: string;
   validate?: (value: any) => boolean | string | Promise<boolean | string>;
   default?: any;
   choices?: Choice[];
   schema?: T;
-  color?: ColorName;
-  variant?: Variant;
+  variantOptions?: {
+    box?: {
+      limit?: number;
+    };
+  };
   action?: () => Promise<void>;
 };

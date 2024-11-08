@@ -1,6 +1,6 @@
 {
   "name": "@reliverse/prompts",
-  "version": "0.9.9",
+  "version": "0.9.10",
   "description": "A modern, type-safe, crash-resistant library for creating seamless, typesafe prompts in CLI applications. Designed for simplicity and elegance, it enables intuitive and robust user interactions.",
   "scripts": {
     "appts": "bun typecheck && bun lint && bun format",
@@ -9,6 +9,7 @@
     "lint": "eslint --cache --fix .",
     "format": "biome check --write .",
     "dev": "bun test/example.ts",
+    "dev:simple": "bun test/simple.ts",
     "check": "bun test",
     "knip": "knip"
   },
@@ -37,8 +38,10 @@
   "license": "MIT",
   "dependencies": {
     "@sinclair/typebox": "^0.33.17",
+    "cli-spinners": "^3.2.0",
     "fs-extra": "^11.2.0",
     "nypm": "^0.3.12",
+    "ora": "^8.1.1",
     "pathe": "^1.1.2",
     "picocolors": "^1.1.1",
     "sisteransi": "^1.0.5"

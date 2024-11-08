@@ -7,12 +7,36 @@ import readline from "node:readline/promises";
 import type { PromptOptions } from "~/types";
 
 import { colorize } from "~/utils/colorize";
+import { applyVariant } from "~/utils/variant";
 
 export async function confirmPrompt<T extends TSchema>(
   options: PromptOptions<T>,
 ): Promise<Static<T>> {
-  const { title, default: defaultValue, schema, color } = options;
+  const {
+    title,
+    default: defaultValue,
+    schema,
+    titleColor,
+    titleTypography,
+    message,
+    msgColor,
+    msgTypography,
+    titleVariant,
+    msgVariant,
+  } = options;
   const rl = readline.createInterface({ input, output });
+
+  const coloredTitle = colorize(title, titleColor, titleTypography);
+  const coloredMessage = message
+    ? colorize(message, msgColor, msgTypography)
+    : "";
+
+  const titleText = applyVariant([coloredTitle], titleVariant);
+  const messageText = coloredMessage
+    ? applyVariant([coloredMessage], msgVariant)
+    : "";
+
+  const promptText = [titleText, messageText].filter(Boolean).join("\n");
 
   let defaultHint = "";
   if (defaultValue === true) {
@@ -23,8 +47,7 @@ export async function confirmPrompt<T extends TSchema>(
     defaultHint = "[y/n]";
   }
 
-  const coloredTitle = colorize(title, color);
-  const question = `${coloredTitle} ${defaultHint}: `;
+  const question = `${promptText} ${defaultHint}: `;
 
   while (true) {
     const answer = (await rl.question(question)).toLowerCase();

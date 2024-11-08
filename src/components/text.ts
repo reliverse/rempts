@@ -7,6 +7,7 @@ import readline from "node:readline/promises";
 import type { PromptOptions } from "~/types";
 
 import { colorize } from "~/utils/colorize";
+import { applyVariant } from "~/utils/variant";
 
 export async function textPrompt<T extends TSchema>(
   options: PromptOptions<T>,
@@ -17,12 +18,29 @@ export async function textPrompt<T extends TSchema>(
     validate,
     default: defaultValue,
     schema,
-    color,
+    titleColor,
+    titleTypography,
+    message,
+    msgColor,
+    msgTypography,
+    titleVariant,
+    msgVariant,
   } = options;
   const rl = readline.createInterface({ input, output });
 
-  const coloredTitle = colorize(title, color);
-  const question = `${coloredTitle}${
+  const coloredTitle = colorize(title, titleColor, titleTypography);
+  const coloredMessage = message
+    ? colorize(message, msgColor, msgTypography)
+    : "";
+
+  const titleText = applyVariant([coloredTitle], titleVariant);
+  const messageText = coloredMessage
+    ? applyVariant([coloredMessage], msgVariant)
+    : "";
+
+  const promptText = [titleText, messageText].filter(Boolean).join("\n");
+
+  const question = `${promptText}${
     hint ? ` (${hint})` : ""
   }${defaultValue ? ` [${defaultValue}]` : ""}: `;
 

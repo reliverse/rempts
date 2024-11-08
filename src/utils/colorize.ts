@@ -2,38 +2,79 @@ import color from "picocolors";
 
 import type { ColorName } from "~/types";
 
-export function colorize(text: string, colorName?: ColorName): string {
+export function colorize(
+  text: string,
+  colorName?: ColorName,
+  typography?: "bold" | "strikethrough" | "underline" | "italic",
+): string {
+  let result = text;
+
   switch (colorName) {
+    case "inverse":
+      result = color.inverse(` ${result} `);
+      break;
     case "dim":
-      return color.dim(text);
+      result = color.dim(result);
+      break;
     case "black":
-      return color.black(text);
+      result = color.black(result);
+      break;
     case "red":
-      return color.red(text);
+      result = color.red(result);
+      break;
     case "green":
-      return color.green(text);
+      result = color.green(result);
+      break;
     case "yellow":
-      return color.yellow(text);
+      result = color.yellow(result);
+      break;
     case "blue":
-      return color.blue(text);
+      result = color.blue(result);
+      break;
     case "magenta":
-      return color.magenta(text);
+      result = color.magenta(result);
+      break;
     case "cyan":
-      return color.cyan(text);
+      result = color.cyan(result);
+      break;
     case "cyanBright":
-      return color.cyanBright(text);
+      result = color.cyanBright(result);
+      break;
     case "bgCyan":
-      return color.bgCyan(text);
+      result = color.bgCyan(` ${result} `);
+      break;
     case "bgCyanBright":
-      return color.bgCyanBright(text);
+      result = color.bgCyanBright(` ${result} `);
+      break;
     case "white":
-      return color.white(text);
+      result = color.white(result);
+      break;
     case "gray":
     case "grey":
-      return color.gray(text);
+      result = color.gray(result);
+      break;
     case "none":
-      return text;
+      break;
     default:
-      return color.cyanBright(text);
+      result = color.cyanBright(result);
   }
+
+  if (typography) {
+    switch (typography) {
+      case "bold":
+        result = color.bold(result);
+        break;
+      case "strikethrough":
+        result = color.strikethrough(result);
+        break;
+      case "underline":
+        result = color.underline(result);
+        break;
+      case "italic":
+        result = color.italic(result);
+        break;
+    }
+  }
+
+  return result;
 }

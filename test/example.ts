@@ -22,18 +22,26 @@ async function main() {
   await prompts({
     id: "start",
     type: "start",
-    title: "Welcome to the Application!",
-    color: "bgCyanBright",
+    title: "Welcome to the @reliverse/prompts example CLI!",
+    titleColor: "inverse",
+    message: "This CLI helps you test the library.",
+    msgColor: "green",
+    msgTypography: "italic",
   });
 
   const depsResult = await prompts({
     id: "deps",
     type: "confirm",
     title: "Do you want to install dependencies?",
+    titleColor: "red", // IntelliSense will show you all available colors.
+    titleVariant: "doubleBox",
     schema: schema.properties.deps,
     // @reliverse/prompts includes styled prompts, with the `title` color defaulting
     // to "cyanBright". Setting the color to "none" removes the default styling.
-    color: "red", // IntelliSense will show you all available colors.
+    message: "This will install all necessary dependencies.",
+    msgColor: "dim",
+    msgVariant: "underline",
+    default: true,
   });
 
   const usernameResult = await prompts({
@@ -43,7 +51,7 @@ async function main() {
     type: "text",
     title: "Enter your username",
     schema: schema.properties.username,
-    color: "green",
+    msgColor: "green",
   });
 
   // Initialize `passwordResult` to avoid uninitialized variable errors.
@@ -178,35 +186,44 @@ async function main() {
   await prompts({
     id: "nextSteps",
     type: "nextSteps",
-    title: `Here is your input result:\n${JSON.stringify(userInput, null, 2)}`,
-    color: "none",
-    variant: "box",
-    // Display all user input values, e.g.:
-    // ┌────────────────────────────────┐
-    // │ Here is your input result:     │
-    // │ {                              │
-    // │   "deps": true,                │
-    // │   "username": "GeraltOfRivia", │
-    // │   "password": "21ytrewq",      │
-    // │   "age": 98,                   │
-    // │   "color": "blue",             │
-    // │   "features": [                │
-    // │      "typescript", "eslint"    │
-    // │   ]                            │
-    // │ }                              │
-    // └────────────────────────────────┘
+    title: "Next Steps",
+    titleColor: "none",
+    titleVariant: "banner",
+    message: "- Set up your profile\n║ - Add tasks\n║ - Review your dashboard",
+    // message: JSON.stringify(userInput, null, 2),
+    msgColor: "white",
+    msgVariant: "doubleBox",
+    action: async () => {
+      // Display all user input values, e.g.:
+      // ┌────────────────────────────────┐
+      // │ Here is your input result:     │
+      // │ {                              │
+      // │   "deps": true,                │
+      // │   "username": "GeraltOfRivia", │
+      // │   "password": "21ytrewq",      │
+      // │   "age": 98,                   │
+      // │   "color": "blue",             │
+      // │   "features": [                │
+      // │      "typescript", "eslint"    │
+      // │   ]                            │
+      // │ }                              │
+      // └────────────────────────────────┘
+      console.log("Here is your input result:", userInput);
+    },
   });
 
   await prompts({
     id: "end",
     type: "end",
-    title: "Thank you for using the application!",
-    color: "dim",
+    title: "👋 Goodbye!",
+    titleColor: "dim",
+    message: "Thank you for using @reliverse/prompts example CLI.",
+    msgColor: "cyan",
     action: async () => {
       if (userInput.deps) {
         await installDependencies();
       }
-      console.log("Exiting application...");
+      console.log("Exiting...");
       process.exit(0);
     },
   });

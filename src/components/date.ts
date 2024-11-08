@@ -17,11 +17,12 @@ export async function datePrompt<T extends TSchema>(
     validate,
     default: defaultValue,
     schema,
-    color,
+    titleColor,
+    titleTypography,
   } = options;
   const rl = readline.createInterface({ input, output });
 
-  const coloredTitle = colorize(title, color);
+  const coloredTitle = colorize(title, titleColor, titleTypography);
   const question = `${coloredTitle}${
     hint ? ` (${hint})` : ""
   }${defaultValue ? ` [${defaultValue}]` : ""}: `;

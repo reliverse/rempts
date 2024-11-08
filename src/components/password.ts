@@ -9,8 +9,9 @@ import { colorize } from "~/utils/colorize";
 export async function passwordPrompt<T extends TSchema>(
   options: PromptOptions<T>,
 ): Promise<Static<T>> {
-  const { title, hint, validate, schema, color } = options;
-  const coloredTitle = colorize(title, color); 
+  const { title, hint, validate, schema, titleColor, titleTypography } =
+    options;
+  const coloredTitle = colorize(title, titleColor, titleTypography);
   const question = `${coloredTitle}${hint ? ` (${hint})` : ""}: `;
 
   process.stdout.write(question);
