@@ -28,6 +28,9 @@ async function main() {
     type: "confirm",
     title: "Do you want to install dependencies?",
     schema: schema.properties.deps,
+    // @reliverse/prompts includes styled prompts, with the `title` color defaulting
+    // to "cyanBright". Setting the color to "none" removes the default styling.
+    color: "red", // IntelliSense will show you all available colors.
   });
 
   const usernameResult = await prompts({

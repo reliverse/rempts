@@ -6,13 +6,23 @@ import readline from "node:readline/promises";
 
 import type { PromptOptions } from "~/types";
 
+import { colorize } from "~/utils/colorize";
+
 export async function numberPrompt<T extends TSchema>(
   options: PromptOptions<T>,
 ): Promise<Static<T>> {
-  const { title, hint, validate, default: defaultValue, schema } = options;
+  const {
+    title,
+    hint,
+    validate,
+    default: defaultValue,
+    schema,
+    color,
+  } = options;
   const rl = readline.createInterface({ input, output });
 
-  const question = `${title}${
+  const coloredTitle = colorize(title, color);
+  const question = `${coloredTitle}${
     hint ? ` (${hint})` : ""
   }${defaultValue !== undefined ? ` [${defaultValue}]` : ""}: `;
 

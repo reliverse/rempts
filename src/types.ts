@@ -1,5 +1,19 @@
 import type { TSchema } from "@sinclair/typebox";
 
+export type ColorName =
+  | "black"
+  | "red"
+  | "green"
+  | "yellow"
+  | "blue"
+  | "magenta"
+  | "cyan"
+  | "cyanBright"
+  | "white"
+  | "gray"
+  | "grey"
+  | "none";
+
 export type Choice = {
   title: string;
   value: any;
@@ -24,4 +38,5 @@ export type PromptOptions<T extends TSchema = any> = {
   default?: any;
   choices?: Choice[];
   schema?: T;
+  color?: ColorName;
 };

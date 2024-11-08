@@ -7,15 +7,18 @@ import color from "picocolors";
 
 import type { PromptOptions } from "~/types";
 
+import { colorize } from "~/utils/colorize";
+
 export async function multiselectPrompt<T extends TSchema>(
   options: PromptOptions<T>,
 ): Promise<Static<T>> {
-  const { title, choices, schema } = options;
+  const { title, choices, schema, color: titleColor } = options;
   if (!choices || choices.length === 0) {
     throw new Error("Choices are required for multiselect prompt.");
   }
 
-  console.log(color.cyanBright(color.bold(title)));
+  const coloredTitle = colorize(title, titleColor);
+  console.log(color.cyanBright(color.bold(coloredTitle)));
   choices.forEach((choice, index) => {
     console.log(
       `${index + 1}) ${choice.title} ${

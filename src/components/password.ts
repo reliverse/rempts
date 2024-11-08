@@ -4,11 +4,14 @@ import { Value } from "@sinclair/typebox/value";
 
 import type { PromptOptions } from "~/types";
 
+import { colorize } from "~/utils/colorize";
+
 export async function passwordPrompt<T extends TSchema>(
   options: PromptOptions<T>,
 ): Promise<Static<T>> {
-  const { title, hint, validate, schema } = options;
-  const question = `${title}${hint ? ` (${hint})` : ""}: `;
+  const { title, hint, validate, schema, color } = options;
+  const coloredTitle = colorize(title, color); 
+  const question = `${coloredTitle}${hint ? ` (${hint})` : ""}: `;
 
   process.stdout.write(question);
 

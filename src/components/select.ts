@@ -7,15 +7,24 @@ import color from "picocolors";
 
 import type { PromptOptions } from "~/types";
 
+import { colorize } from "~/utils/colorize"; 
+
 export async function selectPrompt<T extends TSchema>(
   options: PromptOptions<T>,
 ): Promise<Static<T>> {
-  const { title, choices, default: defaultValue, schema } = options;
+  const {
+    title,
+    choices,
+    default: defaultValue,
+    schema,
+    color: titleColor,
+  } = options;
   if (!choices || choices.length === 0) {
     throw new Error("Choices are required for select prompt.");
   }
 
-  console.log(color.cyanBright(color.bold(title)));
+  const coloredTitle = colorize(title, titleColor); 
+  console.log(color.cyanBright(color.bold(coloredTitle)));
   choices.forEach((choice, index) => {
     const isDefault =
       defaultValue === index + 1 || defaultValue === choice.value;
