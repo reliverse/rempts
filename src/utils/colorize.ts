@@ -4,6 +4,8 @@ import type { ColorName } from "~/types";
 
 export function colorize(text: string, colorName?: ColorName): string {
   switch (colorName) {
+    case "dim":
+      return color.dim(text);
     case "black":
       return color.black(text);
     case "red":
@@ -20,6 +22,10 @@ export function colorize(text: string, colorName?: ColorName): string {
       return color.cyan(text);
     case "cyanBright":
       return color.cyanBright(text);
+    case "bgCyan":
+      return color.bgCyan(text);
+    case "bgCyanBright":
+      return color.bgCyanBright(text);
     case "white":
       return color.white(text);
     case "gray":

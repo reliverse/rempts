@@ -5,10 +5,6 @@ import { prompts } from "~/main";
 import { installDependencies } from "./utils/installDependencies";
 
 async function main() {
-  // Wrapping everything in a try-catch block for a single error handler
-  // is optional and not recommended for every scenario.
-  // try { ... } catch (error) { console.error("Prompt cancelled."); }
-
   // Define the schema once and reuse it for each prompt.
   const schema = Type.Object({
     deps: Type.Boolean(),
@@ -22,6 +18,13 @@ async function main() {
 
   // Define the type to use in the result object, populated with results from the prompts.
   type UserInput = Static<typeof schema>;
+
+  await prompts({
+    id: "start",
+    type: "start",
+    title: "Welcome to the Application!",
+    color: "bgCyanBright",
+  });
 
   const depsResult = await prompts({
     id: "deps",
@@ -167,25 +170,50 @@ async function main() {
   // Access values by their keys
   console.log("✅ User successfully registered:", userInput.username);
 
-  if (userInput.deps) {
-    await installDependencies();
-  }
-
   // Full intellisense is available when defining choices using an enum
   if (userInput.color === "red") {
     console.log("User's favorite color is red. Johnny Silverhand approves.");
   }
 
-  // Display all user input values
-  console.log("User Input:", userInput);
+  await prompts({
+    id: "nextSteps",
+    type: "nextSteps",
+    title: `Here is your input result:\n${JSON.stringify(userInput, null, 2)}`,
+    color: "none",
+    variant: "box",
+    // Display all user input values, e.g.:
+    // ┌────────────────────────────────┐
+    // │ Here is your input result:     │
+    // │ {                              │
+    // │   "deps": true,                │
+    // │   "username": "GeraltOfRivia", │
+    // │   "password": "21ytrewq",      │
+    // │   "age": 98,                   │
+    // │   "color": "blue",             │
+    // │   "features": [                │
+    // │      "typescript", "eslint"    │
+    // │   ]                            │
+    // │ }                              │
+    // └────────────────────────────────┘
+  });
 
-  // User Input: {
-  //   username: "GeraltOfRivia",
-  //   password: "21ytrewq",
-  //   age: 98,
-  //   color: "blue",
-  //   features: [ "react", "typescript", "eslint" ],
-  // }
+  await prompts({
+    id: "end",
+    type: "end",
+    title: "Thank you for using the application!",
+    color: "dim",
+    action: async () => {
+      if (userInput.deps) {
+        await installDependencies();
+      }
+      console.log("Exiting application...");
+      process.exit(0);
+    },
+  });
+
+  // Bonus tip: You can wrap everything in a try-catch block for a single error handler.
+  // This is optional and not recommended for every scenario, but you can play around with it.
+  // try { ... } catch (error) { console.error("Prompt cancelled."); }
 }
 
 await main().catch((error) => {

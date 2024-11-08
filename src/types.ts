@@ -1,6 +1,7 @@
 import type { TSchema } from "@sinclair/typebox";
 
 export type ColorName =
+  | "dim"
   | "black"
   | "red"
   | "green"
@@ -9,10 +10,14 @@ export type ColorName =
   | "magenta"
   | "cyan"
   | "cyanBright"
+  | "bgCyan"
+  | "bgCyanBright"
   | "white"
   | "gray"
   | "grey"
   | "none";
+
+export type Variant = "box";
 
 export type Choice = {
   title: string;
@@ -27,7 +32,10 @@ export type PromptType =
   | "select"
   | "multiselect"
   | "password"
-  | "date";
+  | "date"
+  | "start"
+  | "nextSteps"
+  | "end";
 
 export type PromptOptions<T extends TSchema = any> = {
   type: PromptType;
@@ -39,4 +47,6 @@ export type PromptOptions<T extends TSchema = any> = {
   choices?: Choice[];
   schema?: T;
   color?: ColorName;
+  variant?: Variant;
+  action?: () => Promise<void>;
 };
