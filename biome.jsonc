@@ -98,6 +98,7 @@
         "useWhile": "off"
       },
       "suspicious": {
+        "noConfusingVoidType": "off",
         "noApproximativeNumericConstant": "off",
         "noArrayIndexKey": "off",
         "noAssignInExpressions": "off",
