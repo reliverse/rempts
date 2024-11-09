@@ -7,7 +7,7 @@ export async function nextStepsPrompt(options: PromptOptions): Promise<void> {
   const {
     title,
     titleColor,
-    titleVariant, //
+    titleVariant,
     titleTypography,
     message,
     msgColor,

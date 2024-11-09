@@ -1,4 +1,4 @@
-import { createSpinner } from "~/ui/spinner";
+import { createSpinner } from "~/components/spinner";
 
 const spinner = createSpinner({
   initialMessage: "Installing dependencies...",

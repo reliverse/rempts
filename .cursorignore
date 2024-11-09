@@ -1,0 +1,13 @@
+.venv/
+.vscode/
+*.txt
+addons/
+biome.jsonc
+bun.lockb
+dist/
+knip.jsonc
+LICENSE.md
+node_modules/
+package-lock.json
+pnpm-lock.yaml
+tmp/

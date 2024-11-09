@@ -33,7 +33,6 @@ function deepMerge<T extends object>(...objects: Partial<T>[]): T {
 }
 
 export function makeTheme<SpecificTheme extends object>(
-  // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
   ...themes: readonly (undefined | PartialDeep<Theme<SpecificTheme>>)[]
 ): Prettify<Theme<SpecificTheme>> {
   const themesToMerge = [

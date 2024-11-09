@@ -3,8 +3,9 @@
 
 import figlet from "figlet";
 
+import { endPrompt } from "~/components/end";
 import { prompts } from "~/main";
-import { endPrompt } from "~/ui/end";
+import { colorize } from "~/utils/colorize";
 
 import { handleAnswer } from "./utils/handleAnswer";
 
@@ -17,6 +18,7 @@ async function main() {
     title: "create-app",
     titleColor: "bgCyanBright",
     titleTypography: "bold",
+    state: "initial",
   });
 
   await prompts({
@@ -41,35 +43,10 @@ async function main() {
     default: "./sparkling-solid",
   });
 
-  const { answer } = await prompts({
-    type: "select",
-    id: "answer",
-    title: "JavaScript was created in 10 days then released on",
-    choices: [
-      { title: "May 23rd, 1995", value: "May 23rd, 1995" },
-      { title: "Nov 24th, 1995", value: "Nov 24th, 1995" },
-      { title: "Dec 4th, 1995", value: "Dec 4th, 1995" },
-      { title: "Dec 17, 1996", value: "Dec 17, 1996" },
-    ],
-  });
-  await handleAnswer(
-    answer === "Dec 4th, 1995",
-    `Nice work ${dir}. That's a legit answer!`,
-    `💀💀💀 Game over, you lose ${dir}!`,
-  );
-
-  const message = `Congrats , ${dir} !\n $ 1 , 0 0 0 , 0 0 0`;
-  const asciiArt = figlet.textSync(message);
-  await endPrompt({
+  await prompts({
     type: "end",
-    id: "winner",
-    title: asciiArt,
-    titleTypography: "gradient",
-    message: `
-      Programming isn't about what you know; 
-      it's about making the command line look cool!
-    `,
-    msgColor: "green",
+    id: "end",
+    title: `Problems? ${colorize("https://github.com/blefnk/reliverse/prompts", "cyanBright")}`,
   });
   process.exit(0);
 }

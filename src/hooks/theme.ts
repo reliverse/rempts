@@ -37,7 +37,7 @@ type DefaultTheme = {
    * Configuration for the spinner that is displayed when the prompt is in the
    * `'loading'` state.
    *
-   * We recommend the use of {@link https://github.com/sindresorhus/cli-spinners|cli-spinners} for a list of available spinners.
+   * `cli-spinners` is recommended for a list of available spinners.
    */
   spinner: {
     /**

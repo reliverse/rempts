@@ -1,11 +1,12 @@
 import { cyan, green, red, yellow } from "picocolors";
 
-import type { State } from "~/types";
+import type { ColorName, State } from "~/types";
 
+import { colorize } from "./colorize";
 import figures, { isUnicodeSupported } from "./figures";
 
-export const BAR_START = `${figures.lineDownRightArc} `;
-export const BAR_END = `${figures.lineUpLeftArc} `;
+export const BAR_START = figures.lineDownRightArc;
+export const BAR_END = `${figures.lineUpRightArc} `;
 export const BAR = `${figures.lineVertical} `;
 
 const unicode = isUnicodeSupported();
@@ -52,3 +53,25 @@ export const symbol = (state: State) => {
       return S_STEP_ACTIVE; // Default symbol if state is unrecognized
   }
 };
+
+export const bar = (symbol: string, state: State) => {
+  switch (state) {
+    case "initial":
+      return colorize(symbol, "dim");
+    case "active":
+      return colorize(symbol, "cyan");
+    case "cancel":
+      return colorize(symbol, "yellow");
+    case "error":
+      return colorize(symbol, "red");
+    case "submit":
+      return colorize(symbol, "green");
+    default:
+      return colorize(symbol, undefined);
+  }
+};
+
+export const styledBars = (type: "start" | "middle", state: State) => ({
+  start: bar(BAR_START, state),
+  middle: bar(BAR, state),
+});

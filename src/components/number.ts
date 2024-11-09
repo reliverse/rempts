@@ -6,13 +6,16 @@ import readline from "node:readline/promises";
 
 import type { PromptOptions } from "~/types";
 
+import { usePromptState } from "~/hooks/usePromptState";
 import { colorize } from "~/utils/colorize";
-import { symbol } from "~/utils/states";
 import { applyVariant } from "~/utils/variant";
 
-export async function textPrompt<T extends TSchema>(
+export async function numberPrompt<T extends TSchema>(
   options: PromptOptions<T>,
 ): Promise<Static<T>> {
+  const { state: initialState = "initial" } = options;
+  const { state, setState, figure } = usePromptState(initialState);
+
   const {
     title,
     hint,
@@ -21,19 +24,14 @@ export async function textPrompt<T extends TSchema>(
     schema,
     titleColor,
     titleTypography,
+    titleVariant,
     message,
     msgColor,
     msgTypography,
-    titleVariant,
     msgVariant,
-    defaultColor,
-    defaultTypography,
-    state = "initial",
   } = options;
 
   const rl = readline.createInterface({ input, output });
-
-  const figure = symbol(state);
 
   const coloredTitle = colorize(title, titleColor, titleTypography);
   const coloredMessage = message
@@ -50,52 +48,45 @@ export async function textPrompt<T extends TSchema>(
     .map((line, index) => `${index === 0 ? figure : " "} ${line}`)
     .join("\n");
 
-  const coloredDefaultValue = defaultValue
-    ? colorize(
-        defaultValue.toString(),
-        defaultColor || "dim",
-        defaultTypography || "bold",
-      )
-    : "";
-
   const question = `${promptText}${
     hint ? ` (${hint})` : ""
-  }${coloredDefaultValue ? ` [${coloredDefaultValue}]` : ""}: `;
+  }${defaultValue !== undefined ? ` [${defaultValue}]` : ""}: `;
 
   while (true) {
-    const answer = (await rl.question(question)) || defaultValue || "";
+    const answer = (await rl.question(question)) || defaultValue;
+
+    const num = Number(answer);
+    if (isNaN(num)) {
+      setState("error");
+      console.log(`${figure} Please enter a valid number.`);
+      continue;
+    }
+
     let isValid = true;
     let errorMessage = "Invalid input.";
-
     if (schema) {
-      isValid = Value.Check(schema, answer);
+      isValid = Value.Check(schema, num);
       if (!isValid) {
-        const errors = [...Value.Errors(schema, answer)];
+        const errors = [...Value.Errors(schema, num)];
         if (errors.length > 0) {
           errorMessage = errors[0]?.message ?? "Invalid input.";
         }
       }
     }
-
     if (validate && isValid) {
-      const validation = await validate(answer);
+      const validation = await validate(num);
       if (validation !== true) {
         isValid = false;
         errorMessage =
           typeof validation === "string" ? validation : "Invalid input.";
       }
     }
-
     if (isValid) {
       rl.close();
-      return answer as Static<T>;
+      return num as Static<T>;
     } else {
-      // state = "error";
-      // const errorFigure = symbol(state);
-      // console.log(`${errorFigure} ${errorMessage}`);
-
-      const errorFigure = symbol("error");
-      console.log(`${errorFigure} ${errorMessage}`);
+      setState("error");
+      console.log(`${figure} ${errorMessage}`);
     }
   }
 }

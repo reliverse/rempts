@@ -1,5 +1,4 @@
-import { type Prettify } from "test/utils/helpers/type/utils";
-
+import { type Prettify } from "../type";
 import { breakLines } from "../utils";
 
 /** Represents an item that's part of a layout, about to be rendered */
