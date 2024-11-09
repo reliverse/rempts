@@ -1,5 +1,4 @@
 import chalk from "chalk";
-import chalkAnimation from "chalk-animation";
 import figlet from "figlet";
 import gradient from "gradient-string";
 import color from "picocolors";

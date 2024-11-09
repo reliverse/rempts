@@ -7,6 +7,7 @@ import readline from "node:readline/promises";
 import type { PromptOptions } from "~/types";
 
 import { colorize } from "~/utils/colorize";
+import { symbol } from "~/utils/states";
 import { applyVariant } from "~/utils/variant";
 
 export async function numberPrompt<T extends TSchema>(
@@ -25,8 +26,12 @@ export async function numberPrompt<T extends TSchema>(
     msgColor,
     msgTypography,
     msgVariant,
+    state = "initial",
   } = options;
+
   const rl = readline.createInterface({ input, output });
+
+  const figure = symbol(state);
 
   const coloredTitle = colorize(title, titleColor, titleTypography);
   const coloredMessage = message
@@ -38,7 +43,10 @@ export async function numberPrompt<T extends TSchema>(
     ? applyVariant([coloredMessage], msgVariant)
     : "";
 
-  const promptText = [titleText, messageText].filter(Boolean).join("\n");
+  const promptLines = [titleText, messageText].filter(Boolean);
+  const promptText = promptLines
+    .map((line, index) => `${index === 0 ? figure : " "} ${line}`)
+    .join("\n");
 
   const question = `${promptText}${
     hint ? ` (${hint})` : ""
@@ -49,9 +57,11 @@ export async function numberPrompt<T extends TSchema>(
 
     const num = Number(answer);
     if (isNaN(num)) {
-      console.log("Please enter a valid number.");
+      const errorFigure = symbol("error");
+      console.log(`${errorFigure} Please enter a valid number.`);
       continue;
     }
+
     let isValid = true;
     let errorMessage = "Invalid input.";
     if (schema) {
@@ -75,7 +85,8 @@ export async function numberPrompt<T extends TSchema>(
       rl.close();
       return num as Static<T>;
     } else {
-      console.log(errorMessage);
+      const errorFigure = symbol("error");
+      console.log(`${errorFigure} ${errorMessage}`);
     }
   }
 }

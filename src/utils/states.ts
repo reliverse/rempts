@@ -10,6 +10,7 @@ export const BAR = `${figures.lineVertical} `;
 
 const unicode = isUnicodeSupported();
 const s = (c: string, fallback: string) => (unicode ? c : fallback);
+
 const S_STEP_ACTIVE = s("◆", "*");
 const S_STEP_CANCEL = s("■", "x");
 const S_STEP_ERROR = s("▲", "x");
@@ -47,5 +48,7 @@ export const symbol = (state: State) => {
       return yellow(S_STEP_ERROR);
     case "submit":
       return green(S_STEP_SUBMIT);
+    default:
+      return S_STEP_ACTIVE; // Default symbol if state is unrecognized
   }
 };

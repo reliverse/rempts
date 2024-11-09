@@ -1,5 +1,5 @@
 // examples/install-deps.ts: An advanced example of a CLI application that installs dependencies.
-// Trying to create a drop-in replacement for @clack/prompts, unjs/consola, @inquirer/prompts, etc.
+// Trying to create a drop-in replacement for @clack/prompts, unjs/consola, @inquirer/prompts, withastro/astro, etc.
 
 import figlet from "figlet";
 
@@ -17,6 +17,21 @@ async function main() {
     title: "create-app",
     titleColor: "bgCyanBright",
     titleTypography: "bold",
+  });
+
+  await prompts({
+    type: "text",
+    id: "userInput",
+    title: "Please enter your username",
+    titleColor: "blue",
+    titleTypography: "bold",
+    message: "Your username will be used to identify you in the system.\n",
+    msgTypography: "pulse",
+    // TODO: when mixing gradient-string and picocolors, the
+    // things like `[32m`/`[39m`/etc are shown in the console
+    // msgColor: "green",
+    state: "initial",
+    validate: (input) => input.length > 0 || "Username cannot be empty.",
   });
 
   const dir = await prompts({

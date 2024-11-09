@@ -34,8 +34,9 @@ export async function startPrompt(options: PromptOptions): Promise<void> {
     ? applyVariant([coloredMessage], msgVariant, variantOptions?.box)
     : "";
 
-  console.log(`${BAR_START}${styledTitle}\n${BAR}`);
+  console.log(`${BAR_START}${figure} ${styledTitle}`);
   if (styledMessage) {
-    console.log(`${figure}${styledMessage}\n${BAR_END}`);
+    console.log(`${BAR} ${styledMessage}`);
   }
+  console.log(BAR_END);
 }
