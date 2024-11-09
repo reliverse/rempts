@@ -4,14 +4,20 @@ import { Value } from "@sinclair/typebox/value";
 import { stdin as input, stdout as output } from "node:process";
 import readline from "node:readline/promises";
 
-import type { PromptOptions, State } from "~/types";
+import type { PromptOptions, PromptState } from "~/types";
 
 import { colorize } from "~/utils/colorize";
-import { symbol } from "~/utils/states";
+import { getFigure } from "~/utils/states";
 import { applyVariant } from "~/utils/variant";
 
 export async function textPrompt<T extends TSchema>(
   options: PromptOptions<T>,
+  currentState: PromptState = {
+    id: "",
+    state: "initial",
+    figure: getFigure("initial"),
+    value: undefined,
+  },
 ): Promise<Static<T>> {
   const {
     title,
@@ -26,87 +32,88 @@ export async function textPrompt<T extends TSchema>(
     msgTypography,
     titleVariant,
     msgVariant,
-    defaultColor,
-    defaultTypography,
-    state: initialState = "initial",
+    action,
   } = options;
 
-  let state: State = initialState;
-  let answer: string = defaultValue || "";
-  let errorMessage = "";
+  currentState.state = options.state ?? "initial";
+  currentState.figure = getFigure(currentState.state);
 
   const rl = readline.createInterface({ input, output });
 
-  function renderPrompt() {
-    const figure = symbol(state);
-    const coloredTitle = colorize(title, titleColor, titleTypography);
-    const promptText = `${figure} ${applyVariant([coloredTitle], titleVariant)}`;
+  const coloredTitle = colorize(title, titleColor, titleTypography);
+  const coloredMessage = message
+    ? colorize(message, msgColor, msgTypography)
+    : "";
 
-    console.clear();
-    console.log(promptText);
-    if (hint) {
-      console.log(`(${hint})`);
+  const titleText = applyVariant([coloredTitle], titleVariant);
+  const messageText = coloredMessage
+    ? applyVariant([coloredMessage], msgVariant)
+    : "";
+
+  const promptLines = [titleText, messageText].filter(Boolean);
+  const promptText = promptLines.map((line) => line).join("\n");
+
+  const question = `${promptText}${hint ? ` (${hint})` : ""}${
+    defaultValue ? ` [${defaultValue}]` : ""
+  }: `;
+
+  function displayPrompt(answer?: string) {
+    console.log(`${currentState.figure} ${titleText}`);
+    if (messageText) {
+      console.log(`- ${messageText}`);
     }
-    if (answer) {
-      console.log(`Answer: ${answer}`);
-    }
-    if (state === "error") {
-      console.log(`Error: ${errorMessage}`);
-    }
+    console.log(answer ?? "-");
   }
 
-  // Initial render
-  renderPrompt();
+  while (true) {
+    const answer = (await rl.question(question)) || defaultValue;
 
-  rl.on("line", async (input) => {
-    const key = input.trim();
-
-    if (key === "") {
-      return;
-    } // Skip empty lines
-
-    if (key === "enter") {
-      // Perform validation
-      let isValid = true;
-      let error = "";
-
-      if (schema) {
-        isValid = Value.Check(schema, answer);
-        if (!isValid) {
-          const errors = [...Value.Errors(schema, answer)];
-          error = errors[0]?.message || "Invalid input.";
-        }
-      }
-
-      if (validate && isValid) {
-        const validation = await validate(answer);
-        if (validation !== true) {
-          isValid = false;
-          error =
-            typeof validation === "string" ? validation : "Invalid input.";
-        }
-      }
-
-      if (isValid) {
-        state = "submit";
-        rl.close();
-      } else {
-        state = "error";
-        errorMessage = error;
-        renderPrompt();
-      }
-    } else if (key === "backspace") {
-      answer = answer.slice(0, -1);
-      renderPrompt();
-    } else {
-      answer += key;
-      renderPrompt();
+    if (!answer) {
+      continue;
     }
-  });
 
-  return new Promise<Static<T>>((resolve) => {
-    rl.on("close", () => {
-      resolve(answer as Static<T>);
-    });
-  });
+    let isValid = true;
+    let errorMessage = "";
+
+    if (schema) {
+      isValid = Value.Check(schema, answer);
+      if (!isValid) {
+        const errors = [...Value.Errors(schema, answer)];
+        errorMessage = errors[0]?.message || "Invalid input.";
+        currentState.state = "error";
+        currentState.figure = getFigure(currentState.state);
+      }
+    }
+
+    if (validate && isValid) {
+      const validation = await validate(answer);
+      if (validation !== true) {
+        isValid = false;
+        errorMessage =
+          typeof validation === "string" ? validation : "Invalid input.";
+        currentState.state = "error";
+        currentState.figure = getFigure(currentState.state);
+      }
+    }
+
+    if (isValid) {
+      // Execute the action before marking the prompt as completed
+      if (action) {
+        await action();
+      }
+
+      // Update state to "completed" and display the completed title
+      currentState.state = "completed";
+      currentState.figure = getFigure("completed");
+      currentState.value = answer;
+
+      displayPrompt(answer); // Display completed prompt with answer
+
+      rl.close();
+      return answer as Static<T>;
+    } else {
+      displayPrompt();
+      console.log(`${currentState.figure} ${errorMessage}`);
+    }
+  }
 }

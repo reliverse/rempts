@@ -16,19 +16,20 @@
     "strict": true,
     "noUncheckedIndexedAccess": true,
     "noImplicitOverride": true,
+    "noImplicitAny": false,
     "module": "preserve",
     "noEmit": true,
     "lib": ["es2022"]
   },
   "include": [
+    "build.pub.ts",
     "build.paths.ts",
     "build.config.ts",
     "eslint.config.js",
     "vitest.config.ts",
     "src/**/*.ts",
     "addons/**/*.ts",
-    "examples/**/*.ts",
-    "experimental/**/*.ts"
+    "examples/**/*.ts"
   ],
   "exclude": ["dist", "node_modules"]
 }

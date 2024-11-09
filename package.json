@@ -13,10 +13,11 @@
     "tsc": "tshy",
     "knip": "knip",
     "dev": "bun dev:id",
-    "dev:id": "bun examples/install-deps.ts",
-    "dev:us": "bun examples/user-signup.ts",
-    "dev:wm": "bun examples/win-mln-js.ts",
-    "dev:sc": "bun examples/simple-check.ts"
+    "dev:id": "bun examples/reliverse/install-deps.ts",
+    "dev:us": "bun examples/reliverse/user-signup.ts",
+    "dev:wm": "bun examples/reliverse/win-mln-js.ts",
+    "dev:sc": "bun examples/reliverse/simple-check.ts",
+    "dev:terkelg": "bun examples/terkelg/install-deps.ts"
   },
   "type": "module",
   "publishConfig": {
@@ -69,10 +70,12 @@
     "@types/fs-extra": "^11.0.4",
     "@types/mute-stream": "^0.0.4",
     "@types/node": "^22.9.0",
+    "@types/tape": "^5.6.4",
     "eslint": "^9.14.0",
     "eslint-plugin-perfectionist": "^3.9.1",
     "knip": "^5.36.2",
     "mock-stdin": "^1.0.0",
+    "tape": "^5.9.0",
     "tshy": "^3.0.2",
     "typescript": "^5.6.3",
     "typescript-eslint": "^8.13.0",

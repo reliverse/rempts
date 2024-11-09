@@ -6,5 +6,11 @@
     "source.fixAll.eslint": "explicit",
     "source.organizeImports": "never",
     "source.removeUnused": "never"
-  }
+  },
+  "eslint.rules.customizations": [
+    {
+      "rule": "perfectionist/sort-imports",
+      "severity": "off"
+    }
+  ]
 }

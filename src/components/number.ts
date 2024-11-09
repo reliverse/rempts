@@ -7,6 +7,7 @@ import readline from "node:readline/promises";
 import type { PromptOptions, State } from "~/types";
 
 import { colorize } from "~/utils/colorize";
+import { getFigure } from "~/utils/states";
 import { applyVariant } from "~/utils/variant";
 
 export async function numberPrompt<T extends TSchema>(
@@ -49,9 +50,7 @@ export async function numberPrompt<T extends TSchema>(
     : "";
 
   const promptLines = [titleText, messageText].filter(Boolean);
-  const promptText = promptLines
-    .map((line, index) => `${index === 0 ? figure : " "} ${line}`)
-    .join("\n");
+  const promptText = promptLines.map((line) => line).join("\n");
 
   const question = `${promptText}${
     hint ? ` (${hint})` : ""
@@ -94,13 +93,4 @@ export async function numberPrompt<T extends TSchema>(
       console.log(`${figure} ${errorMessage}`);
     }
   }
-}
-
-function getFigure(state: string): string {
-  const figures = {
-    initial: "🔹",
-    active: "🔸",
-    error: "❌",
-  } as const;
-  return figures[state as keyof typeof figures] || figures.initial;
 }

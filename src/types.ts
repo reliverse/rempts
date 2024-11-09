@@ -57,12 +57,28 @@ export type Typography =
   | "neon"
   | "figlet";
 
-export type State = "initial" | "active" | "cancel" | "submit" | "error";
+export type State =
+  | "initial"
+  | "active"
+  | "completed"
+  | "cancel"
+  | "submit"
+  | "error";
+
+export type Figure = "play" | "star" | "nodejs" | "oneSeventh" | "oneNinth";
+
+export type PromptState = {
+  id: string;
+  state: State;
+  figure: string;
+  value: any;
+};
 
 export type PromptOptions<T extends TSchema = any> = {
   type: PromptType;
   id: string;
   title: string;
+  stateCompletedTitle?: string;
   titleColor?: ColorName;
   titleTypography?: Typography;
   titleVariant?: Variant;

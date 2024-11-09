@@ -75,3 +75,12 @@ export const styledBars = (type: "start" | "middle", state: State) => ({
   start: bar(BAR_START, state),
   middle: bar(BAR, state),
 });
+
+export function getFigure(state: string): string {
+  const figures = {
+    initial: "🔹",
+    active: "🔸",
+    error: "❌",
+  } as const;
+  return figures[state as keyof typeof figures] || figures.initial;
+}
