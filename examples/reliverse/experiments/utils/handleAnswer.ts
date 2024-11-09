@@ -1,4 +1,4 @@
-import { createSpinner } from "~/components/spinner";
+import { createSpinner } from "~/ui/spinner";
 import { colorize } from "~/utils/colorize";
 
 export async function handleAnswer(

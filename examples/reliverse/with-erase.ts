@@ -3,7 +3,7 @@
 
 import type { PromptState } from "~/types";
 
-import { textPrompt } from "~/components/text";
+import { textPrompt } from "~/ui/text";
 import { prompts } from "~/main";
 import { colorize } from "~/utils/colorize";
 import { symbol } from "~/utils/states";

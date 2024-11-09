@@ -1,6 +1,6 @@
 {
   "name": "@reliverse/prompts",
-  "version": "0.9.13",
+  "version": "0.9.14",
   "description": "A modern, type-safe, crash-resistant library for creating seamless, typesafe prompts in CLI applications. Designed for simplicity and elegance, it enables intuitive and robust user interactions.",
   "scripts": {
     "appts": "bun typecheck && bun lint && bun format",

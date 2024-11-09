@@ -65,6 +65,7 @@ export default tseslint.config(
       "@typescript-eslint/unbound-method": "off",
       "@typescript-eslint/no-unsafe-call": "off",
       "@typescript-eslint/no-deprecated": "off",
+      "@typescript-eslint/require-await": "off",
       "@typescript-eslint/consistent-type-definitions": ["error", "type"],
       "@typescript-eslint/consistent-type-imports": [
         "warn",

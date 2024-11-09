@@ -2,18 +2,18 @@ import type { TSchema, Static } from "@sinclair/typebox";
 
 import type { PromptOptions } from "~/types";
 
-import { confirmPrompt } from "~/components/confirm";
-import { datePrompt } from "~/components/date";
-import { endPrompt } from "~/components/end";
-import { multiselectPrompt } from "~/components/multiselect";
-import { nextStepsPrompt } from "~/components/nextSteps";
-import { numberPrompt } from "~/components/number";
-import { passwordPrompt } from "~/components/password";
-import { selectPrompt } from "~/components/select";
-import { startPrompt } from "~/components/start";
-import { textPrompt } from "~/components/text";
+import { confirmPrompt } from "~/ui/confirm";
+import { datePrompt } from "~/ui/date";
+import { endPrompt } from "~/ui/end";
+import { multiselectPrompt } from "~/ui/multiselect";
+import { nextStepsPrompt } from "~/ui/nextSteps";
+import { numberPrompt } from "~/ui/number";
+import { passwordPrompt } from "~/ui/password";
+import { selectPrompt } from "~/ui/select";
+import { startPrompt } from "~/ui/start";
+import { textPrompt } from "~/ui/text";
 
-export { createSpinner } from "~/components/spinner";
+export { createSpinner } from "~/ui/spinner";
 
 export async function prompts<T extends TSchema>(
   options: PromptOptions<T>,

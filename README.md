@@ -1,5 +1,7 @@
 # @reliverse/prompts
 
+[docs](https://docs.reliverse.org/prompts) | [npmjs.com](https://npmjs.com/package/@reliverse/prompts) | [github.com](https://github.com/reliverse/prompts)
+
 - A single library to build the entire command line interface application.
 - A modern, crash-resistant library for creating seamless, typesafe prompts in CLI applications.
 - Designed for simplicity and elegance, it enables intuitive and robust user interactions.
