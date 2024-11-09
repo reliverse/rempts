@@ -1,9 +1,15 @@
+import chalkAnimation from "chalk-animation";
+
+import type { Variant } from "~/types";
+
 export function applyVariant(
   lines: string[],
-  variant?: string,
+  variant?: Variant,
   options?: { limit?: number },
 ): string {
   switch (variant) {
+    case "animated":
+      return createAnimated(lines.join("\n"));
     case "box":
       return createBox(lines, options?.limit);
     case "doubleBox":
@@ -15,6 +21,15 @@ export function applyVariant(
     default:
       return lines.join("\n");
   }
+}
+
+function createAnimated(text: string): string {
+  const animation = chalkAnimation.rainbow(text);
+  // Since chalkAnimation handles the output, we can stop it after a delay
+  setTimeout(() => {
+    animation.stop();
+  }, 2000);
+  return text; // Return text in case we need to chain methods
 }
 
 function createBox(lines: string[], limit?: number): string {

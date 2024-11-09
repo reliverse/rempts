@@ -1,3 +1,5 @@
+// examples/user-signup.ts: An advanced example of a CLI application that simulates a user signup process.
+
 import { Type, type Static } from "@sinclair/typebox";
 
 import { prompts } from "~/main";
@@ -5,6 +7,8 @@ import { prompts } from "~/main";
 import { installDependencies } from "./utils/installDependencies";
 
 async function main() {
+  console.clear();
+
   // Define the schema once and reuse it for each prompt.
   const schema = Type.Object({
     deps: Type.Boolean(),

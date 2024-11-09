@@ -1,7 +1,7 @@
 import ansiEscapes from "ansi-escapes";
 import stripAnsi from "strip-ansi";
 
-import type { ReadReli } from "test/utils/helpers/type";
+import type { ReadReli } from "./type";
 
 import { breakLines, readlineWidth } from "./utils";
 

@@ -7,6 +7,7 @@ import readline from "node:readline/promises";
 import type { PromptOptions } from "~/types";
 
 import { colorize } from "~/utils/colorize";
+import { symbol } from "~/utils/states";
 import { applyVariant } from "~/utils/variant";
 
 export async function textPrompt<T extends TSchema>(
@@ -25,8 +26,13 @@ export async function textPrompt<T extends TSchema>(
     msgTypography,
     titleVariant,
     msgVariant,
+    defaultColor,
+    defaultTypography,
+    state = "initial",
   } = options;
   const rl = readline.createInterface({ input, output });
+
+  const figure = symbol(state);
 
   const coloredTitle = colorize(title, titleColor, titleTypography);
   const coloredMessage = message
@@ -38,16 +44,26 @@ export async function textPrompt<T extends TSchema>(
     ? applyVariant([coloredMessage], msgVariant)
     : "";
 
-  const promptText = [titleText, messageText].filter(Boolean).join("\n");
+  const promptText = `${figure} ${[titleText, messageText].filter(Boolean).join("\n")}`;
+
+  const coloredDefaultValue = defaultValue
+    ? colorize(
+        defaultValue.toString(),
+        defaultColor || "dim",
+        defaultTypography || "bold",
+      )
+    : "";
 
   const question = `${promptText}${
     hint ? ` (${hint})` : ""
-  }${defaultValue ? ` [${defaultValue}]` : ""}: `;
+  }${coloredDefaultValue ? ` [${coloredDefaultValue}]` : ""}: `;
 
   while (true) {
-    const answer = (await rl.question(question)) || defaultValue || "";
+    const answer =
+      (await rl.question(`${figure} ${question}\n│`)) || defaultValue || "";
     let isValid = true;
     let errorMessage = "Invalid input.";
+
     if (schema) {
       isValid = Value.Check(schema, answer);
       if (!isValid) {
@@ -57,6 +73,7 @@ export async function textPrompt<T extends TSchema>(
         }
       }
     }
+
     if (validate && isValid) {
       const validation = await validate(answer);
       if (validation !== true) {
@@ -65,11 +82,12 @@ export async function textPrompt<T extends TSchema>(
           typeof validation === "string" ? validation : "Invalid input.";
       }
     }
+
     if (isValid) {
       rl.close();
       return answer as Static<T>;
     } else {
-      console.log(errorMessage);
+      console.log(`${figure} ${errorMessage}`);
     }
   }
 }

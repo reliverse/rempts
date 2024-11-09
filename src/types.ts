@@ -1,5 +1,11 @@
 import type { TSchema } from "@sinclair/typebox";
 
+export type Choice = {
+  title: string;
+  value: any;
+  description?: string;
+};
+
 export type ColorName =
   | "dim"
   | "inverse"
@@ -18,13 +24,13 @@ export type ColorName =
   | "grey"
   | "none";
 
-export type Variant = "box" | "doubleBox" | "banner" | "underline" | "none"; 
-
-export type Choice = {
-  title: string;
-  value: any;
-  description?: string;
-};
+export type Variant =
+  | "box"
+  | "doubleBox"
+  | "banner"
+  | "underline"
+  | "none"
+  | "animated";
 
 export type PromptType =
   | "text"
@@ -38,20 +44,37 @@ export type PromptType =
   | "nextSteps"
   | "end";
 
+export type Typography =
+  | "bold"
+  | "strikethrough"
+  | "underline"
+  | "italic"
+  | "rainbow"
+  | "gradient"
+  | "pulse"
+  | "glitch"
+  | "radar"
+  | "neon"
+  | "figlet";
+
+export type State = "initial" | "active" | "cancel" | "submit" | "error";
+
 export type PromptOptions<T extends TSchema = any> = {
   type: PromptType;
   id: string;
   title: string;
   titleColor?: ColorName;
-  titleTypography?: "bold" | "strikethrough" | "underline" | "italic";
+  titleTypography?: Typography;
   titleVariant?: Variant;
   message?: string;
   msgColor?: ColorName;
-  msgTypography?: "bold" | "strikethrough" | "underline" | "italic";
+  msgTypography?: Typography;
   msgVariant?: Variant;
   hint?: string;
   validate?: (value: any) => boolean | string | Promise<boolean | string>;
   default?: any;
+  defaultColor?: ColorName;
+  defaultTypography?: Typography;
   choices?: Choice[];
   schema?: T;
   variantOptions?: {
@@ -60,4 +83,5 @@ export type PromptOptions<T extends TSchema = any> = {
     };
   };
   action?: () => Promise<void>;
+  state?: State;
 };

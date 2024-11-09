@@ -1,4 +1,4 @@
-import type { ReadReli } from "test/utils/helpers/type";
+import type { ReadReli } from "./type";
 
 import { withPointer, effectScheduler } from "./hook-engine";
 

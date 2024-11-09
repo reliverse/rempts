@@ -1,8 +1,8 @@
 import { blue, bold, cyan, dim, green, red, yellow } from "picocolors";
 
-import type { Prettify } from "test/utils/helpers/type/utils";
+import figures from "~/utils/figures";
 
-import figures from "./figures";
+import type { Prettify } from "./type";
 
 /**
  * Union type representing the possible statuses of a prompt.

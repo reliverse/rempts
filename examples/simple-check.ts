@@ -1,8 +1,12 @@
+// examples/simple-check.ts: A very basic example to check the library.
+
 import { prompts } from "~/main";
 
 import { installDependencies } from "./utils/installDependencies";
 
 async function main() {
+  console.clear();
+
   await prompts({
     type: "start",
     id: "setupStart",

@@ -2,13 +2,13 @@ import MuteStream from "mute-stream";
 import { AsyncResource } from "node:async_hooks";
 import * as readline from "node:readline";
 import { onExit as onSignalExit } from "signal-exit";
-import { type Prompt, type ReadReli } from "test/utils/helpers/type/readreli";
-import { type Prettify } from "test/utils/helpers/type/utils";
 
 import { AbortPromptError, CancelPromptError, ExitPromptError } from "./errors";
 import { withHooks, effectScheduler } from "./hook-engine";
 import { PromisePolyfill } from "./promise-polyfill";
 import ScreenManager from "./screen-manager";
+import { type Prettify } from "./type";
+import { type Prompt, type ReadReli } from "./type";
 
 type ViewFunction<Value, Config> = (
   config: Prettify<Config>,

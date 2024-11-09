@@ -1,4 +1,4 @@
-import type { Prettify } from "test/utils/helpers/type/utils";
+import type { Prettify } from "../type";
 
 import { type Theme } from "../theme";
 import { useRef } from "../use-ref";

@@ -1,4 +1,4 @@
-import { type ReadReli } from "test/utils/helpers/type";
+import type { ReadReli } from "./type";
 
 import { withUpdates } from "./hook-engine";
 import { type KeypressEvent } from "./key";

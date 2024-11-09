@@ -22,8 +22,8 @@
   },
   "include": [
     "src/**/*.ts",
-    "test/**/*.ts",
     "addons/**/*.ts",
+    "examples/**/*.ts",
     "build.paths.ts",
     "build.config.ts",
     "eslint.config.js",

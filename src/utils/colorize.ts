@@ -1,11 +1,15 @@
+import chalk from "chalk";
+import chalkAnimation from "chalk-animation";
+import figlet from "figlet";
+import gradient from "gradient-string";
 import color from "picocolors";
 
-import type { ColorName } from "~/types";
+import type { ColorName, Typography } from "~/types";
 
 export function colorize(
   text: string,
   colorName?: ColorName,
-  typography?: "bold" | "strikethrough" | "underline" | "italic",
+  typography?: Typography,
 ): string {
   let result = text;
 
@@ -56,22 +60,52 @@ export function colorize(
     case "none":
       break;
     default:
-      result = color.cyanBright(result);
+      break;
   }
 
   if (typography) {
     switch (typography) {
       case "bold":
-        result = color.bold(result);
+        result = chalk.bold(result);
         break;
       case "strikethrough":
-        result = color.strikethrough(result);
+        result = chalk.strikethrough(result);
         break;
       case "underline":
-        result = color.underline(result);
+        result = chalk.underline(result);
         break;
       case "italic":
-        result = color.italic(result);
+        result = chalk.italic(result);
+        break;
+      case "gradient":
+        result = gradient(
+          "red",
+          "yellow",
+          "green",
+          "cyan",
+          "blue",
+          "magenta",
+        )(result);
+        break;
+      case "rainbow":
+        result = gradient.rainbow(result);
+        break;
+      case "pulse":
+        result = gradient.passion(result);
+        break;
+      case "glitch":
+        result = gradient.cristal(result);
+        break;
+      case "radar":
+        result = gradient.mind(result);
+        break;
+      case "neon":
+        result = gradient.vice(result);
+        break;
+      case "figlet":
+        result = figlet.textSync(result);
+        break;
+      default:
         break;
     }
   }

@@ -2,7 +2,7 @@
 
 import { AsyncLocalStorage, AsyncResource } from "node:async_hooks";
 
-import type { ReadReli } from "test/utils/helpers/type";
+import type { ReadReli } from "./type";
 
 import { HookError, ValidationError } from "./errors";
 

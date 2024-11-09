@@ -3,7 +3,7 @@ import mockStdin from "mock-stdin";
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 
 // import { prompts } from "../dist/main.mjs";
-import { prompts } from "../src/main";
+import { prompts } from "../../src/main";
 
 // Helper function to delay execution (useful for simulating asynchronous input)
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
