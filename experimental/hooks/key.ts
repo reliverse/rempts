@@ -1,6 +1,7 @@
 export type KeypressEvent = {
   name: string;
   ctrl: boolean;
+  sequence?: string;
 };
 
 export const isUpKey = (key: KeypressEvent): boolean =>

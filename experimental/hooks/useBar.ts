@@ -1,6 +1,7 @@
+import { useState, useEffect } from "experimental/hooks";
+
 import type { State } from "~/types";
 
-import { useState, useEffect } from "~/hooks";
 import { styledBars } from "~/utils/states";
 
 export function useBar(state: State) {

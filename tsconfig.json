@@ -21,13 +21,14 @@
     "lib": ["es2022"]
   },
   "include": [
-    "src/**/*.ts",
-    "addons/**/*.ts",
-    "examples/**/*.ts",
     "build.paths.ts",
     "build.config.ts",
     "eslint.config.js",
-    "vitest.config.ts"
+    "vitest.config.ts",
+    "src/**/*.ts",
+    "addons/**/*.ts",
+    "examples/**/*.ts",
+    "experimental/**/*.ts"
   ],
   "exclude": ["dist", "node_modules"]
 }

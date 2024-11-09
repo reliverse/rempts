@@ -4,14 +4,19 @@ import { Value } from "@sinclair/typebox/value";
 import { stdin as input, stdout as output } from "node:process";
 import readline from "node:readline/promises";
 
-import type { PromptOptions, State } from "~/types";
+import type { PromptOptions } from "~/types";
 
 import { colorize } from "~/utils/colorize";
 import { applyVariant } from "~/utils/variant";
 
+import { usePromptState } from "../hooks/usePromptState";
+
 export async function numberPrompt<T extends TSchema>(
   options: PromptOptions<T>,
 ): Promise<Static<T>> {
+  const { state: initialState = "initial" } = options;
+  const { state, setState, figure } = usePromptState(initialState);
+
   const {
     title,
     hint,
@@ -25,16 +30,7 @@ export async function numberPrompt<T extends TSchema>(
     msgColor,
     msgTypography,
     msgVariant,
-    state: initialState = "initial",
   } = options;
-
-  let state = initialState;
-  let figure = getFigure(state);
-
-  function setState(newState: State) {
-    state = newState;
-    figure = getFigure(state);
-  }
 
   const rl = readline.createInterface({ input, output });
 
@@ -94,13 +90,4 @@ export async function numberPrompt<T extends TSchema>(
       console.log(`${figure} ${errorMessage}`);
     }
   }
-}
-
-function getFigure(state: string): string {
-  const figures = {
-    initial: "🔹",
-    active: "🔸",
-    error: "❌",
-  } as const;
-  return figures[state as keyof typeof figures] || figures.initial;
 }

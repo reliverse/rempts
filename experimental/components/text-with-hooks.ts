@@ -1,6 +1,13 @@
 import type { TSchema, Static } from "@sinclair/typebox";
+import type { ReadReli } from "experimental/hooks/type";
 
 import { Value } from "@sinclair/typebox/value";
+import {
+  useState,
+  useEffect,
+  useKeypress,
+  type KeypressEvent,
+} from "experimental/hooks";
 import { stdin as input, stdout as output } from "node:process";
 import readline from "node:readline/promises";
 
@@ -31,41 +38,14 @@ export async function textPrompt<T extends TSchema>(
     state: initialState = "initial",
   } = options;
 
-  let state: State = initialState;
-  let answer: string = defaultValue || "";
-  let errorMessage = "";
+  const [state, setState] = useState<State>(initialState);
+  const [answer, setAnswer] = useState<string>(defaultValue || "");
+  const [errorMessage, setErrorMessage] = useState<string>("");
 
   const rl = readline.createInterface({ input, output });
-
-  function renderPrompt() {
-    const figure = symbol(state);
-    const coloredTitle = colorize(title, titleColor, titleTypography);
-    const promptText = `${figure} ${applyVariant([coloredTitle], titleVariant)}`;
-
-    console.clear();
-    console.log(promptText);
-    if (hint) {
-      console.log(`(${hint})`);
-    }
-    if (answer) {
-      console.log(`Answer: ${answer}`);
-    }
-    if (state === "error") {
-      console.log(`Error: ${errorMessage}`);
-    }
-  }
-
-  // Initial render
-  renderPrompt();
-
-  rl.on("line", async (input) => {
-    const key = input.trim();
-
-    if (key === "") {
-      return;
-    } // Skip empty lines
-
-    if (key === "enter") {
+  // Handle keypress events
+  useKeypress(async (event: KeypressEvent, rl: ReadReli) => {
+    if (event.name === "enter") {
       // Perform validation
       let isValid = true;
       let error = "";
@@ -88,21 +68,37 @@ export async function textPrompt<T extends TSchema>(
       }
 
       if (isValid) {
-        state = "submit";
+        setState("submit");
         rl.close();
       } else {
-        state = "error";
-        errorMessage = error;
-        renderPrompt();
+        setState("error");
+        setErrorMessage(error);
       }
-    } else if (key === "backspace") {
-      answer = answer.slice(0, -1);
-      renderPrompt();
-    } else {
-      answer += key;
-      renderPrompt();
+    } else if (event.name === "backspace") {
+      setAnswer(answer.slice(0, -1));
+    } else if (event.sequence) {
+      setAnswer(answer + event.sequence);
     }
   });
+
+  useEffect(() => {
+    // Update the prompt display when state or answer changes
+    const figure = symbol(state);
+    const coloredTitle = colorize(title, titleColor, titleTypography);
+    const promptText = `${figure} ${applyVariant([coloredTitle], titleVariant)}`;
+
+    console.clear();
+    console.log(promptText);
+    if (hint) {
+      console.log(`(${hint})`);
+    }
+    if (answer) {
+      console.log(`Answer: ${answer}`);
+    }
+    if (state === "error") {
+      console.log(`Error: ${errorMessage}`);
+    }
+  }, [state, answer]);
 
   return new Promise<Static<T>>((resolve) => {
     rl.on("close", () => {
