@@ -1,6 +1,3 @@
-// examples/install-deps.ts: An advanced example of a CLI application that installs dependencies.
-// Trying to create a drop-in replacement for @clack/prompts, unjs/consola, @inquirer/prompts, withastro/astro, etc.
-
 import {
   intro,
   outro,

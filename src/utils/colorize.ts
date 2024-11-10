@@ -1,7 +1,31 @@
-import chalk from "chalk";
 import figlet from "figlet";
-import gradient from "gradient-string";
-import color from "picocolors";
+import gradient, {
+  cristal,
+  mind,
+  passion,
+  rainbow,
+  vice,
+} from "gradient-string";
+import {
+  red,
+  inverse,
+  dim,
+  black,
+  green,
+  yellow,
+  blue,
+  magenta,
+  cyan,
+  cyanBright,
+  bgCyan,
+  bgCyanBright,
+  white,
+  gray,
+  underline,
+  bold,
+  strikethrough,
+  italic,
+} from "picocolors";
 
 import type { ColorName, Typography } from "~/types";
 
@@ -14,47 +38,67 @@ export function colorize(
 
   switch (colorName) {
     case "inverse":
-      result = color.inverse(` ${result} `);
+      result = inverse(` ${result} `);
       break;
     case "dim":
-      result = color.dim(result);
+      result = dim(result);
       break;
     case "black":
-      result = color.black(result);
+      result = black(result);
       break;
     case "red":
-      result = color.red(result);
+      result = red(result);
       break;
     case "green":
-      result = color.green(result);
+      result = green(result);
       break;
     case "yellow":
-      result = color.yellow(result);
+      result = yellow(result);
       break;
     case "blue":
-      result = color.blue(result);
+      result = blue(result);
       break;
     case "magenta":
-      result = color.magenta(result);
+      result = magenta(result);
       break;
     case "cyan":
-      result = color.cyan(result);
+      result = cyan(result);
       break;
     case "cyanBright":
-      result = color.cyanBright(result);
+      result = cyanBright(result);
       break;
     case "bgCyan":
-      result = color.bgCyan(` ${result} `);
+      result = bgCyan(` ${result} `);
       break;
     case "bgCyanBright":
-      result = color.bgCyanBright(` ${result} `);
+      result = bgCyanBright(` ${result} `);
       break;
     case "white":
-      result = color.white(result);
+      result = white(result);
       break;
     case "gray":
     case "grey":
-      result = color.gray(result);
+      result = gray(result);
+      break;
+    case "gradientGradient":
+      result = gradient(["red", "yellow", "green", "cyan", "blue", "magenta"])(
+        result,
+      );
+      break;
+    case "rainbowGradient":
+      result = rainbow(result);
+      break;
+    case "cristalGradient":
+      result = cristal(result);
+      break;
+    case "mindGradient":
+      result = mind(result);
+      break;
+    case "passionGradient":
+      result = passion(result);
+      break;
+    case "viceGradient":
+      result = vice(result);
       break;
     case "none":
       break;
@@ -62,44 +106,31 @@ export function colorize(
       break;
   }
 
-  if (typography) {
+  const gradientColors = [
+    "gradientGradient",
+    "cristalGradient",
+    "mindGradient",
+    "passionGradient",
+    "rainbowGradient",
+    "viceGradient",
+  ];
+
+  if (gradientColors.includes(colorName ?? "") && typography)
+    throw new TypeError("Cannot apply typography to gradient color");
+
+  if (!gradientColors.includes(colorName ?? "") && typography) {
     switch (typography) {
       case "bold":
-        result = chalk.bold(result);
+        result = bold(result);
         break;
       case "strikethrough":
-        result = chalk.strikethrough(result);
+        result = strikethrough(result);
         break;
       case "underline":
-        result = chalk.underline(result);
+        result = underline(result);
         break;
       case "italic":
-        result = chalk.italic(result);
-        break;
-      case "gradient":
-        result = gradient(
-          "red",
-          "yellow",
-          "green",
-          "cyan",
-          "blue",
-          "magenta",
-        )(result);
-        break;
-      case "rainbow":
-        result = gradient.rainbow(result);
-        break;
-      case "pulse":
-        result = gradient.passion(result);
-        break;
-      case "glitch":
-        result = gradient.cristal(result);
-        break;
-      case "radar":
-        result = gradient.mind(result);
-        break;
-      case "neon":
-        result = gradient.vice(result);
+        result = italic(result);
         break;
       case "figlet":
         result = figlet.textSync(result);

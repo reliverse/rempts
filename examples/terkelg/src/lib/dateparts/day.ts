@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import DatePart from "./datepart";
 
 const pos = (n: number): string => {

@@ -1,11 +1,8 @@
-// examples/install-deps.ts: An advanced example of a CLI application that installs dependencies.
-// Trying to create a drop-in replacement for @clack/prompts, unjs/consola, @inquirer/prompts, withastro/astro, etc.
-
 import type { PromptState } from "~/types";
 
 import { prompts } from "~/main";
 import { colorize } from "~/utils/colorize";
-import { symbol } from "~/utils/states";
+import { symbol } from "~/utils/symbols";
 
 async function main() {
   console.log();
@@ -15,7 +12,7 @@ async function main() {
   const promptStates: PromptState[] = promptIds.map((id) => ({
     id,
     state: "initial",
-    figure: symbol("initial"),
+    figure: symbol("S_MIDDLE", "initial"),
     value: undefined,
   }));
   function getState(id: PromptId): PromptState {

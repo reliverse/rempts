@@ -1,8 +1,9 @@
-// examples/install-deps.ts: An advanced example of a CLI application that installs dependencies.
+// examples/reliverse/install-deps.ts: An advanced example of a CLI application that installs dependencies.
 // Trying to create a drop-in replacement for @clack/prompts, unjs/consola, @inquirer/prompts, withastro/astro, etc.
 
+import { version } from "~/../package.json";
+
 import { prompts } from "~/main";
-import { colorize } from "~/utils/colorize";
 
 async function main() {
   console.log();
@@ -10,34 +11,35 @@ async function main() {
   await prompts({
     id: "start",
     type: "start",
-    title: "create-app",
-    titleColor: "bgCyanBright",
+    title: `@reliverse/prompts v${version}`,
+    titleColor: "inverse",
     titleTypography: "bold",
+    repeatBarAfterStart: 20,
   });
 
-  const userInput = await prompts({
-    id: "userInput",
-    type: "text",
-    title: "Please enter your username",
-    titleColor: "blue",
-    titleTypography: "bold",
-    message: "Your username will be used to identify you in the system.\n",
-    msgTypography: "pulse",
-    validate: (input) => input.length > 0 || "Username cannot be empty.",
-  });
+  // const userInput = await prompts({
+  //   id: "userInput",
+  //   type: "text",
+  //   title: "Please enter your username",
+  //   titleColor: "blue",
+  //   titleTypography: "bold",
+  //   message: "Your username will be used to identify you in the system.\n",
+  //   msgTypography: "pulse",
+  //   validate: (input) => input.length > 0 || "Username cannot be empty.",
+  // });
 
-  const dir = await prompts({
-    id: "dir",
-    type: "text",
-    title: "Where should we create your project?",
-    default: "./sparkling-solid",
-  });
+  // const dir = await prompts({
+  //   id: "dir",
+  //   type: "text",
+  //   title: "Where should we create your project?",
+  //   default: "./sparkling-solid",
+  // });
 
-  await prompts({
-    type: "end",
-    id: "end",
-    title: `Problems? ${colorize("https://github.com/blefnk/reliverse/prompts", "cyanBright")}`,
-  });
+  // await prompts({
+  //   type: "end",
+  //   id: "end",
+  //   title: `Problems? ${colorize("https://github.com/blefnk/reliverse/prompts", "cyanBright")}`,
+  // });
 
   process.exit(0);
 }

@@ -7,7 +7,7 @@ import readline from "node:readline/promises";
 import type { PromptOptions, PromptState } from "~/types";
 
 import { colorize } from "~/utils/colorize";
-import { getFigure } from "~/utils/states";
+import { symbol } from "~/utils/symbols";
 import { applyVariant } from "~/utils/variant";
 
 export async function textPrompt<T extends TSchema>(
@@ -15,7 +15,7 @@ export async function textPrompt<T extends TSchema>(
   currentState: PromptState = {
     id: "",
     state: "initial",
-    figure: getFigure("initial"),
+    figure: symbol("S_MIDDLE", "initial"),
     value: undefined,
   },
 ): Promise<Static<T>> {
@@ -36,7 +36,7 @@ export async function textPrompt<T extends TSchema>(
   } = options;
 
   currentState.state = options.state ?? "initial";
-  currentState.figure = getFigure(currentState.state);
+  currentState.figure = symbol("S_MIDDLE", currentState.state);
 
   const rl = readline.createInterface({ input, output });
 
@@ -81,7 +81,7 @@ export async function textPrompt<T extends TSchema>(
         const errors = [...Value.Errors(schema, answer)];
         errorMessage = errors[0]?.message || "Invalid input.";
         currentState.state = "error";
-        currentState.figure = getFigure(currentState.state);
+        currentState.figure = symbol("S_MIDDLE", currentState.state);
       }
     }
 
@@ -92,7 +92,7 @@ export async function textPrompt<T extends TSchema>(
         errorMessage =
           typeof validation === "string" ? validation : "Invalid input.";
         currentState.state = "error";
-        currentState.figure = getFigure(currentState.state);
+        currentState.figure = symbol("S_MIDDLE", currentState.state);
       }
     }
 
@@ -104,7 +104,7 @@ export async function textPrompt<T extends TSchema>(
 
       // Update state to "completed" and display the completed title
       currentState.state = "completed";
-      currentState.figure = getFigure("completed");
+      currentState.figure = symbol("S_MIDDLE", currentState.state);
       currentState.value = answer;
 
       displayPrompt(answer); // Display completed prompt with answer

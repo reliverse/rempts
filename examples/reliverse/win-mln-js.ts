@@ -4,7 +4,6 @@ import figlet from "figlet";
 
 import { prompts } from "~/main";
 import { colorize } from "~/utils/colorize";
-import { BAR, BAR_END } from "~/utils/states";
 
 import { handleAnswer } from "./experiments/utils/handleAnswer";
 
@@ -66,9 +65,9 @@ async function main() {
 }
 
 await main().catch((error) => {
-  console.error(`${BAR} An error occurred:\n`, error.message);
+  console.error(`An error occurred:\n`, error.message);
   console.error(
-    `${BAR_END} Please report this issue at https://github.com/blefnk/reliverse/issues`,
+    `Please report this issue at https://github.com/blefnk/reliverse/issues`,
   );
   process.exit(1);
 });

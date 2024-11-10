@@ -3,15 +3,15 @@ import { cursor, erase } from "sisteransi";
 import type { PromptOptions, PromptState } from "~/types";
 
 import { colorize } from "~/utils/colorize";
-import { getFigure } from "~/utils/states";
+import { symbol } from "~/utils/symbols";
 import { applyVariant } from "~/utils/variant";
 
 export async function startPrompt(
   options: PromptOptions,
   currentState: PromptState = {
-    id: options.id ?? "start", // default to "start" or use provided ID
+    id: options.id ?? "start",
     state: options.state ?? "initial",
-    figure: getFigure(options.state ?? "initial"),
+    figure: symbol("S_MIDDLE", options.state ?? "initial"),
     value: undefined,
   },
 ): Promise<void> {
@@ -29,7 +29,7 @@ export async function startPrompt(
 
   // Initialize currentState properties based on provided options
   currentState.state = options.state ?? "initial";
-  currentState.figure = getFigure(currentState.state);
+  currentState.figure = symbol("S_MIDDLE", currentState.state);
 
   const coloredTitle = colorize(title, titleColor, titleTypography);
   const coloredMessage = message
@@ -54,7 +54,7 @@ export async function startPrompt(
 
   // Update the currentState to "completed" after the initial display
   currentState.state = "completed";
-  currentState.figure = getFigure("completed"); // Update figure for "completed" state
+  currentState.figure = symbol("S_MIDDLE", currentState.state); // Update figure for "completed" state
 
   // Move the cursor up by the number of lines used for the initial display
   const linesToMoveUp = styledMessage ? 3 : 2;

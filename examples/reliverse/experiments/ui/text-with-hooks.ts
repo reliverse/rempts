@@ -14,7 +14,7 @@ import readline from "node:readline/promises";
 import type { PromptOptions, State } from "~/types";
 
 import { colorize } from "~/utils/colorize";
-import { symbol } from "~/utils/states";
+import { symbol } from "~/utils/symbols";
 import { applyVariant } from "~/utils/variant";
 
 export async function textPrompt<T extends TSchema>(
@@ -83,7 +83,7 @@ export async function textPrompt<T extends TSchema>(
 
   useEffect(() => {
     // Update the prompt display when state or answer changes
-    const figure = symbol(state);
+    const figure = symbol("S_MIDDLE", state);
     const coloredTitle = colorize(title, titleColor, titleTypography);
     const promptText = `${figure} ${applyVariant([coloredTitle], titleVariant)}`;
 

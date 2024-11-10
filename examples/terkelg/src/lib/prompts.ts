@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 const $ = exports;
 const el = require("./elements");
 const noop = (v) => v;

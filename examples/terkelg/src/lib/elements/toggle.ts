@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 const color = require('kleur');
 const Prompt = require('./prompt');
 const { style, clear } = require('../util');

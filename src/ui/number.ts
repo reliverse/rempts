@@ -7,7 +7,7 @@ import readline from "node:readline/promises";
 import type { PromptOptions, State } from "~/types";
 
 import { colorize } from "~/utils/colorize";
-import { getFigure } from "~/utils/states";
+import { symbol } from "~/utils/symbols";
 import { applyVariant } from "~/utils/variant";
 
 export async function numberPrompt<T extends TSchema>(
@@ -30,11 +30,11 @@ export async function numberPrompt<T extends TSchema>(
   } = options;
 
   let state = initialState;
-  let figure = getFigure(state);
+  let figure = symbol("S_MIDDLE", state);
 
   function setState(newState: State) {
     state = newState;
-    figure = getFigure(state);
+    figure = symbol("S_MIDDLE", state);
   }
 
   const rl = readline.createInterface({ input, output });

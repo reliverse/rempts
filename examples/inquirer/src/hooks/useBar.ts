@@ -1,17 +1,15 @@
 import type { State } from "~/types";
 
-import { styledBars } from "~/utils/states";
+import { symbol } from "~/utils/symbols";
 
 import { useEffect } from "./use-effect";
 import { useState } from "./use-state";
 
 export function useBar(state: State) {
-  const [bars, setBars] = useState<{ start: string; middle: string }>(
-    styledBars("start", state),
-  );
+  const [bars, setBars] = useState<string>(symbol("S_BAR_H", state));
 
   useEffect(() => {
-    setBars(styledBars("start", state));
+    setBars(symbol("S_BAR_H", state));
   }, [state]);
 
   return bars;

@@ -1,6 +1,7 @@
-import isUnicodeSupported from "is-unicode-supported";
 import color from "picocolors";
 import { cursor, erase } from "sisteransi";
+
+import { isUnicodeSupported } from "~/utils/platforms";
 
 import type { State } from "./main";
 

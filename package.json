@@ -17,6 +17,7 @@
     "dev:us": "bun examples/reliverse/user-signup.ts",
     "dev:wm": "bun examples/reliverse/win-mln-js.ts",
     "dev:sc": "bun examples/reliverse/simple-check.ts",
+    "dev:clack": "bun examples/clack/install-deps.ts",
     "dev:terkelg": "bun examples/terkelg/install-deps.ts"
   },
   "type": "module",

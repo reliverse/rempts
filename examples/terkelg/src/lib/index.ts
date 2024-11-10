@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import prompts from "./prompts.js";
 
 type PromptFunction = (

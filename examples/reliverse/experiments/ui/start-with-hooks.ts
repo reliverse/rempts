@@ -52,9 +52,8 @@ export async function startPrompt(options: PromptOptions): Promise<void> {
     ? applyVariant([coloredMessage], msgVariant, variantOptions?.box)
     : "";
 
-  console.log(`${bars.start}${figure} ${styledTitle}`);
+  console.log(`${bars} ${figure} ${styledTitle}`);
   if (styledMessage) {
-    console.log(`${bars.middle} ${styledMessage}`);
+    console.log(`${bars} ${styledMessage}`);
   }
-  console.log(bars.middle);
 }

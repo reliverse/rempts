@@ -20,7 +20,6 @@ async function main() {
     },
   );
 
-  // eslint-disable-next-line @typescript-eslint/require-await
   await withHooks(rl as unknown as InquirerReadline, async (cycle) => {
     cycle(async () => {
       await prompts({

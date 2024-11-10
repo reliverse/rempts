@@ -1,10 +1,28 @@
 import type { TSchema } from "@sinclair/typebox";
 
-export type Choice = {
-  title: string;
-  value: any;
-  description?: string;
-};
+export type SymbolCharacter =
+  | "S_START"
+  | "S_MIDDLE"
+  | "S_END"
+  | "S_LINE"
+  | "S_STEP_ACTIVE"
+  | "S_STEP_CANCEL"
+  | "S_STEP_ERROR"
+  | "S_STEP_SUBMIT"
+  | "S_RADIO_ACTIVE"
+  | "S_RADIO_INACTIVE"
+  | "S_CHECKBOX_ACTIVE"
+  | "S_CHECKBOX_SELECTED"
+  | "S_CHECKBOX_INACTIVE"
+  | "S_PASSWORD_MASK"
+  | "S_BAR_H"
+  | "S_CORNER_TOP_RIGHT"
+  | "S_CONNECT_LEFT"
+  | "S_CORNER_BOTTOM_RIGHT"
+  | "S_INFO"
+  | "S_SUCCESS"
+  | "S_WARN"
+  | "S_ERROR";
 
 export type ColorName =
   | "dim"
@@ -22,6 +40,12 @@ export type ColorName =
   | "white"
   | "gray"
   | "grey"
+  | "gradientGradient"
+  | "rainbowGradient"
+  | "cristalGradient"
+  | "mindGradient"
+  | "passionGradient"
+  | "viceGradient"
   | "none";
 
 export type Variant =
@@ -65,15 +89,6 @@ export type State =
   | "submit"
   | "error";
 
-export type Figure = "play" | "star" | "nodejs" | "oneSeventh" | "oneNinth";
-
-export type PromptState = {
-  id: string;
-  state: State;
-  figure: string;
-  value: any;
-};
-
 export type PromptOptions<T extends TSchema = any> = {
   type: PromptType;
   id: string;
@@ -98,6 +113,20 @@ export type PromptOptions<T extends TSchema = any> = {
       limit?: number;
     };
   };
+  repeatBarAfterStart?: number;
   action?: () => Promise<void>;
   state?: State;
+};
+
+export type PromptState = {
+  id: string;
+  state: State;
+  figure: string;
+  value: any;
+};
+
+export type Choice = {
+  title: string;
+  value: any;
+  description?: string;
 };

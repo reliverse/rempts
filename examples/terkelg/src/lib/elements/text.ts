@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 const color = require("kleur");
 const { erase, cursor } = require("sisteransi");
 
