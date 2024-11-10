@@ -22,7 +22,6 @@
     "lib": ["es2022"]
   },
   "include": [
-    "build.pub.ts",
     "build.paths.ts",
     "build.config.ts",
     "eslint.config.js",

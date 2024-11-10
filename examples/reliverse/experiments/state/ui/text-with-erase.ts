@@ -16,7 +16,7 @@ export async function textPrompt<T extends TSchema>(
   currentState: PromptState = {
     id: "",
     state: "initial",
-    figure: symbol("S_MIDDLE", "initial"),
+    symbol: symbol("S_MIDDLE", "initial"),
     value: undefined,
   },
 ): Promise<Static<T>> {
@@ -38,7 +38,7 @@ export async function textPrompt<T extends TSchema>(
   } = options;
 
   currentState.state = options.state ?? "initial";
-  currentState.figure = symbol("S_MIDDLE", currentState.state);
+  currentState.symbol = symbol("S_MIDDLE", currentState.state);
 
   const rl = readline.createInterface({ input, output });
 
@@ -68,7 +68,7 @@ export async function textPrompt<T extends TSchema>(
   function displayPrompt(isCompleted = false) {
     const displayTitle = isCompleted ? completedTitleText : titleText;
     process.stdout.write(
-      `${cursor.move(-999, 0)}${erase.line}${currentState.figure} ${displayTitle}\n`,
+      `${cursor.move(-999, 0)}${erase.line}${currentState.symbol} ${displayTitle}\n`,
     );
     if (messageText) {
       process.stdout.write(`${erase.line}- ${messageText}\n`);
@@ -102,7 +102,7 @@ export async function textPrompt<T extends TSchema>(
         const errors = [...Value.Errors(schema, answer)];
         errorMessage = errors[0]?.message || "Invalid input.";
         currentState.state = "error";
-        currentState.figure = symbol("S_MIDDLE", currentState.state);
+        currentState.symbol = symbol("S_MIDDLE", currentState.state);
       }
     }
 
@@ -113,7 +113,7 @@ export async function textPrompt<T extends TSchema>(
         errorMessage =
           typeof validation === "string" ? validation : "Invalid input.";
         currentState.state = "error";
-        currentState.figure = symbol("S_MIDDLE", currentState.state);
+        currentState.symbol = symbol("S_MIDDLE", currentState.state);
       }
     }
 
@@ -125,7 +125,7 @@ export async function textPrompt<T extends TSchema>(
 
       // Update state to "completed" and display the completed title
       currentState.state = "completed";
-      currentState.figure = symbol("S_MIDDLE", currentState.state);
+      currentState.symbol = symbol("S_MIDDLE", currentState.state);
       currentState.value = answer;
 
       clearPrompt();
@@ -138,7 +138,7 @@ export async function textPrompt<T extends TSchema>(
       clearPrompt();
       displayPrompt();
       process.stdout.write(
-        `${erase.line}${currentState.figure} ${errorMessage}\n`,
+        `${erase.line}${currentState.symbol} ${errorMessage}\n`,
       );
     }
   }

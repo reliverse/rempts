@@ -4,7 +4,7 @@ import { Type, type Static } from "@sinclair/typebox";
 
 import { prompts } from "~/main";
 
-import { installDependencies } from "./experiments/utils/installDependencies";
+import { installDependencies } from "./experiments/state/utils/installDependencies";
 
 async function main() {
   // Define the schema once and reuse it for each prompt.

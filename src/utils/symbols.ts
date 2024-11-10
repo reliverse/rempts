@@ -1,4 +1,4 @@
-import type { State, SymbolCharacter } from "~/types";
+import type { State, SymbolCharacter, SymbolMessages } from "~/types";
 
 import { colorize } from "./colorize";
 import { isUnicodeSupported } from "./platforms";
@@ -344,3 +344,30 @@ export const symbol = (
   const repeatedSymbol = baseSymbol.repeat(repeatCount);
   return styledSymbols(repeatedSymbol, state);
 };
+
+function formatMessage(
+  type: SymbolMessages,
+  state: State = "initial",
+  text = "",
+  dashCount = 1,
+): string {
+  switch (type) {
+    case "M_START_PROMPT":
+      const dashedLine = dashCount ? symbol("S_LINE", state, dashCount) : "";
+      return `${symbol("S_START", state)} ${text} ${dashedLine}\n${symbol("S_MIDDLE", state)}`;
+    case "M_MIDDLE":
+      return symbol("S_MIDDLE", state);
+    default:
+      throw new Error(`Unhandled SymbolMessages type: ${type}`);
+  }
+}
+
+export function msg(
+  type: SymbolMessages,
+  state: State,
+  text: string,
+  dashCount: number,
+): void {
+  const logger = state === "error" ? console.warn : console.log;
+  logger(formatMessage(type, state, text, dashCount));
+}

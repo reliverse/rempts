@@ -23,7 +23,7 @@ export async function textPrompt<T extends TSchema>(
     title,
     hint,
     validate,
-    default: defaultValue = "",
+    default: defaultValue,
     schema,
     titleColor,
     titleTypography,
@@ -32,10 +32,9 @@ export async function textPrompt<T extends TSchema>(
     msgTypography,
     titleVariant,
     msgVariant,
+    action,
     state = "initial",
   } = options;
-
-  const rl = readline.createInterface({ input, output });
 
   const updateState = (newState: State) => {
     currentState.state = newState;
@@ -43,6 +42,8 @@ export async function textPrompt<T extends TSchema>(
   };
 
   updateState(state);
+
+  const rl = readline.createInterface({ input, output });
 
   const promptText = [
     applyVariant([colorize(title, titleColor, titleTypography)], titleVariant),
@@ -53,34 +54,46 @@ export async function textPrompt<T extends TSchema>(
     .filter(Boolean)
     .join("\n");
 
-  const question = `${currentState.symbol} ${promptText}${hint ? ` (${hint})` : ""}${
+  const question = `${promptText}${hint ? ` (${hint})` : ""}${
     defaultValue ? ` [${defaultValue}]` : ""
   }: `;
 
-  const validateAnswer = async (answer: string): Promise<string | true> => {
-    if (schema && !Value.Check(schema, answer)) {
-      return [...Value.Errors(schema, answer)][0]?.message || "Invalid input.";
-    }
-    if (validate) {
-      const validation = await validate(answer);
-      return validation === true ? true : validation || "Invalid input.";
-    }
-    return true;
-  };
+  function displayPrompt(answer?: string) {
+    console.log(`${currentState.symbol} ${promptText}`);
+    console.log(answer ?? "-");
+  }
 
   while (true) {
     const answer = (await rl.question(question)) || defaultValue;
 
     if (!answer) continue;
 
-    const validation = await validateAnswer(answer);
-    if (validation === true) {
+    let isValid = true;
+    let errorMessage = "";
+
+    if (schema && !(isValid = Value.Check(schema, answer))) {
+      errorMessage =
+        [...Value.Errors(schema, answer)][0]?.message || "Invalid input.";
+    } else if (validate) {
+      const validation = await validate(answer);
+      if (validation !== true) {
+        isValid = false;
+        errorMessage =
+          typeof validation === "string" ? validation : "Invalid input.";
+      }
+    }
+
+    if (isValid) {
+      if (action) await action();
+      updateState("completed");
       currentState.value = answer;
+      displayPrompt(answer);
       rl.close();
       return answer as Static<T>;
     } else {
       updateState("error");
-      console.log(`${currentState.symbol} ${validation}`);
+      displayPrompt();
+      console.log(`${currentState.symbol} ${errorMessage}`);
     }
   }
 }

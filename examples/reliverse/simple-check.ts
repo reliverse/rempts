@@ -2,7 +2,7 @@
 
 import { prompts } from "~/main";
 
-import { installDependencies } from "./experiments/utils/installDependencies";
+import { installDependencies } from "./experiments/state/utils/installDependencies";
 
 async function main() {
   await prompts({

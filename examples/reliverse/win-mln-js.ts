@@ -5,7 +5,7 @@ import figlet from "figlet";
 import { prompts } from "~/main";
 import { colorize } from "~/utils/colorize";
 
-import { handleAnswer } from "./experiments/utils/handleAnswer";
+import { handleAnswer } from "./experiments/state/utils/handleAnswer";
 
 async function main() {
   await prompts({

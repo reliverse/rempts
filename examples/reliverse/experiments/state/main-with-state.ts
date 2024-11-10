@@ -1,6 +1,6 @@
 import type { TSchema, Static } from "@sinclair/typebox";
 
-import type { PromptOptions } from "~/types";
+import type { PromptState } from "~/types";
 
 import { confirmPrompt } from "~/ui/confirm";
 import { datePrompt } from "~/ui/date";
@@ -12,21 +12,31 @@ import { passwordPrompt } from "~/ui/password";
 import { selectPrompt } from "~/ui/select";
 import { startPrompt } from "~/ui/start";
 import { textPrompt } from "~/ui/text";
+import { symbol } from "~/utils/symbols";
+
+import type { PromptOptionsWithState } from "./types-wth-state";
+
 export { createSpinner } from "~/ui/spinner";
 
 export async function prompts<T extends TSchema>(
-  options: PromptOptions<T>,
+  options: PromptOptionsWithState<T>,
+  currentState: PromptState = {
+    id: "",
+    state: "initial",
+    symbol: symbol("S_MIDDLE", "initial"),
+    value: undefined,
+  },
 ): Promise<Record<(typeof options)["id"], Static<T>>> {
   const { type, id, action } = options;
   let value: any;
 
   switch (type) {
     case "start":
-      await startPrompt(options);
+      await startPrompt(options, currentState);
       value = null;
       break;
     case "text":
-      value = await textPrompt(options);
+      value = await textPrompt(options, currentState);
       break;
     case "number":
       value = await numberPrompt(options);

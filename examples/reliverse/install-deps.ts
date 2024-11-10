@@ -14,19 +14,19 @@ async function main() {
     title: `@reliverse/prompts v${version}`,
     titleColor: "inverse",
     titleTypography: "bold",
-    repeatBarAfterStart: 20,
+    dashCount: 20,
   });
 
-  // const userInput = await prompts({
-  //   id: "userInput",
-  //   type: "text",
-  //   title: "Please enter your username",
-  //   titleColor: "blue",
-  //   titleTypography: "bold",
-  //   message: "Your username will be used to identify you in the system.\n",
-  //   msgTypography: "pulse",
-  //   validate: (input) => input.length > 0 || "Username cannot be empty.",
-  // });
+  await prompts({
+    id: "userInput",
+    type: "text",
+    title: "Please enter your username",
+    titleColor: "blue",
+    titleTypography: "bold",
+  });
+  // message: "Your username will be used to identify you in the system.",
+  // msgTypography: "pulse",
+  // validate: (input) => input.length > 0 || "Username cannot be empty.",
 
   // const dir = await prompts({
   //   id: "dir",

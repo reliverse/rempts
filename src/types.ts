@@ -1,5 +1,7 @@
 import type { TSchema } from "@sinclair/typebox";
 
+export type SymbolMessages = "M_START_PROMPT" | "M_MIDDLE";
+
 export type SymbolCharacter =
   | "S_START"
   | "S_MIDDLE"
@@ -113,15 +115,15 @@ export type PromptOptions<T extends TSchema = any> = {
       limit?: number;
     };
   };
-  repeatBarAfterStart?: number;
   action?: () => Promise<void>;
   state?: State;
+  dashCount?: number;
 };
 
 export type PromptState = {
   id: string;
   state: State;
-  figure: string;
+  symbol: string;
   value: any;
 };
 

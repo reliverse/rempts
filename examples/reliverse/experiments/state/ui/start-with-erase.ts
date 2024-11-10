@@ -11,7 +11,7 @@ export async function startPrompt(
   currentState: PromptState = {
     id: options.id ?? "start",
     state: options.state ?? "initial",
-    figure: symbol("S_MIDDLE", options.state ?? "initial"),
+    symbol: symbol("S_MIDDLE", options.state ?? "initial"),
     value: undefined,
   },
 ): Promise<void> {
@@ -29,7 +29,7 @@ export async function startPrompt(
 
   // Initialize currentState properties based on provided options
   currentState.state = options.state ?? "initial";
-  currentState.figure = symbol("S_MIDDLE", currentState.state);
+  currentState.symbol = symbol("S_MIDDLE", currentState.state);
 
   const coloredTitle = colorize(title, titleColor, titleTypography);
   const coloredMessage = message
@@ -45,8 +45,8 @@ export async function startPrompt(
     ? applyVariant([coloredMessage], msgVariant, variantOptions?.box)
     : "";
 
-  // Initial display of the prompt with the current figure and styles
-  console.log(`| ${currentState.figure} ${styledTitle}`);
+  // Initial display of the prompt with the current symbol and styles
+  console.log(`| ${currentState.symbol} ${styledTitle}`);
   if (styledMessage) {
     console.log(`- ${styledMessage}`);
   }
@@ -54,7 +54,7 @@ export async function startPrompt(
 
   // Update the currentState to "completed" after the initial display
   currentState.state = "completed";
-  currentState.figure = symbol("S_MIDDLE", currentState.state); // Update figure for "completed" state
+  currentState.symbol = symbol("S_MIDDLE", currentState.state); // Update symbol for "completed" state
 
   // Move the cursor up by the number of lines used for the initial display
   const linesToMoveUp = styledMessage ? 3 : 2;
@@ -62,7 +62,7 @@ export async function startPrompt(
 
   // Clear each line and replace with the updated prompt
   process.stdout.write(
-    `${erase.line}| ${currentState.figure} ${styledTitle}\n`,
+    `${erase.line}| ${currentState.symbol} ${styledTitle}\n`,
   );
   if (styledMessage) {
     process.stdout.write(`${erase.line}- ${styledMessage}\n`);

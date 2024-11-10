@@ -1,11 +1,11 @@
 {
   "name": "@reliverse/prompts",
-  "version": "0.9.14",
+  "version": "0.9.15",
   "description": "A modern, type-safe, crash-resistant library for creating seamless, typesafe prompts in CLI applications. Designed for simplicity and elegance, it enables intuitive and robust user interactions.",
   "scripts": {
     "appts": "bun typecheck && bun lint && bun format",
     "build": "unbuild && bun build.paths.ts",
-    "pub": "bun run build && bun publish",
+    "pub": "unbuild && bun build.paths.ts && bun publish",
     "lint": "eslint --cache --fix .",
     "format": "biome check --write .",
     "check": "bun test",
