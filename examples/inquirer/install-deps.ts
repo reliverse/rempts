@@ -1,9 +1,9 @@
 import type { InquirerReadline } from "examples/inquirer/src/type/inquirer";
 
 import { withHooks } from "examples/inquirer/src/hooks/hook-engine";
+import { prompts } from "examples/reliverse/experiments/tests/main-merged";
 import readline from "node:readline";
 
-import { prompts } from "~/main";
 import { colorize } from "~/utils/colorize";
 
 async function main() {

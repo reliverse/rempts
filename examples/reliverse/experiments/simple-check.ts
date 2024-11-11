@@ -1,6 +1,6 @@
 // examples/simple-check.ts: A very basic example to check the library.
 
-import { prompts } from "~/main";
+import { prompts } from "examples/reliverse/experiments/tests/main-merged";
 
 import { installDependencies } from "./state/utils/installDependencies";
 

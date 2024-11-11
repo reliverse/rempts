@@ -4,12 +4,12 @@
 import { Type, type Static } from "@sinclair/typebox";
 import { version } from "~/../package.json";
 
-import { prompts } from "~/main";
+import { startPrompt, textPrompt } from "~/main";
 
 async function main() {
   console.log();
 
-  await prompts({
+  await startPrompt({
     id: "start",
     type: "start",
     title: `@reliverse/prompts v${version}`,
@@ -23,7 +23,7 @@ async function main() {
   });
   type UserInput = Static<typeof schema>;
 
-  const usernameResult = await prompts({
+  const usernameResult = await textPrompt({
     id: "username",
     type: "text",
     title: "We're glad you decided to test our library!",
@@ -49,9 +49,9 @@ async function main() {
   // });
 
   const userInput: UserInput = {
-    username: usernameResult.username ?? "johnny",
+    username: usernameResult,
   };
-  // console.log(userInput);
+  console.log(userInput);
   process.exit(0);
 }
 

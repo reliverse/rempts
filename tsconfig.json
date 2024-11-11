@@ -22,7 +22,7 @@
     "lib": ["es2022"]
   },
   "include": [
-    "build.paths.ts",
+    "build.optim.ts",
     "build.config.ts",
     "eslint.config.js",
     "vitest.config.ts",

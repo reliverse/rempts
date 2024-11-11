@@ -1,6 +1,6 @@
 import type { PromptState, SymbolCharacter } from "~/types";
 
-import { prompts } from "~/main";
+import { prompts } from "examples/reliverse/experiments/tests/main-merged";
 import { textPrompt } from "~/ui/text";
 import { colorize } from "~/utils/colorize";
 import { symbol } from "~/utils/messages";

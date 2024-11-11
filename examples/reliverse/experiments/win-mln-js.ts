@@ -2,7 +2,7 @@
 
 import figlet from "figlet";
 
-import { prompts } from "~/main";
+import { prompts } from "examples/reliverse/experiments/tests/main-merged";
 import { colorize } from "~/utils/colorize";
 
 import { handleAnswer } from "./state/utils/handleAnswer";

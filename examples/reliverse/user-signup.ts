@@ -1,8 +1,7 @@
 // examples/user-signup.ts: An advanced example of a CLI application that simulates a user signup process.
 
 import { Type, type Static } from "@sinclair/typebox";
-
-import { prompts } from "~/main";
+import { prompts } from "examples/reliverse/experiments/tests/main-merged";
 
 import { installDependencies } from "./experiments/state/utils/installDependencies";
 
