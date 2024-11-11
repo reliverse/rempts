@@ -11,7 +11,7 @@
   },
   "formatter": {
     "enabled": true,
-    "ignore": [".git/", "node_modules/", "dist/"],
+    "ignore": [".git/", "node_modules/", "dist/", "output/"],
     "indentStyle": "space",
     "attributePosition": "auto",
     "formatWithErrors": false,
@@ -24,7 +24,7 @@
   },
   "linter": {
     "enabled": true,
-    "ignore": [".git/", "node_modules/", "dist/", "examples/terkelg/**/*.ts"],
+    "ignore": [".git/", "node_modules/", "dist/", "output/", "examples/terkelg/**/*.ts"],
     "rules": {
       "recommended": true,
       "a11y": {

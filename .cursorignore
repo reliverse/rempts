@@ -5,6 +5,7 @@ addons/
 biome.jsonc
 bun.lockb
 dist/
+output/
 knip.jsonc
 LICENSE.md
 node_modules/

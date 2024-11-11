@@ -3,9 +3,9 @@ import path from "pathe";
 
 import { createSpinner } from "~/main";
 
-const distDir = path.resolve(__dirname, "dist");
+const outputDir = path.resolve(__dirname, "output");
 
-const filesToDelete = [path.join(distDir, "utils/charmap.d.ts")];
+const filesToDelete = [path.join(outputDir, "utils/charmap.d.ts")];
 
 async function deleteFiles(paths: string[]) {
   for (const filePath of paths) {
@@ -55,7 +55,7 @@ async function processFiles(dir: string) {
       const updatedContent = replaceImportPaths(
         content,
         path.dirname(filePath),
-        distDir,
+        outputDir,
       );
 
       if (content !== updatedContent) {
@@ -85,7 +85,7 @@ async function optimizeBuildForProduction(dir: string) {
   }
 }
 
-await optimizeBuildForProduction(distDir).catch((error) => {
+await optimizeBuildForProduction(outputDir).catch((error) => {
   console.error("An error occurred:", error);
   process.exit(1);
 });

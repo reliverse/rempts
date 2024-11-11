@@ -8,6 +8,7 @@
     "pub": "unbuild && bun build.optim.ts && bun publish",
     "lint": "eslint --cache --fix .",
     "format": "biome check --write .",
+    "optimize": "putout output",
     "check": "bun test",
     "attw": "attw --pack",
     "tsc": "tshy",
@@ -26,18 +27,18 @@
     "type": "git",
     "url": "git+https://github.com/reliverse/prompts.git"
   },
-  "main": "./dist/main.js",
-  "types": "./dist/main.d.ts",
-  "module": "./dist/main.js",
+  "main": "./output/main.js",
+  "types": "./output/main.d.ts",
+  "module": "./output/main.js",
   "exports": {
-    "import": "./dist/main.js",
-    "types": "./dist/main.d.ts"
+    "import": "./output/main.js",
+    "types": "./output/main.d.ts"
   },
   "bugs": {
     "url": "https://github.com/reliverse/prompts/issues",
     "email": "blefnk@gmail.com"
   },
-  "files": ["package.json", "README.md", "LICENSE.md", "dist"],
+  "files": ["package.json", "README.md", "LICENSE.md", "output"],
   "homepage": "https://github.com/reliverse/prompts",
   "keywords": ["cli", "reliverse"],
   "license": "MIT",

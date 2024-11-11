@@ -161,6 +161,7 @@
     "**/*.jpeg",
     "**/.pnp.*",
     "**/coverage",
+    "**/dist",
     "**/dist-dev",
     "**/build",
     "**/package-lock.json",
@@ -177,7 +178,8 @@
     "**/bun.lockb",
     "**/eslint.config.js",
     "**/knip.jsonc",
-    "**/vitest.config.ts"
+    "**/vitest.config.ts",
+    "**/*.d.ts"
   ],
   "rules": {
     "coverage": "off",

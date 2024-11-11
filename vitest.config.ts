@@ -2,8 +2,8 @@ import { defineConfig } from "vitest/config";
 
 export default defineConfig({
   test: {
-    include: ["test/**/*.test.ts"],
-    exclude: ["dist", "node_modules"],
+    include: ["examples/**/*.test.ts"],
+    exclude: ["dist", "node_modules", "output"],
     alias: {
       "~/": new URL("./src/", import.meta.url).pathname,
     },

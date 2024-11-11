@@ -4,7 +4,7 @@ export default defineBuildConfig({
   declaration: true,
   entries: [
     {
-      outDir: "dist",
+      outDir: "output",
       builder: "mkdist",
       input: "src",
       format: "esm",

@@ -30,5 +30,5 @@
     "addons/**/*.ts",
     "examples/**/*.ts"
   ],
-  "exclude": ["dist", "node_modules"]
+  "exclude": ["output", "node_modules"]
 }
