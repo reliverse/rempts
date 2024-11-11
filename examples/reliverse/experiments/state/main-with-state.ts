@@ -10,7 +10,7 @@ import { nextStepsPrompt } from "~/ui/nextSteps";
 import { numberPrompt } from "~/ui/number";
 import { passwordPrompt } from "~/ui/password";
 import { selectPrompt } from "~/ui/select";
-import { symbol } from "~/utils/messages";
+import { symbol } from "~/utils/symbols";
 
 import type { PromptOptionsWithState } from "./types-wth-state";
 

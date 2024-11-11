@@ -1,8 +1,9 @@
+import { prompts } from "examples/reliverse/experiments/tests/main-merged";
+
 import type { PromptState, SymbolCharacter } from "~/types";
 
-import { prompts } from "examples/reliverse/experiments/tests/main-merged";
 import { colorize } from "~/utils/colorize";
-import { symbol } from "~/utils/messages";
+import { symbol } from "~/utils/symbols";
 
 async function main() {
   console.log();

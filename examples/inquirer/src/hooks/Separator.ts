@@ -1,6 +1,5 @@
+import { figures } from "examples/terkelg/src/lib/util";
 import { dim } from "picocolors";
-
-import {figures} from "~/utils/messages";
 
 /**
  * Separator object

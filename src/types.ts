@@ -20,11 +20,7 @@ export type SymbolCharacter =
   | "S_BAR_H"
   | "S_CORNER_TOP_RIGHT"
   | "S_CONNECT_LEFT"
-  | "S_CORNER_BOTTOM_RIGHT"
-  | "S_INFO"
-  | "S_SUCCESS"
-  | "S_WARN"
-  | "S_ERROR";
+  | "S_CORNER_BOTTOM_RIGHT";
 
 export type ColorName =
   | "dim"

@@ -1,6 +1,6 @@
 import type { State } from "~/types";
 
-import { symbol } from "~/utils/messages";
+import { symbol } from "~/utils/symbols";
 
 import { useEffect } from "./use-effect";
 import { useState } from "./use-state";

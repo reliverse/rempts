@@ -201,7 +201,8 @@
     "nodejs/add-missing-strict-mode": "off",
     "nodejs/remove-useless-strict-mode": "off",
     "browserlist": "off",
-    "filesystem": "off"
+    "filesystem": "off",
+    "conditions/apply-consistent-blocks": "off"
   },
   "plugins": [
     "apply-at",

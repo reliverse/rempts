@@ -1,71 +1,71 @@
-import { Value } from "@sinclair/typebox/value";
-import { stdin as input, stdout as output } from "node:process";
-import readline from "node:readline/promises";
-import { colorize } from "../utils/colorize";
-import { symbol } from "../utils/messages";
-import { applyVariant } from "../utils/variants";
+import {
+    stdin as input,
+    stdout as output,
+} from 'node:process';
+import readline from 'node:readline/promises';
+import {Value} from '@sinclair/typebox/value';
+import {colorize} from '../utils/colorize';
+import {applyVariant} from '../utils/variants';
+
 export async function numberPrompt(options) {
-  const {
-    title,
-    hint,
-    validate,
-    default: defaultValue,
-    schema,
-    titleColor,
-    titleTypography,
-    titleVariant,
-    content,
-    contentColor,
-    contentTypography,
-    contentVariant,
-    state: initialState = "initial"
-  } = options;
-  let state = initialState;
-  let figure = symbol("S_MIDDLE", state);
-  function setState(newState) {
-    state = newState;
-    figure = symbol("S_MIDDLE", state);
-  }
-  const rl = readline.createInterface({ input, output });
-  const coloredTitle = colorize(title, titleColor, titleTypography);
-  const coloredContent = content ? colorize(content, contentColor, contentTypography) : "";
-  const titleText = applyVariant([coloredTitle], titleVariant);
-  const contentText = coloredContent ? applyVariant([coloredContent], contentVariant) : "";
-  const promptLines = [titleText, contentText].filter(Boolean);
-  const promptText = promptLines.map((line) => line).join("\n");
-  const question = `${promptText}${hint ? ` (${hint})` : ""}${defaultValue !== void 0 ? ` [${defaultValue}]` : ""}: `;
-  while (true) {
-    const answer = await rl.question(question) || defaultValue;
-    const num = Number(answer);
-    if (isNaN(num)) {
-      setState("error");
-      console.log(`${figure} Please enter a valid number.`);
-      continue;
-    }
-    let isValid = true;
-    let errorMessage = "Invalid input.";
-    if (schema) {
-      isValid = Value.Check(schema, num);
-      if (!isValid) {
-        const errors = [...Value.Errors(schema, num)];
-        if (errors.length > 0) {
-          errorMessage = errors[0]?.message ?? "Invalid input.";
+    const {
+        title,
+        hint,
+        validate,
+        default: defaultValue,
+        schema,
+        titleColor,
+        titleTypography,
+        titleVariant,
+        content,
+        contentColor,
+        contentTypography,
+        contentVariant,
+    } = options;
+    
+    function setState() {}
+
+    const rl = readline.createInterface({
+        input,
+        output,
+    });
+    const coloredTitle = colorize(title, titleColor, titleTypography);
+    const coloredContent = content ? colorize(content, contentColor, contentTypography) : '';
+    const titleText = applyVariant([coloredTitle], titleVariant);
+    const contentText = coloredContent ? applyVariant([coloredContent], contentVariant) : '';
+    const promptLines = [titleText, contentText].filter(Boolean);
+    const promptText = promptLines.join('\n');
+    const question = `${promptText}${hint ? ` (${hint})` : ''}${defaultValue !== void 0 ? ` [${defaultValue}]` : ''}: `;
+    
+    while (true) {
+        const answer = await rl.question(question) || defaultValue;
+        const num = Number(answer);
+        
+        if (isNaN(num)) {
+            setState();
+            
+            continue;
         }
-      }
+        
+        let isValid = true;
+        
+        if (schema) {
+            isValid = Value.Check(schema, num);
+        }
+        
+        if (validate && isValid) {
+            const validation = await validate(num);
+            
+            if (!validation) {
+                isValid = false;
+            }
+        }
+        
+        if (isValid) {
+            rl.close();
+            return num;
+        }
+        
+        setState();
     }
-    if (validate && isValid) {
-      const validation = await validate(num);
-      if (validation !== true) {
-        isValid = false;
-        errorMessage = typeof validation === "string" ? validation : "Invalid input.";
-      }
-    }
-    if (isValid) {
-      rl.close();
-      return num;
-    } else {
-      setState("error");
-      console.log(`${figure} ${errorMessage}`);
-    }
-  }
 }

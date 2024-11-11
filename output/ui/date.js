@@ -1,50 +1,54 @@
-import { Value } from "@sinclair/typebox/value";
-import { stdin as input, stdout as output } from "node:process";
-import readline from "node:readline/promises";
-import { colorize } from "../utils/colorize";
+import {
+    stdin as input,
+    stdout as output,
+} from 'node:process';
+import readline from 'node:readline/promises';
+import {Value} from '@sinclair/typebox/value';
+import {colorize} from '../utils/colorize';
+
 export async function datePrompt(options) {
-  const {
-    title,
-    hint,
-    validate,
-    default: defaultValue,
-    schema,
-    titleColor,
-    titleTypography
-  } = options;
-  const rl = readline.createInterface({ input, output });
-  const coloredTitle = colorize(title, titleColor, titleTypography);
-  const question = `${coloredTitle}${hint ? ` (${hint})` : ""}${defaultValue ? ` [${defaultValue}]` : ""}: `;
-  while (true) {
-    const answer = await rl.question(question) || defaultValue || "";
-    const date = new Date(answer);
-    if (isNaN(date.getTime())) {
-      console.log("Please enter a valid date.");
-      continue;
-    }
-    let isValid = true;
-    let errorMessage = "Invalid input.";
-    if (schema) {
-      isValid = Value.Check(schema, date);
-      if (!isValid) {
-        const errors = [...Value.Errors(schema, date)];
-        if (errors.length > 0) {
-          errorMessage = errors[0]?.message ?? "Invalid input.";
+    const {
+        title,
+        hint,
+        validate,
+        default: defaultValue,
+        schema,
+        titleColor,
+        titleTypography,
+    } = options;
+    
+    const rl = readline.createInterface({
+        input,
+        output,
+    });
+    const coloredTitle = colorize(title, titleColor, titleTypography);
+    const question = `${coloredTitle}${hint ? ` (${hint})` : ''}${defaultValue ? ` [${defaultValue}]` : ''}: `;
+    
+    while (true) {
+        const answer = await rl.question(question) || defaultValue || '';
+        const date = new Date(answer);
+        
+        if (isNaN(date.getTime())) {
+            continue;
         }
-      }
+        
+        let isValid = true;
+        
+        if (schema) {
+            isValid = Value.Check(schema, date);
+        }
+        
+        if (validate && isValid) {
+            const validation = await validate(date);
+            
+            if (!validation) {
+                isValid = false;
+            }
+        }
+        
+        if (isValid) {
+            rl.close();
+            return date;
+        }
     }
-    if (validate && isValid) {
-      const validation = await validate(date);
-      if (validation !== true) {
-        isValid = false;
-        errorMessage = typeof validation === "string" ? validation : "Invalid input.";
-      }
-    }
-    if (isValid) {
-      rl.close();
-      return date;
-    } else {
-      console.log(errorMessage);
-    }
-  }
 }
