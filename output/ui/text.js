@@ -42,7 +42,7 @@ export async function textPrompt(options, currentState = {
     const text = [styledTitle, content]
         .filter(Boolean)
         .join('\n');
-    const question = fmt('MT_MIDDLE', 'initial', text, 1);
+    const question = fmt('M_MIDDLE', 'initial', text, 1);
     
     const validateAnswer = async (answer) => {
         if (schema && !Value.Check(schema, answer)) {
@@ -69,6 +69,6 @@ export async function textPrompt(options, currentState = {
         }
         
         updateState('error');
-        msg('MT_MIDDLE', 'error', validation, 0);
+        msg('M_MIDDLE', 'error', validation, 0);
     }
 }

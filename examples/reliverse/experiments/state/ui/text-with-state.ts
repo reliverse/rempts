@@ -1,13 +1,13 @@
 import type { TSchema, Static } from "@sinclair/typebox";
 
 import { Value } from "@sinclair/typebox/value";
+import { symbol } from "examples/reliverse/experiments/utils/symbols";
 import { stdin as input, stdout as output } from "node:process";
 import readline from "node:readline/promises";
 
 import type { PromptOptions, PromptState, State } from "~/types";
 
 import { colorize } from "~/utils/colorize";
-import { symbol } from "~/utils/symbols";
 import { applyVariant } from "~/utils/variants";
 
 export async function textPrompt<T extends TSchema>(

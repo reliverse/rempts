@@ -7,15 +7,12 @@ import { version } from "~/../package.json";
 import { startPrompt, textPrompt } from "~/main";
 
 async function main() {
-  console.log();
-
   await startPrompt({
     id: "start",
     type: "start",
     title: `@reliverse/prompts v${version}`,
     titleColor: "inverse",
     titleTypography: "bold",
-    dashCount: 20,
   });
 
   const schema = Type.Object({

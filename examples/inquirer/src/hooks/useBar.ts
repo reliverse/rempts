@@ -1,6 +1,6 @@
-import type { State } from "~/types";
+import { symbol } from "examples/reliverse/experiments/utils/symbols";
 
-import { symbol } from "~/utils/symbols";
+import type { State } from "~/types";
 
 import { useEffect } from "./use-effect";
 import { useState } from "./use-state";

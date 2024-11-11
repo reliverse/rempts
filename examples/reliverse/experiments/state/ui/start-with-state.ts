@@ -1,7 +1,8 @@
+import { symbol } from "examples/reliverse/experiments/utils/symbols";
+
 import type { PromptOptions, PromptState } from "~/types";
 
 import { colorize } from "~/utils/colorize";
-import { symbol } from "~/utils/symbols";
 import { applyVariant } from "~/utils/variants";
 
 export async function startPrompt(

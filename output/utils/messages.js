@@ -10,15 +10,15 @@ export function fmt(type, state = 'initial', text = '', dashCount) {
     };
     
     switch(type) {
-    case 'MT_START':
+    case 'M_START':
         const longLine = dashCount ? ss.dash.repeat(dashCount) : '';
         return `${ss.start}${ss.dash} ${text} ${longLine}`;
     
-    case 'MT_MIDDLE':
+    case 'M_MIDDLE':
         return `${ss.bar}
 ${ss.icon}  ${text}`;
     
-    case 'MT_END':
+    case 'M_END':
         return `${ss.end}  ${text}`;
     
     default:

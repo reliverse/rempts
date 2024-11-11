@@ -1,5 +1,7 @@
 import type { TSchema, Static } from "@sinclair/typebox";
 
+import { symbol } from "examples/reliverse/experiments/utils/symbols";
+
 import type { PromptState } from "~/types";
 
 import { confirmPrompt } from "~/ui/confirm";
@@ -10,7 +12,6 @@ import { nextStepsPrompt } from "~/ui/nextSteps";
 import { numberPrompt } from "~/ui/number";
 import { passwordPrompt } from "~/ui/password";
 import { selectPrompt } from "~/ui/select";
-import { symbol } from "~/utils/symbols";
 
 import type { PromptOptionsWithState } from "./types-wth-state";
 

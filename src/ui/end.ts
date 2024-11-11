@@ -1,7 +1,7 @@
 import type { PromptOptions } from "~/types";
 
 import { colorize } from "~/utils/colorize";
-import { symbol } from "~/utils/symbols";
+import { msg } from "~/utils/messages";
 import { applyVariant } from "~/utils/variants";
 
 export async function endPrompt(options: PromptOptions): Promise<void> {
@@ -14,10 +14,7 @@ export async function endPrompt(options: PromptOptions): Promise<void> {
     contentColor,
     contentVariant,
     contentTypography,
-    state = "initial",
   } = options;
-
-  const figure = symbol("S_MIDDLE", state);
 
   const coloredTitle = colorize(title, titleColor, titleTypography);
   const coloredContent = content
@@ -31,5 +28,5 @@ export async function endPrompt(options: PromptOptions): Promise<void> {
 
   const styledText = [titleText, contentText].filter(Boolean).join("\n");
 
-  console.log(`${figure} ${styledText}`);
+  msg("M_END", styledText);
 }

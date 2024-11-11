@@ -1,40 +1,74 @@
-import type { State, MsgType } from "~/types";
+import { retro } from "gradient-string";
+import { greenBright, redBright } from "picocolors";
 
-import { symbol } from "./symbols";
+import { isUnicodeSupported } from "./platforms";
 
-export function fmt(
-  type: MsgType,
-  state: State = "initial",
-  text = "",
-  dashCount?: number,
-): string {
-  const ss = {
-    start: symbol("S_START", state),
-    dash: symbol("S_LINE", state),
-    bar: symbol("S_MIDDLE", "initial"),
-    icon: symbol("S_STEP_ACTIVE", state),
-    end: symbol("S_END", state),
-  };
+const unicode = isUnicodeSupported();
+const u = (c: string, fallback: string) => (unicode ? c : fallback);
+const S = {
+  START: u("╭", "T"),
+  MIDDLE: u("│", "|"),
+  END: u("╰", "—"),
+  LINE: u("─", "—"),
+  CORNER_TOP_RIGHT: u("»", "T"),
+  STEP_ACTIVE: u("◆", "♦"),
+  STEP_ERROR: u("▲", "x"),
+};
 
-  switch (type) {
-    case "MT_START":
-      const longLine = dashCount ? ss.dash.repeat(dashCount) : "";
-      return `${ss.start}${ss.dash} ${text} ${longLine}`;
-    case "MT_MIDDLE":
-      return `${ss.bar}\n${ss.icon}  ${text}`;
-    case "MT_END":
-      return `${ss.end}  ${text}`;
-    default:
-      throw new Error(`Unhandled MsgType type: ${type}`);
+const MESSAGES = ["M_START", "M_MIDDLE", "M_END", "M_ERROR"] as const;
+type MsgType = (typeof MESSAGES)[number];
+type MsgConfig = {
+  symbol: string;
+  prefix?: string;
+  color?: (text: string) => string;
+  newLine?: boolean;
+  suffix?: string;
+};
+
+const MESSAGE_CONFIGS: Record<MsgType, MsgConfig> = {
+  M_START: {
+    symbol: `${S.START}${S.LINE} `,
+    suffix: ` ${retro(S.LINE.repeat(22) + "⊱")}`,
+  },
+  M_MIDDLE: {
+    symbol: S.MIDDLE,
+    prefix: greenBright(S.STEP_ACTIVE),
+    newLine: true,
+  },
+  M_END: {
+    symbol: S.END,
+  },
+  M_ERROR: {
+    symbol: S.MIDDLE,
+    prefix: redBright(S.STEP_ERROR),
+    newLine: true,
+  },
+};
+
+export function fmt(type: MsgType, text = ""): string {
+  const config = MESSAGE_CONFIGS[type];
+
+  if (!config) {
+    throw new Error(`Invalid message type: ${type}`);
   }
+
+  const { symbol, prefix = "", suffix = "", color, newLine = false } = config;
+
+  const formattedPrefix = prefix ? `${prefix}  ` : "";
+  const formattedText = color ? color(text) : text;
+
+  return [
+    retro(symbol),
+    newLine ? "\n" : "",
+    formattedPrefix,
+    formattedText,
+    suffix,
+  ]
+    .filter(Boolean)
+    .join("");
 }
 
-export function msg(
-  type: MsgType,
-  state: State,
-  text: string,
-  dashCount: number,
-): void {
-  const logger = state === "error" ? console.warn : console.log;
-  logger(fmt(type, state, text, dashCount));
+export function msg(type: MsgType, text: string): void {
+  if (type !== "M_ERROR") console.log(fmt(type, text));
+  else console.error(fmt(type, text));
 }

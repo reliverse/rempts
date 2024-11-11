@@ -7,8 +7,9 @@ import readline from "node:readline/promises";
 import type { PromptOptions, State } from "~/types";
 
 import { colorize } from "~/utils/colorize";
-import { msg } from "~/utils/messages";
 import { applyVariant } from "~/utils/variants";
+
+import { symbol } from "../../utils/symbols";
 
 export async function numberPrompt<T extends TSchema>(
   options: PromptOptions<T>,
@@ -26,7 +27,16 @@ export async function numberPrompt<T extends TSchema>(
     contentColor,
     contentTypography,
     contentVariant,
+    state: initialState = "initial",
   } = options;
+
+  let state = initialState;
+  let figure = symbol("S_MIDDLE", state);
+
+  function setState(newState: State) {
+    state = newState;
+    figure = symbol("S_MIDDLE", state);
+  }
 
   const rl = readline.createInterface({ input, output });
 
@@ -52,7 +62,8 @@ export async function numberPrompt<T extends TSchema>(
 
     const num = Number(answer);
     if (isNaN(num)) {
-      msg("M_ERROR", "Please enter a valid number.");
+      setState("error");
+      console.log(`${figure} Please enter a valid number.`);
       continue;
     }
 
@@ -79,7 +90,8 @@ export async function numberPrompt<T extends TSchema>(
       rl.close();
       return num as Static<T>;
     } else {
-      msg("M_ERROR", errorMessage);
+      setState("error");
+      console.log(`${figure} ${errorMessage}`);
     }
   }
 }

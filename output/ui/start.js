@@ -6,5 +6,5 @@ export function startPrompt({title, titleColor, titleTypography, titleVariant, v
     const coloredTitle = colorize(title, titleColor, titleTypography);
     const styledTitle = applyVariant([coloredTitle], titleVariant, variantOptions?.box);
     
-    msg('MT_START', 'initial', styledTitle, dashCount);
+    msg('M_START', 'initial', styledTitle, dashCount);
 }

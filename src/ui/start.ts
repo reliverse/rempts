@@ -10,14 +10,16 @@ export async function startPrompt({
   titleTypography,
   titleVariant,
   variantOptions,
-  dashCount = 23,
 }: PromptOptions): Promise<void> {
+  console.clear();
+
   const coloredTitle = colorize(title, titleColor, titleTypography);
+
   const styledTitle = applyVariant(
     [coloredTitle],
     titleVariant,
     variantOptions?.box,
   );
 
-  msg("MT_START", "initial", styledTitle, dashCount);
+  msg("M_START", styledTitle);
 }
