@@ -74,6 +74,8 @@
     "eslint-plugin-perfectionist": "^3.9.1",
     "knip": "^5.36.2",
     "mock-stdin": "^1.0.0",
+    "putout": "^36.11.0",
+    "redrun": "^11.0.5",
     "tape": "^5.9.0",
     "tshy": "^3.0.2",
     "typescript": "^5.6.3",

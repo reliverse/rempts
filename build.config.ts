@@ -13,8 +13,10 @@ export default defineBuildConfig({
   ],
   rollup: {
     emitCJS: false,
+    inlineDependencies: true,
     esbuild: {
       target: "es2022",
+      minify: true,
     },
   },
 });
