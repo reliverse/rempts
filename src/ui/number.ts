@@ -7,8 +7,8 @@ import readline from "node:readline/promises";
 import type { PromptOptions, State } from "~/types";
 
 import { colorize } from "~/utils/colorize";
-import { symbol } from "~/utils/symbols";
-import { applyVariant } from "~/utils/variant";
+import { symbol } from "~/utils/messages";
+import { applyVariant } from "~/utils/variants";
 
 export async function numberPrompt<T extends TSchema>(
   options: PromptOptions<T>,
@@ -22,10 +22,10 @@ export async function numberPrompt<T extends TSchema>(
     titleColor,
     titleTypography,
     titleVariant,
-    message,
-    msgColor,
-    msgTypography,
-    msgVariant,
+    content,
+    contentColor,
+    contentTypography,
+    contentVariant,
     state: initialState = "initial",
   } = options;
 
@@ -40,16 +40,16 @@ export async function numberPrompt<T extends TSchema>(
   const rl = readline.createInterface({ input, output });
 
   const coloredTitle = colorize(title, titleColor, titleTypography);
-  const coloredMessage = message
-    ? colorize(message, msgColor, msgTypography)
+  const coloredContent = content
+    ? colorize(content, contentColor, contentTypography)
     : "";
 
   const titleText = applyVariant([coloredTitle], titleVariant);
-  const messageText = coloredMessage
-    ? applyVariant([coloredMessage], msgVariant)
+  const contentText = coloredContent
+    ? applyVariant([coloredContent], contentVariant)
     : "";
 
-  const promptLines = [titleText, messageText].filter(Boolean);
+  const promptLines = [titleText, contentText].filter(Boolean);
   const promptText = promptLines.map((line) => line).join("\n");
 
   const question = `${promptText}${

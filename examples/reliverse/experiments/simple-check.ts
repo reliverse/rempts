@@ -2,7 +2,7 @@
 
 import { prompts } from "~/main";
 
-import { installDependencies } from "./experiments/state/utils/installDependencies";
+import { installDependencies } from "./state/utils/installDependencies";
 
 async function main() {
   await prompts({
@@ -12,10 +12,10 @@ async function main() {
     titleColor: "cyan",
     titleVariant: "box",
     titleTypography: "bold",
-    message: "Follow the steps to complete the configuration.",
-    msgColor: "dim",
-    msgVariant: "underline",
-    msgTypography: "italic",
+    content: "Follow the steps to complete the configuration.",
+    contentColor: "dim",
+    contentVariant: "underline",
+    contentTypography: "italic",
     variantOptions: { box: { limit: 50 } },
   });
 
@@ -26,10 +26,10 @@ async function main() {
     titleColor: "blue",
     titleVariant: "doubleBox",
     titleTypography: "bold",
-    message: "Please provide a number between 1 and 100.",
-    msgColor: "dim",
-    msgVariant: "underline",
-    msgTypography: "italic",
+    content: "Please provide a number between 1 and 100.",
+    contentColor: "dim",
+    contentVariant: "underline",
+    contentTypography: "italic",
     default: 50,
   });
 

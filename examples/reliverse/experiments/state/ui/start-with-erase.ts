@@ -3,8 +3,8 @@ import { cursor, erase } from "sisteransi";
 import type { PromptOptions, PromptState } from "~/types";
 
 import { colorize } from "~/utils/colorize";
-import { symbol } from "~/utils/symbols";
-import { applyVariant } from "~/utils/variant";
+import { symbol } from "~/utils/messages";
+import { applyVariant } from "~/utils/variants";
 
 export async function startPrompt(
   options: PromptOptions,
@@ -20,10 +20,10 @@ export async function startPrompt(
     titleColor,
     titleTypography,
     titleVariant,
-    message,
-    msgColor,
-    msgTypography,
-    msgVariant,
+    content,
+    contentColor,
+    contentTypography,
+    contentVariant,
     variantOptions,
   } = options;
 
@@ -32,8 +32,8 @@ export async function startPrompt(
   currentState.symbol = symbol("S_MIDDLE", currentState.state);
 
   const coloredTitle = colorize(title, titleColor, titleTypography);
-  const coloredMessage = message
-    ? colorize(message, msgColor, msgTypography)
+  const coloredContent = content
+    ? colorize(content, contentColor, contentTypography)
     : "";
 
   const styledTitle = applyVariant(
@@ -41,14 +41,14 @@ export async function startPrompt(
     titleVariant,
     variantOptions?.box,
   );
-  const styledMessage = coloredMessage
-    ? applyVariant([coloredMessage], msgVariant, variantOptions?.box)
+  const styledContent = coloredContent
+    ? applyVariant([coloredContent], contentVariant, variantOptions?.box)
     : "";
 
   // Initial display of the prompt with the current symbol and styles
   console.log(`| ${currentState.symbol} ${styledTitle}`);
-  if (styledMessage) {
-    console.log(`- ${styledMessage}`);
+  if (styledContent) {
+    console.log(`- ${styledContent}`);
   }
   console.log("-");
 
@@ -57,15 +57,15 @@ export async function startPrompt(
   currentState.symbol = symbol("S_MIDDLE", currentState.state); // Update symbol for "completed" state
 
   // Move the cursor up by the number of lines used for the initial display
-  const linesToMoveUp = styledMessage ? 3 : 2;
+  const linesToMoveUp = styledContent ? 3 : 2;
   process.stdout.write(cursor.up(linesToMoveUp));
 
   // Clear each line and replace with the updated prompt
   process.stdout.write(
     `${erase.line}| ${currentState.symbol} ${styledTitle}\n`,
   );
-  if (styledMessage) {
-    process.stdout.write(`${erase.line}- ${styledMessage}\n`);
+  if (styledContent) {
+    process.stdout.write(`${erase.line}- ${styledContent}\n`);
   }
   process.stdout.write(`${erase.line}-\n`);
 }

@@ -37,8 +37,8 @@ async function main() {
         title: "Please enter your username",
         titleColor: "blue",
         titleTypography: "bold",
-        message: "Your username will be used to identify you in the system.\n",
-        msgTypography: "pulse",
+        content: "Your username will be used to identify you in the system.\n",
+        contentTypography: "pulse",
         state: "initial",
         validate: (input) => input.length > 0 || "Username cannot be empty.",
       });

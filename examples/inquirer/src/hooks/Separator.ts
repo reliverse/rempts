@@ -1,6 +1,6 @@
 import { dim } from "picocolors";
 
-import figures from "~/utils/symbols";
+import {figures} from "~/utils/messages";
 
 /**
  * Separator object

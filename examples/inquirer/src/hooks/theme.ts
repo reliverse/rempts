@@ -1,6 +1,6 @@
 import { blue, bold, cyan, dim, green, red, yellow } from "picocolors";
 
-import figures from "~/utils/symbols";
+import { figures } from "~/utils/messages";
 
 import type { Prettify } from "../type/utils";
 

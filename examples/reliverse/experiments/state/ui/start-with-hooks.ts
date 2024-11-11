@@ -5,7 +5,7 @@ import { usePromptState } from "examples/inquirer/src/hooks/usePromptState";
 import type { PromptOptions } from "~/types";
 
 import { colorize } from "~/utils/colorize";
-import { applyVariant } from "~/utils/variant";
+import { applyVariant } from "~/utils/variants";
 
 export async function startPrompt(options: PromptOptions): Promise<void> {
   const { state: initialState = "initial" } = options;
@@ -17,17 +17,17 @@ export async function startPrompt(options: PromptOptions): Promise<void> {
     titleColor,
     titleTypography,
     titleVariant,
-    message,
-    msgColor,
-    msgTypography,
-    msgVariant,
+    content,
+    contentColor,
+    contentTypography,
+    contentVariant,
     variantOptions,
   } = options;
 
   useEffect(() => {
     // Simulate a state update after 2 seconds
     const timer = setTimeout(() => {
-      if (message && message.length > 20) {
+      if (content && content.length > 20) {
         setState("active"); // Switch to 'active' state if message length is > 20
       } else {
         setState("initial"); // Default to 'initial' state
@@ -36,11 +36,11 @@ export async function startPrompt(options: PromptOptions): Promise<void> {
 
     // Cleanup timer on component unmount
     return () => clearTimeout(timer);
-  }, [message, setState]);
+  }, [content, setState]);
 
   const coloredTitle = colorize(title, titleColor, titleTypography);
-  const coloredMessage = message
-    ? colorize(message, msgColor, msgTypography)
+  const coloredContent = content
+    ? colorize(content, contentColor, contentTypography)
     : "";
 
   const styledTitle = applyVariant(
@@ -48,12 +48,12 @@ export async function startPrompt(options: PromptOptions): Promise<void> {
     titleVariant,
     variantOptions?.box,
   );
-  const styledMessage = coloredMessage
-    ? applyVariant([coloredMessage], msgVariant, variantOptions?.box)
+  const styledContent = coloredContent
+    ? applyVariant([coloredContent], contentVariant, variantOptions?.box)
     : "";
 
   console.log(`${bars} ${figure} ${styledTitle}`);
-  if (styledMessage) {
-    console.log(`${bars} ${styledMessage}`);
+  if (styledContent) {
+    console.log(`${bars} ${styledContent}`);
   }
 }

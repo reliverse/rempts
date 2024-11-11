@@ -1,6 +1,6 @@
 {
   "name": "@reliverse/prompts",
-  "version": "0.9.15",
+  "version": "0.9.16",
   "description": "A modern, type-safe, crash-resistant library for creating seamless, typesafe prompts in CLI applications. Designed for simplicity and elegance, it enables intuitive and robust user interactions.",
   "scripts": {
     "appts": "bun typecheck && bun lint && bun format",
@@ -15,10 +15,8 @@
     "dev": "bun dev:id",
     "dev:id": "bun examples/reliverse/install-deps.ts",
     "dev:us": "bun examples/reliverse/user-signup.ts",
-    "dev:wm": "bun examples/reliverse/win-mln-js.ts",
-    "dev:sc": "bun examples/reliverse/simple-check.ts",
-    "dev:clack": "bun examples/clack/install-deps.ts",
-    "dev:terkelg": "bun examples/terkelg/install-deps.ts"
+    "dev:wm": "bun examples/reliverse/experiments/win-mln-js.ts",
+    "dev:sc": "bun examples/reliverse/experiments/simple-check.ts"
   },
   "type": "module",
   "publishConfig": {

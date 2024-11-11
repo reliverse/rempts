@@ -1,7 +1,7 @@
 import type { PromptOptions } from "~/types";
 
 import { colorize } from "~/utils/colorize";
-import { applyVariant } from "~/utils/variant";
+import { applyVariant } from "~/utils/variants";
 
 export async function nextStepsPrompt(options: PromptOptions): Promise<void> {
   const {
@@ -9,23 +9,23 @@ export async function nextStepsPrompt(options: PromptOptions): Promise<void> {
     titleColor,
     titleVariant,
     titleTypography,
-    message,
-    msgColor,
-    msgVariant,
-    msgTypography,
+    content,
+    contentColor,
+    contentVariant,
+    contentTypography,
   } = options;
 
   const coloredTitle = colorize(title, titleColor, titleTypography);
-  const coloredMessage = message
-    ? colorize(message, msgColor, msgTypography)
+  const coloredContent = content
+    ? colorize(content, contentColor, contentTypography)
     : "";
 
   const titleText = applyVariant([coloredTitle], titleVariant);
-  const messageText = coloredMessage
-    ? applyVariant([coloredMessage], msgVariant)
+  const contentText = coloredContent
+    ? applyVariant([coloredContent], contentVariant)
     : "";
 
-  const styledText = [titleText, messageText].filter(Boolean).join("\n");
+  const styledText = [titleText, contentText].filter(Boolean).join("\n");
 
   console.log(styledText);
 }

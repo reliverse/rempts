@@ -14,8 +14,8 @@ import readline from "node:readline/promises";
 import type { PromptOptions, State } from "~/types";
 
 import { colorize } from "~/utils/colorize";
-import { symbol } from "~/utils/symbols";
-import { applyVariant } from "~/utils/variant";
+import { symbol } from "~/utils/messages";
+import { applyVariant } from "~/utils/variants";
 
 export async function textPrompt<T extends TSchema>(
   options: PromptOptions<T>,
@@ -28,11 +28,11 @@ export async function textPrompt<T extends TSchema>(
     schema,
     titleColor,
     titleTypography,
-    message,
-    msgColor,
-    msgTypography,
+    content,
+    contentColor,
+    contentTypography,
     titleVariant,
-    msgVariant,
+    contentVariant,
     defaultColor,
     defaultTypography,
     state: initialState = "initial",

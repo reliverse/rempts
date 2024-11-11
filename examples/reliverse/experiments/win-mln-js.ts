@@ -5,7 +5,7 @@ import figlet from "figlet";
 import { prompts } from "~/main";
 import { colorize } from "~/utils/colorize";
 
-import { handleAnswer } from "./experiments/state/utils/handleAnswer";
+import { handleAnswer } from "./state/utils/handleAnswer";
 
 async function main() {
   await prompts({
@@ -55,11 +55,11 @@ async function main() {
     id: "winner",
     title: asciiArt,
     titleTypography: "gradient",
-    message: `
+    content: `
       Programming isn't about what you know; 
       it's about making the command line look cool!
     `,
-    msgColor: "green",
+    contentColor: "green",
   });
   process.exit(0);
 }

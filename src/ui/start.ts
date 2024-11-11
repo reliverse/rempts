@@ -1,8 +1,8 @@
-import type { PromptOptions, State, SymbolMessages } from "~/types";
+import type { PromptOptions } from "~/types";
 
 import { colorize } from "~/utils/colorize";
-import { msg } from "~/utils/symbols";
-import { applyVariant } from "~/utils/variant";
+import { msg } from "~/utils/messages";
+import { applyVariant } from "~/utils/variants";
 
 export async function startPrompt({
   title,
@@ -19,5 +19,5 @@ export async function startPrompt({
     variantOptions?.box,
   );
 
-  msg("M_START_PROMPT", "initial", styledTitle, dashCount);
+  msg("MT_START", "initial", styledTitle, dashCount);
 }

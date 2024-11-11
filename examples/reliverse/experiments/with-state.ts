@@ -1,9 +1,8 @@
-import type { PromptState } from "~/types";
+import type { PromptState, SymbolCharacter } from "~/types";
 
 import { prompts } from "~/main";
-import { textPrompt } from "~/ui/text";
 import { colorize } from "~/utils/colorize";
-import { symbol } from "~/utils/symbols";
+import { symbol } from "~/utils/messages";
 
 async function main() {
   console.log();
@@ -15,6 +14,7 @@ async function main() {
     state: "initial",
     figure: symbol("S_MIDDLE", "initial"),
     value: undefined,
+    symbol: "S_MIDDLE" as SymbolCharacter,
   }));
   function getState(id: PromptId): PromptState {
     const state = promptStates.find((state) => state.id === id);
@@ -38,29 +38,40 @@ async function main() {
   currentState.state = "completed";
 
   currentState = getState("userInput");
-  const userInput = await textPrompt(
-    {
-      id: currentState.id,
-      type: "text",
-      title: `Please enter your username (Prompt state: ${currentState.state})`,
-      stateCompletedTitle: `Please enter your username (Prompt state: ${currentState.state})`,
-      titleColor: "blue",
-      titleTypography: "bold",
-      message: "Your username will be used to identify you in the system.\n",
-      msgTypography: "pulse",
-      state: currentState.state,
-      validate: (input: string) =>
-        input.length > 0 || "Username cannot be empty.",
-      action: async () => {
-        console.log("action of promptId: ", currentState.id);
-        currentState.state = "completed";
-      },
-    },
-    currentState,
-  );
+  const userInput = await prompts({
+    type: "text",
+    id: currentState.id,
+    title: `Please enter your username (Prompt state: ${currentState.state})`,
+    titleColor: "blue",
+    titleTypography: "bold",
+    content: "Your username will be used to identify you in the system.\n",
+    contentTypography: "pulse",
+    state: currentState.state,
+    validate: (input) => input.length > 0 || "Username cannot be empty.",
+  });
   currentState.state = "completed";
   currentState.value = userInput;
   console.log("currentState of userInput: ", currentState);
+
+  currentState = getState("dir");
+  const dir = await prompts({
+    id: currentState.id,
+    type: "text",
+    title: `Where should we create your project? (Prompt state: ${currentState.state})`,
+    default: "./sparkling-solid",
+    state: currentState.state,
+  });
+  currentState.state = "completed";
+  currentState.value = dir;
+
+  currentState = getState("end");
+  await prompts({
+    type: "end",
+    id: currentState.id,
+    title: `Problems? ${colorize("https://github.com/blefnk/reliverse/prompts", "cyanBright")}`,
+    state: currentState.state,
+  });
+  currentState.state = "completed";
 
   process.exit(0);
 }

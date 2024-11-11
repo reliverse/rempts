@@ -1,6 +1,6 @@
 import type { TSchema } from "@sinclair/typebox";
 
-export type SymbolMessages = "M_START_PROMPT" | "M_MIDDLE";
+export type MsgType = "MT_START" | "MT_MIDDLE" | "MT_END";
 
 export type SymbolCharacter =
   | "S_START"
@@ -99,10 +99,10 @@ export type PromptOptions<T extends TSchema = any> = {
   titleColor?: ColorName;
   titleTypography?: Typography;
   titleVariant?: Variant;
-  message?: string;
-  msgColor?: ColorName;
-  msgTypography?: Typography;
-  msgVariant?: Variant;
+  content?: string;
+  contentColor?: ColorName;
+  contentTypography?: Typography;
+  contentVariant?: Variant;
   hint?: string;
   validate?: (value: any) => boolean | string | Promise<boolean | string>;
   default?: any;

@@ -26,9 +26,9 @@ async function main() {
     type: "start",
     title: "Welcome to the @reliverse/prompts example CLI!",
     titleColor: "inverse",
-    message: "This CLI helps you test the library.",
-    msgColor: "green",
-    msgTypography: "italic",
+    content: "This CLI helps you test the library.",
+    contentColor: "green",
+    contentTypography: "italic",
   });
 
   const depsResult = await prompts({
@@ -40,9 +40,9 @@ async function main() {
     schema: schema.properties.deps,
     // @reliverse/prompts includes styled prompts, with the `title` color defaulting
     // to "cyanBright". Setting the color to "none" removes the default styling.
-    message: "This will install all necessary dependencies.",
-    msgColor: "dim",
-    msgVariant: "underline",
+    content: "This will install all necessary dependencies.",
+    contentColor: "dim",
+    contentVariant: "underline",
     default: true,
   });
 
@@ -53,7 +53,7 @@ async function main() {
     type: "text",
     title: "Enter your username",
     schema: schema.properties.username,
-    msgColor: "green",
+    contentColor: "green",
   });
 
   // Initialize `passwordResult` to avoid uninitialized variable errors.
@@ -191,10 +191,10 @@ async function main() {
     title: "Next Steps",
     titleColor: "none",
     titleVariant: "banner",
-    message: "- Set up your profile\n║ - Add tasks\n║ - Review your dashboard",
+    content: "- Set up your profile\n║ - Add tasks\n║ - Review your dashboard",
     // message: JSON.stringify(userInput, null, 2),
-    msgColor: "white",
-    msgVariant: "doubleBox",
+    contentColor: "white",
+    contentVariant: "doubleBox",
     action: async () => {
       // Display all user input values, e.g.:
       // ┌────────────────────────────────┐
@@ -219,8 +219,8 @@ async function main() {
     type: "end",
     title: "👋 Goodbye!",
     titleColor: "dim",
-    message: "Thank you for using @reliverse/prompts example CLI.",
-    msgColor: "cyan",
+    content: "Thank you for using @reliverse/prompts example CLI.",
+    contentColor: "cyan",
     action: async () => {
       if (userInput.deps) {
         await installDependencies();

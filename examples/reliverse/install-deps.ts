@@ -1,6 +1,7 @@
 // examples/reliverse/install-deps.ts: An advanced example of a CLI application that installs dependencies.
 // Trying to create a drop-in replacement for @clack/prompts, unjs/consola, @inquirer/prompts, withastro/astro, etc.
 
+import { Type, type Static } from "@sinclair/typebox";
 import { version } from "~/../package.json";
 
 import { prompts } from "~/main";
@@ -17,16 +18,22 @@ async function main() {
     dashCount: 20,
   });
 
-  await prompts({
-    id: "userInput",
+  const schema = Type.Object({
+    username: Type.String({ minLength: 3, maxLength: 20 }),
+  });
+  type UserInput = Static<typeof schema>;
+
+  const usernameResult = await prompts({
+    id: "username",
     type: "text",
-    title: "Please enter your username",
+    title: "We're glad you decided to test our library!",
     titleColor: "blue",
     titleTypography: "bold",
+    content: "Let's get to know each other! What's your username?",
+    contentTypography: "italic",
+    contentColor: "dim",
+    schema: schema.properties.username,
   });
-  // message: "Your username will be used to identify you in the system.",
-  // msgTypography: "pulse",
-  // validate: (input) => input.length > 0 || "Username cannot be empty.",
 
   // const dir = await prompts({
   //   id: "dir",
@@ -41,6 +48,10 @@ async function main() {
   //   title: `Problems? ${colorize("https://github.com/blefnk/reliverse/prompts", "cyanBright")}`,
   // });
 
+  const userInput: UserInput = {
+    username: usernameResult.username ?? "johnny",
+  };
+  // console.log(userInput);
   process.exit(0);
 }
 

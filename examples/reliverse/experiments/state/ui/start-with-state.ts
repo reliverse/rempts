@@ -1,8 +1,8 @@
 import type { PromptOptions, PromptState } from "~/types";
 
 import { colorize } from "~/utils/colorize";
-import { symbol } from "~/utils/symbols";
-import { applyVariant } from "~/utils/variant";
+import { symbol } from "~/utils/messages";
+import { applyVariant } from "~/utils/variants";
 
 export async function startPrompt(
   options: PromptOptions,
@@ -13,14 +13,8 @@ export async function startPrompt(
     value: undefined,
   },
 ): Promise<void> {
-  const {
-    title,
-    titleColor,
-    titleTypography,
-    titleVariant,
-    variantOptions,
-    repeatBarAfterStart,
-  } = options;
+  const { title, titleColor, titleTypography, titleVariant, variantOptions } =
+    options;
 
   currentState.state = options.state ?? "initial";
   currentState.symbol = symbol("S_MIDDLE", currentState.state);
@@ -37,7 +31,6 @@ export async function startPrompt(
     `${symbol("S_START", currentState.state)} ${styledTitle} ${symbol(
       "S_LINE",
       currentState.state,
-      repeatBarAfterStart ?? 23,
     )}`,
   );
 }

@@ -8,7 +8,7 @@ import readline from "node:readline/promises";
 import type { PromptOptions } from "~/types";
 
 import { colorize } from "~/utils/colorize";
-import { applyVariant } from "~/utils/variant";
+import { applyVariant } from "~/utils/variants";
 
 export async function numberPrompt<T extends TSchema>(
   options: PromptOptions<T>,
@@ -25,25 +25,25 @@ export async function numberPrompt<T extends TSchema>(
     titleColor,
     titleTypography,
     titleVariant,
-    message,
-    msgColor,
-    msgTypography,
-    msgVariant,
+    content,
+    contentColor,
+    contentTypography,
+    contentVariant,
   } = options;
 
   const rl = readline.createInterface({ input, output });
 
   const coloredTitle = colorize(title, titleColor, titleTypography);
-  const coloredMessage = message
-    ? colorize(message, msgColor, msgTypography)
+  const coloredContent = content
+    ? colorize(content, contentColor, contentTypography)
     : "";
 
   const titleText = applyVariant([coloredTitle], titleVariant);
-  const messageText = coloredMessage
-    ? applyVariant([coloredMessage], msgVariant)
+  const contentText = coloredContent
+    ? applyVariant([coloredContent], contentVariant)
     : "";
 
-  const promptLines = [titleText, messageText].filter(Boolean);
+  const promptLines = [titleText, contentText].filter(Boolean);
   const promptText = promptLines
     .map((line, index) => `${index === 0 ? figure : " "} ${line}`)
     .join("\n");

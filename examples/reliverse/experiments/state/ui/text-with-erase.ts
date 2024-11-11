@@ -8,8 +8,8 @@ import { cursor, erase } from "sisteransi";
 import type { PromptOptions, PromptState } from "~/types";
 
 import { colorize } from "~/utils/colorize";
-import { symbol } from "~/utils/symbols";
-import { applyVariant } from "~/utils/variant";
+import { symbol } from "~/utils/messages";
+import { applyVariant } from "~/utils/variants";
 
 export async function textPrompt<T extends TSchema>(
   options: PromptOptions<T>,
@@ -29,11 +29,11 @@ export async function textPrompt<T extends TSchema>(
     schema,
     titleColor,
     titleTypography,
-    message,
-    msgColor,
-    msgTypography,
+    content,
+    contentColor,
+    contentTypography,
     titleVariant,
-    msgVariant,
+    contentVariant,
     action,
   } = options;
 
@@ -48,17 +48,17 @@ export async function textPrompt<T extends TSchema>(
     titleColor,
     titleTypography,
   );
-  const coloredMessage = message
-    ? colorize(message, msgColor, msgTypography)
+  const coloredContent = content
+    ? colorize(content, contentColor, contentTypography)
     : "";
 
   const titleText = applyVariant([coloredTitle], titleVariant);
   const completedTitleText = applyVariant([completedTitle], titleVariant);
-  const messageText = coloredMessage
-    ? applyVariant([coloredMessage], msgVariant)
+  const contentText = coloredContent
+    ? applyVariant([coloredContent], contentVariant)
     : "";
 
-  const promptLines = [titleText, messageText].filter(Boolean);
+  const promptLines = [titleText, contentText].filter(Boolean);
   const promptText = promptLines.map((line) => line).join("\n");
 
   const question = `${promptText}${hint ? ` (${hint})` : ""}${
@@ -70,14 +70,14 @@ export async function textPrompt<T extends TSchema>(
     process.stdout.write(
       `${cursor.move(-999, 0)}${erase.line}${currentState.symbol} ${displayTitle}\n`,
     );
-    if (messageText) {
-      process.stdout.write(`${erase.line}- ${messageText}\n`);
+    if (contentText) {
+      process.stdout.write(`${erase.line}- ${contentText}\n`);
     }
     process.stdout.write(`${erase.line}-\n`);
   }
 
   function clearPrompt() {
-    const linesToClear = messageText ? 3 : 2;
+    const linesToClear = contentText ? 3 : 2;
     process.stdout.write(
       cursor.move(-999, -linesToClear) + erase.down(linesToClear),
     );

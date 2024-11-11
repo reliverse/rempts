@@ -10,11 +10,12 @@ import { nextStepsPrompt } from "~/ui/nextSteps";
 import { numberPrompt } from "~/ui/number";
 import { passwordPrompt } from "~/ui/password";
 import { selectPrompt } from "~/ui/select";
-import { startPrompt } from "~/ui/start";
-import { textPrompt } from "~/ui/text";
-import { symbol } from "~/utils/symbols";
+import { symbol } from "~/utils/messages";
 
 import type { PromptOptionsWithState } from "./types-wth-state";
+
+import { startPrompt } from "./ui/start-with-state.js";
+import { textPrompt } from "./ui/text-with-state";
 
 export { createSpinner } from "~/ui/spinner";
 
