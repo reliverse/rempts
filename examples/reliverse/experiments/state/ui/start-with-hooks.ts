@@ -2,12 +2,14 @@ import { useEffect } from "examples/inquirer/src/hooks";
 import { useBar } from "examples/inquirer/src/hooks/useBar";
 import { usePromptState } from "examples/inquirer/src/hooks/usePromptState";
 
-import type { PromptOptions } from "~/types";
+import type { PromptOptionsDeprecated } from "~/types/dev";
 
 import { colorize } from "~/utils/colorize";
 import { applyVariant } from "~/utils/variants";
 
-export async function startPrompt(options: PromptOptions): Promise<void> {
+export async function startPrompt(
+  options: PromptOptionsDeprecated,
+): Promise<void> {
   const { state: initialState = "initial" } = options;
   const { state, setState, figure } = usePromptState(initialState);
   const bars = useBar(state);

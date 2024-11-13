@@ -2,27 +2,27 @@ import type { TSchema, Static } from "@sinclair/typebox";
 
 import { symbol } from "examples/reliverse/experiments/utils/symbols";
 
-import type { PromptState } from "~/types";
+import type { PromptStateDeprecated } from "~/types/dev";
 
-import { confirmPrompt } from "~/ui/confirm";
-import { datePrompt } from "~/ui/date";
-import { endPrompt } from "~/ui/end";
-import { multiselectPrompt } from "~/ui/multiselect";
-import { nextStepsPrompt } from "~/ui/nextSteps";
-import { numberPrompt } from "~/ui/number";
-import { passwordPrompt } from "~/ui/password";
-import { selectPrompt } from "~/ui/select";
+import { confirmPrompt } from "~/components/confirm";
+import { datePrompt } from "~/components/date";
+import { endPrompt } from "~/components/end";
+import { multiselectPrompt } from "~/components/multi-select";
+import { nextStepsPrompt } from "~/components/next-steps";
+import { numberPrompt } from "~/components/number";
+import { passwordPrompt } from "~/components/password";
+import { selectPrompt } from "~/components/select";
 
 import type { PromptOptionsWithState } from "./types-wth-state";
 
 import { startPrompt } from "./ui/start-with-state.js";
 import { textPrompt } from "./ui/text-with-state";
 
-export { createSpinner } from "~/ui/spinner";
+export { createSpinner } from "~/components/spinner";
 
 export async function prompts<T extends TSchema>(
   options: PromptOptionsWithState<T>,
-  currentState: PromptState = {
+  currentState: PromptStateDeprecated = {
     id: "",
     state: "initial",
     symbol: symbol("S_MIDDLE", "initial"),

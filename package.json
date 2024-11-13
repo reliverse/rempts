@@ -1,6 +1,6 @@
 {
   "name": "@reliverse/prompts",
-  "version": "0.9.19",
+  "version": "0.9.23",
   "description": "A modern, type-safe, crash-resistant library for creating seamless, typesafe prompts in CLI applications. Designed for simplicity and elegance, it enables intuitive and robust user interactions.",
   "scripts": {
     "appts": "bun typecheck && bun lint && bun format",
@@ -14,11 +14,7 @@
     "attw": "attw --pack",
     "tsc": "tshy",
     "knip": "knip",
-    "dev": "bun dev:id",
-    "dev:id": "bun examples/reliverse/install-deps.ts",
-    "dev:us": "bun examples/reliverse/user-signup.ts",
-    "dev:wm": "bun examples/reliverse/experiments/win-mln-js.ts",
-    "dev:sc": "bun examples/reliverse/experiments/simple-check.ts"
+    "dev": "bun examples/examples-runner.ts"
   },
   "type": "module",
   "publishConfig": {
@@ -44,14 +40,16 @@
   "keywords": ["cli", "reliverse"],
   "license": "MIT",
   "dependencies": {
+    "@figliolia/chalk-animation": "^1.0.4",
     "@sinclair/typebox": "^0.33.17",
+    "ansi-escapes": "^7.0.0",
     "chalk": "^5.3.0",
-    "chalk-animation": "^2.0.3",
     "cli-spinners": "^3.2.0",
     "cli-width": "^4.1.0",
     "figlet": "^1.8.0",
     "fs-extra": "^11.2.0",
     "gradient-string": "^3.0.0",
+    "log-update": "^6.1.0",
     "mute-stream": "^2.0.0",
     "nypm": "^0.3.12",
     "ora": "^8.1.1",

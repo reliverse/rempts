@@ -44,7 +44,7 @@ describe("prompts", () => {
       type: "text",
       id: "city",
       title: "Enter your city",
-      default: "New York",
+      defaultValue: "New York",
     });
 
     await sendInput("");
@@ -133,9 +133,9 @@ describe("prompts", () => {
       id: "color",
       title: "Choose a color",
       choices: [
-        { title: "Red", value: "red" },
-        { title: "Green", value: "green" },
-        { title: "Blue", value: "blue" },
+        { title: "Red", id: "red" },
+        { title: "Green", id: "green" },
+        { title: "Blue", id: "blue" },
       ],
     });
 
@@ -151,9 +151,9 @@ describe("prompts", () => {
       id: "color",
       title: "Choose a color",
       choices: [
-        { title: "Red", value: "red" },
-        { title: "Green", value: "green" },
-        { title: "Blue", value: "blue" },
+        { title: "Red", id: "red" },
+        { title: "Green", id: "green" },
+        { title: "Blue", id: "blue" },
       ],
     });
 
@@ -173,9 +173,9 @@ describe("prompts", () => {
       id: "fruits",
       title: "Select your favorite fruits",
       choices: [
-        { title: "Apple", value: "apple" },
-        { title: "Banana", value: "banana" },
-        { title: "Cherry", value: "cherry" },
+        { title: "Apple", id: "apple" },
+        { title: "Banana", id: "banana" },
+        { title: "Cherry", id: "cherry" },
       ],
     });
 
@@ -191,9 +191,9 @@ describe("prompts", () => {
       id: "fruits",
       title: "Select your favorite fruits",
       choices: [
-        { title: "Apple", value: "apple" },
-        { title: "Banana", value: "banana" },
-        { title: "Cherry", value: "cherry" },
+        { title: "Apple", id: "apple" },
+        { title: "Banana", id: "banana" },
+        { title: "Cherry", id: "cherry" },
       ],
     });
 

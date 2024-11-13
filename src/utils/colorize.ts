@@ -1,4 +1,3 @@
-import figlet from "figlet";
 import gradient, {
   cristal,
   mind,
@@ -27,12 +26,12 @@ import {
   italic,
 } from "picocolors";
 
-import type { ColorName, Typography } from "~/types";
+import type { ColorName, TypographyName } from "~/types/prod";
 
 export function colorize(
   text: string,
   colorName?: ColorName,
-  typography?: Typography,
+  typography?: TypographyName,
 ): string {
   let result = text;
 
@@ -116,7 +115,9 @@ export function colorize(
   ];
 
   if (gradientColors.includes(colorName ?? "") && typography)
-    throw new TypeError("Cannot apply typography to gradient color");
+    throw new Error(
+      "[colorize] Cannot apply typography to gradient color.\n│  Use regular colorize()'s color or remove typography.",
+    );
 
   if (!gradientColors.includes(colorName ?? "") && typography) {
     switch (typography) {
@@ -132,9 +133,9 @@ export function colorize(
       case "italic":
         result = italic(result);
         break;
-      case "figlet":
-        result = figlet.textSync(result);
-        break;
+      // case "figlet":
+      //   result = figlet.textSync(result);
+      //   break;
       default:
         break;
     }

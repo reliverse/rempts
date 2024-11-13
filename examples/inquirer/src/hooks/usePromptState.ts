@@ -1,12 +1,12 @@
 import { symbol } from "examples/reliverse/experiments/utils/symbols";
 
-import type { State } from "~/types";
+import type { StateDeprecated } from "~/types/dev";
 
 import { useEffect } from "./use-effect";
 import { useState } from "./use-state";
 
-export function usePromptState(initialState: State) {
-  const [state, setState] = useState<State>(initialState);
+export function usePromptState(initialState: StateDeprecated) {
+  const [state, setState] = useState<StateDeprecated>(initialState);
   const [figure, setFigure] = useState<string>(
     symbol("S_MIDDLE", initialState),
   );

@@ -1,14 +1,17 @@
 import { symbol } from "examples/reliverse/experiments/utils/symbols";
 import { cursor, erase } from "sisteransi";
 
-import type { PromptOptions, PromptState } from "~/types";
+import type {
+  PromptOptionsDeprecated,
+  PromptStateDeprecated,
+} from "~/types/dev";
 
 import { colorize } from "~/utils/colorize";
 import { applyVariant } from "~/utils/variants";
 
 export async function startPrompt(
-  options: PromptOptions,
-  currentState: PromptState = {
+  options: PromptOptionsDeprecated,
+  currentState: PromptStateDeprecated = {
     id: options.id ?? "start",
     state: options.state ?? "initial",
     symbol: symbol("S_MIDDLE", options.state ?? "initial"),

@@ -1,4 +1,4 @@
-import type { State, SymbolCharacter } from "~/types";
+import type { StateDeprecated, SymbolCharacterDeprecated } from "~/types/dev";
 
 import { colorize } from "~/utils/colorize";
 import { isUnicodeSupported } from "~/utils/platforms";
@@ -6,7 +6,7 @@ import { isUnicodeSupported } from "~/utils/platforms";
 const unicode = isUnicodeSupported();
 const s = (c: string, fallback: string) => (unicode ? c : fallback);
 
-// export const SYMBOLS: Record<SymbolCharacter, string> = {
+// export const SYMBOLS: Record<SymbolCharacterDeprecated, string> = {
 export const S_START = s("╭", "T");
 export const S_MIDDLE = s("│", "|");
 export const S_END = s("╰", "—");
@@ -32,7 +32,7 @@ export const S_CONNECT_LEFT = s("╰", "+");
 export const S_CORNER_BOTTOM_RIGHT = s("╯", "+");
 // };
 
-export const styledSymbols = (symbol: string, state: State) => {
+export const styledSymbols = (symbol: string, state: StateDeprecated) => {
   switch (state) {
     case "initial":
       return colorize(symbol, "rainbowGradient");
@@ -49,7 +49,10 @@ export const styledSymbols = (symbol: string, state: State) => {
   }
 };
 
-export const symbol = (symbol: SymbolCharacter, state: State) => {
+export const symbol = (
+  symbol: SymbolCharacterDeprecated,
+  state: StateDeprecated,
+) => {
   const baseSymbol = S_START;
   return styledSymbols(baseSymbol, state);
 };

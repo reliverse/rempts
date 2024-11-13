@@ -54,7 +54,12 @@ export type PromptOptions<Self extends Prompt> = {
   debug?: boolean;
 };
 
-export type State = "initial" | "active" | "cancel" | "submit" | "error";
+export type StateDeprecated =
+  | "initial"
+  | "active"
+  | "cancel"
+  | "submit"
+  | "error";
 
 export default class Prompt {
   protected input: Readable;
@@ -65,7 +70,7 @@ export default class Prompt {
   private _render: (context: Omit<Prompt, "prompt">) => string | void;
   protected _cursor = 0;
 
-  public state: State = "initial";
+  public state: StateDeprecated = "initial";
   public value: any;
   public error = "";
 

@@ -6,7 +6,7 @@
 - A modern, crash-resistant library for creating seamless, typesafe prompts in CLI applications.
 - Designed for simplicity and elegance, it enables intuitive and robust user interactions.
 
-[![example prompt](./public/example.gif)](https://docs.reliverse.org/prompts)
+[![example prompt](./public/example.png)](https://docs.reliverse.org/prompts)
 
 ## Installation
 
@@ -16,14 +16,14 @@ Install via your preferred package manager:
 bun add @reliverse/prompts # instead of bun you can use: npm, pnpm, or yarn (deno support is coming soon)
 ```
 
-[![confirm prompt](./public/confirm.gif)](https://docs.reliverse.org/prompts)
-
 ## Key Features
 
 - **Type Safety**: Built with TypeScript, ensuring robust types and preventing runtime errors.
 - **Schema Validation**: Define and validate inputs using schemas for reliable data handling.
 - **Flexibility**: Supports various prompt types including text, password, number, select, and multiselect.
 - **Crash Resilience**: Structured to handle cancellations and errors gracefully, keeping your application stable.
+
+[![confirm prompt](./public/confirm.gif)](https://docs.reliverse.org/prompts)
 
 ## Prompt Types
 
@@ -33,10 +33,14 @@ bun add @reliverse/prompts # instead of bun you can use: npm, pnpm, or yarn (den
 - **Confirm**: Yes/No prompt.
 - **Select**: Dropdown selection from multiple choices.
 - **Multiselect**: Multiple choice selection from a list.
+
+[![multiselect prompt](./public/list.gif)](https://docs.reliverse.org/prompts)
   
 ## Validation
 
 Each prompt can include custom validation logic to provide immediate feedback to the user.
+
+[![number prompt with validation](./public/validate.gif)](https://docs.reliverse.org/prompts)
 
 ## Playground
 

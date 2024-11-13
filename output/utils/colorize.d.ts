@@ -1,2 +1,2 @@
-import type { ColorName, Typography } from "../types";
-export declare function colorize(text: string, colorName?: ColorName, typography?: Typography): string;
+import type { ColorName, TypographyName } from "../types/prod";
+export declare function colorize(text: string, colorName?: ColorName, typography?: TypographyName): string;

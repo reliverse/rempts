@@ -1,5 +1,6 @@
 import type { InquirerReadline } from "examples/inquirer/src/type/inquirer";
 
+import { errorHandler } from "examples/helpers/error-handler";
 import { withHooks } from "examples/inquirer/src/hooks/hook-engine";
 import { prompts } from "examples/reliverse/experiments/tests/main-merged";
 import readline from "node:readline";
@@ -38,7 +39,7 @@ async function main() {
         titleColor: "blue",
         titleTypography: "bold",
         content: "Your username will be used to identify you in the system.\n",
-        contentTypography: "pulse",
+        contentTypography: "bold",
         state: "initial",
         validate: (input) => input.length > 0 || "Username cannot be empty.",
       });
@@ -47,7 +48,7 @@ async function main() {
         id: "dir",
         type: "text",
         title: "Where should we create your project?",
-        default: "./sparkling-solid",
+        defaultValue: "./sparkling-solid",
       });
 
       await prompts({
@@ -62,10 +63,4 @@ async function main() {
   process.exit(0);
 }
 
-await main().catch((error) => {
-  console.error("│  An error occurred:\n", error.message);
-  console.error(
-    "└  Please report this issue at https://github.com/blefnk/reliverse/issues",
-  );
-  process.exit(1);
-});
+await main().catch((error) => errorHandler(error));

@@ -5,7 +5,10 @@ import { createSpinner } from "~/main";
 
 const outputDir = path.resolve(__dirname, "output");
 
-const filesToDelete = [path.join(outputDir, "utils/charmap.d.ts")];
+const filesToDelete = [
+  path.join(outputDir, "types/dev.d.ts"),
+  path.join(outputDir, "types/dev.js"),
+];
 
 async function deleteFiles(paths: string[]) {
   for (const filePath of paths) {

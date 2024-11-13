@@ -6,14 +6,17 @@ import { stdin as input, stdout as output } from "node:process";
 import readline from "node:readline/promises";
 import { cursor, erase } from "sisteransi";
 
-import type { PromptOptions, PromptState } from "~/types";
+import type {
+  PromptOptionsDeprecated,
+  PromptStateDeprecated,
+} from "~/types/dev";
 
 import { colorize } from "~/utils/colorize";
 import { applyVariant } from "~/utils/variants";
 
 export async function textPrompt<T extends TSchema>(
-  options: PromptOptions<T>,
-  currentState: PromptState = {
+  options: PromptOptionsDeprecated<T>,
+  currentState: PromptStateDeprecated = {
     id: "",
     state: "initial",
     symbol: symbol("S_MIDDLE", "initial"),
@@ -25,7 +28,7 @@ export async function textPrompt<T extends TSchema>(
     stateCompletedTitle,
     hint,
     validate,
-    default: defaultValue,
+    defaultValue,
     schema,
     titleColor,
     titleTypography,

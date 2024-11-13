@@ -5,14 +5,18 @@ import { symbol } from "examples/reliverse/experiments/utils/symbols";
 import { stdin as input, stdout as output } from "node:process";
 import readline from "node:readline/promises";
 
-import type { PromptOptions, PromptState, State } from "~/types";
+import type {
+  PromptOptionsDeprecated,
+  PromptStateDeprecated,
+  StateDeprecated,
+} from "~/types/dev";
 
 import { colorize } from "~/utils/colorize";
 import { applyVariant } from "~/utils/variants";
 
 export async function textPrompt<T extends TSchema>(
-  options: PromptOptions<T>,
-  currentState: PromptState = {
+  options: PromptOptionsDeprecated<T>,
+  currentState: PromptStateDeprecated = {
     id: "",
     state: "initial",
     symbol: symbol("S_MIDDLE", "initial"),
@@ -23,7 +27,7 @@ export async function textPrompt<T extends TSchema>(
     title,
     hint,
     validate,
-    default: defaultValue,
+    defaultValue,
     schema,
     titleColor,
     titleTypography,
@@ -36,7 +40,7 @@ export async function textPrompt<T extends TSchema>(
     state = "initial",
   } = options;
 
-  const updateState = (newState: State) => {
+  const updateState = (newState: StateDeprecated) => {
     currentState.state = newState;
     currentState.symbol = symbol("S_MIDDLE", newState);
   };
@@ -90,7 +94,7 @@ export async function textPrompt<T extends TSchema>(
       if (action) await action();
       updateState("completed");
       currentState.value = answer;
-      displayPrompt(answer);
+      displayPrompt(answer as string);
       rl.close();
       return answer as Static<T>;
     } else {

@@ -3,7 +3,7 @@ import { cursor, erase } from "sisteransi";
 
 import { isUnicodeSupported } from "~/utils/platforms";
 
-import type { State } from "./main";
+import type { StateDeprecated } from "./main";
 
 import {
   block,
@@ -47,7 +47,7 @@ const S_SUCCESS = s("◆", "*");
 const S_WARN = s("▲", "!");
 const S_ERROR = s("■", "x");
 
-const symbol = (state: State) => {
+const symbol = (state: StateDeprecated) => {
   switch (state) {
     case "initial":
     case "active":

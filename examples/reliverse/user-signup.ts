@@ -1,6 +1,7 @@
 // examples/user-signup.ts: An advanced example of a CLI application that simulates a user signup process.
 
 import { Type, type Static } from "@sinclair/typebox";
+import { errorHandler } from "examples/helpers/error-handler";
 import { prompts } from "examples/reliverse/experiments/tests/main-merged";
 
 import { installDependencies } from "./experiments/state/utils/installDependencies";
@@ -42,7 +43,7 @@ async function main() {
     content: "This will install all necessary dependencies.",
     contentColor: "dim",
     contentVariant: "underline",
-    default: true,
+    defaultValue: true,
   });
 
   const usernameResult = await prompts({
@@ -111,9 +112,9 @@ async function main() {
     type: "select",
     title: "Choose a favorite color",
     choices: [
-      { title: "Red", value: "red" },
-      { title: "Green", value: "green" },
-      { title: "Blue", value: "blue" },
+      { title: "Red", id: "red" },
+      { title: "Green", id: "green" },
+      { title: "Blue", id: "blue" },
     ] as const, // Define choices as const to make them literal types.
     schema: schema.properties.color, // Use schema-defined color enum.
   });
@@ -125,19 +126,19 @@ async function main() {
     choices: [
       {
         title: "React",
-        value: "react",
+        id: "react",
         // Some properties, like 'choices.description', are optional.
         description: "A library for building user interfaces.",
       },
       {
         title: "TypeScript",
-        value: "typescript",
+        id: "typescript",
         description:
           "A programming language that adds static typing to JavaScript.",
       },
       {
         title: "ESLint",
-        value: "eslint",
+        id: "eslint",
         description: "A tool for identifying patterns in JavaScript code.",
       },
     ],
@@ -234,10 +235,4 @@ async function main() {
   // try { ... } catch (error) { console.error("Prompt cancelled."); }
 }
 
-await main().catch((error) => {
-  console.error("│  An error occurred:\n", error.message);
-  console.error(
-    "└  Please report this issue at https://github.com/blefnk/reliverse/issues",
-  );
-  process.exit(1);
-});
+await main().catch((error) => errorHandler(error));

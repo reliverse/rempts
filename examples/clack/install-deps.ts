@@ -8,6 +8,7 @@ import {
   cancel,
   text,
 } from "examples/clack/src";
+import { errorHandler } from "examples/helpers/error-handler";
 import { setTimeout as sleep } from "node:timers/promises";
 import color from "picocolors";
 
@@ -62,10 +63,4 @@ async function main() {
   process.exit(0);
 }
 
-await main().catch((error) => {
-  console.error("│  An error occurred:\n", error.message);
-  console.error(
-    "└  Please report this issue at https://github.com/blefnk/reliverse/issues",
-  );
-  process.exit(1);
-});
+await main().catch((error) => errorHandler(error));

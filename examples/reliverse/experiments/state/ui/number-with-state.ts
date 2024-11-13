@@ -4,7 +4,7 @@ import { Value } from "@sinclair/typebox/value";
 import { stdin as input, stdout as output } from "node:process";
 import readline from "node:readline/promises";
 
-import type { PromptOptions, State } from "~/types";
+import type { PromptOptionsDeprecated, StateDeprecated } from "~/types/dev";
 
 import { colorize } from "~/utils/colorize";
 import { applyVariant } from "~/utils/variants";
@@ -12,13 +12,13 @@ import { applyVariant } from "~/utils/variants";
 import { symbol } from "../../utils/symbols";
 
 export async function numberPrompt<T extends TSchema>(
-  options: PromptOptions<T>,
+  options: PromptOptionsDeprecated<T>,
 ): Promise<Static<T>> {
   const {
     title,
     hint,
     validate,
-    default: defaultValue,
+    defaultValue,
     schema,
     titleColor,
     titleTypography,
@@ -33,7 +33,7 @@ export async function numberPrompt<T extends TSchema>(
   let state = initialState;
   let figure = symbol("S_MIDDLE", state);
 
-  function setState(newState: State) {
+  function setState(newState: StateDeprecated) {
     state = newState;
     figure = symbol("S_MIDDLE", state);
   }

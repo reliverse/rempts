@@ -12,19 +12,19 @@ import { symbol } from "examples/reliverse/experiments/utils/symbols";
 import { stdin as input, stdout as output } from "node:process";
 import readline from "node:readline/promises";
 
-import type { PromptOptions, State } from "~/types";
+import type { PromptOptionsDeprecated, StateDeprecated } from "~/types/dev";
 
 import { colorize } from "~/utils/colorize";
 import { applyVariant } from "~/utils/variants";
 
 export async function textPrompt<T extends TSchema>(
-  options: PromptOptions<T>,
+  options: PromptOptionsDeprecated<T>,
 ): Promise<Static<T>> {
   const {
     title,
     hint,
     validate,
-    default: defaultValue,
+    defaultValue,
     schema,
     titleColor,
     titleTypography,
@@ -38,8 +38,10 @@ export async function textPrompt<T extends TSchema>(
     state: initialState = "initial",
   } = options;
 
-  const [state, setState] = useState<State>(initialState);
-  const [answer, setAnswer] = useState<string>(defaultValue || "");
+  const [state, setState] = useState<StateDeprecated>(initialState);
+  const [answer, setAnswer] = useState<string | number | boolean>(
+    defaultValue || "",
+  );
   const [errorMessage, setErrorMessage] = useState<string>("");
 
   const rl = readline.createInterface({ input, output });
@@ -75,9 +77,9 @@ export async function textPrompt<T extends TSchema>(
         setErrorMessage(error);
       }
     } else if (event.name === "backspace") {
-      setAnswer(answer.slice(0, -1));
+      setAnswer((answer as string).slice(0, -1));
     } else if (event.sequence) {
-      setAnswer(answer + event.sequence);
+      setAnswer((answer as string) + event.sequence);
     }
   });
 

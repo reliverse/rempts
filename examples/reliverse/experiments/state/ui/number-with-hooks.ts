@@ -5,13 +5,13 @@ import { usePromptState } from "examples/inquirer/src/hooks/usePromptState";
 import { stdin as input, stdout as output } from "node:process";
 import readline from "node:readline/promises";
 
-import type { PromptOptions } from "~/types";
+import type { PromptOptionsDeprecated } from "~/types/dev";
 
 import { colorize } from "~/utils/colorize";
 import { applyVariant } from "~/utils/variants";
 
 export async function numberPrompt<T extends TSchema>(
-  options: PromptOptions<T>,
+  options: PromptOptionsDeprecated<T>,
 ): Promise<Static<T>> {
   const { state: initialState = "initial" } = options;
   const { state, setState, figure } = usePromptState(initialState);
@@ -20,7 +20,7 @@ export async function numberPrompt<T extends TSchema>(
     title,
     hint,
     validate,
-    default: defaultValue,
+    defaultValue,
     schema,
     titleColor,
     titleTypography,

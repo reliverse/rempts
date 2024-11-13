@@ -1,34 +1,33 @@
-import chalkAnimation from 'chalk-animation';
+import {colorMap} from './mapping.js';
 
-export function applyVariant(lines, variant, options) {
-    switch(variant) {
-    case 'animated':
-        return createAnimated(lines.join('\n'));
+const {isArray} = Array;
+const maybeArray = (a) => isArray(a) ? a : [a];
+
+export const variantMap = {
+    box: createBox,
+    doubleBox: createDoubleBox,
+    banner: createBanner,
+    underline: createUnderline,
+};
+export function applyVariant(lines, variant, options, borderColor) {
+    const linesArray = maybeArray(lines);
     
+    switch(variant) {
     case 'box':
-        return createBox(lines, options?.limit);
+        return createBox(linesArray, options?.limit);
     
     case 'doubleBox':
-        return createDoubleBox(lines, options?.limit);
+        return createDoubleBox(linesArray, options?.limit, borderColor);
     
     case 'banner':
-        return createBanner(lines);
+        return createBanner(linesArray);
     
     case 'underline':
-        return createUnderline(lines);
+        return createUnderline(linesArray);
     
     default:
-        return lines.join('\n');
+        return linesArray.join('\n');
     }
-}
-
-function createAnimated(text) {
-    const animation = chalkAnimation.rainbow(text);
-    
-    setTimeout(() => {
-        animation.stop();
-    }, 2e3);
-    return text;
 }
 
 function createBox(lines, limit) {
@@ -45,13 +44,23 @@ ${middle}
 ${bottomBorder}`;
 }
 
-function createDoubleBox(lines, limit) {
+function createDoubleBox(lines, limit, borderColor) {
     const processedLines = processLines(lines, limit);
     const maxLength = Math.max(...processedLines.map((line) => line.length));
-    const topBorder = `\u2554${'\u2550'.repeat(maxLength + 2)}\u2557`;
-    const bottomBorder = `\u255A${'\u2550'.repeat(maxLength + 2)}\u255D`;
+    const indentation = '';
+    
+    if (borderColor === void 0) {
+        borderColor = 'viceGradient';
+    }
+    
+    const topBorder = borderColor ? colorMap[borderColor](`${'\u2550'.repeat(maxLength)}\u2557`) : `${'\u2550'.repeat(maxLength)}\u2557`;
+    const bottomBorder = borderColor ? colorMap[borderColor](`${indentation}\u255A${'\u2550'.repeat(maxLength + 2)}\u255D`) : `${indentation}\u255A${'\u2550'.repeat(maxLength + 2)}\u255D`;
+    
     const middle = processedLines
-        .map((line) => `\u2551 ${line.padEnd(maxLength + 10)} \u2551`)
+        .map((line, index) => {
+        const lineIndentation = !index ? indentation : `${indentation}  `;
+        return `${lineIndentation}${borderColor ? colorMap[borderColor]('\u2551') : '\u2551'} ${colorMap[borderColor](line.padEnd(maxLength))} ${borderColor ? colorMap[borderColor]('\u2551') : '\u2551'}`;
+    })
         .join('\n');
     
     return `${topBorder}
@@ -76,7 +85,9 @@ ${'='.repeat(line.length)}`)
 }
 
 function processLines(lines, limit) {
-    return lines.map((line) => {
+    const linesArray = maybeArray(lines);
+    
+    return linesArray.map((line) => {
         let truncatedLine = line;
         
         if (limit && line.length > limit) {

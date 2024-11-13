@@ -1,5 +1,6 @@
 // examples/simple-check.ts: A very basic example to check the library.
 
+import { errorHandler } from "examples/helpers/error-handler";
 import { prompts } from "examples/reliverse/experiments/tests/main-merged";
 
 import { installDependencies } from "./state/utils/installDependencies";
@@ -30,16 +31,10 @@ async function main() {
     contentColor: "dim",
     contentVariant: "underline",
     contentTypography: "italic",
-    default: 50,
+    defaultValue: 50,
   });
 
   await installDependencies();
 }
 
-await main().catch((error) => {
-  console.error("│  An error occurred:\n", error.message);
-  console.error(
-    "└  Please report this issue at https://github.com/blefnk/reliverse/issues",
-  );
-  process.exit(1);
-});
+await main().catch((error) => errorHandler(error));

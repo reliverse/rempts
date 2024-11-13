@@ -1,11 +1,11 @@
 import { symbol } from "examples/reliverse/experiments/utils/symbols";
 
-import type { State } from "~/types";
+import type { StateDeprecated } from "~/types/dev";
 
 import { useEffect } from "./use-effect";
 import { useState } from "./use-state";
 
-export function useBar(state: State) {
+export function useBar(state: StateDeprecated) {
   const [bars, setBars] = useState<string>(symbol("S_BAR_H", state));
 
   useEffect(() => {

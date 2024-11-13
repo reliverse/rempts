@@ -1,14 +1,14 @@
 import type { TSchema } from "@sinclair/typebox";
 
+import type { PromptTypeDeprecated } from "~/types/dev";
 import type {
-  Choice,
+  ChoiceOptions,
   ColorName,
-  PromptType,
-  Typography,
+  TypographyName,
   Variant,
-} from "~/types";
+} from "~/types/prod";
 
-export type State =
+export type StateDeprecated =
   | "initial"
   | "active"
   | "completed"
@@ -17,23 +17,23 @@ export type State =
   | "error";
 
 export type PromptOptionsWithState<T extends TSchema = any> = {
-  type: PromptType;
+  type: PromptTypeDeprecated;
   id: string;
   title: string;
   stateCompletedTitle?: string;
   titleColor?: ColorName;
-  titleTypography?: Typography;
+  titleTypography?: TypographyName;
   titleVariant?: Variant;
   message?: string;
   msgColor?: ColorName;
-  msgTypography?: Typography;
+  msgTypography?: TypographyName;
   msgVariant?: Variant;
   hint?: string;
   validate?: (value: any) => boolean | string | Promise<boolean | string>;
   default?: any;
   defaultColor?: ColorName;
-  defaultTypography?: Typography;
-  choices?: Choice[];
+  defaultTypography?: TypographyName;
+  choices?: ChoiceOptions[];
   schema?: T;
   variantOptions?: {
     box?: {
@@ -42,5 +42,5 @@ export type PromptOptionsWithState<T extends TSchema = any> = {
   };
   repeatBarAfterStart?: number;
   action?: () => Promise<void>;
-  state?: State;
+  state?: StateDeprecated;
 };

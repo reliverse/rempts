@@ -3,59 +3,96 @@
 
 import { Type, type Static } from "@sinclair/typebox";
 import { version } from "~/../package.json";
+import { errorHandler } from "examples/helpers/error-handler";
 
-import { startPrompt, textPrompt } from "~/main";
+import type { OptionalPromptOptions } from "~/types/prod";
 
-async function main() {
+import { promptsAnimateText } from "~/components/animate";
+import { pressAnyKeyPrompt } from "~/components/any-key";
+import { promptsAsciiArt } from "~/components/ascii-art";
+import { promptsDisplayResults } from "~/components/results";
+import { endPrompt, startPrompt, textPrompt } from "~/main";
+
+const basicConfig = {
+  titleColor: "cyanBright",
+  titleTypography: "bold",
+  borderColor: "viceGradient",
+} satisfies OptionalPromptOptions;
+const extendedConfig = {
+  ...basicConfig,
+  contentTypography: "italic",
+  contentColor: "dim",
+} satisfies OptionalPromptOptions;
+
+await promptsAsciiArt({
+  message: "reliverse",
+});
+
+export async function installDeps() {
   await startPrompt({
     id: "start",
-    type: "start",
     title: `@reliverse/prompts v${version}`,
+    ...basicConfig,
     titleColor: "inverse",
-    titleTypography: "bold",
+    clearConsole: true,
   });
 
   const schema = Type.Object({
     username: Type.String({ minLength: 3, maxLength: 20 }),
+    dir: Type.String({ minLength: 1 }),
   });
   type UserInput = Static<typeof schema>;
 
-  const usernameResult = await textPrompt({
+  const username = await textPrompt({
     id: "username",
-    type: "text",
     title: "We're glad you decided to test our library!",
-    titleColor: "blue",
-    titleTypography: "bold",
-    content: "Let's get to know each other! What's your username?",
-    contentTypography: "italic",
-    contentColor: "dim",
+    content: "Let's get to know each other!\nWhat's your username?",
     schema: schema.properties.username,
+    ...extendedConfig,
   });
 
-  // const dir = await prompts({
-  //   id: "dir",
-  //   type: "text",
-  //   title: "Where should we create your project?",
-  //   default: "./sparkling-solid",
-  // });
-
-  // await prompts({
-  //   type: "end",
-  //   id: "end",
-  //   title: `Problems? ${colorize("https://github.com/blefnk/reliverse/prompts", "cyanBright")}`,
-  // });
+  const dir = await textPrompt({
+    id: "dir",
+    title: ` Great! Nice to meet you, ${username}!`,
+    content: "Where should we create your project?",
+    schema: schema.properties.dir,
+    ...extendedConfig,
+    titleVariant: "doubleBox",
+    defaultValue: "./prefilled-default-value",
+    hint: "Press <Enter> to use the default value.",
+  });
 
   const userInput: UserInput = {
-    username: usernameResult,
+    username,
+    dir,
   };
-  console.log(userInput);
-  process.exit(0);
+
+  await promptsAnimateText({
+    title: "🤯 By the way, you can even have animated messages!",
+    titleAnimated: `│  By the way, you can even have animated messages!`,
+    anim: "neon",
+    delay: 2000,
+    ...basicConfig,
+    titleColor: "passionGradient",
+    titleTypography: "bold",
+  });
+
+  await pressAnyKeyPrompt(`${username}, press any key to exit...`);
+
+  await endPrompt({
+    id: "end",
+    title: "👉 Learn more at https://docs.reliverse.org/prompts",
+    titleAnimated: `│  Learn more at https://docs.reliverse.org/prompts`,
+    titleAnimation: "glitch",
+    ...basicConfig,
+    titleColor: "retroGradient",
+    titleTypography: "bold",
+    titleAnimationDelay: 2000,
+  });
+
+  await promptsDisplayResults({
+    results: JSON.stringify(userInput, null, 2),
+  });
 }
 
-await main().catch((error) => {
-  console.error("│  An error occurred:\n", error.message);
-  console.error(
-    "└  Please report this issue at https://github.com/blefnk/reliverse/issues",
-  );
-  process.exit(1);
-});
+await installDeps().catch((error) => errorHandler(error));

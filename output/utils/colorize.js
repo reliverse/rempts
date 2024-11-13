@@ -1,4 +1,3 @@
-import figlet from 'figlet';
 import gradient, {
     cristal,
     mind,
@@ -134,7 +133,7 @@ export function colorize(result, colorName, typography) {
     ];
     
     if (gradientColors.includes(colorName ?? '') && typography)
-        throw TypeError('Cannot apply typography to gradient color');
+        throw Error(`[colorize] Cannot apply typography to gradient color.\n│  Use regular colorize()'s color or remove typography.`);
     
     if (!gradientColors.includes(colorName ?? '') && typography) {
         switch(typography) {
@@ -154,11 +153,10 @@ export function colorize(result, colorName, typography) {
             result = italic(result);
             break;
         
-        case 'figlet':
-            result = figlet.textSync(result);
-            break;
-        
-        default:
+        // case "figlet":
+//   result = figlet.textSync(result);
+//   break;
+default:
             break;
         }
     }
