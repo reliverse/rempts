@@ -1,11 +1,11 @@
 // @ts-nocheck
 
-'use strict';
+"use strict";
 
-const color = require('kleur');
-const { cursor } = require('sisteransi');
-const Prompt = require('./prompt');
-const { clear, figures, style, wrap, entriesToDisplay } = require('../util');
+const color = require("kleur");
+const { cursor } = require("sisteransi");
+const Prompt = require("./prompt");
+const { clear, figures, style, wrap, entriesToDisplay } = require("../util");
 
 /**
  * MultiselectPrompt Base Element
@@ -21,44 +21,43 @@ const { clear, figures, style, wrap, entriesToDisplay } = require('../util');
  * @param {Stream} [opts.stdout] The Writable stream to write readline data to
  */
 class MultiselectPrompt extends Prompt {
-  constructor(opts={}) {
+  constructor(opts = {}) {
     super(opts);
     this.msg = opts.message;
     this.cursor = opts.cursor || 0;
     this.scrollIndex = opts.cursor || 0;
-    this.hint = opts.hint || '';
-    this.warn = opts.warn || '- This option is disabled -';
+    this.hint = opts.hint || "";
+    this.warn = opts.warn || "- This option is disabled -";
     this.minSelected = opts.min;
     this.showMinError = false;
     this.maxChoices = opts.max;
     this.instructions = opts.instructions;
     this.optionsPerPage = opts.optionsPerPage || 10;
     this.value = opts.choices.map((ch, idx) => {
-      if (typeof ch === 'string')
-        ch = {title: ch, value: idx};
+      if (typeof ch === "string") ch = { title: ch, value: idx };
       return {
         title: ch && (ch.title || ch.value || ch),
         description: ch && ch.description,
         value: ch && (ch.value === undefined ? idx : ch.value),
         selected: ch && ch.selected,
-        disabled: ch && ch.disabled
+        disabled: ch && ch.disabled,
       };
     });
-    this.clear = clear('', this.out.columns);
+    this.clear = clear("", this.out.columns);
     if (!opts.overrideRender) {
       this.render();
     }
   }
 
   reset() {
-    this.value.map(v => !v.selected);
+    this.value.map((v) => !v.selected);
     this.cursor = 0;
     this.fire();
     this.render();
   }
 
   selected() {
-    return this.value.filter(v => v.selected);
+    return this.value.filter((v) => v.selected);
   }
 
   exit() {
@@ -69,13 +68,12 @@ class MultiselectPrompt extends Prompt {
     this.done = this.aborted = true;
     this.fire();
     this.render();
-    this.out.write('\n');
+    this.out.write("\n");
     this.close();
   }
 
   submit() {
-    const selected = this.value
-      .filter(e => e.selected);
+    const selected = this.value.filter((e) => e.selected);
     if (this.minSelected && selected.length < this.minSelected) {
       this.showMinError = true;
       this.render();
@@ -84,7 +82,7 @@ class MultiselectPrompt extends Prompt {
       this.aborted = false;
       this.fire();
       this.render();
-      this.out.write('\n');
+      this.out.write("\n");
       this.close();
     }
   }
@@ -127,7 +125,8 @@ class MultiselectPrompt extends Prompt {
   }
 
   right() {
-    if (this.value.filter(e => e.selected).length >= this.maxChoices) return this.bell();
+    if (this.value.filter((e) => e.selected).length >= this.maxChoices)
+      return this.bell();
     this.value[this.cursor].selected = true;
     this.render();
   }
@@ -138,7 +137,10 @@ class MultiselectPrompt extends Prompt {
     if (v.selected) {
       v.selected = false;
       this.render();
-    } else if (v.disabled || this.value.filter(e => e.selected).length >= this.maxChoices) {
+    } else if (
+      v.disabled ||
+      this.value.filter((e) => e.selected).length >= this.maxChoices
+    ) {
       return this.bell();
     } else {
       v.selected = true;
@@ -152,14 +154,16 @@ class MultiselectPrompt extends Prompt {
     }
 
     const newSelected = !this.value[this.cursor].selected;
-    this.value.filter(v => !v.disabled).forEach(v => v.selected = newSelected);
+    this.value
+      .filter((v) => !v.disabled)
+      .forEach((v) => (v.selected = newSelected));
     this.render();
   }
 
   _(c, key) {
-    if (c === ' ') {
+    if (c === " ") {
       this.handleSpaceToggle();
-    } else if (c === 'a') {
+    } else if (c === "a") {
       this.toggleAll();
     } else {
       return this.bell();
@@ -168,46 +172,67 @@ class MultiselectPrompt extends Prompt {
 
   renderInstructions() {
     if (this.instructions === undefined || this.instructions) {
-      if (typeof this.instructions === 'string') {
+      if (typeof this.instructions === "string") {
         return this.instructions;
       }
-      return '\nInstructions:\n'
-        + `    ${figures.arrowUp}/${figures.arrowDown}: Highlight option\n`
-        + `    ${figures.arrowLeft}/${figures.arrowRight}/[space]: Toggle selection\n`
-        + (this.maxChoices === undefined ? `    a: Toggle all\n` : '')
-        + `    enter/return: Complete answer`;
+      return (
+        "\nInstructions:\n" +
+        `    ${figures.arrowUp}/${figures.arrowDown}: Highlight option\n` +
+        `    ${figures.arrowLeft}/${figures.arrowRight}/[space]: Toggle selection\n` +
+        (this.maxChoices === undefined ? `    a: Toggle all\n` : "") +
+        `    enter/return: Complete answer`
+      );
     }
-    return '';
+    return "";
   }
 
   renderOption(cursor, v, i, arrowIndicator) {
-    const prefix = (v.selected ? color.green(figures.radioOn) : figures.radioOff) + ' ' + arrowIndicator + ' ';
+    const prefix =
+      (v.selected ? color.green(figures.radioOn) : figures.radioOff) +
+      " " +
+      arrowIndicator +
+      " ";
     let title, desc;
 
     if (v.disabled) {
-      title = cursor === i ? color.gray().underline(v.title) : color.strikethrough().gray(v.title);
+      title =
+        cursor === i
+          ? color.gray().underline(v.title)
+          : color.strikethrough().gray(v.title);
     } else {
       title = cursor === i ? color.cyan().underline(v.title) : v.title;
       if (cursor === i && v.description) {
         desc = ` - ${v.description}`;
-        if (prefix.length + title.length + desc.length >= this.out.columns
-          || v.description.split(/\r?\n/).length > 1) {
-          desc = '\n' + wrap(v.description, { margin: prefix.length, width: this.out.columns });
+        if (
+          prefix.length + title.length + desc.length >= this.out.columns ||
+          v.description.split(/\r?\n/).length > 1
+        ) {
+          desc =
+            "\n" +
+            wrap(v.description, {
+              margin: prefix.length,
+              width: this.out.columns,
+            });
         }
       }
     }
 
-    return prefix + title + color.gray(desc || '');
+    return prefix + title + color.gray(desc || "");
   }
 
   // shared with autocompleteMultiselect
   paginateOptions(options) {
     if (options.length === 0) {
-      return color.red('No matches for this query.');
+      return color.red("No matches for this query.");
     }
 
-    let { startIndex, endIndex } = entriesToDisplay(this.cursor, options.length, this.optionsPerPage);
-    let prefix, styledOptions = [];
+    let { startIndex, endIndex } = entriesToDisplay(
+      this.cursor,
+      options.length,
+      this.optionsPerPage,
+    );
+    let prefix,
+      styledOptions = [];
 
     for (let i = startIndex; i < endIndex; i++) {
       if (i === startIndex && startIndex > 0) {
@@ -215,28 +240,28 @@ class MultiselectPrompt extends Prompt {
       } else if (i === endIndex - 1 && endIndex < options.length) {
         prefix = figures.arrowDown;
       } else {
-        prefix = ' ';
+        prefix = " ";
       }
       styledOptions.push(this.renderOption(this.cursor, options[i], i, prefix));
     }
 
-    return '\n' + styledOptions.join('\n');
+    return "\n" + styledOptions.join("\n");
   }
 
-  // shared with autocomleteMultiselect
+  // shared with autocompleteMultiselect
   renderOptions(options) {
     if (!this.done) {
       return this.paginateOptions(options);
     }
-    return '';
+    return "";
   }
 
   renderDoneOrInstructions() {
     if (this.done) {
       return this.value
-        .filter(e => e.selected)
-        .map(v => v.title)
-        .join(', ');
+        .filter((e) => e.selected)
+        .map((v) => v.title)
+        .join(", ");
     }
 
     const output = [color.gray(this.hint), this.renderInstructions()];
@@ -244,7 +269,7 @@ class MultiselectPrompt extends Prompt {
     if (this.value[this.cursor].disabled) {
       output.push(color.yellow(this.warn));
     }
-    return output.join(' ');
+    return output.join(" ");
   }
 
   render() {
@@ -257,10 +282,12 @@ class MultiselectPrompt extends Prompt {
       style.symbol(this.done, this.aborted),
       color.bold(this.msg),
       style.delimiter(false),
-      this.renderDoneOrInstructions()
-    ].join(' ');
+      this.renderDoneOrInstructions(),
+    ].join(" ");
     if (this.showMinError) {
-      prompt += color.red(`You must select a minimum of ${this.minSelected} choices.`);
+      prompt += color.red(
+        `You must select a minimum of ${this.minSelected} choices.`,
+      );
       this.showMinError = false;
     }
     prompt += this.renderOptions(this.value);

@@ -2,7 +2,8 @@
 
 import { Type, type Static } from "@sinclair/typebox";
 import { errorHandler } from "examples/helpers/error-handler";
-import { prompts } from "examples/reliverse/experiments/tests/main-merged";
+
+import { prompts } from "~/components/all-in-one";
 
 import { installDependencies } from "./experiments/state/utils/installDependencies";
 

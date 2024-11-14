@@ -12,7 +12,6 @@ import { passwordPrompt } from "~/components/password";
 import { selectPrompt } from "~/components/select";
 import { startPrompt } from "~/components/start";
 import { textPrompt } from "~/components/text";
-export { createSpinner } from "~/components/spinner";
 
 export async function prompts<T extends TSchema>(
   options: PromptOptionsDeprecated<T>,

@@ -108,7 +108,7 @@ $.date = (args) => toPrompt("DatePrompt", args);
 $.confirm = (args) => toPrompt("ConfirmPrompt", args);
 
 /**
- * List prompt, split intput string by `seperator`
+ * List prompt, split input string by `separator`
  * @param {string} args.message Prompt message to display
  * @param {string} [args.initial] Default string value
  * @param {string} [args.style="default"] Render style ('default', 'password', 'invisible')

@@ -1,34 +1,35 @@
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-nocheck
-
-/* eslint-disable @typescript-eslint/no-floating-promises */
 
 import * as prompts from "../src/main.js";
 
+// Utility type to check if a property exists on a given type
 type HasProperty<T, K> = K extends keyof T ? true : false;
 
+// Prompt to input a number and double it
 (async () => {
   const response = await prompts({
     type: "number",
     name: "value",
-    message: "Input value to double:",
-    validate: (value: any) => (value < 0 ? `Cant be less than zero` : true),
+    message: "Input a value to double:",
+    validate: (value: any) => (value < 0 ? "Cannot be less than zero" : true),
   });
-  const HasPropValue: HasProperty<typeof response, "value"> = true;
-  const DoesntHavePropAsdf: HasProperty<typeof response, "asdf"> = false;
+  const hasValueProperty: HasProperty<typeof response, "value"> = true;
+  const withoutAsdfProperty: HasProperty<typeof response, "asdf"> = false;
 })();
 
+// Prompt for text input and conditional confirmation based on response
 (async () => {
   await prompts([
     {
       type: "text",
       name: "language",
-      message: "What langauge is the next greatest thing since sliced bread?",
+      message: "What language is the next greatest thing since sliced bread?",
     },
     {
       type: (prev, values) => {
-        const HasPromptName: HasProperty<typeof values, "language"> = true;
-        const DoesntHavePromptTypes: HasProperty<typeof values, "text"> = false;
+        const hasLanguageProperty: HasProperty<typeof values, "language"> =
+          true;
+        const withoutTextProperty: HasProperty<typeof values, "text"> = false;
 
         return prev === "javascript" ? "confirm" : null;
       },
@@ -37,175 +38,138 @@ type HasProperty<T, K> = K extends keyof T ? true : false;
     },
     {
       type: "select",
-      name: "so-many-options",
-      message: "options, options!!",
+      name: "options",
+      message: "Choose an option:",
       choices: [
-        {
-          title: "A",
-          value: "A",
-        },
-        {
-          title: "B",
-          value: { foo: "bar" },
-        },
-        {
-          title: "C",
-          value: "C",
-          disabled: false,
-          selected: false,
-          description: "a description",
-        },
+        { title: "Option A", value: "A" },
+        { title: "Option B", value: { foo: "bar" } },
+        { title: "Option C", value: "C", description: "This is a description" },
       ],
       warn: "Warning, option is disabled",
     },
     {
       type: "multiselect",
-      name: "choices",
-      message: `why don't we have both?`,
+      name: "multiChoices",
+      message: "Why not select multiple?",
       instructions: false,
       choices: [
-        {
-          value: "A",
-          title: "A",
-        },
-        {
-          value: "B",
-          title: "B",
-        },
+        { title: "Option A", value: "A" },
+        { title: "Option B", value: "B" },
       ],
       warn: "Warning, option is disabled",
     },
   ]);
 })();
 
+// Nested select prompts with dynamic choices
 (async () => {
   await prompts([
     {
       type: "select",
-      name: "choices",
+      name: "primaryChoice",
       instructions: false,
-      message: "options, options!!",
+      message: "Select a primary option:",
       choices: [
-        {
-          value: "A",
-          title: "A",
-        },
-        {
-          title: "B",
-        },
+        { title: "Option A", value: "A" },
+        { title: "Option B", value: "B" },
       ],
       warn: "Warning, option is disabled",
     },
     {
       type: "select",
-      name: "subchoices",
-      message: "optionception!",
-      choices: (prev) => {
-        return [
-          {
-            value: prev + "A",
-            title: prev + "A",
-          },
-          {
-            value: prev + "B",
-            title: prev + "B",
-          },
-        ];
-      },
+      name: "subChoice",
+      message: "Choose a sub-option:",
+      choices: (prev) => [
+        { title: `${prev} Sub-A`, value: `${prev}A` },
+        { title: `${prev} Sub-B`, value: `${prev}B` },
+      ],
     },
   ]);
 })();
 
-// test for PromptObject.initial
+// Testing PromptObject with various initial values
 (async () => {
   await prompts({
     type: "text",
-    name: "value",
-    message: "string",
-    initial: "string",
+    name: "textValue",
+    message: "Enter a string",
+    initial: "default text",
   });
 
   await prompts({
     type: "number",
-    name: "value",
-    message: "number",
+    name: "numberValue",
+    message: "Enter a number",
     initial: 0,
   });
 
   await prompts({
     type: "confirm",
-    name: "value",
-    message: "boolean",
+    name: "confirmValue",
+    message: "Confirm?",
     initial: true,
   });
 
   await prompts({
     type: "date",
-    name: "value",
-    message: "date",
+    name: "dateValue",
+    message: "Select a date",
     initial: new Date(),
   });
 
   await prompts({
     type: "text",
-    name: "value",
-    message: "function => string",
-    initial: () => "initial value",
+    name: "functionTextValue",
+    message: "Enter a string (function-based initial)",
+    initial: () => "default function value",
   });
 
   await prompts({
     type: "number",
-    name: "value",
-    message: "function => number",
+    name: "functionNumberValue",
+    message: "Enter a number (function-based initial)",
     initial: () => 1,
   });
 
   await prompts({
     type: "confirm",
-    name: "value",
-    message: "function => boolean",
+    name: "functionConfirmValue",
+    message: "Confirm? (function-based initial)",
     initial: () => true,
   });
 
   await prompts({
     type: "date",
-    name: "value",
-    message: "function => date",
-    initial: () => new Date(),
-  });
-
-  await prompts({
-    type: "date",
-    name: "value",
-    message: "function => date",
+    name: "functionDateValue",
+    message: "Select a date (function-based initial)",
     initial: () => new Date(),
   });
 
   await prompts({
     type: "text",
-    name: "value",
-    message: "async function => string",
-    initial: async () => "initial value",
+    name: "asyncTextValue",
+    message: "Enter a string (async function-based initial)",
+    initial: async () => "async initial value",
   });
 
   await prompts({
     type: "number",
-    name: "value",
-    message: "async function => number",
+    name: "asyncNumberValue",
+    message: "Enter a number (async function-based initial)",
     initial: async () => 1,
   });
 
   await prompts({
     type: "confirm",
-    name: "value",
-    message: "async function => boolean",
+    name: "asyncConfirmValue",
+    message: "Confirm? (async function-based initial)",
     initial: async () => true,
   });
 
   await prompts({
     type: "date",
-    name: "value",
-    message: "async function => date",
+    name: "asyncDateValue",
+    message: "Select a date (async function-based initial)",
     initial: async () => new Date(),
   });
 })();

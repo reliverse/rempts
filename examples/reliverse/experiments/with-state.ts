@@ -1,5 +1,4 @@
 import { errorHandler } from "examples/helpers/error-handler";
-import { prompts } from "examples/reliverse/experiments/tests/main-merged";
 import { symbol } from "examples/reliverse/experiments/utils/symbols";
 
 import type {
@@ -7,6 +6,7 @@ import type {
   SymbolCharacterDeprecated,
 } from "~/types/dev";
 
+import { prompts } from "~/components/all-in-one";
 import { colorize } from "~/utils/colorize";
 
 async function main() {

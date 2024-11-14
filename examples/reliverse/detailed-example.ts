@@ -1,15 +1,15 @@
-// examples/reliverse/install-deps.ts: An advanced example of a CLI application that installs dependencies.
-// Trying to create a drop-in replacement for @clack/prompts, unjs/consola, @inquirer/prompts, withastro/astro, etc.
+// examples/reliverse/detailed-example.ts: An advanced example of a CLI application with a beautiful UI.
+// This example demonstrates how we create a drop-in replacement for libraries like @inquirer/prompts.
 
 import { Type, type Static } from "@sinclair/typebox";
 import { version } from "~/../package.json";
 import { errorHandler } from "examples/helpers/error-handler";
+import { emojify } from "node-emoji";
 
 import type { OptionalPromptOptions } from "~/types/prod";
 
-import { promptsAnimateText } from "~/components/animate";
+import { animateText } from "~/components/animate";
 import { pressAnyKeyPrompt } from "~/components/any-key";
-import { promptsAsciiArt } from "~/components/ascii-art";
 import { promptsDisplayResults } from "~/components/results";
 import { endPrompt, startPrompt, textPrompt } from "~/main";
 
@@ -18,17 +18,14 @@ const basicConfig = {
   titleTypography: "bold",
   borderColor: "viceGradient",
 } satisfies OptionalPromptOptions;
+
 const extendedConfig = {
   ...basicConfig,
   contentTypography: "italic",
   contentColor: "dim",
 } satisfies OptionalPromptOptions;
 
-await promptsAsciiArt({
-  message: "reliverse",
-});
-
-export async function installDeps() {
+export async function detailedExample() {
   await startPrompt({
     id: "start",
     title: `@reliverse/prompts v${version}`,
@@ -41,11 +38,12 @@ export async function installDeps() {
     username: Type.String({ minLength: 3, maxLength: 20 }),
     dir: Type.String({ minLength: 1 }),
   });
+
   type UserInput = Static<typeof schema>;
 
   const username = await textPrompt({
     id: "username",
-    title: "We're glad you decided to test our library!",
+    title: "We're glad you're testing our interactive prompts library!",
     content: "Let's get to know each other!\nWhat's your username?",
     schema: schema.properties.username,
     ...extendedConfig,
@@ -53,7 +51,7 @@ export async function installDeps() {
 
   const dir = await textPrompt({
     id: "dir",
-    title: ` Great! Nice to meet you, ${username}!`,
+    title: `Great! Nice to meet you, ${username}!`,
     content: "Where should we create your project?",
     schema: schema.properties.dir,
     ...extendedConfig,
@@ -67,9 +65,10 @@ export async function installDeps() {
     dir,
   };
 
-  await promptsAnimateText({
-    title: "🤯 By the way, you can even have animated messages!",
-    titleAnimated: `│  By the way, you can even have animated messages!`,
+  await animateText({
+    title: emojify(
+      "ℹ  :exploding_head: Our library even supports animated messages and emojis!",
+    ),
     anim: "neon",
     delay: 2000,
     ...basicConfig,
@@ -81,8 +80,9 @@ export async function installDeps() {
 
   await endPrompt({
     id: "end",
-    title: "👉 Learn more at https://docs.reliverse.org/prompts",
-    titleAnimated: `│  Learn more at https://docs.reliverse.org/prompts`,
+    title: emojify(
+      "ℹ  :books: Learn the docs here: https://docs.reliverse.org/prompts",
+    ),
     titleAnimation: "glitch",
     ...basicConfig,
     titleColor: "retroGradient",
@@ -95,4 +95,4 @@ export async function installDeps() {
   });
 }
 
-await installDeps().catch((error) => errorHandler(error));
+await detailedExample().catch((error) => errorHandler(error));

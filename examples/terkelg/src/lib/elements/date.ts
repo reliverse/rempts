@@ -31,7 +31,7 @@ const regexGroups = {
   9: (opts) => new Milliseconds(opts), // Fractional seconds
 };
 
-const dfltLocales = {
+const defaultLocales = {
   months:
     "January,February,March,April,May,June,July,August,September,October,November,December".split(
       ",",
@@ -61,7 +61,7 @@ class DatePrompt extends Prompt {
     this.msg = opts.message;
     this.cursor = 0;
     this.typed = "";
-    this.locales = Object.assign(dfltLocales, opts.locales);
+    this.locales = Object.assign(defaultLocales, opts.locales);
     this._date = opts.initial || new Date();
     this.errorMsg = opts.error || "Please Enter A Valid Value";
     this.validator = opts.validate || (() => true);

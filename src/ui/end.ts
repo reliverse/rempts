@@ -1,16 +1,10 @@
 import type { PromptOptions } from "~/types/prod";
 
-import { promptsAnimateText } from "~/components/animate";
+import { animateText } from "~/components/animate";
 import { msg } from "~/utils/messages";
-
-type EndPromptOptions = PromptOptions & {
-  titleAnimation?: string;
-  titleAnimated?: string;
-};
 
 export async function endPrompt({
   title,
-  titleAnimated,
   titleColor,
   titleTypography,
   titleVariant,
@@ -18,16 +12,10 @@ export async function endPrompt({
   titleAnimationDelay,
   border = true,
   borderColor = "none",
-}: EndPromptOptions): Promise<void> {
+}: PromptOptions): Promise<void> {
   if (titleAnimation) {
-    if (!titleAnimated) {
-      throw new Error(
-        "[endPrompt] titleAnimated is required when titleAnimation is provided",
-      );
-    }
-    await promptsAnimateText({
+    await animateText({
       title,
-      titleAnimated,
       anim: titleAnimation,
       delay: titleAnimationDelay,
       type: "M_END_ANIMATED",

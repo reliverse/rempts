@@ -2,9 +2,9 @@ import type { InquirerReadline } from "examples/inquirer/src/type/inquirer";
 
 import { errorHandler } from "examples/helpers/error-handler";
 import { withHooks } from "examples/inquirer/src/hooks/hook-engine";
-import { prompts } from "examples/reliverse/experiments/tests/main-merged";
 import readline from "node:readline";
 
+import { prompts } from "~/components/all-in-one";
 import { colorize } from "~/utils/colorize";
 
 async function main() {

@@ -1,7 +1,8 @@
 // examples/simple-check.ts: A very basic example to check the library.
 
 import { errorHandler } from "examples/helpers/error-handler";
-import { prompts } from "examples/reliverse/experiments/tests/main-merged";
+
+import { prompts } from "~/components/all-in-one";
 
 import { installDependencies } from "./state/utils/installDependencies";
 

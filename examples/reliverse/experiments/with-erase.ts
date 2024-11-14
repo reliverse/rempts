@@ -1,11 +1,12 @@
 import { errorHandler } from "examples/helpers/error-handler";
-import { prompts } from "examples/reliverse/experiments/tests/main-merged";
 import { symbol } from "examples/reliverse/experiments/utils/symbols";
 
 import type {
   PromptStateDeprecated,
   SymbolCharacterDeprecated,
 } from "~/types/dev";
+
+import { prompts } from "~/components/all-in-one";
 
 async function main() {
   console.log();

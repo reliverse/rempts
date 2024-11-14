@@ -2,9 +2,9 @@ import { Type } from "@sinclair/typebox";
 import mockStdin from "mock-stdin";
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 
-import { prompts } from "./main-merged";
+import { prompts } from "~/components/all-in-one";
 
-// Helper function to delay execution (useful for simulating asynchronous input)
+// Helper function to delay execution to simulate asynchronous input
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 describe("prompts", () => {

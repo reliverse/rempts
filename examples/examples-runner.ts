@@ -22,7 +22,7 @@ async function examplesRunner() {
         title: "Install Dependencies",
         description: colorize("(recommended)", "viceGradient"),
         action: async () => {
-          await import("./reliverse/install-deps");
+          await import("./reliverse/detailed-example");
         },
       },
       {

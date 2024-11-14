@@ -1,10 +1,10 @@
 // examples/win-mln-js.ts: A fun example of a quiz game. Inspired by CLI-game created by Fireship.
 
 import { errorHandler } from "examples/helpers/error-handler";
-import { prompts } from "examples/reliverse/experiments/tests/main-merged";
 import figlet from "figlet";
 
-import { promptsAsciiArt } from "~/components/ascii-art";
+import { prompts } from "~/components/all-in-one";
+import { createAsciiArt } from "~/components/ascii-art";
 import { colorize } from "~/utils/colorize";
 
 import { handleAnswer } from "./state/utils/handleAnswer";
@@ -53,7 +53,7 @@ async function main() {
 
   const message = `Congrats !\n $ 1 , 0 0 0 , 0 0 0`;
 
-  await promptsAsciiArt({
+  await createAsciiArt({
     message,
     font: "Standard",
   });

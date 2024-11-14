@@ -30,9 +30,15 @@ export async function textPrompt<T extends TSchema>(
 
   const rl = readline.createInterface({ input, output });
 
+  let userTitle = title;
+
+  if (titleVariant) {
+    userTitle = ` ${title}`;
+  }
+
   const question = fmt({
     type: "M_GENERAL",
-    title,
+    title: userTitle,
     titleColor,
     titleTypography,
     titleVariant,

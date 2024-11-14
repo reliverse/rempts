@@ -26,7 +26,7 @@ function calculateDelay(text: string): number {
   return baseDelay + text.length * delayPerCharacter;
 }
 
-export async function promptsAnimateText({
+export async function animateText({
   title,
   anim,
   delay,
@@ -35,7 +35,6 @@ export async function promptsAnimateText({
   titleTypography,
   border = true,
   borderColor,
-  titleAnimated,
 }: {
   title: string;
   anim: AnimationName;
@@ -45,18 +44,27 @@ export async function promptsAnimateText({
   titleTypography?: TypographyName;
   borderColor?: ColorName;
   border?: boolean;
-  titleAnimated: string;
 }) {
-  const finalDelay = delay ?? calculateDelay(titleAnimated);
-  const animation = animationMap[anim](titleAnimated);
+  const finalDelay = delay ?? calculateDelay(title);
+  const animation = animationMap[anim](title);
 
   await new Promise<void>((resolve) => {
     setTimeout(() => {
       animation.stop();
       deleteLastLine();
+
+      if (title.includes("│  ")) {
+        title = title.replace("│  ", "");
+      } else if (title.includes("ℹ  ")) {
+        title = title.replace("ℹ  ", "");
+      }
+      // if (title.includes(":")) {
+      //   title = emojify(title);
+      // }
+
       msg({
         type,
-        title: title,
+        title,
         titleColor,
         titleTypography,
         borderColor,

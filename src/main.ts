@@ -1,11 +1,14 @@
+export { animateText } from "~/components/animate";
+export { createAsciiArt } from "~/components/ascii-art";
+export { createSpinner } from "~/components/spinner";
 export { startPrompt } from "~/components/start";
 export { textPrompt } from "~/components/text";
+export { selectPrompt } from "~/components/select";
 export { confirmPrompt } from "~/components/confirm";
 export { datePrompt } from "~/components/date";
-export { endPrompt } from "~/components/end";
 export { multiselectPrompt } from "~/components/multi-select";
 export { nextStepsPrompt } from "~/components/next-steps";
 export { numberPrompt } from "~/components/number";
 export { passwordPrompt } from "~/components/password";
-export { selectPrompt } from "~/components/select";
-export { createSpinner } from "~/components/spinner";
+export { endPrompt } from "~/components/end";
+export { prompts } from "~/components/all-in-one";

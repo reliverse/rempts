@@ -108,7 +108,6 @@ export type OptionalPromptOptions<T extends TSchema = any> = {
   border?: boolean;
   borderColor?: ColorName;
   clearConsole?: boolean;
-  titleAnimated?: string;
 };
 
 export type PromptOptions<T extends TSchema = any> = RequiredPromptOptions &
