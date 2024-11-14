@@ -5,21 +5,27 @@ import { colorize } from "~/utils/colorize";
 
 import { errorHandler } from "./helpers/error-handler";
 
+const selectPromptConfig = {
+  description: colorize("(not finished)", "red"),
+  titleTypography: "bold",
+} satisfies ChoiceOptionalOptions;
+
 async function examplesRunner() {
-  const selectPromptConfig = {
-    description: colorize("(not finished)", "red"),
-    titleTypography: "bold",
-  } satisfies ChoiceOptionalOptions;
+  console.clear();
 
   const exampleToRun = await selectPrompt({
     id: "start",
     title: "Choose an example to run",
+    content: colorize(
+      "Use arrow keys to navigate or just press the corresponding number",
+      "dim",
+    ),
     titleColor: "green",
     titleTypography: "bold",
     choices: [
       {
         id: "install-deps",
-        title: "Install Dependencies",
+        title: "1. Install Dependencies",
         description: colorize("(recommended)", "viceGradient"),
         action: async () => {
           await import("./reliverse/detailed-example");
@@ -27,7 +33,7 @@ async function examplesRunner() {
       },
       {
         id: "user-signup",
-        title: "User Signup",
+        title: "2. User Signup",
         ...selectPromptConfig,
         action: async () => {
           await import("./reliverse/user-signup");
@@ -35,7 +41,7 @@ async function examplesRunner() {
       },
       {
         id: "simple-check",
-        title: "Simple Library Check",
+        title: "3. Simple Library Check",
         ...selectPromptConfig,
         action: async () => {
           await import("./reliverse/experiments/simple-check");
@@ -43,7 +49,7 @@ async function examplesRunner() {
       },
       {
         id: "win-mln-js",
-        title: "Who Wants To Be A JavaScript Millionaire?",
+        title: "4. Who Wants To Be A JavaScript Millionaire?",
         ...selectPromptConfig,
         action: async () => {
           await import("./reliverse/experiments/win-mln-js");
@@ -51,7 +57,8 @@ async function examplesRunner() {
       },
       {
         id: "exit",
-        title: "Exit (Ctrl+C)",
+        title: "5. Exit",
+        description: colorize("(Ctrl+C)", "passionGradient"),
       },
     ],
   });

@@ -58,9 +58,6 @@ export async function animateText({
       } else if (title.includes("ℹ  ")) {
         title = title.replace("ℹ  ", "");
       }
-      // if (title.includes(":")) {
-      //   title = emojify(title);
-      // }
 
       msg({
         type,

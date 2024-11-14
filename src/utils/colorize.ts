@@ -133,9 +133,6 @@ export function colorize(
       case "italic":
         result = italic(result);
         break;
-      // case "figlet":
-      //   result = figlet.textSync(result);
-      //   break;
       default:
         break;
     }

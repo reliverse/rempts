@@ -3,8 +3,10 @@
 
 import { Type, type Static } from "@sinclair/typebox";
 import { version } from "~/../package.json";
+import { detect } from "detect-package-manager";
 import { errorHandler } from "examples/helpers/error-handler";
 import { emojify } from "node-emoji";
+import { underline } from "picocolors";
 
 import type { OptionalPromptOptions } from "~/types/prod";
 
@@ -65,6 +67,14 @@ export async function detailedExample() {
     dir,
   };
 
+  const pm = await detect();
+  let notification = underline(`${username}, press any key to continue...`);
+  if (pm === "bun") {
+    notification += `\n\nDid you know? Bun currently may crash if you press Enter while setTimeout\nis running. So please avoid doing that in the prompts after this one! 😅`;
+  }
+
+  await pressAnyKeyPrompt(notification);
+
   await animateText({
     title: emojify(
       "ℹ  :exploding_head: Our library even supports animated messages and emojis!",
@@ -75,8 +85,6 @@ export async function detailedExample() {
     titleColor: "passionGradient",
     titleTypography: "bold",
   });
-
-  await pressAnyKeyPrompt(`${username}, press any key to exit...`);
 
   await endPrompt({
     id: "end",
