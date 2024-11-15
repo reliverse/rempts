@@ -30,7 +30,7 @@
       "dist/",
       "output/",
       "examples/terkelg/**/*.ts",
-      "examples/cronvel/**/*.js"
+      "examples/cronvel/**/*.ts"
     ],
     "rules": {
       "recommended": true,
