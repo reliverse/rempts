@@ -1,8 +1,8 @@
-#!/usr/bin/env node
+// @ts-nocheck
 
 var fs = require("fs");
 
-var termkit = require("../lib/termkit.js");
+var termkit = require("../lib/termkit");
 var term;
 var ScreenBuffer = termkit.ScreenBuffer;
 

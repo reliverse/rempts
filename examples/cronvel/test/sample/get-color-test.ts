@@ -1,6 +1,6 @@
-#!/usr/bin/env node
+// @ts-nocheck
 
-require("../lib/termkit.js").getDetectedTerminal(function (error, term) {
+require("../../src/termkit").getDetectedTerminal(function (error, term) {
   var terminating = false;
 
   function terminate() {

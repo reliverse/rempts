@@ -1,4 +1,6 @@
-const fromOutputSequence = require("./fromOutputSequence.js");
+// @ts-nocheck
+
+const fromOutputSequence = require("./fromOutputSequence");
 const string = require("string-kit");
 const NextGenEvents = require("nextgen-events");
 const Promise = require("seventh");

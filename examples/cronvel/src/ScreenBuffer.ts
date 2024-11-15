@@ -1,4 +1,6 @@
-const misc = require("./misc.js");
+// @ts-nocheck
+
+const misc = require("./misc");
 
 const fs = require("fs");
 const string = require("string-kit");
@@ -62,7 +64,7 @@ ScreenBuffer.prototype.bitsPerColor = 8;
 // Backward compatibility
 ScreenBuffer.create = (...args) => new ScreenBuffer(...args);
 
-const termkit = require("./termkit.js");
+const termkit = require("./termkit");
 const Rect = termkit.Rect;
 
 /*

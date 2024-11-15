@@ -1,7 +1,9 @@
+// @ts-nocheck
+
 const NextGenEvents = require("nextgen-events");
 const Promise = require("seventh");
 const string = require("string-kit");
-const autoComplete = require("./autoComplete.js");
+const autoComplete = require("./autoComplete");
 
 const defaultKeyBindings = {
   ENTER: "submit",

@@ -1,7 +1,7 @@
-#!/usr/bin/env node
+// @ts-nocheck
 
 //console.error( "\n\n\n\n\n\n\n\n" ) ;
-const termkit = require("../../lib/termkit.js");
+const termkit = require("../../../src/termkit");
 const term = termkit.terminal;
 
 term.clear();

@@ -1,7 +1,9 @@
+// @ts-nocheck
+
 const tree = require("tree-kit");
 const string = require("string-kit");
-const xterm = require("./xterm.js");
-const gpm = require("../gpm.js");
+const xterm = require("./xterm");
+const gpm = require("../gpm");
 
 // shortcuts
 const bold = "\x1b[1m";

@@ -1,5 +1,7 @@
+// @ts-nocheck
+
 const tree = require("tree-kit");
-const xterm256 = require("./xterm-256color.js");
+const xterm256 = require("./xterm-256color");
 
 const esc = tree.extend(null, Object.create(xterm256.esc), {
   // Not supported...

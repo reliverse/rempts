@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 // Characters that are hard to type
 // Comments explain how to type it on a linux platform, using a fr layout keyboard
 

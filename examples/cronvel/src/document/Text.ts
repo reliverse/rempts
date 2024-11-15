@@ -1,4 +1,6 @@
-const Element = require("./Element.js");
+// @ts-nocheck
+
+const Element = require("./Element");
 
 function Text(options) {
   // Clone options if necessary

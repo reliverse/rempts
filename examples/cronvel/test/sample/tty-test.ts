@@ -1,9 +1,9 @@
-#!/usr/bin/env node
+// @ts-nocheck
 
 /* jshint unused:false */
 /* global describe, it, before, after */
 
-var termkit = require("../lib/termkit.js");
+var termkit = require("../../src/termkit");
 var term = termkit.terminal;
 var realTerm;
 

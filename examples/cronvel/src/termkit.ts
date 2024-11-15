@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 /*
 	Terminal Kit
 
@@ -28,10 +30,10 @@ const path = require("path");
 
 if (
   process.browser ||
-  require.cache[path.join(__dirname, "termkit-no-lazy-require.js")]
+  require.cache[path.join(__dirname, "termkit-no-lazy-require")]
 ) {
-  console.log("using termkit-no-lazy-require.js");
-  module.exports = require("./termkit-no-lazy-require.js");
+  console.log("using termkit-no-lazy-require");
+  module.exports = require("./termkit-no-lazy-require");
   process.exit();
 }
 
@@ -43,7 +45,7 @@ const lazy = require("lazyness")(require);
 // Global config
 termkit.globalConfig = {};
 
-lazy.requireProperty(termkit, "tty", "./tty.js");
+lazy.requireProperty(termkit, "tty", "./tty");
 
 // For some reason, starting from node v4, once process.stdin getter is triggered, the 'tty' command would not work properly.
 // This 'hack' cache the result of the command 'tty' if we are in the linux console, so 'gpm' can work.
@@ -52,58 +54,58 @@ if (process.env.TERM === "linux") {
 }
 
 // Core submodules
-Object.assign(termkit, require("./misc.js"));
-Object.assign(termkit, require("./detectTerminal.js"));
+Object.assign(termkit, require("./misc"));
+Object.assign(termkit, require("./detectTerminal"));
 
-termkit.Terminal = require("./Terminal.js");
+termkit.Terminal = require("./Terminal");
 termkit.createTerminal = termkit.Terminal.create;
 
 // Windows patches
 if (process.platform === "win32") {
-  require("./windows.js")(termkit);
+  require("./windows")(termkit);
 }
 
 // Lazy submodules
 lazy.requireProperties(termkit, {
-  image: "./image.js",
-  Palette: "./Palette.js",
-  Rect: "./Rect.js",
-  ScreenBuffer: "./ScreenBuffer.js",
-  ScreenBufferHD: "./ScreenBufferHD.js",
-  TextBuffer: "./TextBuffer.js",
-  Vte: "./vte/Vte.js",
-  autoComplete: "./autoComplete.js",
-  spChars: "./spChars.js",
+  image: "./image",
+  Palette: "./Palette",
+  Rect: "./Rect",
+  ScreenBuffer: "./ScreenBuffer",
+  ScreenBufferHD: "./ScreenBufferHD",
+  TextBuffer: "./TextBuffer",
+  Vte: "./vte/Vte",
+  autoComplete: "./autoComplete",
+  spChars: "./spChars",
 
   // Document model
-  Element: "./document/Element.js",
-  Document: "./document/Document.js",
-  Container: "./document/Container.js",
-  Text: "./document/Text.js",
-  AnimatedText: "./document/AnimatedText.js",
-  Button: "./document/Button.js",
-  ToggleButton: "./document/ToggleButton.js",
-  TextBox: "./document/TextBox.js",
-  EditableTextBox: "./document/EditableTextBox.js",
-  Slider: "./document/Slider.js",
-  Bar: "./document/Bar.js",
-  LabeledInput: "./document/LabeledInput.js",
-  InlineInput: "./document/InlineInput.js",
-  InlineFileInput: "./document/InlineFileInput.js",
-  InlineMenu: "./document/InlineMenu.js",
-  Inspector: "./document/Inspector.js",
-  Form: "./document/Form.js",
-  RowMenu: "./document/RowMenu.js",
-  ColumnMenu: "./document/ColumnMenu.js",
-  ColumnMenuMulti: "./document/ColumnMenuMulti.js",
-  ColumnMenuMixed: "./document/ColumnMenuMixed.js",
-  SelectList: "./document/SelectList.js",
-  SelectListMulti: "./document/SelectListMulti.js",
-  DropDownMenu: "./document/DropDownMenu.js",
-  TextTable: "./document/TextTable.js",
-  Layout: "./document/Layout.js",
-  Border: "./document/Border.js",
-  Window: "./document/Window.js",
+  Element: "./document/Element",
+  Document: "./document/Document",
+  Container: "./document/Container",
+  Text: "./document/Text",
+  AnimatedText: "./document/AnimatedText",
+  Button: "./document/Button",
+  ToggleButton: "./document/ToggleButton",
+  TextBox: "./document/TextBox",
+  EditableTextBox: "./document/EditableTextBox",
+  Slider: "./document/Slider",
+  Bar: "./document/Bar",
+  LabeledInput: "./document/LabeledInput",
+  InlineInput: "./document/InlineInput",
+  InlineFileInput: "./document/InlineFileInput",
+  InlineMenu: "./document/InlineMenu",
+  Inspector: "./document/Inspector",
+  Form: "./document/Form",
+  RowMenu: "./document/RowMenu",
+  ColumnMenu: "./document/ColumnMenu",
+  ColumnMenuMulti: "./document/ColumnMenuMulti",
+  ColumnMenuMixed: "./document/ColumnMenuMixed",
+  SelectList: "./document/SelectList",
+  SelectListMulti: "./document/SelectListMulti",
+  DropDownMenu: "./document/DropDownMenu",
+  TextTable: "./document/TextTable",
+  Layout: "./document/Layout",
+  Border: "./document/Border",
+  Window: "./document/Window",
 
   // External modules
   chroma: "chroma-js",

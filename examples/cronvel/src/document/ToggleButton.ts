@@ -1,6 +1,8 @@
-const Element = require("./Element.js");
-const Text = require("./Text.js");
-const Button = require("./Button.js");
+// @ts-nocheck
+
+const Element = require("./Element");
+const Text = require("./Text");
+const Button = require("./Button");
 
 function ToggleButton(options) {
   // Clone options if necessary

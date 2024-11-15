@@ -1,5 +1,7 @@
+// @ts-nocheck
+
 const tree = require("tree-kit");
-const xterm = require("./xterm.js");
+const xterm = require("./xterm");
 const string = require("string-kit");
 
 // Remove colors

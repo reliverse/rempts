@@ -1,5 +1,7 @@
-const Element = require("./Element.js");
-const Container = require("./Container.js");
+// @ts-nocheck
+
+const Element = require("./Element");
+const Container = require("./Container");
 
 const Promise = require("seventh");
 

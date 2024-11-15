@@ -1,9 +1,9 @@
-#!/usr/bin/env node
+// @ts-nocheck
 
 /* jshint unused:false */
 
 var fs = require("fs");
-var termkit = require("../lib/termkit.js");
+var termkit = require("../../src/termkit");
 
 termkit.getDetectedTerminal(function (error, term) {
   var autoCompleter = function autoCompleter(inputString, callback) {

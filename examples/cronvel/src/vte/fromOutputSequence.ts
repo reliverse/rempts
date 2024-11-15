@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 // Control char (not escape sequence)
 exports.control = {
   "\\x07": { event: "bell" },

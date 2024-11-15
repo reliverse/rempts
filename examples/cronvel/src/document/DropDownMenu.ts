@@ -1,7 +1,9 @@
-const Element = require("./Element.js");
-const ToggleButton = require("./ToggleButton.js");
-const RowMenu = require("./RowMenu.js");
-const ColumnMenuMixed = require("./ColumnMenuMixed.js");
+// @ts-nocheck
+
+const Element = require("./Element");
+const ToggleButton = require("./ToggleButton");
+const RowMenu = require("./RowMenu");
+const ColumnMenuMixed = require("./ColumnMenuMixed");
 
 function DropDownMenu(options) {
   // Clone options if necessary

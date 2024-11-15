@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 /*
 	Ideally, this should be done using a graph algorithm, but we will just brute-force it for instance...
 */

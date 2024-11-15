@@ -1,6 +1,8 @@
-const Element = require("./Element.js");
-const TextBox = require("./TextBox.js");
-const boxesChars = require("../spChars.js").box;
+// @ts-nocheck
+
+const Element = require("./Element");
+const TextBox = require("./TextBox");
+const boxesChars = require("../spChars").box;
 
 function TextTable(options) {
   // Clone options if necessary

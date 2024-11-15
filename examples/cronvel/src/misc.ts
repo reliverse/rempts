@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 const string = require("string-kit");
 
 const colorNameToIndexDict = {

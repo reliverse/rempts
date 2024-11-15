@@ -1,8 +1,10 @@
-const Element = require("./Element.js");
-const Text = require("./Text.js");
-const Button = require("./Button.js");
-const RowMenu = require("./RowMenu.js");
-const ColumnMenu = require("./ColumnMenu.js");
+// @ts-nocheck
+
+const Element = require("./Element");
+const Text = require("./Text");
+const Button = require("./Button");
+const RowMenu = require("./RowMenu");
+const ColumnMenu = require("./ColumnMenu");
 
 const string = require("string-kit");
 

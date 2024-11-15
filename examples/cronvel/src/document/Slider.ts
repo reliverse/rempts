@@ -1,5 +1,7 @@
-const Element = require("./Element.js");
-const Button = require("./Button.js");
+// @ts-nocheck
+
+const Element = require("./Element");
+const Button = require("./Button");
 
 // Default transfer function
 const IDENTITY = (v) => v;

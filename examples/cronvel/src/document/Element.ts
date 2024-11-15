@@ -1,9 +1,11 @@
-const misc = require("../misc.js");
+// @ts-nocheck
+
+const misc = require("../misc");
 const string = require("string-kit");
 const NextGenEvents = require("nextgen-events");
 
 // Avoid requiring Document at top-level, it could cause circular require troubles
-//const Document = require( './Document.js' ) ;
+//const Document = require( './Document' ) ;
 
 var autoId = 0;
 
@@ -133,7 +135,7 @@ Element.prototype = Object.create(NextGenEvents.prototype);
 Element.prototype.constructor = Element;
 Element.prototype.elementType = "Element";
 
-const termkit = require("../termkit.js");
+const termkit = require("../termkit");
 
 // Destroy the element and all its children, detaching them and removing listeners
 Element.prototype.destroy = function (isSubDestroy = false, noDraw = false) {

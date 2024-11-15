@@ -1,5 +1,7 @@
-const ScreenBuffer = require("./ScreenBuffer.js");
-const misc = require("./misc.js");
+// @ts-nocheck
+
+const ScreenBuffer = require("./ScreenBuffer");
+const misc = require("./misc");
 
 const fs = require("fs");
 const string = require("string-kit");
@@ -22,7 +24,7 @@ function ScreenBufferHD(options = {}) {
 
 module.exports = ScreenBufferHD;
 
-const termkit = require("./termkit.js");
+const termkit = require("./termkit");
 
 ScreenBufferHD.prototype = Object.create(ScreenBuffer.prototype);
 ScreenBufferHD.prototype.constructor = ScreenBufferHD;

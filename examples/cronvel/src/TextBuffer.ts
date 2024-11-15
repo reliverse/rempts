@@ -1,4 +1,6 @@
-const misc = require("./misc.js");
+// @ts-nocheck
+
+const misc = require("./misc");
 
 const fs = require("fs");
 const string = require("string-kit");
@@ -84,7 +86,7 @@ function Cell(char = " ", special = 1, attr = null, misc_ = null) {
 
 TextBuffer.Cell = Cell;
 
-const termkit = require("./termkit.js");
+const termkit = require("./termkit");
 
 TextBuffer.prototype.getText = function () {
   return this.buffer.map((line) => string.unicode.fromCells(line)).join("");

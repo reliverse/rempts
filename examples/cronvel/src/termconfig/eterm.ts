@@ -1,5 +1,7 @@
+// @ts-nocheck
+
 const tree = require("tree-kit");
-const xterm = require("./xterm.js");
+const xterm = require("./xterm");
 
 const bold = "\x1b[1m";
 const noBold = "\x1b[22m";

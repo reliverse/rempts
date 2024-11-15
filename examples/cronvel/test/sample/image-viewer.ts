@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+// @ts-nocheck
 /*
 	Terminal Kit
 
@@ -26,7 +26,7 @@
 */
 
 const termkit = require("..");
-//const termkit = require( '../lib/termkit-no-lazy-require.js' ) ;
+//const termkit = require( '../lib/termkit-no-lazy-require' ) ;
 const term = termkit.terminal;
 const path = require("path");
 

@@ -1,8 +1,8 @@
-#!/usr/bin/env node
+// @ts-nocheck
 
 /* jshint unused:false */
 
-require("../lib/termkit.js").getDetectedTerminal((error, term) => {
+require("../../src/termkit").getDetectedTerminal((error, term) => {
   var progress;
   var progressBar;
 

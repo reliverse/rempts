@@ -1,7 +1,7 @@
 /// <reference types="node" />
 import type { Duplex } from "node:stream";
 /**
- * `InquirerReadline` is a re-implementation of `readline.Interface` from Node.js.
+ * `InquirerReadline` is a re-implementation of `readline.Interface` from Node.
  * It is reimplemented because of 3 reasons:
  * 1. The `readline.Interface` API is not complete; it's missing for example `clearLine`.
  * 2. The input/output streams are not generics, meaning they're inexact.

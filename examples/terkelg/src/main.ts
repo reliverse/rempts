@@ -1,2 +1,2 @@
-import prompts from "./lib/index.js";
+import prompts from "./lib/index";
 export default prompts;

@@ -1,7 +1,7 @@
-#!/usr/bin/env node
+// @ts-nocheck
 
 const string = require("string-kit");
-const term = require("../lib/termkit.js").terminal;
+const term = require("../../src/termkit").terminal;
 const Promise = require("seventh");
 
 async function test() {

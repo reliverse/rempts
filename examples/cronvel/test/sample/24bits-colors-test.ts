@@ -1,10 +1,10 @@
-#!/usr/bin/env node
+// @ts-nocheck
 
 /* jshint unused:false */
 
-require("../lib/termkit.js").getDetectedTerminal(function (error, term) {
+require("../../src/termkit").getDetectedTerminal(function (error, term) {
   /*
-	var term = require( '../lib/termkit.js' ).terminal ;
+	var term = require( '../lib/termkit' ).terminal ;
 	term( 'Terminal name: %s\n' , term.appName ) ;
 	term( 'Terminal app ID: %s\n' , term.appId ) ;
 	term( 'Generic terminal: %s\n' , term.generic ) ;

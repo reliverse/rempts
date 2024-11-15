@@ -1,5 +1,7 @@
-const Element = require("./Element.js");
-const builtinBarChars = require("../spChars.js").bar;
+// @ts-nocheck
+
+const Element = require("./Element");
+const builtinBarChars = require("../spChars").bar;
 
 function Bar(options) {
   // Clone options if necessary

@@ -1,23 +1,26 @@
 <!doctype html>
 <html>
-  <head>
-    <title>Consola</title>
-  </head>
-  <body>
-    Open developer tools to see the magic!
-    <script src="../dist/consola.browser.js"></script>
-    <script>
-      consola.level = 5;
 
-      consola.wrapAll();
+<head>
+  <title>Consola</title>
+</head>
 
-      for (let type of Object.keys(consola.options.types).sort()) {
-        consola[type]("Open developer tools to see the magic!");
-      }
+<body>
+  Open developer tools to see the magic!
+  <script src="../dist/consola.browser"></script>
+  <script>
+    consola.level = 5;
 
-      consola.withTag("customTag").info("Im from custom world!");
+    consola.wrapAll();
 
-      consola.error(new Error("Whoo Haha"));
-    </script>
-  </body>
+    for (let type of Object.keys(consola.options.types).sort()) {
+      consola[type]("Open developer tools to see the magic!");
+    }
+
+    consola.withTag("customTag").info("Im from custom world!");
+
+    consola.error(new Error("Whoo Haha"));
+  </script>
+</body>
+
 </html>

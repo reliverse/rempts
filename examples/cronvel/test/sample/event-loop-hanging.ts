@@ -1,9 +1,9 @@
-#!/usr/bin/env node
+// @ts-nocheck
 
 /* jshint unused:false */
 /* global describe, it, before, after */
 
-var term = require("../lib/termkit.js").terminal;
+var term = require("../../src/termkit").terminal;
 
 // Looks like it's not possible to ref() again stdin, so it's a no-go:
 // program will keep hanging if they have used stdin even once

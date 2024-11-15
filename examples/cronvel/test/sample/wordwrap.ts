@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+// @ts-nocheck
 
 var term = require("..").terminal;
 

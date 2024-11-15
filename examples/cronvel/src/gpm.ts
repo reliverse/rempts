@@ -1,10 +1,12 @@
+// @ts-nocheck
+
 /*
 	This module try to stay close to the original GPM lib written in C.
 */
 
 const net = require("net");
 const NextGenEvents = require("nextgen-events");
-const termkit = require("./termkit.js");
+const termkit = require("./termkit");
 
 const gpm = {};
 module.exports = gpm;

@@ -1,7 +1,9 @@
+// @ts-nocheck
+
 const Promise = require("seventh");
 const string = require("string-kit");
 
-require("./patches.js");
+require("./patches");
 const execAsync = require("child_process").execAsync;
 const execFileAsync = require("child_process").execFileAsync;
 const spawn = require("child_process").spawn;

@@ -1,6 +1,8 @@
+// @ts-nocheck
+
 const tree = require("tree-kit");
-const xterm256 = require("./xterm-256color.js");
-const gnome = require("./gnome.js");
+const xterm256 = require("./xterm-256color");
+const gnome = require("./gnome");
 
 // Remove colors
 const defaultColor = "\x1b[39m"; // back to the default color, most of time it is the same than .white

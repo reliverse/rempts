@@ -1,6 +1,6 @@
-#!/usr/bin/env node
+// @ts-nocheck
 
-const termkit = require("../../lib/termkit.js");
+const termkit = require("../../../src/termkit");
 const term = termkit.terminal;
 
 term.clear();
@@ -20,7 +20,7 @@ try {
   var StateMachine = require("text-machine");
 
   var stateMachine = new StateMachine({
-    program: require("text-machine/languages/javascript.js"),
+    program: require("text-machine/languages/javascript"),
     api: termkit.TextBuffer.TextMachineApi,
   });
 } catch (error) {

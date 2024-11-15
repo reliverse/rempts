@@ -1,7 +1,9 @@
-const Element = require("./Element.js");
-const BaseMenu = require("./BaseMenu.js");
-const ColumnMenuMulti = require("./ColumnMenuMulti.js");
-const Button = require("./Button.js");
+// @ts-nocheck
+
+const Element = require("./Element");
+const BaseMenu = require("./BaseMenu");
+const ColumnMenuMulti = require("./ColumnMenuMulti");
+const Button = require("./Button");
 
 // Inherit from ColumnMenuMulti for common methods
 

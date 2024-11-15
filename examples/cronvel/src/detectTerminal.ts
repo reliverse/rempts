@@ -1,9 +1,11 @@
+// @ts-nocheck
+
 const Promise = require("seventh");
 const exec = require("child_process").exec;
 const path = require("path");
 const os = require("os");
 
-const termkit = require("./termkit.js");
+const termkit = require("./termkit");
 
 // Try to guess the terminal without any async system call, using TERM and COLORTERM.
 // Argument 'unpipe' is used when we will get a TTY even if we haven't one ATM.
@@ -250,7 +252,7 @@ exports.getParentTerminalInfo = async function (callback) {
       }
       appNames.push(appName);
 
-      // Do NOT skip the first, there are case where the terminal may run directly node.js without any shell in between
+      // Do NOT skip the first, there are case where the terminal may run directly node without any shell in between
       //if ( ++ loop <= 1 ) { asyncCallback( undefined , true ) ; return ; }
 
       loopAgain = false;

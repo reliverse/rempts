@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 const ndarray = require("ndarray");
 const Promise = require("seventh");
 

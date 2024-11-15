@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+// @ts-nocheck
 
 const Promise = require("seventh");
 const termkit = require("..");

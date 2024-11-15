@@ -1,6 +1,8 @@
-const Element = require("./Element.js");
-const LabeledInput = require("./LabeledInput.js");
-const Button = require("./Button.js");
+// @ts-nocheck
+
+const Element = require("./Element");
+const LabeledInput = require("./LabeledInput");
+const Button = require("./Button");
 
 function Form(options) {
   // Clone options if necessary

@@ -1,6 +1,6 @@
 // @ts-nocheck
 
-import * as prompts from "../src/main.js";
+import * as prompts from "../src/main";
 
 // Utility type to check if a property exists on a given type
 type HasProperty<T, K> = K extends keyof T ? true : false;

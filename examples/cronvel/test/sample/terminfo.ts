@@ -1,8 +1,8 @@
-#!/usr/bin/env node
+// @ts-nocheck
 
 const termkit = require("..");
 const term = termkit.terminal;
-const terminfo = require("../lib/terminfo/terminfo.js");
+const terminfo = require("../../src/terminfo/terminfo");
 
 var termName = process.argv[2] || process.env.TERM;
 var key = process.argv[3] || null;
@@ -17,7 +17,7 @@ if (key) {
 }
 
 try {
-  var termconfig = require("../lib/termconfig/" + termName + ".js");
+  var termconfig = require("../../src/termconfig/" + termName + "");
   var newTermconfig = terminfo.mergeWithTerminfo(termconfig, info);
   term("terminfo keyUp: %s\n", info.keyUp);
   term("termconfig UP: %s\n", termconfig.keymap.UP);

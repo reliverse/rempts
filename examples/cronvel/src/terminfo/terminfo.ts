@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 /*
 	Terminal Kit
 
@@ -30,162 +32,159 @@
 	Licensed under the MIT license.
 */
 
-"use strict" ;
+"use strict";
 
+const fs = require("fs");
+const tree = require("tree-kit");
 
+const boolOptions = require("./boolean-opts.json");
+const numberOptions = require("./number-opts.json");
+const stringOptions = require("./string-opts.json");
 
-const fs = require( 'fs' ) ;
-const tree = require( 'tree-kit' ) ;
+exports.getTerminfo = (termName) => {
+  if ((!termName && process.platform === "win32") || termName === "win32") {
+    return require("./windows-profile.json");
+  }
 
-const boolOptions = require( './boolean-opts.json' ) ;
-const numberOptions = require( './number-opts.json' ) ;
-const stringOptions = require( './string-opts.json' ) ;
-
-
-
-exports.getTerminfo = termName => {
-	if ( ( ! termName && process.platform === 'win32' ) || termName === 'win32' ) {
-		return require( './windows-profile.json' ) ;
-	}
-
-	var infoBuffer = getTerminfoBuffer( termName ) ;
-	return parseTermBuffer( infoBuffer , termName ) ;
-} ;
-
-
+  var infoBuffer = getTerminfoBuffer(termName);
+  return parseTermBuffer(infoBuffer, termName);
+};
 
 // Merge a config with terminfo
-exports.mergeWithTerminfo = ( config , info ) => {
-	var newConfig = {
-		esc: Object.create( config.esc ) ,
-		keymap: Object.create( config.keymap ) ,
-		handler: Object.create( config.handler ) ,
-		support: {
-			deltaEscapeSequence: true ,
-			"256colors": true ,
-			"24bitsColors": true ,	// DEPRECATED
-			"trueColor": true
-		} ,
-		colorRegister: config.colorRegister
-	} ;
+exports.mergeWithTerminfo = (config, info) => {
+  var newConfig = {
+    esc: Object.create(config.esc),
+    keymap: Object.create(config.keymap),
+    handler: Object.create(config.handler),
+    support: {
+      deltaEscapeSequence: true,
+      "256colors": true,
+      "24bitsColors": true, // DEPRECATED
+      trueColor: true,
+    },
+    colorRegister: config.colorRegister,
+  };
 
-	if ( info.keyUp ) {
-		newConfig.keymap.UP = info.keyUp ;
-	}
+  if (info.keyUp) {
+    newConfig.keymap.UP = info.keyUp;
+  }
 
-	return newConfig ;
-} ;
+  return newConfig;
+};
 
+function getTerminfoBuffer(termName) {
+  var path;
 
-
-function getTerminfoBuffer( termName ) {
-	var path ;
-
-	try {
-		path = '/usr/share/terminfo/' + termName.charCodeAt( 0 ).toString( 16 )
-			.toUpperCase() + '/' + termName ;
-		return { path: path , buf: fs.readFileSync( path ) } ;
-	}
-	catch ( error ) {
-		try {
-			path = '/usr/share/terminfo/' + termName[ 0 ] + '/' + termName ;
-			return { path: path , buf: fs.readFileSync( path ) } ;
-		}
-		catch ( error_ ) {
-			throw new Error( 'unknown TERM name: ' + termName ) ;
-		}
-	}
+  try {
+    path =
+      "/usr/share/terminfo/" +
+      termName.charCodeAt(0).toString(16).toUpperCase() +
+      "/" +
+      termName;
+    return { path: path, buf: fs.readFileSync(path) };
+  } catch (error) {
+    try {
+      path = "/usr/share/terminfo/" + termName[0] + "/" + termName;
+      return { path: path, buf: fs.readFileSync(path) };
+    } catch (error_) {
+      throw new Error("unknown TERM name: " + termName);
+    }
+  }
 }
 
+function parseTermBuffer(bufPair, termName) {
+  var i,
+    getInt,
+    intSize,
+    buf = bufPair.buf,
+    offset = 0;
 
+  // magic number
+  var magic = buf.readInt16LE(offset);
+  offset += 2;
 
-function parseTermBuffer( bufPair , termName ) {
-	var i , getInt , intSize ,
-		buf = bufPair.buf ,
-		offset = 0 ;
+  console.log("Magic number: 0x" + magic.toString(16));
 
-	// magic number
-	var magic = buf.readInt16LE( offset ) ;
-	offset += 2 ;
+  if (magic === 0x11a) {
+    // Legacy format
+    console.log("Legacy format");
+    intSize = 2;
+    getInt = buf.readInt16LE.bind(buf);
+  } else if (magic === 0x21e) {
+    // New format using 32bit integers
+    console.log("New 32bit integer format");
+    intSize = 4;
+    getInt = buf.readInt32LE.bind(buf);
+  } else {
+    throw new Error(
+      "terminfo for " +
+        termName +
+        " has invalid magic number: 0x" +
+        magic.toString(16),
+    );
+  }
 
-	console.log( "Magic number: 0x" + magic.toString( 16 ) ) ;
+  var result = {
+    path: bufPair.path,
+    namesSize: buf.readInt16LE(offset),
+    boolSize: buf.readInt16LE(offset + 2),
+    numCount: buf.readInt16LE(offset + 4),
+    offCount: buf.readInt16LE(offset + 6),
+    strSize: buf.readInt16LE(offset + 8),
+  };
 
-	if ( magic === 0x11a ) {
-		// Legacy format
-		console.log( "Legacy format" ) ;
-		intSize = 2 ;
-		getInt = buf.readInt16LE.bind( buf ) ;
-	}
-	else if ( magic === 0x21e ) {
-		// New format using 32bit integers
-		console.log( "New 32bit integer format" ) ;
-		intSize = 4 ;
-		getInt = buf.readInt32LE.bind( buf ) ;
-	}
-	else {
-		throw new Error( 'terminfo for ' + termName + ' has invalid magic number: 0x' + magic.toString( 16 ) ) ;
-	}
+  offset += 10;
 
-	var result = {
-		path: bufPair.path ,
-		namesSize: buf.readInt16LE( offset ) ,
-		boolSize: buf.readInt16LE( offset + 2 ) ,
-		numCount: buf.readInt16LE( offset + 4 ) ,
-		offCount: buf.readInt16LE( offset + 6 ) ,
-		strSize: buf.readInt16LE( offset + 8 )
-	} ;
+  // names (usually a descriptive name along with the $TERM name)
+  result.names = buf
+    .toString("ascii", offset, offset + result.namesSize - 1)
+    .split("|");
+  offset += result.namesSize;
 
-	offset += 10 ;
-
-	// names (usually a descriptive name along with the $TERM name)
-	result.names = buf.toString( 'ascii' , offset , offset + result.namesSize - 1 ).split( '|' ) ;
-	offset += result.namesSize ;
-
-	// bools
-	/*
+  // bools
+  /*
 	if ( result.boolSize < boolOptions.length ) {
 		throw new Error( 'terminfo for ' + termName + ' has invalid boolean section size (' + result.boolSize + ' < ' + boolOptions.length + ')' ) ;
 	}
 	*/
 
-	boolOptions.forEach( ( opt , j ) => {
-		result[ opt ] = Boolean( buf.readInt8( offset + j ) ) ;
-	} ) ;
+  boolOptions.forEach((opt, j) => {
+    result[opt] = Boolean(buf.readInt8(offset + j));
+  });
 
-	offset += result.boolSize ;
+  offset += result.boolSize;
 
-	// shorts are aligned to short boundary in file
-	// /!\ Should it be aligned for 32bit on the new format???
-	offset += offset % 2 ;
+  // shorts are aligned to short boundary in file
+  // /!\ Should it be aligned for 32bit on the new format???
+  offset += offset % 2;
 
-	// numbers
-	for ( i = 0 ; i < result.numCount && i < numberOptions.length ; i ++ ) {
-		var num = getInt( offset + ( i * intSize ) ) ;
-		if ( num !== -1 ) {
-			result[numberOptions[i]] = num ;
-		}
-	}
+  // numbers
+  for (i = 0; i < result.numCount && i < numberOptions.length; i++) {
+    var num = getInt(offset + i * intSize);
+    if (num !== -1) {
+      result[numberOptions[i]] = num;
+    }
+  }
 
-	offset += intSize * result.numCount ;
+  offset += intSize * result.numCount;
 
-	// strings
-	var offsetTable = offset + ( result.offCount * 2 ) ;
+  // strings
+  var offsetTable = offset + result.offCount * 2;
 
-	for ( i = 0 ; i < result.offCount && i < stringOptions.length ; i ++ ) {
-		var off = buf.readInt16LE( offset + ( 2 * i ) ) ;
-		if ( off !== -1 ) {
-			result[stringOptions[i]] = toCString( buf , offsetTable + off ) ;
-		}
-	}
+  for (i = 0; i < result.offCount && i < stringOptions.length; i++) {
+    var off = buf.readInt16LE(offset + 2 * i);
+    if (off !== -1) {
+      result[stringOptions[i]] = toCString(buf, offsetTable + off);
+    }
+  }
 
-	return result ;
+  return result;
 }
 
-
-
-function toCString( buf , offset ) {
-	var end = offset ;
-	while ( buf[end ++] !== 0 ) { /* :) */ }
-	return buf.toString( 'ascii' , offset , end - 1 ) ;
+function toCString(buf, offset) {
+  var end = offset;
+  while (buf[end++] !== 0) {
+    /* :) */
+  }
+  return buf.toString("ascii", offset, end - 1);
 }
-

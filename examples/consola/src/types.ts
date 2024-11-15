@@ -33,13 +33,13 @@ export type ConsolaOptions = {
   throttleMin: number;
 
   /**
-   * The Node.js writable stream for standard output. See {@link NodeJS.WriteStream}.
+   * The Node writable stream for standard output. See {@link NodeJS.WriteStream}.
    * @optional
    */
   stdout?: NodeJS.WriteStream;
 
   /**
-   * The Node.js writeable stream for standard error output. See {@link NodeJS.WriteStream}.
+   * The Node writeable stream for standard error output. See {@link NodeJS.WriteStream}.
    * @optional
    */
   stderr?: NodeJS.WriteStream;

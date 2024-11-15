@@ -1,9 +1,11 @@
+// @ts-nocheck
+
 /* Base class for menus (ColumnMenu, RowMenu, etc) */
 
 const tree = require("tree-kit");
 
-const Element = require("./Element.js");
-const Button = require("./Button.js");
+const Element = require("./Element");
+const Button = require("./Button");
 
 function BaseMenu(options = {}) {
   Element.call(this, options);

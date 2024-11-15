@@ -1,9 +1,11 @@
+// @ts-nocheck
+
 const tree = require("tree-kit");
-const xterm256 = require("./xterm-256color.js");
-const xtermGeneric = require("./xterm.generic.js");
+const xterm256 = require("./xterm-256color");
+const xtermGeneric = require("./xterm.generic");
 
 // So far, we derivate from xterm-256color and then just add specific things (owned properties)
-// of xterm.generic.js, thus we achieve a clean inheritance model without duplicated code.
+// of xterm.generic, thus we achieve a clean inheritance model without duplicated code.
 
 // Remove colors
 const defaultColor = "\x1b[39m"; // back to the default color, most of time it is the same than .white

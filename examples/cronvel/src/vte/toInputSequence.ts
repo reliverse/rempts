@@ -1,6 +1,8 @@
+// @ts-nocheck
+
 exports.specialKeys = {
   /*
-		From the Xterm config (lib/termconfig/xterm.js).
+		From the Xterm config (lib/termconfig/xterm).
 		When multiple keys exist, the chosen one is (by order of preference):
 			- ultimately the sequence that avoid overlapping
 			- the more consistent sequence

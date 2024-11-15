@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+// @ts-nocheck
 /*
 	Terminal Kit
 
@@ -25,8 +25,7 @@
 	SOFTWARE.
 */
 
-var term = require( '../' ).terminal ;
+var term = require("../").terminal;
 
-term.windowTitle( 'Supa Title' ) ;
-setTimeout( () => null , 2000 ) ;
-
+term.windowTitle("Supa Title");
+setTimeout(() => null, 2000);

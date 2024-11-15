@@ -1,6 +1,8 @@
-const Element = require("./Element.js");
-const InlineInput = require("./InlineInput.js");
-const fileHelpers = require("../fileHelpers.js");
+// @ts-nocheck
+
+const Element = require("./Element");
+const InlineInput = require("./InlineInput");
+const fileHelpers = require("../fileHelpers");
 
 const fs = require("fs");
 const path = require("path");

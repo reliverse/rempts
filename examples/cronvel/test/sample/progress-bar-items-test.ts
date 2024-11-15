@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+// @ts-nocheck
 
 const fs = require("fs");
 const term = require("..").terminal;

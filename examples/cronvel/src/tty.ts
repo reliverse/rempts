@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 //var exec = require( 'child_process' ).exec ;
 //var spawn = require( 'child_process' ).spawn ;
 var execSync = require("child_process").execSync;
@@ -65,7 +67,7 @@ tty_.getPath = function getPath(stdin) {
 /*
 	getInput()
 
-	Open a TTY input file descriptor and transform it into a regular node.js TTY input stream.
+	Open a TTY input file descriptor and transform it into a regular node TTY input stream.
 	It returns the TTY input `Stream` use instead of process.stdin
 
 	This code was borrowed from the 'ttys' module by Nathan Rajlich.
@@ -86,7 +88,7 @@ tty_.getInput = function getInput() {
 /*
 	getOutput()
 
-	Open a TTY output file descriptor and transform it into a regular node.js TTY output stream.
+	Open a TTY output file descriptor and transform it into a regular node TTY output stream.
 	It returns the TTY output `Stream` use instead of process.stdin
 
 	This code was borrowed from the 'ttys' module by Nathan Rajlich.
@@ -103,7 +105,7 @@ tty_.getOutput = function getOutput() {
 
   // Hack to have the stdout stream not keep the event loop alive.
   // See: https://github.com/joyent/node/issues/1726
-  // XXX: remove/fix this once src/node.js does something different as well.
+  // XXX: remove/fix this once src/node does something different as well.
   // @cronvel: that doesn't work much either...
   if (output._handle && output._handle.unref) {
     output._handle.unref();

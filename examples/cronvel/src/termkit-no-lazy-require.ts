@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 const termkit = {};
 module.exports = termkit;
 
@@ -6,7 +8,7 @@ const lazy = require("lazyness")(require);
 // Global config
 termkit.globalConfig = {};
 
-termkit.tty = require("./tty.js");
+termkit.tty = require("./tty");
 
 // For some reason, starting from node v4, once process.stdin getter is triggered, the 'tty' command would not work properly.
 // This 'hack' cache the result of the command 'tty' if we are in the linux console, so 'gpm' can work.
@@ -15,56 +17,56 @@ if (process.env.TERM === "linux") {
 }
 
 // Core submodules
-Object.assign(termkit, require("./misc.js"));
-Object.assign(termkit, require("./detectTerminal.js"));
+Object.assign(termkit, require("./misc"));
+Object.assign(termkit, require("./detectTerminal"));
 
-termkit.Terminal = require("./Terminal.js");
+termkit.Terminal = require("./Terminal");
 termkit.createTerminal = termkit.Terminal.create;
 
 // Windows patches
 if (process.platform === "win32") {
-  require("./windows.js")(termkit);
+  require("./windows")(termkit);
 }
 
-termkit.image = require("./image.js");
-termkit.Palette = require("./Palette.js");
-termkit.Rect = require("./Rect.js");
-termkit.ScreenBuffer = require("./ScreenBuffer.js");
-termkit.ScreenBufferHD = require("./ScreenBufferHD.js");
-termkit.TextBuffer = require("./TextBuffer.js");
-termkit.Vte = require("./vte/Vte.js");
-termkit.autoComplete = require("./autoComplete.js");
-termkit.spChars = require("./spChars.js");
+termkit.image = require("./image");
+termkit.Palette = require("./Palette");
+termkit.Rect = require("./Rect");
+termkit.ScreenBuffer = require("./ScreenBuffer");
+termkit.ScreenBufferHD = require("./ScreenBufferHD");
+termkit.TextBuffer = require("./TextBuffer");
+termkit.Vte = require("./vte/Vte");
+termkit.autoComplete = require("./autoComplete");
+termkit.spChars = require("./spChars");
 
 // Document model
-termkit.Element = require("./document/Element.js");
-termkit.Document = require("./document/Document.js");
-termkit.Container = require("./document/Container.js");
-termkit.Text = require("./document/Text.js");
-termkit.AnimatedText = require("./document/AnimatedText.js");
-termkit.Button = require("./document/Button.js");
-termkit.ToggleButton = require("./document/ToggleButton.js");
-termkit.TextBox = require("./document/TextBox.js");
-termkit.EditableTextBox = require("./document/EditableTextBox.js");
-termkit.Slider = require("./document/Slider.js");
-termkit.Bar = require("./document/Bar.js");
-termkit.LabeledInput = require("./document/LabeledInput.js");
-termkit.InlineInput = require("./document/InlineInput.js");
-termkit.InlineFileInput = require("./document/InlineFileInput.js");
-termkit.InlineMenu = require("./document/InlineMenu.js");
-termkit.Inspector = require("./document/Inspector.js");
-termkit.Form = require("./document/Form.js");
-termkit.RowMenu = require("./document/RowMenu.js");
-termkit.ColumnMenu = require("./document/ColumnMenu.js");
-termkit.ColumnMenuMulti = require("./document/ColumnMenuMulti.js");
-termkit.ColumnMenuMixed = require("./document/ColumnMenuMixed.js");
-termkit.SelectList = require("./document/SelectList.js");
-termkit.SelectListMulti = require("./document/SelectListMulti.js");
-termkit.DropDownMenu = require("./document/DropDownMenu.js");
-termkit.TextTable = require("./document/TextTable.js");
-termkit.Layout = require("./document/Layout.js");
-termkit.Border = require("./document/Border.js");
-termkit.Window = require("./document/Window.js");
+termkit.Element = require("./document/Element");
+termkit.Document = require("./document/Document");
+termkit.Container = require("./document/Container");
+termkit.Text = require("./document/Text");
+termkit.AnimatedText = require("./document/AnimatedText");
+termkit.Button = require("./document/Button");
+termkit.ToggleButton = require("./document/ToggleButton");
+termkit.TextBox = require("./document/TextBox");
+termkit.EditableTextBox = require("./document/EditableTextBox");
+termkit.Slider = require("./document/Slider");
+termkit.Bar = require("./document/Bar");
+termkit.LabeledInput = require("./document/LabeledInput");
+termkit.InlineInput = require("./document/InlineInput");
+termkit.InlineFileInput = require("./document/InlineFileInput");
+termkit.InlineMenu = require("./document/InlineMenu");
+termkit.Inspector = require("./document/Inspector");
+termkit.Form = require("./document/Form");
+termkit.RowMenu = require("./document/RowMenu");
+termkit.ColumnMenu = require("./document/ColumnMenu");
+termkit.ColumnMenuMulti = require("./document/ColumnMenuMulti");
+termkit.ColumnMenuMixed = require("./document/ColumnMenuMixed");
+termkit.SelectList = require("./document/SelectList");
+termkit.SelectListMulti = require("./document/SelectListMulti");
+termkit.DropDownMenu = require("./document/DropDownMenu");
+termkit.TextTable = require("./document/TextTable");
+termkit.Layout = require("./document/Layout");
+termkit.Border = require("./document/Border");
+termkit.Window = require("./document/Window");
 
 // External modules
 termkit.chroma = require("chroma-js");

@@ -1,4 +1,6 @@
-const fileHelpers = require("./fileHelpers.js");
+// @ts-nocheck
+
+const fileHelpers = require("./fileHelpers");
 const path = require("path");
 
 /*

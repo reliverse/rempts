@@ -1,8 +1,10 @@
-const ScreenBuffer = require("../ScreenBuffer.js");
-const Rect = require("../Rect.js");
+// @ts-nocheck
+
+const ScreenBuffer = require("../ScreenBuffer");
+const Rect = require("../Rect");
 const string = require("string-kit");
-const toInputSequence = require("./toInputSequence.js");
-const SequencesReader = require("./SequencesReader.js");
+const toInputSequence = require("./toInputSequence");
+const SequencesReader = require("./SequencesReader");
 
 const NextGenEvents = require("nextgen-events");
 const Promise = require("seventh");

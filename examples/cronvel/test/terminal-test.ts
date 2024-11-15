@@ -1,4 +1,6 @@
-var termkit = require("../lib/termkit.js");
+// @ts-nocheck
+
+var termkit = require("../lib/termkit");
 var term = termkit.terminal;
 
 describe("Find", () => {

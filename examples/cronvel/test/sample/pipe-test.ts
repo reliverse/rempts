@@ -1,6 +1,6 @@
-#!/usr/bin/env node
+// @ts-nocheck
 
-var term = require("../lib/termkit.js").terminal;
+var term = require("../../src/termkit").terminal;
 
 process.stdin.on("data", function (data) {
   term.red(data.toString());

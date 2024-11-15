@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+// @ts-nocheck
 /*
 	Terminal Kit
 
@@ -24,4 +24,4 @@
 	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 	SOFTWARE.
 */
-console.log( process.stdout.isTTY ? 'is a TTY' : 'NOT a TTY' ) ;
+console.log(process.stdout.isTTY ? "is a TTY" : "NOT a TTY");

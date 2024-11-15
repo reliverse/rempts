@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 const string = require("string-kit");
 
 /* Escape sequences */
@@ -200,7 +202,7 @@ const esc = {
 	otherKeyModifier: { on: '\x1b[>3;1m' , off: '\x1b[>3;0m' } ,
 	*/
 
-  // Do not work... use node.js stdout.setRawMode(true) instead
+  // Do not work... use node stdout.setRawMode(true) instead
   //noecho: { on: '\x1b[12h' } ,
 
   /* OSC - OS Command sequences: may be unavailable on some context */

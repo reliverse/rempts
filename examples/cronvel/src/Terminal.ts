@@ -1,9 +1,11 @@
+// @ts-nocheck
+
 const tree = require("tree-kit");
 const string = require("string-kit");
 const NextGenEvents = require("nextgen-events");
 const Promise = require("seventh");
 
-const termkit = require("./termkit.js");
+const termkit = require("./termkit");
 //function noop() {}
 
 /*
@@ -116,7 +118,7 @@ Terminal.create = function (createOptions) {
   if (term.appId) {
     // We have got the real terminal app
     try {
-      term.termconfigFile = term.appId + ".js";
+      term.termconfigFile = term.appId + "";
       termconfig = require("./termconfig/" + term.termconfigFile);
     } catch (error) {} // Do nothing, let the next if block handle the case
   }
@@ -125,21 +127,21 @@ Terminal.create = function (createOptions) {
     // The real terminal app is not known, or we fail to load it...
     // Fallback to the terminal generic (most of time, got from the $TERM env variable).
     try {
-      // If a .generic.js file exists, this is a widely used terminal generic, 'xterm' for example.
+      // If a .generic file exists, this is a widely used terminal generic, 'xterm' for example.
       // We should use this generic files because despite advertising them as 'xterm',
       // most terminal sucks at being truly 'xterm' compatible (only 33% to 50% of xterm capabilities
       // are supported, even gnome-terminal and Konsole are bad).
       // So we will try to maintain a fail-safe xterm generic config.
-      term.termconfigFile = term.generic + ".generic.js";
+      term.termconfigFile = term.generic + ".generic";
       termconfig = require("./termconfig/" + term.termconfigFile);
     } catch (error) {
       try {
         // No generic config exists, try a specific config
-        term.termconfigFile = term.generic + ".js";
+        term.termconfigFile = term.generic + "";
         termconfig = require("./termconfig/" + term.termconfigFile);
       } catch (error_) {
         // Nothing found, fallback to the most common terminal generic
-        term.termconfigFile = "xterm.generic.js";
+        term.termconfigFile = "xterm.generic";
         termconfig = require("./termconfig/" + term.termconfigFile);
       }
     }
@@ -1162,16 +1164,16 @@ function onResize() {
 var notChainable = Object.create(Terminal.prototype);
 
 // Complexes high-level features have their own file
-notChainable.yesOrNo = require("./yesOrNo.js");
-notChainable.inputField = require("./inputField.js");
-notChainable.fileInput = require("./fileInput.js");
+notChainable.yesOrNo = require("./yesOrNo");
+notChainable.inputField = require("./inputField");
+notChainable.fileInput = require("./fileInput");
 notChainable.singleRowMenu =
-  notChainable.singleLineMenu = require("./singleLineMenu.js");
-notChainable.singleColumnMenu = require("./singleColumnMenu.js");
-notChainable.gridMenu = require("./gridMenu.js");
-notChainable.progressBar = require("./progressBar.js");
-notChainable.bar = require("./bar.js");
-notChainable.slowTyping = require("./slowTyping.js");
+  notChainable.singleLineMenu = require("./singleLineMenu");
+notChainable.singleColumnMenu = require("./singleColumnMenu");
+notChainable.gridMenu = require("./gridMenu");
+notChainable.progressBar = require("./progressBar");
+notChainable.bar = require("./bar");
+notChainable.slowTyping = require("./slowTyping");
 
 notChainable.createDocument = function (options) {
   if (!options || typeof options !== "object") {
@@ -1527,7 +1529,7 @@ notChainable.grabInput = function (options, safe) {
   // Disable grabInput mode
   var disable = () => {
     // Very important: removing all listeners doesn't switch back to pause mode.
-    // This is some nasty Node.js quirks (the documentation pleads for backward compatibility).
+    // This is some nasty Node quirks (the documentation pleads for backward compatibility).
     this.stdin.pause();
 
     try {
@@ -1567,7 +1569,7 @@ notChainable.grabInput = function (options, safe) {
   this.stdin.on("data", this.onStdin);
 
   // Very important: after the first this.stdin.pause(), listening for data seems to not switch back to flowing mode.
-  // Again, a nasty Node.js quirk.
+  // Again, a nasty Node quirk.
   this.stdin.resume();
 
   if (options.mouse) {
@@ -2062,7 +2064,7 @@ notChainable.getClipboard = function (source = "c") {
 
   // First, check capabilities:
   if (this.esc.requestClipboard.na) {
-    extClipboard = require("./extClipboard.js");
+    extClipboard = require("./extClipboard");
     return extClipboard.getClipboard(source).catch(() => "");
   }
 
@@ -2127,7 +2129,7 @@ notChainable.setClipboard = async function (str, source = "c") {
   var extClipboard;
 
   if (this.esc.setClipboardLL.na) {
-    extClipboard = require("./extClipboard.js");
+    extClipboard = require("./extClipboard");
     return extClipboard.setClipboard(str, source).catch(() => undefined);
   }
 

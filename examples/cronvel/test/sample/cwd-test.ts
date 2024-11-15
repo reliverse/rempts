@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+// @ts-nocheck
 /*
 	Terminal Kit
 
@@ -25,9 +25,8 @@
 	SOFTWARE.
 */
 
-var path = require( 'path' ) ;
-var term = require( '../' ).terminal ;
+var path = require("path");
+var term = require("../").terminal;
 
-term.cwd( 'file://' + path.resolve( process.cwd() + '/../../' ) ) ;
-setTimeout( () => null , 2000 ) ;
-
+term.cwd("file://" + path.resolve(process.cwd() + "/../../"));
+setTimeout(() => null, 2000);

@@ -1,5 +1,7 @@
+// @ts-nocheck
+
 const tree = require("tree-kit");
-const xterm = require("./xterm.js");
+const xterm = require("./xterm");
 
 const esc = tree.extend(null, Object.create(xterm.esc), {
   // Not supported...

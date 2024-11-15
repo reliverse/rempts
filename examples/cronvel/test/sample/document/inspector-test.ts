@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+// @ts-nocheck
 
 /*
 	The Object-viewer should have its own Document Element later.

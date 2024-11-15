@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 // Used when there is no terminal (e.g.: pipe)
 
 const esc = {

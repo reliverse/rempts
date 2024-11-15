@@ -1,10 +1,12 @@
+// @ts-nocheck
+
 // Container: an enclosed surface (ScreenBuffer), with a viewport to allow scrolling.
 
-const Element = require("./Element.js");
-const ScreenBuffer = require("../ScreenBuffer.js");
+const Element = require("./Element");
+const ScreenBuffer = require("../ScreenBuffer");
 
 // Avoid requiring Slider at top-level, it could cause circular require troubles
-//const Slider = require( './Slider.js' ) ;
+//const Slider = require( './Slider' ) ;
 
 function Container(options) {
   // Clone options if necessary
@@ -80,7 +82,7 @@ Element.inherit(Container);
 Container.prototype.isContainer = true;
 Container.prototype.containerBorderSize = 0;
 
-const termkit = require("../termkit.js");
+const termkit = require("../termkit");
 
 Container.prototype.keyBindings = {
   UP: "tinyScrollUp",

@@ -1,7 +1,7 @@
-#!/usr/bin/env node
+// @ts-nocheck
 
 const os = require("os");
-const termkit = require("../lib/termkit.js");
+const termkit = require("../../src/termkit");
 const term = termkit.terminal;
 
 async function testTerminal(t) {

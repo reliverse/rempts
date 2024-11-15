@@ -1,6 +1,8 @@
-const Element = require("./Element.js");
-const TextBox = require("./TextBox.js");
-const RowMenu = require("./RowMenu.js");
+// @ts-nocheck
+
+const Element = require("./Element");
+const TextBox = require("./TextBox");
+const RowMenu = require("./RowMenu");
 
 const Promise = require("seventh");
 const string = require("string-kit");

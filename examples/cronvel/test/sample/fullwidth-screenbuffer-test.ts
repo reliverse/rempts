@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+// @ts-nocheck
 
 const string = require("string-kit");
 const termkit = require("..");

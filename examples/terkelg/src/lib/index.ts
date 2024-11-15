@@ -1,6 +1,6 @@
 // @ts-nocheck
 
-import prompts from "./prompts.js";
+import prompts from "./prompts";
 
 type PromptFunction = (
   answer: any,

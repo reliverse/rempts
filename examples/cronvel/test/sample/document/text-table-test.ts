@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+// @ts-nocheck
 
 //console.error( "\n\n\n\n\n\n\n\n" ) ;
 const termkit = require("../..");

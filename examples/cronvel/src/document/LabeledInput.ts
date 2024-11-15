@@ -1,11 +1,13 @@
-const Element = require("./Element.js");
-const Text = require("./Text.js");
-const EditableTextBox = require("./EditableTextBox.js");
-const SelectList = require("./SelectList.js");
-const SelectListMulti = require("./SelectListMulti.js");
+// @ts-nocheck
+
+const Element = require("./Element");
+const Text = require("./Text");
+const EditableTextBox = require("./EditableTextBox");
+const SelectList = require("./SelectList");
+const SelectListMulti = require("./SelectListMulti");
 
 const string = require("string-kit");
-//const autoComplete = require( './autoComplete.js' ) ;
+//const autoComplete = require( './autoComplete' ) ;
 
 // Labeled: american english, Labelled british english
 // (to me, 'labelled' seems more natural, but there are 10 times more results on Google for 'labeled', so I will go for it)

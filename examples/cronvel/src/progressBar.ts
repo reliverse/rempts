@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 //var string = require( 'string-kit' ) ;
 
 /*

@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+// @ts-nocheck
 
 const termkit = require("../..");
 const term = termkit.terminal;

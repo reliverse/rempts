@@ -1,4 +1,6 @@
-const autoComplete = require("./autoComplete.js");
+// @ts-nocheck
+
+const autoComplete = require("./autoComplete");
 
 const fs = require("fs");
 const path = require("path");
@@ -116,7 +118,7 @@ exports.autoCompleteFile = async (inputString, params) => {
   }
 
   completion = autoComplete(files, inputFile, true, inputDir);
-  //console.error( 'fileHelpers.js completion:' , completion , inputDir ) ;
+  //console.error( 'fileHelpers completion:' , completion , inputDir ) ;
 
   return completion;
 };

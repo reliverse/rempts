@@ -1,8 +1,8 @@
-#!/usr/bin/env node
+// @ts-nocheck
 
 /* jshint unused:false */
 
-var terminal = require("../lib/termkit.js");
+var terminal = require("../../src/termkit");
 
 terminal.getDetectedTerminal(function (error, term) {
   var i;

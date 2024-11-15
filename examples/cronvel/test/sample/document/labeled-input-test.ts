@@ -1,6 +1,6 @@
-#!/usr/bin/env node
+// @ts-nocheck
 
-const termkit = require("../../lib/termkit.js");
+const termkit = require("../../../src/termkit");
 const term = termkit.terminal;
 
 term.clear();

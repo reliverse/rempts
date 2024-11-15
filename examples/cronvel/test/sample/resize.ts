@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+// @ts-nocheck
 
 //process.stdout.on( 'resize' , () => { console.log( "process.stdout 'resize'" ) ; } ) ;
 //process.on( 'SIGWINCH' , () => { console.log( "process 'SIGWINCH'" ) ; } ) ;
@@ -6,7 +6,7 @@
 //return ;
 
 var term = require("..").terminal;
-//require( '../lib/termkit.js' ).getDetectedTerminal( ( error , term ) => {
+//require( '../lib/termkit' ).getDetectedTerminal( ( error , term ) => {
 
 term.stdout.on("resize", () => {
   console.log("term.stdout 'resize'");

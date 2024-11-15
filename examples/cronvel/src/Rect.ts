@@ -1,4 +1,6 @@
-const termkit = require("./termkit.js");
+// @ts-nocheck
+
+const termkit = require("./termkit");
 
 /*
 	Rect: rectangular region, clipping, iterators for blitters, etc...

@@ -1,7 +1,7 @@
-#!/usr/bin/env node
+// @ts-nocheck
 
 var tree = require("tree-kit");
-var termkit = require("../lib/termkit.js");
+var termkit = require("../../src/termkit");
 var term = termkit.terminal;
 
 term.clear();

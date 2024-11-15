@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+// @ts-nocheck
 
 /* jshint unused:false */
 /* global describe, it, before, after */

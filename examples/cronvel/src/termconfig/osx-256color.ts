@@ -1,5 +1,7 @@
+// @ts-nocheck
+
 const tree = require("tree-kit");
-const xterm256Generic = require("./xterm-256color.generic.js");
+const xterm256Generic = require("./xterm-256color.generic");
 
 const keymap = tree.extend(null, Object.create(xterm256Generic.keymap), {
   UP: "\x1b[A",

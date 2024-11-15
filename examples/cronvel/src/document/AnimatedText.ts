@@ -1,6 +1,8 @@
-const Element = require("./Element.js");
-const Text = require("./Text.js");
-const spChars = require("../spChars.js");
+// @ts-nocheck
+
+const Element = require("./Element");
+const Text = require("./Text");
+const spChars = require("../spChars");
 
 function AnimatedText(options) {
   // Clone options if necessary

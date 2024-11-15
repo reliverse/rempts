@@ -1,5 +1,7 @@
+// @ts-nocheck
+
 const tree = require("tree-kit");
-const xterm = require("./xterm.js");
+const xterm = require("./xterm");
 
 // Fail-safe xterm-compatible
 

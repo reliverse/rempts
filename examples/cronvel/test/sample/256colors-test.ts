@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+// @ts-nocheck
 
 require("..").getDetectedTerminal(function (error, term) {
   //term.getPalette( function( error , palette ) {

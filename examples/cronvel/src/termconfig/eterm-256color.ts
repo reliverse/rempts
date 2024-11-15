@@ -1,6 +1,8 @@
+// @ts-nocheck
+
 const tree = require("tree-kit");
-const xterm256 = require("./xterm-256color.js");
-const eterm = require("./eterm.js");
+const xterm256 = require("./xterm-256color");
+const eterm = require("./eterm");
 
 const esc = tree.extend({ own: true }, Object.create(xterm256.esc), eterm.esc, {
   color24bits: { on: "%D%D%D", na: true }, // not capable

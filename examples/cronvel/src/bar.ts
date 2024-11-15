@@ -1,4 +1,6 @@
-const spChars = require("./spChars.js");
+// @ts-nocheck
+
+const spChars = require("./spChars");
 
 /*
 	bar( value , options )

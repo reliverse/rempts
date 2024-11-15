@@ -1,5 +1,7 @@
-const Element = require("./Element.js");
-const TextBox = require("./TextBox.js");
+// @ts-nocheck
+
+const Element = require("./Element");
+const TextBox = require("./TextBox");
 
 const string = require("string-kit");
 const Promise = require("seventh");

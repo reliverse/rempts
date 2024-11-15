@@ -1,6 +1,6 @@
-#!/usr/bin/env node
+// @ts-nocheck
 
-//require( '../lib/termkit.js' ).getDetectedTerminal( function( error , term ) {
+//require( '../lib/termkit' ).getDetectedTerminal( function( error , term ) {
 const termkit = require("..");
 const term = termkit.terminal;
 

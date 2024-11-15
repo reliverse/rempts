@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 const termkit = require("./termkit");
 const stringWidth = termkit.stringWidth;
 const string = require("string-kit");

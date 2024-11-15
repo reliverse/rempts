@@ -1,8 +1,8 @@
-#!/usr/bin/env node
+// @ts-nocheck
 
 /* jshint unused:false */
 
-var term = require("../lib/termkit.js").terminal;
+var term = require("../../src/termkit").terminal;
 var i;
 
 term("Check the .color() method:\n");

@@ -1,6 +1,8 @@
-const Element = require("./Element.js");
-const Container = require("./Container.js");
-const boxesChars = require("../spChars.js").box;
+// @ts-nocheck
+
+const Element = require("./Element");
+const Container = require("./Container");
+const boxesChars = require("../spChars").box;
 
 function Layout(options) {
   // Clone options if necessary

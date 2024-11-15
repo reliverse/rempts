@@ -1,13 +1,15 @@
+// @ts-nocheck
+
 /*
 	This is a mix between ColumnMenu and ColumnMenuMulti: some items have states, some haven't.
 	In fact it is closer from ColumnMenu in behavior: any click submit the button, not a key/value object.
 	This is useful to improve the DropDownMenu, where it is common to have menu items states (turned on/off).
 */
 
-const Element = require("./Element.js");
-const ColumnMenu = require("./ColumnMenu.js");
-const Button = require("./Button.js");
-const ToggleButton = require("./ToggleButton.js");
+const Element = require("./Element");
+const ColumnMenu = require("./ColumnMenu");
+const Button = require("./Button");
+const ToggleButton = require("./ToggleButton");
 
 // Inherit from ColumnMenu for common methods
 

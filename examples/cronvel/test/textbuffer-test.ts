@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 var termkit = require("..");
 var term = termkit.terminal;
 var TextBuffer = termkit.TextBuffer;

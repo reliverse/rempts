@@ -1,4 +1,6 @@
-const termkit = require("./termkit.js");
+// @ts-nocheck
+
+const termkit = require("./termkit");
 
 /*
 	Custom 256-colors palette for ScreenBuffer, each color is 24 bits.

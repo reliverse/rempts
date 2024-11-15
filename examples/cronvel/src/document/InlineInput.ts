@@ -1,11 +1,13 @@
-const Element = require("./Element.js");
-const TextBox = require("./TextBox.js");
-const EditableTextBox = require("./EditableTextBox.js");
-const RowMenu = require("./RowMenu.js");
+// @ts-nocheck
+
+const Element = require("./Element");
+const TextBox = require("./TextBox");
+const EditableTextBox = require("./EditableTextBox");
+const RowMenu = require("./RowMenu");
 
 const Promise = require("seventh");
 const string = require("string-kit");
-const computeAutoCompleteArray = require("../autoComplete.js");
+const computeAutoCompleteArray = require("../autoComplete");
 
 /*
 	This is the Document-model version of .inputField().

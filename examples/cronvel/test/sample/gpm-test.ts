@@ -1,9 +1,9 @@
-#!/usr/bin/env node
+// @ts-nocheck
 
 /* jshint unused:false */
 
-var termkit = require("../lib/termkit.js");
-var gpm = require("../lib/gpm.js");
+var termkit = require("../../src/termkit");
+var gpm = require("../../src/gpm");
 
 var handler = gpm.createHandler({
   stdin: process.stdin,

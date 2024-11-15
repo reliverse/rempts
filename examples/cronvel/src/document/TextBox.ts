@@ -1,9 +1,11 @@
-const Element = require("./Element.js");
-const Slider = require("./Slider.js");
+// @ts-nocheck
 
-const ScreenBuffer = require("../ScreenBuffer.js");
-const TextBuffer = require("../TextBuffer.js");
-const Rect = require("../Rect.js");
+const Element = require("./Element");
+const Slider = require("./Slider");
+
+const ScreenBuffer = require("../ScreenBuffer");
+const TextBuffer = require("../TextBuffer");
+const Rect = require("../Rect");
 
 const string = require("string-kit");
 

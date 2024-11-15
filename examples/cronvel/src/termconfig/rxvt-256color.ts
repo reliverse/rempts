@@ -1,6 +1,8 @@
+// @ts-nocheck
+
 const tree = require("tree-kit");
-const xterm256 = require("./xterm-256color.js");
-const rxvt = require("./rxvt.js");
+const xterm256 = require("./xterm-256color");
+const rxvt = require("./rxvt");
 
 const esc = tree.extend({ own: true }, Object.create(xterm256.esc), rxvt.esc, {
   color24bits: { on: "%D%D%D", na: true }, // not capable

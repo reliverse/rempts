@@ -1,5 +1,7 @@
-const Element = require("./Element.js");
-const framesChars = require("../spChars.js").box;
+// @ts-nocheck
+
+const Element = require("./Element");
+const framesChars = require("../spChars").box;
 
 function Border(options) {
   // Clone options if necessary

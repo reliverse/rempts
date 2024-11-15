@@ -1,5 +1,7 @@
+// @ts-nocheck
+
 const tree = require("tree-kit");
-const xterm = require("./xterm.js");
+const xterm = require("./xterm");
 
 const esc = tree.extend(null, Object.create(xterm.esc), {
   // Not supported...
@@ -32,7 +34,7 @@ const keymap = Object.create(xterm.keymap);
 const handler = Object.create(xterm.handler);
 
 // Stoopid KDE again, it can flood MOUSE_X_PRESSED on mouse drag, rather than MOUSE_MOTION -_-'
-// This is a copy-paste of handler.mouseSGRProtocol of xterm.js, with the appropriated work-around
+// This is a copy-paste of handler.mouseSGRProtocol of xterm, with the appropriated work-around
 handler.mouseSGRProtocol = function mouseSGRProtocol(basename, buffer) {
   var code, pressed, matches, result;
 

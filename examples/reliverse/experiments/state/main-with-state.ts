@@ -15,7 +15,7 @@ import { selectPrompt } from "~/components/select";
 
 import type { PromptOptionsWithState } from "./types-wth-state";
 
-import { startPrompt } from "./ui/start-with-state.js";
+import { startPrompt } from "./ui/start-with-state";
 import { textPrompt } from "./ui/text-with-state";
 
 export { createSpinner } from "~/components/spinner";
