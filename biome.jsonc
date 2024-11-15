@@ -24,7 +24,14 @@
   },
   "linter": {
     "enabled": true,
-    "ignore": [".git/", "node_modules/", "dist/", "output/", "examples/terkelg/**/*.ts"],
+    "ignore": [
+      ".git/",
+      "node_modules/",
+      "dist/",
+      "output/",
+      "examples/terkelg/**/*.ts",
+      "examples/cronvel/**/*.js"
+    ],
     "rules": {
       "recommended": true,
       "a11y": {

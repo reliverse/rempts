@@ -27,6 +27,8 @@ bun add @reliverse/prompts # Replace 'bun' with npm, pnpm, or yarn if desired (d
 
 ## Prompt Types
 
+Each type has its own validation and display logic. More types are planned for future releases.
+
 - **Text**: Collects text input.
 - **Password**: Hidden input for secure password entries.
 - **Number**: Numeric input with optional validation.
@@ -76,32 +78,33 @@ Try out @reliverse/prompts by running examples locally or viewing the code linke
 - 🔵: Partially supported
 - 🔴: Not supported
 
-| **Feature**                   | **@reliverse/prompts**                             | **@inquirer/prompts**  | **@clack/prompts**  | **@terkelg/prompts**         |
-|-------------------------------|----------------------------------------------------|------------------------|---------------------|------------------------------|
-| **Modules Support**           | 🟢 ESM-only                                        | 🟡                    | 🟡                  | 🔴 CJS-only                 |
-| **TypeSafety & IntelliSense** | 🔵                                                 | 🟡                    | 🟡                  | 🟡                          |
-| **Schema Validation**         | 🟢 TypeBox + Custom                                | 🟡                    | 🟡                  | 🟡                          |
-| **Usage Examples**            | 🟢                                                 | 🟡                    | 🟡                  | 🟡                          |
-| **All-in-one** `prompts()`    | 🟢 Separate + All-in-one                           | 🟡                    | 🟡                  | 🟢 Separate(?) + All-in-one |
-| **Start Prompt**              | 🟢                                                 | 🟡                    | 🟡                  | 🟡                          |
-| **Text Prompt**               | 🟢                                                 | 🟡                    | 🟡                  | 🟡                          |
-| **Customization**             | 🟢 Colors, Typography, Border, Variants, and more  | 🟡                    | 🟡                  | 🟡                          |
-| **Title Animations**          | 🟢 Includes 6 animations                           | 🟡                    | 🟡                  | 🟡                          |
-| **ASCII Art Component**       | 🟢 Includes 290 fonts                              | 🟡                    | 🟡                  | 🟡                          |
-| **Password Prompt**           | 🟡                                                 | 🟡                    | 🟡                  | 🟡                          |
-| **Number Prompt**             | 🟡                                                 | 🟡                    | 🟡                  | 🟡                          |
-| **Confirm Prompt**            | 🟡                                                 | 🟡                    | 🟡                  | 🟡                          |
-| **Select Prompt**             | 🟡                                                 | 🟡                    | 🟡                  | 🟡                          |
-| **Multiselect Prompt**        | 🟡                                                 | 🟡                    | 🟡                  | 🟡                          |
-| **Custom Validation**         | 🟡                                                 | 🟡                    | 🟡                  | 🟡                          |
-| **Error Handling**            | 🟡                                                 | 🟡                    | 🟡                  | 🟡                          |
-| **Ease of Setup**             | 🟡                                                 | 🟡                    | 🟡                  | 🟡                          |
-| **Crash Resilience**          | 🟡                                                 | 🟡                    | 🟡                  | 🟡                          |
-| **General DX**                | 🔵 Clean TS code understandable for anyone         | 🟡                    | 🟡                  | 🔴 JS-only                  |
-| **DX: Classes**               | 🟢 Zero classes                                    | 🟡                    | 🟡                  | 🟡                          |
-| **Documentation**             | 🟡                                                 | 🟡                    | 🟡                  | 🔵                          |
-| **Community**                 | 🔴 Marketing in progress, no active community yet  | 🟡                    | 🟡                  | 🟡                          |
-| **Designed With UX in Mind**  | 🔵                                                 | 🟡                    | 🟡                  | 🟡                          |
+| **Feature**                                   | **@reliverse/prompts**                             | **@inquirer/prompts**  | **@clack/prompts**  | **@terkelg/prompts**         | **@cronvel/terminal-kit**   |
+|-----------------------------------------------|----------------------------------------------------|------------------------|---------------------|------------------------------|-----------------------------|
+| **Full Node.js Modules Support**              | 🟢 ESM-only                                        | 🟡                    | 🟡                  | 🔴 CJS-only                 | 🔴 CJS-only                 |
+| **Codebase typesafety with intellisense**     | 🔵                                                 | 🟡                    | 🟡                  | 🟡                          | 🟡                          |
+| **Runtime typesafety with schema validation** | 🟢 TypeBox + Custom                                | 🟡                    | 🟡                  | 🟡                          | 🟡                          |
+| **Usage Examples**                            | 🟢                                                 | 🟡                    | 🟡                  | 🟡                          | 🟡                          |
+| **All-in-one prompts()**                      | 🟢 Separate + All-in-one                           | 🟡                    | 🟡                  | 🟢 Separate(?) + All-in-one | 🟡                          |
+| **Start Component**                           | 🟢                                                 | 🟡                    | 🟡                  | 🟡                          | 🟡                          |
+| **Text Component**                            | 🟢                                                 | 🟡                    | 🟡                  | 🟡                          | 🟡                          |
+| **Customization**                             | 🟢 Colors, Typography, Border, Variants, and more  | 🟡                    | 🟡                  | 🟡                          | 🟡                          |
+| **Title Animations**                          | 🟢 Includes 6 animations                           | 🟡                    | 🟡                  | 🟡                          | 🟡                          |
+| **ASCII Art Component**                       | 🟢 Includes 290 fonts                              | 🟡                    | 🟡                  | 🟡                          | 🟡                          |
+| **Password Component**                        | 🟡                                                 | 🟡                    | 🟡                  | 🟡                          | 🟡                          |
+| **Number Component**                          | 🟡                                                 | 🟡                    | 🟡                  | 🟡                          | 🟡                          |
+| **Confirm Component**                         | 🟡                                                 | 🟡                    | 🟡                  | 🟡                          | 🟡                          |
+| **Select Component**                          | 🟡                                                 | 🟡                    | 🟡                  | 🟡                          | 🟡                          |
+| **Multiselect Component**                     | 🟡                                                 | 🟡                    | 🟡                  | 🟡                          | 🟡                          |
+| **ProgressBar Component**                     | 🟡                                                 | 🟡                    | 🟡                  | 🟡                          | 🟢                          |
+| **Image Component**                           | 🟡                                                 | 🟡                    | 🟡                  | 🟡                          | 🟢                          |
+| **Custom Validation**                         | 🟡                                                 | 🟡                    | 🟡                  | 🟡                          | 🟡                          |
+| **Error Handling**                            | 🟡                                                 | 🟡                    | 🟡                  | 🟡                          | 🟡                          |
+| **Ease of Setup**                             | 🟡                                                 | 🟡                    | 🟡                  | 🟡                          | 🟡                          |
+| **Crash Resilience**                          | 🟡                                                 | 🟡                    | 🟡                  | 🟡                          | 🟡                          |
+| **General DX**                                | 🔵 Clean TS code understandable for anyone         | 🟡                    | 🟡                  | 🔴 JS-only                  | 🔴 JS-only                  |
+| **DX: Classes**                               | 🟢 Zero classes                                    | 🟡                    | 🟡                  | 🟡                          | 🟡                          |
+| **Documentation**                             | 🟡                                                 | 🟡                    | 🟡                  | 🔵                          | 🟢                          |
+| **Designed With UX in Mind**                  | 🔵                                                 | 🟡                    | 🟡                  | 🟡                          | 🟡                          |
 
 **Related Links**: [ESM/CJS](https://dev.to/iggredible/what-the-heck-are-cjs-amd-umd-and-esm-ikm), ["Pure ESM package"](https://gist.github.com/sindresorhus/a39789f98801d908bbc7ff3ecc99d99c), [Clean code](https://github.com/ryanmcdermott/clean-code-javascript#readme), ["UX patterns for CLI tools"](https://lucasfcosta.com/2022/06/01/ux-patterns-cli-tools.html), [DX (Developer Experience)](https://github.blog/enterprise-software/collaboration/developer-experience-what-is-it-and-why-should-you-care), [TypeBox](https://github.com/sinclairzx81/typebox#readme)
 
@@ -114,6 +117,7 @@ This project wouldn’t exist without the amazing work of the following projects
 - [@clack/prompts](https://github.com/bombshell-dev/clack#readme)
 - [create-t3-app](https://github.com/t3-oss/create-t3-app#readme)
 - [create-astro](https://github.com/withastro/astro/tree/main/packages/create-astro#readme)
+- [cronvel/terminal-kit](https://github.com/cronvel/terminal-kit#readme)
 - [unjs/consola](https://github.com/unjs/consola#readme)
 
 ## Wrap-Up

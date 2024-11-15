@@ -3,7 +3,8 @@
     "baseUrl": ".",
     "paths": {
       "~/*": ["./src/*"],
-      "@/*": ["./addons/*"]
+      "@/*": ["./addons/*"],
+      "#/*": ["./examples/*"]
     },
     "esModuleInterop": true,
     "skipLibCheck": true,
@@ -16,6 +17,7 @@
     "strict": true,
     "noUncheckedIndexedAccess": true,
     "noImplicitOverride": true,
+    "strictNullChecks": false,
     "noImplicitAny": false,
     "module": "preserve",
     "noEmit": true,

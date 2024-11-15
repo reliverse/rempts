@@ -15,7 +15,6 @@ export default class MultiSelectPrompt<
   cursor = 0;
 
   private get _value() {
-    // @ts-expect-error TODO: fix ts
     return this.options[this.cursor].value;
   }
 

@@ -8,7 +8,7 @@ import {
   cancel,
   text,
 } from "examples/clack/src";
-import { errorHandler } from "examples/helpers/error-handler";
+import { errorHandler } from "examples/reliverse/detailed-utils";
 import { setTimeout as sleep } from "node:timers/promises";
 import color from "picocolors";
 

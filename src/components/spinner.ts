@@ -4,6 +4,8 @@ import ora from "ora";
 import color from "picocolors";
 import { cursor, erase } from "sisteransi";
 
+import { removeCursor, restoreCursor } from "~/utils/terminal";
+
 type SimpleSpinnerType = "default" | "dottedCircle" | "boxSpinner";
 type OraAllowedSpinners = "dots" | "bouncingBar" | "arc";
 type OraSpinnerType = Extract<SpinnerName, OraAllowedSpinners>;
@@ -66,12 +68,32 @@ export function createSpinner<T extends "simple" | "ora">(
         ? simpleSpinners[spinnerType as SimpleSpinnerType]
         : simpleSpinners.default;
 
+    const handleInput = (data: Buffer) => {
+      const key = data.toString();
+      if (key === "\r" || key === "\n") {
+        // Ignore Enter key
+        return;
+      }
+    };
+
     const start = (msg = ""): void => {
       if (interval) {
-        return;
-      } // Prevent multiple starts
+        return; // Prevent multiple starts
+      }
       message = msg || message;
-      process.stdout.write(cursor.hide);
+
+      // Check if stdin is a TTY and setRawMode is available
+      if (
+        process.stdin.isTTY &&
+        typeof process.stdin.setRawMode === "function"
+      ) {
+        process.stdin.setRawMode(true);
+        process.stdin.resume();
+        process.stdin.on("data", handleInput);
+      }
+
+      removeCursor();
+
       interval = setInterval(() => {
         const frame = color.magenta(frames[frameIndex]);
         process.stdout.write(
@@ -84,13 +106,24 @@ export function createSpinner<T extends "simple" | "ora">(
     const stop = (finalMessage = "", code = 0): void => {
       if (!interval) {
         return;
-      } // Stop only if running
-
+      }
       clearInterval(interval);
       interval = null;
+
+      // Clean up stdin if it was modified
+      if (
+        process.stdin.isTTY &&
+        typeof process.stdin.setRawMode === "function"
+      ) {
+        process.stdin.setRawMode(false);
+        process.stdin.pause();
+        process.stdin.removeListener("data", handleInput);
+      }
+
+      restoreCursor();
+
       const statusSymbol = code === 0 ? color.green("✔") : color.red("✖");
       process.stdout.write(`\r${erase.line}${statusSymbol} ${finalMessage}\n`);
-      process.stdout.write(cursor.show); // Restore cursor
     };
 
     const updateMessage = (newMessage: string) => {

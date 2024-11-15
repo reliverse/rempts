@@ -63,6 +63,10 @@ export function fmt(opts: FmtMsgOptions) {
     opts.title = opts.title.replace("│  ", "");
   }
 
+  if (!opts.borderColor) {
+    opts.borderColor = "viceGradient";
+  }
+
   const bar = opts.borderColor
     ? colorMap[opts.borderColor](s.middle)
     : s.middle;

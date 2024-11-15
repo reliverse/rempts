@@ -1,10 +1,11 @@
 // examples/simple-check.ts: A very basic example to check the library.
 
-import { errorHandler } from "examples/helpers/error-handler";
+import {
+  errorHandler,
+  installDependencies,
+} from "examples/reliverse/detailed-utils";
 
 import { prompts } from "~/components/all-in-one";
-
-import { installDependencies } from "./state/utils/installDependencies";
 
 async function main() {
   await prompts({

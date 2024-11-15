@@ -1,6 +1,6 @@
 // examples/win-mln-js.ts: A fun example of a quiz game. Inspired by CLI-game created by Fireship.
 
-import { errorHandler } from "examples/helpers/error-handler";
+import { errorHandler } from "examples/reliverse/detailed-utils";
 import figlet from "figlet";
 
 import { prompts } from "~/components/all-in-one";
@@ -32,7 +32,7 @@ async function main() {
     defaultValue: "Player",
   });
   // TODO: fix [object object]
-  const playerName = String(player_name) ?? "Player";
+  const playerName = player_name ?? "Player";
 
   const { answer } = await prompts({
     type: "select",

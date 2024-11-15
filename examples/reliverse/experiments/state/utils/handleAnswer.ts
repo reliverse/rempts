@@ -12,7 +12,7 @@ export async function handleAnswer(
     spinnerType: "dots",
   });
   spinner.start();
-  await new Promise((resolve) => setTimeout(resolve, 2000)); // Simulate delay
+  await new Promise((resolve) => setTimeout(resolve, 2000));
 
   if (isCorrect) {
     spinner.stop(colorize(successMsg, "green"), 0);

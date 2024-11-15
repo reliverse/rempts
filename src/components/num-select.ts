@@ -9,7 +9,7 @@ import type { PromptOptions } from "~/types/prod";
 
 import { colorize } from "~/utils/colorize";
 
-export async function selectNumberPrompt<T extends TSchema>(
+export async function numSelectPrompt<T extends TSchema>(
   options: PromptOptions<T>,
 ): Promise<Static<T>> {
   const { title, choices, defaultValue, schema, titleColor, titleTypography } =

@@ -81,7 +81,7 @@ export type RequiredPromptOptions = {
 };
 
 export type OptionalPromptOptions<T extends TSchema = any> = {
-  stateCompletedTitle?: string;
+  schema?: T;
   titleColor?: ColorName;
   titleTypography?: TypographyName;
   titleVariant?: Variant;
@@ -97,7 +97,6 @@ export type OptionalPromptOptions<T extends TSchema = any> = {
   defaultColor?: ColorName;
   defaultTypography?: TypographyName;
   choices?: ChoiceOptions[];
-  schema?: T;
   variantOptions?: {
     box?: {
       limit?: number;

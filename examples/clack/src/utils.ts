@@ -2,7 +2,8 @@ import type { Key } from "node:readline";
 
 import { stdin, stdout } from "node:process";
 import * as readline from "node:readline";
-import { cursor } from "sisteransi";
+
+import { removeCursor, restoreCursor } from "~/utils/terminal";
 
 const isWindows = globalThis.process.platform.startsWith("win");
 
@@ -41,14 +42,14 @@ export function block({
     });
   };
   if (hideCursor) {
-    process.stdout.write(cursor.hide);
+    removeCursor();
   }
   input.once("keypress", clear);
 
   return () => {
     input.off("keypress", clear);
     if (hideCursor) {
-      process.stdout.write(cursor.show);
+      restoreCursor();
     }
 
     // Prevent Windows specific issues

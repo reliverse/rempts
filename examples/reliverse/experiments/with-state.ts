@@ -1,4 +1,4 @@
-import { errorHandler } from "examples/helpers/error-handler";
+import { errorHandler } from "examples/reliverse/detailed-utils";
 import { symbol } from "examples/reliverse/experiments/utils/symbols";
 
 import type {

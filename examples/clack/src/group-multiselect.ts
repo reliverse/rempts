@@ -25,9 +25,8 @@ export default class GroupMultiSelectPrompt<
 
   private toggleValue() {
     const item = this.options[this.cursor];
-    // @ts-expect-error TODO: fix ts
+
     if (item.group === true) {
-      // @ts-expect-error TODO: fix ts
       const group = item.value;
       const groupedItems = this.getGroupItems(group);
       if (this.isGroupSelected(group)) {
@@ -39,13 +38,10 @@ export default class GroupMultiSelectPrompt<
       }
       this.value = Array.from(new Set(this.value));
     } else {
-      // @ts-expect-error TODO: fix ts
       const selected = this.value.includes(item.value);
       this.value = selected
-        ? // @ts-expect-error TODO: fix ts
-          this.value.filter((v: T["value"]) => v !== item.value)
-        : // @ts-expect-error TODO: fix ts
-          [...this.value, item.value];
+        ? this.value.filter((v: T["value"]) => v !== item.value)
+        : [...this.value, item.value];
     }
   }
 

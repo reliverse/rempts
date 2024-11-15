@@ -42,6 +42,7 @@ await (async function () {
       message: "Can you confirm?",
     },
     {
+      // @ts-expect-error TODO: fix ts
       type: (prev: boolean) => prev && "toggle",
       name: "confirmtoggle",
       message: "Can you confirm again?",

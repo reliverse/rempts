@@ -3,7 +3,7 @@ import type { ChoiceOptionalOptions } from "~/types/prod";
 import { selectPrompt } from "~/components/select";
 import { colorize } from "~/utils/colorize";
 
-import { errorHandler } from "./helpers/error-handler";
+import { errorHandler } from "./reliverse/detailed-utils";
 
 const selectPromptConfig = {
   description: colorize("(not finished)", "red"),
@@ -32,16 +32,8 @@ async function examplesRunner() {
         },
       },
       {
-        id: "user-signup",
-        title: "2. User Signup",
-        ...selectPromptConfig,
-        action: async () => {
-          await import("./reliverse/user-signup");
-        },
-      },
-      {
         id: "simple-check",
-        title: "3. Simple Library Check",
+        title: "2. Simple Library Check",
         ...selectPromptConfig,
         action: async () => {
           await import("./reliverse/experiments/simple-check");
@@ -49,7 +41,7 @@ async function examplesRunner() {
       },
       {
         id: "win-mln-js",
-        title: "4. Who Wants To Be A JavaScript Millionaire?",
+        title: "3. Who Wants To Be A JavaScript Millionaire?",
         ...selectPromptConfig,
         action: async () => {
           await import("./reliverse/experiments/win-mln-js");
@@ -57,7 +49,7 @@ async function examplesRunner() {
       },
       {
         id: "exit",
-        title: "5. Exit",
+        title: "4. Exit",
         description: colorize("(Ctrl+C)", "passionGradient"),
       },
     ],

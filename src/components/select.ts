@@ -11,11 +11,15 @@ import { useKeyPress } from "~/hooks/useKeyPress";
 import { colorize } from "~/utils/colorize";
 import { resetCursorAndClear, moveCursorAndClear } from "~/utils/readline";
 
-export async function selectPrompt<T extends TSchema>(
-  options: PromptOptions<T>,
-): Promise<Static<T>> {
+export async function selectPrompt(options: PromptOptions): Promise<string> {
   const { title, choices, defaultValue, schema, titleColor, titleTypography } =
     options;
+
+  if (schema) {
+    throw new Error(
+      "Schema providing is currently not supported for selectPrompt().\n│  But don't worry, we're already handling some validations for you.",
+    );
+  }
 
   if (!choices || choices.length === 0) {
     throw new Error("Choices are required for select prompt.");
@@ -33,7 +37,7 @@ export async function selectPrompt<T extends TSchema>(
   if (selectedIndex === -1) selectedIndex = 0;
 
   function renderChoices() {
-    if (!choices || choices.length === 0) {
+    if (!choices) {
       throw new Error("Choices are required for select prompt.");
     }
     resetCursorAndClear(stdout, 0, 0);
@@ -60,8 +64,15 @@ export async function selectPrompt<T extends TSchema>(
 
       let isValid = true;
       let errorMessage = "Invalid input.";
+
       if (schema) {
-        isValid = Value.Check(schema, selectedValue);
+        try {
+          isValid = Value.Check(schema, selectedValue);
+        } catch (error) {
+          isValid = false;
+          errorMessage = "Validation error.";
+          console.error(error);
+        }
         if (!isValid) {
           const errors = [...Value.Errors(schema, selectedValue)];
           if (errors.length > 0) {
@@ -74,10 +85,10 @@ export async function selectPrompt<T extends TSchema>(
         if (selectedChoice?.action) {
           selectedChoice
             .action()
-            .then(() => resolve(selectedValue as Static<T>))
+            .then(() => resolve(selectedValue ?? ""))
             .catch(reject);
         } else {
-          resolve(selectedValue as Static<T>);
+          resolve(selectedValue ?? "");
         }
       } else {
         console.log(errorMessage);
@@ -95,6 +106,7 @@ export async function selectPrompt<T extends TSchema>(
       } else if (key.name === "return") {
         finalizeSelection();
       } else if (key.ctrl && key.name === "c") {
+        cleanupKeyPress();
         process.exit();
       } else if (
         !isNaN(Number(str)) &&

@@ -1,6 +1,7 @@
 import logUpdate from "log-update";
 
 import { colorize } from "~/utils/colorize";
+import { restoreCursor } from "~/utils/terminal";
 
 const DEFAULT_MESSAGE = "Press any key to continue...";
 
@@ -29,11 +30,18 @@ export async function pressAnyKeyPrompt(
   return new Promise((resolve, reject) => {
     const cleanup = () => {
       process.stdin.removeListener("data", handler);
-      process.stdin.setRawMode(false);
+      if (
+        process.stdin.isTTY &&
+        typeof process.stdin.setRawMode === "function"
+      ) {
+        process.stdin.setRawMode(false);
+      }
       process.stdin.pause();
+      restoreCursor();
     };
 
     const handleCtrlC = () => {
+      cleanup();
       if (ctrlC === "reject") {
         reject(new Error("User pressed CTRL+C"));
       } else if (ctrlC === false) {
@@ -64,7 +72,9 @@ export async function pressAnyKeyPrompt(
     };
 
     process.stdin.resume();
-    process.stdin.setRawMode(true);
+    if (process.stdin.isTTY && typeof process.stdin.setRawMode === "function") {
+      process.stdin.setRawMode(true);
+    }
     process.stdin.once("data", handler);
   });
 }

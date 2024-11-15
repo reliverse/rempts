@@ -23,6 +23,7 @@ export async function confirmPrompt<T extends TSchema>(
     contentTypography,
     titleVariant,
     contentVariant,
+    action,
   } = options;
   const rl = readline.createInterface({ input, output });
 
@@ -76,6 +77,9 @@ export async function confirmPrompt<T extends TSchema>(
     }
     if (isValid) {
       rl.close();
+      if (action && value) {
+        await action();
+      }
       return value as Static<T>;
     } else {
       console.log(errorMessage);

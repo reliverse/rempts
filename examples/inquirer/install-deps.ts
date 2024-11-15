@@ -1,6 +1,6 @@
 import type { InquirerReadline } from "examples/inquirer/src/type/inquirer";
 
-import { errorHandler } from "examples/helpers/error-handler";
+import { errorHandler } from "examples/reliverse/detailed-utils";
 import { withHooks } from "examples/inquirer/src/hooks/hook-engine";
 import readline from "node:readline";
 

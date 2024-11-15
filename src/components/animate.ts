@@ -6,7 +6,7 @@ import {
 
 import type { ColorName, MsgType, TypographyName } from "~/types/prod";
 
-import { deleteLastLine } from "~/utils/console";
+import { deleteLastLine } from "~/utils/terminal";
 
 import { msg } from "../utils/messages";
 
@@ -48,26 +48,30 @@ export async function animateText({
   const finalDelay = delay ?? calculateDelay(title);
   const animation = animationMap[anim](title);
 
-  await new Promise<void>((resolve) => {
-    setTimeout(() => {
-      animation.stop();
-      deleteLastLine();
+  try {
+    await new Promise<void>((resolve) => {
+      setTimeout(() => {
+        animation.stop();
+        deleteLastLine();
 
-      if (title.includes("│  ")) {
-        title = title.replace("│  ", "");
-      } else if (title.includes("ℹ  ")) {
-        title = title.replace("ℹ  ", "");
-      }
+        if (title.includes("│  ")) {
+          title = title.replace("│  ", "");
+        } else if (title.includes("ℹ  ")) {
+          title = title.replace("ℹ  ", "");
+        }
 
-      msg({
-        type,
-        title,
-        titleColor,
-        titleTypography,
-        borderColor,
-        border,
-      });
-      resolve();
-    }, finalDelay);
-  });
+        msg({
+          type,
+          title,
+          titleColor,
+          titleTypography,
+          borderColor,
+          border,
+        });
+        resolve();
+      }, finalDelay);
+    });
+  } catch (error) {
+    console.error("Animation failed to complete.", error);
+  }
 }

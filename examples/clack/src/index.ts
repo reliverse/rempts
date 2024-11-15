@@ -257,11 +257,9 @@ export const select = <Value>(opts: SelectOptions<Value>) => {
 
       switch (this.state) {
         case "submit":
-          // @ts-expect-error TODO: fix ts
           return `${title}${color.gray(S_BAR)}  ${opt(this.options[this.cursor], "selected")}`;
         case "cancel":
           return `${title}${color.gray(S_BAR)}  ${opt(
-            // @ts-expect-error TODO: fix ts
             this.options[this.cursor],
             "cancelled",
           )}\n${color.gray(S_BAR)}`;
@@ -307,12 +305,10 @@ export const selectKey = <Value extends string>(opts: SelectOptions<Value>) => {
       switch (this.state) {
         case "submit":
           return `${title}${color.gray(S_BAR)}  ${opt(
-            // @ts-expect-error TODO: fix ts
             this.options.find((opt) => opt.value === this.value),
             "selected",
           )}`;
         case "cancel":
-          // @ts-expect-error TODO: fix ts
           return `${title}${color.gray(S_BAR)}  ${opt(this.options[0], "cancelled")}\n${color.gray(
             S_BAR,
           )}`;
@@ -549,7 +545,6 @@ export const groupMultiselect = <Value>(
               const groupActive =
                 !active &&
                 typeof option.group === "string" &&
-                // @ts-expect-error TODO: fix ts
                 this.options[this.cursor].value === option.group;
               if (groupActive) {
                 return opt(
@@ -579,7 +574,6 @@ export const groupMultiselect = <Value>(
               const groupActive =
                 !active &&
                 typeof option.group === "string" &&
-                // @ts-expect-error TODO: fix ts
                 this.options[this.cursor].value === option.group;
               if (groupActive) {
                 return opt(
@@ -729,6 +723,7 @@ export const spinner = () => {
     let frameIndex = 0;
     let dotsTimer = 0;
     registerHooks();
+
     // @ts-expect-error TODO: fix ts
     loop = setInterval(() => {
       const frame = color.magenta(frames[frameIndex]);
@@ -817,6 +812,7 @@ export const group = async <T>(
 
   for (const name of promptNames) {
     const prompt = prompts[name as keyof T];
+    // @ts-expect-error TODO: fix ts
     const result = await prompt({ results })?.catch((e) => {
       throw e;
     });

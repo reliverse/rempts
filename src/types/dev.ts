@@ -39,6 +39,7 @@ export type PromptOptionsDeprecated<T extends TSchema = any> =
   RequiredPromptOptionsDeprecated &
     OptionalPromptOptions<T> & {
       state?: StateDeprecated;
+      stateCompletedTitle?: string;
     };
 
 export type SymbolCharacterDeprecated =

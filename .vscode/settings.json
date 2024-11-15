@@ -12,5 +12,6 @@
       "rule": "perfectionist/sort-imports",
       "severity": "off"
     }
-  ]
+  ],
+  "openMultipleFiles.limit": 600
 }

@@ -10,6 +10,7 @@ export async function endPrompt({
   titleVariant,
   titleAnimation,
   titleAnimationDelay,
+  border = true,
   borderColor = "none",
 }: PromptOptions): Promise<void> {
   if (titleAnimation) {
@@ -20,6 +21,7 @@ export async function endPrompt({
       type: "M_END_ANIMATED",
       titleColor,
       titleTypography,
+      border,
       borderColor,
     });
   } else {
@@ -29,6 +31,7 @@ export async function endPrompt({
       titleColor,
       titleTypography,
       titleVariant,
+      border,
       borderColor,
     });
   }

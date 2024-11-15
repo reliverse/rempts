@@ -15,7 +15,6 @@ export default class SelectPrompt<T extends { value: any }> extends Prompt {
   }
 
   private changeValue() {
-    // @ts-expect-error TODO: fix ts
     this.value = this._value.value;
   }
 

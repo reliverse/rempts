@@ -56,7 +56,11 @@ export async function prompts<T extends TSchema>(
       value = await passwordPrompt(options);
       break;
     case "date":
-      value = await datePrompt(options);
+      value = await datePrompt({
+        ...options,
+        dateFormat: "DD/MM/YYYY",
+        dateKind: "other",
+      });
       break;
     case "nextSteps":
       await nextStepsPrompt(options);

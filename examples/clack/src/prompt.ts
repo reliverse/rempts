@@ -243,6 +243,7 @@ export default class Prompt {
 
   private _prevFrame = "";
   private render() {
+    // @ts-expect-error TODO: fix ts
     const frame = wrap(this._render(this) ?? "", process.stdout.columns, {
       hard: true,
     });
@@ -260,19 +261,15 @@ export default class Prompt {
       // If a single line has changed, only update that line
       if (diff && diff.length === 1) {
         const diffLine = diff[0];
-        // @ts-expect-error TODO: fix ts
         this.output.write(cursor.move(0, diffLine));
         this.output.write(erase.lines(1));
         const lines = frame.split("\n");
-        // @ts-expect-error TODO: fix ts
         this.output.write(lines[diffLine]);
         this._prevFrame = frame;
-        // @ts-expect-error TODO: fix ts
         this.output.write(cursor.move(0, lines.length - diffLine - 1));
         return;
       } else if (diff && diff.length > 1) {
         const diffLine = diff[0];
-        // @ts-expect-error TODO: fix ts
         this.output.write(cursor.move(0, diffLine));
         this.output.write(erase.down());
         const lines = frame.split("\n");

@@ -131,6 +131,7 @@ export const effectScheduler = {
     const { index } = store;
 
     store.hooksEffect.push(() => {
+      // @ts-expect-error TODO: fix ts
       store.hooksCleanup[index]?.();
 
       const cleanFn = cb(readline());
@@ -157,6 +158,7 @@ export const effectScheduler = {
   clearAll() {
     const store = getStore();
     store.hooksCleanup.forEach((cleanFn) => {
+      // @ts-expect-error TODO: fix ts
       cleanFn?.();
     });
 
