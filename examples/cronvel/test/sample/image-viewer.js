@@ -25,8 +25,6 @@
 	SOFTWARE.
 */
 
-"use strict";
-
 const termkit = require("..");
 //const termkit = require( '../lib/termkit-no-lazy-require.js' ) ;
 const term = termkit.terminal;

@@ -1,6 +1,6 @@
 // examples/win-mln-js.ts: A fun example of a quiz game. Inspired by CLI-game created by Fireship.
 
-import { errorHandler } from "examples/reliverse/detailed-utils";
+import { errorHandler } from "@/reliverse/main-utils";
 import figlet from "figlet";
 
 import { prompts } from "~/components/all-in-one";

@@ -1,3 +1,4 @@
+tmp/
 .venv/
 .vscode/
 *.txt
@@ -11,4 +12,9 @@ LICENSE.md
 node_modules/
 package-lock.json
 pnpm-lock.yaml
-tmp/
+examples/astro/
+examples/clack/
+examples/consola/
+examples/cronvel/
+examples/inquirer/
+examples/terkelg/

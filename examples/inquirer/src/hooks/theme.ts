@@ -1,4 +1,4 @@
-import { figures } from "examples/terkelg/src/lib/util";
+import { figures } from "@/terkelg/src/lib/util";
 import { blue, bold, cyan, dim, green, red, yellow } from "picocolors";
 
 import type { Prettify } from "../type/utils";

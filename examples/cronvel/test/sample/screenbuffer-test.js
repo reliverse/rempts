@@ -25,8 +25,6 @@
 	SOFTWARE.
 */
 
-"use strict";
-
 const termkit = require("terminal-kit");
 const term = termkit.terminal;
 

@@ -1,7 +1,5 @@
 // @ts-nocheck
 
-"use strict";
-
 const color = require("kleur");
 const { cursor } = require("sisteransi");
 const Prompt = require("./prompt");

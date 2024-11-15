@@ -24,8 +24,6 @@
 	SOFTWARE.
 */
 
-"use strict";
-
 const path = require("path");
 
 if (

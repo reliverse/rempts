@@ -1,7 +1,7 @@
-import type { InquirerReadline } from "examples/inquirer/src/type/inquirer";
+import type { InquirerReadline } from "@/inquirer/src/type/inquirer";
 
-import { errorHandler } from "examples/reliverse/detailed-utils";
-import { withHooks } from "examples/inquirer/src/hooks/hook-engine";
+import { withHooks } from "@/inquirer/src/hooks/hook-engine";
+import { errorHandler } from "@/reliverse/main-utils";
 import readline from "node:readline";
 
 import { prompts } from "~/components/all-in-one";

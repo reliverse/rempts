@@ -1,6 +1,6 @@
 import type { TSchema, Static } from "@sinclair/typebox";
 
-import { symbol } from "examples/reliverse/experiments/utils/symbols";
+import { symbol } from "@/reliverse/experiments/utils/symbols";
 
 import type { PromptStateDeprecated } from "~/types/dev";
 

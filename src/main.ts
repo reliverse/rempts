@@ -1,3 +1,4 @@
+export { msg, fmt } from "~/utils/messages";
 export { animateText } from "~/components/animate";
 export { createAsciiArt } from "~/components/ascii-art";
 export { createSpinner } from "~/components/spinner";

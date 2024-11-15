@@ -1,4 +1,4 @@
-import { symbol } from "examples/reliverse/experiments/utils/symbols";
+import { symbol } from "@/reliverse/experiments/utils/symbols";
 
 import type { StateDeprecated } from "~/types/dev";
 

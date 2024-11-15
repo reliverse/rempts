@@ -3,7 +3,7 @@ import type { ChoiceOptionalOptions } from "~/types/prod";
 import { selectPrompt } from "~/components/select";
 import { colorize } from "~/utils/colorize";
 
-import { errorHandler } from "./reliverse/detailed-utils";
+import { errorHandler } from "./reliverse/main-utils";
 
 const selectPromptConfig = {
   description: colorize("(not finished)", "red"),
@@ -28,7 +28,7 @@ async function examplesRunner() {
         title: "1. Install Dependencies",
         description: colorize("(recommended)", "viceGradient"),
         action: async () => {
-          await import("./reliverse/detailed-example");
+          await import("./main-example");
         },
       },
       {

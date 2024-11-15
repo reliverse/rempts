@@ -1,5 +1,3 @@
-"use strict";
-
 const test = require("tape");
 
 const TextPrompt = require("../lib/elements/text");

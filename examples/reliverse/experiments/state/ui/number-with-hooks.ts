@@ -1,7 +1,7 @@
 import type { TSchema, Static } from "@sinclair/typebox";
 
+import { usePromptState } from "@/inquirer/src/hooks/usePromptState";
 import { Value } from "@sinclair/typebox/value";
-import { usePromptState } from "examples/inquirer/src/hooks/usePromptState";
 import { stdin as input, stdout as output } from "node:process";
 import readline from "node:readline/promises";
 

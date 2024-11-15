@@ -4,21 +4,21 @@
  * https://github.com/natemoo-re/clack/blob/593f93d06c1a53c8424e9aaf0c1c63fbf6975527/packages/prompts/src/index.ts
  */
 
-import ConfirmPrompt from "examples/clack/src/confirm";
-import GroupMultiSelectPrompt from "examples/clack/src/group-multiselect";
-import MultiSelectPrompt from "examples/clack/src/multi-select";
-import PasswordPrompt from "examples/clack/src/password";
-import { isCancel, type StateDeprecated } from "examples/clack/src/prompt";
-import SelectPrompt from "examples/clack/src/select";
-import SelectKeyPrompt from "examples/clack/src/select-key";
-import TextPrompt from "examples/clack/src/text";
-import { block } from "examples/clack/src/utils";
+import ConfirmPrompt from "@/clack/src/confirm";
+import GroupMultiSelectPrompt from "@/clack/src/group-multiselect";
+import MultiSelectPrompt from "@/clack/src/multi-select";
+import PasswordPrompt from "@/clack/src/password";
+import { isCancel, type StateDeprecated } from "@/clack/src/prompt";
+import SelectPrompt from "@/clack/src/select";
+import SelectKeyPrompt from "@/clack/src/select-key";
+import TextPrompt from "@/clack/src/text";
+import { block } from "@/clack/src/utils";
 import isUnicodeSupported from "is-unicode-supported";
 import { cursor, erase } from "sisteransi";
 
 import { colors as color } from "./color";
 
-export { isCancel } from "examples/clack/src";
+export { isCancel } from "@/clack/src";
 
 const unicode = isUnicodeSupported();
 /**

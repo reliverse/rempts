@@ -1,82 +1,50 @@
-/*
-	Terminal Kit
+const tree = require("tree-kit");
+const xterm256Generic = require("./xterm-256color.generic.js");
 
-	Copyright (c) 2009 - 2022 Cédric Ronvel
+const keymap = tree.extend(null, Object.create(xterm256Generic.keymap), {
+  UP: "\x1b[A",
+  DOWN: "\x1b[B",
+  RIGHT: "\x1b[C",
+  LEFT: "\x1b[D",
+  BACKSPACE: "\x7f",
+  SHIFT_F1: "\x1b[1;2P",
+  SHIFT_F2: "\x1b[1;2Q",
+  SHIFT_F3: "\x1b[1;2R",
+  SHIFT_F4: "\x1b[1;2S",
+  CTRL_F1: "\x1bOP",
+  CTRL_F2: "\x1bOQ",
+  CTRL_F3: "\x1bOR",
+  CTRL_F4: "\x1bOS",
+  CTRL_F5: "\x1b[15~",
+  CTRL_F6: "\x1b[17~",
+  CTRL_F7: "\x1b[18~",
+  CTRL_F8: "\x1b[19~",
+  CTRL_F9: "\x1b[20~",
+  CTRL_F10: "\x1b[21~",
+  CTRL_F11: "\x1b[23~",
+  CTRL_F12: "\x1b[24~",
+  CTRL_SHIFT_F1: "\x1bOP",
+  CTRL_SHIFT_F2: "\x1bOQ",
+  CTRL_SHIFT_F3: "\x1bOR",
+  CTRL_SHIFT_F4: "\x1bOS",
+  CTRL_SHIFT_F5: "\x1b[15~",
+  CTRL_SHIFT_F6: "\x1b[17~",
+  CTRL_SHIFT_F7: "\x1b[18~",
+  CTRL_SHIFT_F8: "\x1b[19~",
+  CTRL_SHIFT_F9: "\x1b[20~",
+  CTRL_SHIFT_F10: "\x1b[21~",
+  CTRL_SHIFT_F11: "\x1b[23~",
+  CTRL_SHIFT_F12: "\x1b[24~",
+  ALT_UP: "\x1b\x1b[A",
+  ALT_DOWN: "\x1b\x1b[B",
+  ALT_RIGHT: "\x1b\x1b[C",
+  ALT_LEFT: "\x1b\x1b[D",
+  //SHIFT_DELETE: '\x7f' ,
+  //ALT_BACKSPACE: '\x7f' ,
+  //ALT_TAB: '\x09' ,
+  //CTRL_ALT_SPACE: ' ' ,
 
-	The MIT License (MIT)
-
-	Permission is hereby granted, free of charge, to any person obtaining a copy
-	of this software and associated documentation files (the "Software"), to deal
-	in the Software without restriction, including without limitation the rights
-	to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-	copies of the Software, and to permit persons to whom the Software is
-	furnished to do so, subject to the following conditions:
-
-	The above copyright notice and this permission notice shall be included in all
-	copies or substantial portions of the Software.
-
-	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-	IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-	FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-	AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-	LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-	SOFTWARE.
-*/
-
-"use strict" ;
-
-
-
-const tree = require( 'tree-kit' ) ;
-const xterm256Generic = require( './xterm-256color.generic.js' ) ;
-
-
-
-const keymap = tree.extend( null , Object.create( xterm256Generic.keymap ) , {
-	UP: '\x1b[A' ,
-	DOWN: '\x1b[B' ,
-	RIGHT: '\x1b[C' ,
-	LEFT: '\x1b[D' ,
-	BACKSPACE: '\x7f' ,
-	SHIFT_F1: '\x1b[1;2P' ,
-	SHIFT_F2: '\x1b[1;2Q' ,
-	SHIFT_F3: '\x1b[1;2R' ,
-	SHIFT_F4: '\x1b[1;2S' ,
-	CTRL_F1: '\x1bOP' ,
-	CTRL_F2: '\x1bOQ' ,
-	CTRL_F3: '\x1bOR' ,
-	CTRL_F4: '\x1bOS' ,
-	CTRL_F5: '\x1b[15~' ,
-	CTRL_F6: '\x1b[17~' ,
-	CTRL_F7: '\x1b[18~' ,
-	CTRL_F8: '\x1b[19~' ,
-	CTRL_F9: '\x1b[20~' ,
-	CTRL_F10: '\x1b[21~' ,
-	CTRL_F11: '\x1b[23~' ,
-	CTRL_F12: '\x1b[24~' ,
-	CTRL_SHIFT_F1: '\x1bOP' ,
-	CTRL_SHIFT_F2: '\x1bOQ' ,
-	CTRL_SHIFT_F3: '\x1bOR' ,
-	CTRL_SHIFT_F4: '\x1bOS' ,
-	CTRL_SHIFT_F5: '\x1b[15~' ,
-	CTRL_SHIFT_F6: '\x1b[17~' ,
-	CTRL_SHIFT_F7: '\x1b[18~' ,
-	CTRL_SHIFT_F8: '\x1b[19~' ,
-	CTRL_SHIFT_F9: '\x1b[20~' ,
-	CTRL_SHIFT_F10: '\x1b[21~' ,
-	CTRL_SHIFT_F11: '\x1b[23~' ,
-	CTRL_SHIFT_F12: '\x1b[24~' ,
-	ALT_UP: '\x1b\x1b[A' ,
-	ALT_DOWN: '\x1b\x1b[B' ,
-	ALT_RIGHT: '\x1b\x1b[C' ,
-	ALT_LEFT: '\x1b\x1b[D'
-	//SHIFT_DELETE: '\x7f' ,
-	//ALT_BACKSPACE: '\x7f' ,
-	//ALT_TAB: '\x09' ,
-	//CTRL_ALT_SPACE: ' ' ,
-
-	/*
+  /*
 	ALT_A: '\xc3\xa5' ,
 	CTRL_ALT_A: '\x01' ,
 	ALT_SHIFT_A: '\xc3\x85' ,
@@ -154,21 +122,18 @@ const keymap = tree.extend( null , Object.create( xterm256Generic.keymap ) , {
 	CTRL_ALT_Z: '\x1a' ,
 	ALT_SHIFT_Z: '\xc2\xb8'
 	*/
-} ) ;
-
-
+});
 
 module.exports = {
-	esc: Object.create( xterm256Generic.esc ) ,
-	keymap: keymap ,
-	// keymap: keymap ,
-	handler: Object.create( xterm256Generic.handler ) ,
-	support: {
-		deltaEscapeSequence: true ,
-		"256colors": true ,
-		"24bitsColors": undefined ,	// DEPRECATED
-		"trueColor": undefined	// maybe, maybe not
-	} ,
-	colorRegister: require( '../colorScheme/gnome.json' )
-} ;
-
+  esc: Object.create(xterm256Generic.esc),
+  keymap: keymap,
+  // keymap: keymap ,
+  handler: Object.create(xterm256Generic.handler),
+  support: {
+    deltaEscapeSequence: true,
+    "256colors": true,
+    "24bitsColors": undefined, // DEPRECATED
+    trueColor: undefined, // maybe, maybe not
+  },
+  colorRegister: require("../colorScheme/gnome.json"),
+};

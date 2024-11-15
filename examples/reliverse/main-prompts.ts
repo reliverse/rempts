@@ -7,7 +7,6 @@ import { animateText } from "~/components/animate";
 import { pressAnyKeyPrompt } from "~/components/any-key";
 import { numSelectPrompt } from "~/components/num-select";
 import { promptsDisplayResults } from "~/components/results";
-import { createSpinner } from "~/components/spinner";
 import {
   confirmPrompt,
   datePrompt,
@@ -22,9 +21,9 @@ import {
 } from "~/main";
 import { fmt } from "~/utils/messages";
 
-import { basicConfig, extendedConfig } from "./detailed-configs";
-import { schema, type UserInput } from "./detailed-schema";
-import { installDependencies } from "./detailed-utils";
+import { basicConfig, extendedConfig } from "./main-configs";
+import { schema, type UserInput } from "./main-schema";
+import { exampleSpinner } from "./main-utils";
 
 const IDs = {
   start: "start",
@@ -198,34 +197,20 @@ export async function showConfirmPrompt(
 
   const deps = await confirmPrompt({
     id: IDs.deps,
-    title: "Do you want to install dependencies?",
+    title: "Do you want to see spinner in action?",
     // Intellisense will show you all available colors thanks to the enum.
     titleColor: "red",
     titleVariant: "doubleBox",
     schema: schema.properties.deps,
     // @reliverse/prompts includes styled prompts, with the `title` color defaulting
     // to "cyanBright". Setting the color to "none" removes the default styling.
-    content: "This will install all necessary dependencies.",
+    content: "Spinners are helpful for long-running tasks.",
     contentColor: "dim",
     contentVariant: "underline",
     // Default value can be set both by the `defaultValue` property,
     // or by returning the value in your own function like this one.
     defaultValue: true,
-    // Display all user input values, e.g.:
-    // ┌────────────────────────────────┐
-    // │ Here is your input result:     │
-    // │ {                              │
-    // │   "deps": true,                │
-    // │   "username": "GeraltOfRivia", │
-    // │   "password": "21ytrewq",      │
-    // │   "age": 98,                   │
-    // │   "color": "blue",             │
-    // │   "features": [                │
-    // │      "typescript", "eslint"    │
-    // │   ]                            │
-    // │ }                              │
-    // └────────────────────────────────┘
-    action: async () => installDependencies(),
+    action: async () => exampleSpinner(),
   });
   // A return value is unnecessary for prompts when the result is not needed later.
   return deps ?? false;
@@ -290,6 +275,20 @@ export async function showEndPrompt() {
 
 export async function showResults(userInput: UserInput) {
   await promptsDisplayResults({
+    // Display all user input values, e.g.:
+    // ┌────────────────────────────────┐
+    // │ Here is your input result:     │
+    // │ {                              │
+    // │   "deps": true,                │
+    // │   "username": "GeraltOfRivia", │
+    // │   "password": "21ytrewq",      │
+    // │   "age": 98,                   │
+    // │   "color": "blue",             │
+    // │   "features": [                │
+    // │      "typescript", "eslint"    │
+    // │   ]                            │
+    // │ }                              │
+    // └────────────────────────────────┘
     results: userInput,
     inline: true,
   });

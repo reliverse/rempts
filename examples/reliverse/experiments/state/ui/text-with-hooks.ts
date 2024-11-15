@@ -1,14 +1,14 @@
+import type { InquirerReadline } from "@/inquirer/src/type/inquirer";
 import type { TSchema, Static } from "@sinclair/typebox";
-import type { InquirerReadline } from "examples/inquirer/src/type/inquirer";
 
-import { Value } from "@sinclair/typebox/value";
 import {
   useEffect,
   useKeypress,
   type KeypressEvent,
-} from "examples/inquirer/src/hooks";
-import { useState } from "examples/inquirer/src/hooks/use-state";
-import { symbol } from "examples/reliverse/experiments/utils/symbols";
+} from "@/inquirer/src/hooks";
+import { useState } from "@/inquirer/src/hooks/use-state";
+import { symbol } from "@/reliverse/experiments/utils/symbols";
+import { Value } from "@sinclair/typebox/value";
 import { stdin as input, stdout as output } from "node:process";
 import readline from "node:readline/promises";
 

@@ -1,9 +1,7 @@
 // examples/simple-check.ts: A very basic example to check the library.
 
-import {
-  errorHandler,
-  installDependencies,
-} from "examples/reliverse/detailed-utils";
+import { errorHandler } from "@/reliverse/main-utils";
+import { installDependencies } from "nypm";
 
 import { prompts } from "~/components/all-in-one";
 

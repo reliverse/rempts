@@ -1,7 +1,7 @@
 import type { TSchema, Static } from "@sinclair/typebox";
 
+import { symbol } from "@/reliverse/experiments/utils/symbols";
 import { Value } from "@sinclair/typebox/value";
-import { symbol } from "examples/reliverse/experiments/utils/symbols";
 import { stdin as input, stdout as output } from "node:process";
 import readline from "node:readline/promises";
 

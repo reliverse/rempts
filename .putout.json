@@ -126,6 +126,13 @@
       "remove-console": "off",
       "remove-empty/import": "off"
     },
+    "output": {
+      "nodejs/remove-process-exit": "off",
+      "nodejs/convert-top-level-return": "on",
+      "remove-console": "off",
+      "remove-empty/import": "off",
+      "nodejs/declare": "off"
+    },
     "{test,*.spec.{js,mjs,cjs}}": {
       "tape": "on"
     },

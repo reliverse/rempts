@@ -1,5 +1,3 @@
-"use strict";
-
 module.exports = {
   TextPrompt: require("./text"),
   SelectPrompt: require("./select"),
