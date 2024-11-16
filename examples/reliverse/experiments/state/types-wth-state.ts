@@ -1,9 +1,9 @@
 import type { TSchema } from "@sinclair/typebox";
 
-import type { PromptTypeDeprecated } from "~/types/dev";
 import type {
   ChoiceOptions,
   ColorName,
+  PromptType,
   TypographyName,
   Variant,
 } from "~/types/prod";
@@ -17,7 +17,7 @@ export type StateDeprecated =
   | "error";
 
 export type PromptOptionsWithState<T extends TSchema = any> = {
-  type: PromptTypeDeprecated;
+  type: PromptType;
   id: string;
   title: string;
   stateCompletedTitle?: string;

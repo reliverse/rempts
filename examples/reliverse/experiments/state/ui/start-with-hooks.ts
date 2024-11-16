@@ -1,6 +1,6 @@
-import { useEffect } from "@/inquirer/src/hooks";
-import { useBar } from "@/inquirer/src/hooks/useBar";
-import { usePromptState } from "@/inquirer/src/hooks/usePromptState";
+import { useEffect } from "@/external/inquirer/src/hooks";
+import { useBar } from "@/external/inquirer/src/hooks/useBar";
+import { usePromptState } from "@/external/inquirer/src/hooks/usePromptState";
 
 import type { PromptOptionsDeprecated } from "~/types/dev";
 

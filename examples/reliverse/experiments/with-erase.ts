@@ -1,12 +1,12 @@
 import { symbol } from "@/reliverse/experiments/utils/symbols";
-import { errorHandler } from "@/reliverse/main-utils";
+import { errorHandler } from "~/utils/helpers/errors";
 
 import type {
   PromptStateDeprecated,
   SymbolCharacterDeprecated,
 } from "~/types/dev";
 
-import { prompts } from "~/components/all-in-one";
+import { prompt } from "~/mono";
 
 async function main() {
   console.log();
@@ -31,27 +31,24 @@ async function main() {
   let currentState: PromptStateDeprecated = getState("start");
 
   currentState = getState("start");
-  await prompts({
+  await prompt({
     id: currentState.id,
     type: "start",
     title: "create-app",
     titleColor: "bgCyanBright",
     titleTypography: "bold",
-    state: currentState.state,
   });
   currentState.state = "completed";
 
   currentState = getState("userInput");
-  const userInput = await prompts({
+  const userInput = await prompt({
     id: currentState.id,
     type: "text",
     title: `Please enter your username (Prompt state: ${currentState.state})`,
-    stateCompletedTitle: `Please enter your username (Prompt state: ${currentState.state})`,
     titleColor: "blue",
     titleTypography: "bold",
     content: "Your username will be used to identify you in the system.\n",
     contentTypography: "italic",
-    state: currentState.state,
     validate: (input: string) =>
       input.length > 0 || "Username cannot be empty.",
     action: async () => {

@@ -1,19 +1,17 @@
-// examples/win-mln-js.ts: A fun example of a quiz game. Inspired by CLI-game created by Fireship.
+// 2-mono-example.ts: A fun example of a quiz game. Inspired by CLI-game created by Fireship. The example demonstrates how to use a mono prompt() component.
 
-import { errorHandler } from "@/reliverse/main-utils";
-import figlet from "figlet";
-
-import { prompts } from "~/components/all-in-one";
 import { createAsciiArt } from "~/components/ascii-art";
+import { prompt } from "~/mono";
 import { colorize } from "~/utils/colorize";
+import { errorHandler } from "~/utils/helpers/errors";
 
-import { handleAnswer } from "./state/utils/handleAnswer";
+import { handleAnswer } from "./reliverse/experiments/state/utils/handleAnswer";
 
 async function main() {
-  await prompts({
+  await prompt({
     type: "start",
     id: "welcome",
-    title: "Who Wants To Be A JavaScript Millionaire?",
+    title: "Who Wants to Be a JS Mil?",
     titleColor: "gradientGradient",
     titleTypography: "bold",
     titleVariant: "animated",
@@ -25,7 +23,7 @@ async function main() {
     So get all the questions right...
   `);
 
-  const player_name = await prompts({
+  const player_name = await prompt({
     type: "text",
     id: "player_name",
     title: "What is your name?",
@@ -34,8 +32,8 @@ async function main() {
   // TODO: fix [object object]
   const playerName = player_name ?? "Player";
 
-  const { answer } = await prompts({
-    type: "select",
+  const { answer } = await prompt({
+    type: "numSelect",
     id: "answer",
     title: "JavaScript was created in 10 days then released on",
     choices: [
@@ -48,7 +46,7 @@ async function main() {
   await handleAnswer(
     answer === "Dec 4th, 1995",
     `Nice work ${playerName}. That's a legit answer!`,
-    `💀💀💀 Game over, you lose ${playerName}!`,
+    `🫠 Game over, ${playerName}! You lose!`,
   );
 
   const message = `Congrats !\n $ 1 , 0 0 0 , 0 0 0`;
@@ -58,7 +56,7 @@ async function main() {
     font: "Standard",
   });
 
-  await prompts({
+  await prompt({
     type: "end",
     id: "winner",
     title: `

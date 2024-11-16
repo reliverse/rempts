@@ -29,8 +29,8 @@
       "node_modules/",
       "dist/",
       "output/",
-      "examples/terkelg/**/*.ts",
-      "examples/cronvel/**/*.ts"
+      "examples/external/terkelg/**/*.ts",
+      "examples/external/cronvel/**/*.ts"
     ],
     "rules": {
       "recommended": true,

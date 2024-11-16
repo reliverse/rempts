@@ -1,6 +1,6 @@
 {
   "name": "@reliverse/prompts",
-  "version": "0.9.27",
+  "version": "0.9.29",
   "description": "@reliverse/prompts is a powerful library that enables seamless, typesafe, and resilient prompts for command-line applications. Crafted with simplicity and elegance, it provides developers with an intuitive and robust way to build interactive CLIs.",
   "scripts": {
     "appts": "bun typecheck && bun lint && bun format",
@@ -14,8 +14,8 @@
     "attw": "attw --pack",
     "tsc": "tshy",
     "knip": "knip",
-    "dev": "bun examples/examples-runner.ts",
-    "dev:tsx": "tsx examples/examples-runner.ts"
+    "dev": "bun examples/run-example.ts",
+    "dev:x": "tsx examples/run-example.ts"
   },
   "type": "module",
   "publishConfig": {

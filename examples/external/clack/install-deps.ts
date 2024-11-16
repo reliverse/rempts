@@ -7,8 +7,8 @@ import {
   isCancel,
   cancel,
   text,
-} from "@/clack/src";
-import { errorHandler } from "@/reliverse/main-utils";
+} from "@/external/clack/src";
+import { errorHandler } from "~/utils/helpers/errors";
 import { setTimeout as sleep } from "node:timers/promises";
 import color from "picocolors";
 

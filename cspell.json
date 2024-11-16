@@ -2,7 +2,7 @@
   "version": "0.2",
   "language": "en",
   "import": ["@cspell/dict-npm/cspell-ext.json"],
-  "ignorePaths": ["examples/cronvel"],
+  "ignorePaths": ["examples/external/cronvel"],
   "words": [
     "alacritty",
     "Approximative",

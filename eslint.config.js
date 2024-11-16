@@ -10,7 +10,7 @@ export default tseslint.config(
     ignores: [
       "**/.{git,next,astro,wxt}/",
       "**/{node_modules,dist,output,public,drizzle}/",
-      "examples/{cronvel,terkelg}/**/*.{js,ts}",
+      "examples/external/{cronvel,terkelg}/**/*.{js,ts}",
     ],
   },
   eslint.configs.recommended,

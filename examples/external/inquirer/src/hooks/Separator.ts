@@ -1,4 +1,4 @@
-import { figures } from "@/terkelg/src/lib/util";
+import { figures } from "@/external/terkelg/src/lib/util";
 import { dim } from "picocolors";
 
 /**

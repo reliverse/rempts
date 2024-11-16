@@ -1,10 +1,10 @@
-import type { InquirerReadline } from "@/inquirer/src/type/inquirer";
+import type { InquirerReadline } from "@/external/inquirer/src/type/inquirer";
 
-import { withHooks } from "@/inquirer/src/hooks/hook-engine";
-import { errorHandler } from "@/reliverse/main-utils";
+import { withHooks } from "@/external/inquirer/src/hooks/hook-engine";
+import { errorHandler } from "~/utils/helpers/errors";
 import readline from "node:readline";
 
-import { prompts } from "~/components/all-in-one";
+import { prompt } from "~/mono";
 import { colorize } from "~/utils/colorize";
 
 async function main() {
@@ -23,16 +23,15 @@ async function main() {
 
   await withHooks(rl as unknown as InquirerReadline, async (cycle) => {
     cycle(async () => {
-      await prompts({
+      await prompt({
         id: "start",
         type: "start",
         title: "create-app",
         titleColor: "bgCyanBright",
         titleTypography: "bold",
-        state: "initial",
       });
 
-      await prompts({
+      await prompt({
         type: "text",
         id: "userInput",
         title: "Please enter your username",
@@ -40,18 +39,17 @@ async function main() {
         titleTypography: "bold",
         content: "Your username will be used to identify you in the system.\n",
         contentTypography: "bold",
-        state: "initial",
         validate: (input) => input.length > 0 || "Username cannot be empty.",
       });
 
-      const dir = await prompts({
+      const dir = await prompt({
         id: "dir",
         type: "text",
         title: "Where should we create your project?",
         defaultValue: "./sparkling-solid",
       });
 
-      await prompts({
+      await prompt({
         type: "end",
         id: "end",
         title: `Problems? ${colorize("https://github.com/blefnk/reliverse/prompts", "cyanBright")}`,

@@ -2,8 +2,7 @@ import type { ChoiceOptionalOptions } from "~/types/prod";
 
 import { selectPrompt } from "~/components/select";
 import { colorize } from "~/utils/colorize";
-
-import { errorHandler } from "./reliverse/main-utils";
+import { errorHandler } from "~/utils/helpers/errors";
 
 const selectPromptConfig = {
   description: colorize("(not finished)", "red"),
@@ -24,27 +23,27 @@ async function examplesRunner() {
     titleTypography: "bold",
     choices: [
       {
-        id: "install-deps",
-        title: "1. Install Dependencies",
+        id: "1-main-example",
+        title: "1. Main Example",
         description: colorize("(recommended)", "viceGradient"),
         action: async () => {
-          await import("./main-example");
+          await import("./1-main-example");
         },
       },
       {
-        id: "simple-check",
-        title: "2. Simple Library Check",
+        id: "2-mono-example",
+        title: "2. Mono Example",
         ...selectPromptConfig,
         action: async () => {
-          await import("./reliverse/experiments/simple-check");
+          await import("./2-mono-example");
         },
       },
       {
-        id: "win-mln-js",
-        title: "3. Who Wants To Be A JavaScript Millionaire?",
+        id: "3-basic-example",
+        title: "3. Basic Example",
         ...selectPromptConfig,
         action: async () => {
-          await import("./reliverse/experiments/win-mln-js");
+          await import("./3-basic-example");
         },
       },
       {

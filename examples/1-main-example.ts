@@ -1,5 +1,5 @@
-// examples/reliverse/main-example.ts: An advanced example of a CLI application with a beautiful UI.
-// This example demonstrates how we create a drop-in replacement for libraries like @inquirer/prompts.
+// 1-main-example.ts: An advanced example of a CLI application with a beautiful UI config. This example
+// demonstrates all possible prompt components. Everything is divided into separate files for clarity.
 
 import {
   askDir,
@@ -19,12 +19,11 @@ import {
   showTextPrompt,
 } from "@/reliverse/main-prompts";
 import { type UserInput } from "@/reliverse/main-schema";
-import { errorHandler } from "@/reliverse/main-utils";
+import { errorHandler } from "~/utils/helpers/errors";
 
 export async function detailedExample() {
   await showStartPrompt();
   await showAnyKeyPrompt("privacy");
-
   const username = await showTextPrompt();
   const dir = await askDir(username);
   const age = await showNumberPrompt();

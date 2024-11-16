@@ -1,12 +1,12 @@
 import { symbol } from "@/reliverse/experiments/utils/symbols";
-import { errorHandler } from "@/reliverse/main-utils";
+import { errorHandler } from "~/utils/helpers/errors";
 
 import type {
   PromptStateDeprecated,
   SymbolCharacterDeprecated,
 } from "~/types/dev";
 
-import { prompts } from "~/components/all-in-one";
+import { prompt } from "~/mono";
 import { colorize } from "~/utils/colorize";
 
 async function main() {
@@ -32,18 +32,17 @@ async function main() {
   let currentState: PromptStateDeprecated = getState("start");
 
   currentState = getState("start");
-  await prompts({
+  await prompt({
     id: currentState.id,
     type: "start",
     title: "create-app",
     titleColor: "bgCyanBright",
     titleTypography: "bold",
-    state: currentState.state,
   });
   currentState.state = "completed";
 
   currentState = getState("userInput");
-  const userInput = await prompts({
+  const userInput = await prompt({
     type: "text",
     id: currentState.id,
     title: `Please enter your username (Prompt state: ${currentState.state})`,
@@ -51,7 +50,6 @@ async function main() {
     titleTypography: "bold",
     content: "Your username will be used to identify you in the system.\n",
     contentTypography: "italic",
-    state: currentState.state,
     validate: (input) => input.length > 0 || "Username cannot be empty.",
   });
   currentState.state = "completed";
@@ -59,22 +57,20 @@ async function main() {
   console.log("currentState of userInput: ", currentState);
 
   currentState = getState("dir");
-  const dir = await prompts({
+  const dir = await prompt({
     id: currentState.id,
     type: "text",
     title: `Where should we create your project? (Prompt state: ${currentState.state})`,
     defaultValue: "./sparkling-solid",
-    state: currentState.state,
   });
   currentState.state = "completed";
   currentState.value = dir;
 
   currentState = getState("end");
-  await prompts({
+  await prompt({
     type: "end",
     id: currentState.id,
     title: `Problems? ${colorize("https://github.com/blefnk/reliverse/prompts", "cyanBright")}`,
-    state: currentState.state,
   });
   currentState.state = "completed";
 

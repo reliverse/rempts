@@ -1,18 +1,6 @@
 import type { TSchema } from "@sinclair/typebox";
 
-import type { OptionalPromptOptions } from "~/types/prod";
-
-export type PromptTypeDeprecated =
-  | "text"
-  | "number"
-  | "confirm"
-  | "select"
-  | "multiselect"
-  | "password"
-  | "date"
-  | "start"
-  | "nextSteps"
-  | "end";
+import type { OptionalPromptOptions, PromptType } from "~/types/prod";
 
 export type StateDeprecated =
   | "initial"
@@ -31,7 +19,7 @@ export type PromptStateDeprecated = {
 
 export type RequiredPromptOptionsDeprecated = {
   id: string;
-  type: PromptTypeDeprecated;
+  type: PromptType;
   title: string;
 };
 

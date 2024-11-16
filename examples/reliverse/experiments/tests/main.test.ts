@@ -2,12 +2,12 @@ import { Type } from "@sinclair/typebox";
 import mockStdin from "mock-stdin";
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 
-import { prompts } from "~/components/all-in-one";
+import { prompt } from "~/mono";
 
 // Helper function to delay execution to simulate asynchronous input
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
-describe("prompts", () => {
+describe("prompt", () => {
   let stdinMock: ReturnType<typeof mockStdin.stdin>;
 
   beforeEach(() => {
@@ -27,7 +27,7 @@ describe("prompts", () => {
   }
 
   it("should prompt for text input", async () => {
-    const promptPromise = prompts({
+    const promptPromise = prompt({
       type: "text",
       id: "name",
       title: "Enter your name",
@@ -40,7 +40,7 @@ describe("prompts", () => {
   });
 
   it("should use default value when input is empty", async () => {
-    const promptPromise = prompts({
+    const promptPromise = prompt({
       type: "text",
       id: "city",
       title: "Enter your city",
@@ -54,7 +54,7 @@ describe("prompts", () => {
   });
 
   it("should validate text input with schema", async () => {
-    const promptPromise = prompts({
+    const promptPromise = prompt({
       type: "text",
       id: "username",
       title: "Enter your username",
@@ -72,7 +72,7 @@ describe("prompts", () => {
   });
 
   it("should prompt for number input", async () => {
-    const promptPromise = prompts({
+    const promptPromise = prompt({
       type: "number",
       id: "age",
       title: "Enter your age",
@@ -85,7 +85,7 @@ describe("prompts", () => {
   });
 
   it("should handle invalid number input and re-prompt", async () => {
-    const promptPromise = prompts({
+    const promptPromise = prompt({
       type: "number",
       id: "age",
       title: "Enter your age",
@@ -100,7 +100,7 @@ describe("prompts", () => {
   });
 
   it("should prompt for confirmation", async () => {
-    const promptPromise = prompts({
+    const promptPromise = prompt({
       type: "confirm",
       id: "agree",
       title: "Do you agree?",
@@ -113,7 +113,7 @@ describe("prompts", () => {
   });
 
   it("should handle invalid confirmation input and re-prompt", async () => {
-    const promptPromise = prompts({
+    const promptPromise = prompt({
       type: "confirm",
       id: "agree",
       title: "Do you agree?",
@@ -128,7 +128,7 @@ describe("prompts", () => {
   });
 
   it("should prompt for selection", async () => {
-    const promptPromise = prompts({
+    const promptPromise = prompt({
       type: "select",
       id: "color",
       title: "Choose a color",
@@ -146,7 +146,7 @@ describe("prompts", () => {
   });
 
   it("should handle invalid selection input and re-prompt", async () => {
-    const promptPromise = prompts({
+    const promptPromise = prompt({
       type: "select",
       id: "color",
       title: "Choose a color",
@@ -168,7 +168,7 @@ describe("prompts", () => {
   });
 
   it("should prompt for multiple selections", async () => {
-    const promptPromise = prompts({
+    const promptPromise = prompt({
       type: "multiselect",
       id: "fruits",
       title: "Select your favorite fruits",
@@ -186,7 +186,7 @@ describe("prompts", () => {
   });
 
   it("should handle invalid multiple selections and re-prompt", async () => {
-    const promptPromise = prompts({
+    const promptPromise = prompt({
       type: "multiselect",
       id: "fruits",
       title: "Select your favorite fruits",
@@ -208,7 +208,7 @@ describe("prompts", () => {
   });
 
   it("should prompt for date input", async () => {
-    const promptPromise = prompts({
+    const promptPromise = prompt({
       type: "date",
       id: "eventDate",
       title: "Enter the event date",
@@ -221,7 +221,7 @@ describe("prompts", () => {
   });
 
   it("should handle invalid date input and re-prompt", async () => {
-    const promptPromise = prompts({
+    const promptPromise = prompt({
       type: "date",
       id: "eventDate",
       title: "Enter the event date",
@@ -235,7 +235,7 @@ describe("prompts", () => {
     expect(console.log).toHaveBeenCalledWith("Please enter a valid date.");
   });
 
-  // Testing password prompts can be complex due to raw input mode
+  // Testing password prompt can be complex due to raw input mode
   // We might need to refactor the current code to make this testable
   it("should prompt for password input", async () => {
     // Currently we are skipping actual implementation due to complexity

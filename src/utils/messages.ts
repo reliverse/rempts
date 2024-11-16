@@ -118,17 +118,14 @@ export function fmt(opts: FmtMsgOptions) {
     M_END: {
       symbol: "",
       prefix: "",
-      suffix: opts.border === true ? ` ${suffixEndLine}\n${bar}` : "",
+      suffix: opts.border ? ` ${suffixEndLine}\n${bar}` : "",
       newLineBefore: false,
       newLineAfter: true,
     },
     M_END_ANIMATED: {
       symbol: "",
       prefix: greenBright(s.info),
-      suffix:
-        opts.border === true
-          ? `\n${bar}\n${prefixEndLine}${suffixEndLine}\n`
-          : "",
+      suffix: opts.border ? `\n${bar}\n${prefixEndLine}${suffixEndLine}\n` : "",
       newLineBefore: false,
       newLineAfter: false,
     },

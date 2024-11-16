@@ -1,6 +1,6 @@
 import type { TSchema, Static } from "@sinclair/typebox";
 
-import type { PromptOptionsDeprecated } from "~/types/dev";
+import type { PromptOptions, PromptType } from "~/types/prod";
 
 import { confirmPrompt } from "~/components/confirm";
 import { datePrompt } from "~/components/date";
@@ -12,9 +12,12 @@ import { passwordPrompt } from "~/components/password";
 import { selectPrompt } from "~/components/select";
 import { startPrompt } from "~/components/start";
 import { textPrompt } from "~/components/text";
+import { numSelectPrompt } from "./components/num-select";
 
-export async function prompts<T extends TSchema>(
-  options: PromptOptionsDeprecated<T>,
+export async function prompt<T extends TSchema>(
+  options: PromptOptions<T> & {
+    type: PromptType;
+  },
 ): Promise<Record<(typeof options)["id"], Static<T>>> {
   const { type, id, action } = options;
   let value: any;
@@ -32,6 +35,9 @@ export async function prompts<T extends TSchema>(
       break;
     case "confirm":
       value = await confirmPrompt(options);
+      break;
+    case "numSelect":
+      value = await numSelectPrompt(options);
       break;
     case "select":
       value = await selectPrompt(options);

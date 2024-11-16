@@ -855,7 +855,7 @@ export type Task = {
  */
 export const tasks = async (tasks: Task[]) => {
   for (const task of tasks) {
-    if (task.enabled === false) {
+    if (!task.enabled) {
       continue;
     }
 

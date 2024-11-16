@@ -12,4 +12,4 @@ export { nextStepsPrompt } from "~/components/next-steps";
 export { numberPrompt } from "~/components/number";
 export { passwordPrompt } from "~/components/password";
 export { endPrompt } from "~/components/end";
-export { prompts } from "~/components/all-in-one";
+export { prompt } from "~/mono";

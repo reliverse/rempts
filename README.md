@@ -58,14 +58,11 @@ bun i
 
 ## Playground
 
-Run `bun dev` to start the playground and explore any of the examples below.
+Run `bun dev` to launch the [examples/run-example.ts](./examples/run-example.ts) CLI, where you can dive into and explore any of the examples listed below. Experiment with @reliverse/prompts by running examples locally or reviewing the linked code:
 
-Try out @reliverse/prompts by running examples locally or viewing the code linked below:
-
-1. [detailed-example.ts](./examples/reliverse/main-example.ts): An advanced example of a CLI application with a beautiful UI. This example demonstrates how we create a drop-in replacement for libraries like [@inquirer/prompts](https://github.com/SBoudrias/Inquirer.js), [@clack/prompts](https://github.com/bombshell-dev/clack), [@terkelg/prompts](https://github.com/lu-jiejie/prompts-plus#readme), and others.
-2. [user-signup.ts](./examples/reliverse/user-signup.ts): Simulates a user signup flow in a CLI.
-3. [win-mln-js.ts](./examples/reliverse/experiments/win-mln-js.ts): A quiz game example inspired by a Fireship [video](https://youtube.com/watch?v=_oHByo8tiEY).
-4. [simple-check.ts](./examples/reliverse/experiments/simple-check.ts): A basic example demonstrating core functionality.
+1. **[1-main-example.ts](./examples/1-main-example.ts)**: A comprehensive example of a CLI application featuring a well styled UI config. This example showcases all available prompt components, with code organized into separate functions and files for better readability and clarity.
+2. **[2-mono-example.ts](./examples/2-mono-example.ts)**: A quiz game example inspired by Fireship's [video](https://youtube.com/watch?v=_oHByo8tiEY). It demonstrates the dynamic capabilities of @reliverse/prompts by using a prompt() that includes all prompt components, so you don't need to import each component separately.
+3. **[3-basic-example.ts](./examples/3-basic-example.ts)**: A simple example highlighting the core functionalities of @reliverse/prompts. The entire implementation is contained within a single file for easy understanding.
 
 ## Prompts Library Comparison
 
