@@ -1,7 +1,7 @@
 import fs from "fs-extra";
 import path from "pathe";
 
-import { createSpinner } from "~/main";
+import { spinnerPrompts } from "~/main";
 
 const outputDir = path.resolve(__dirname, "output");
 
@@ -69,23 +69,17 @@ async function processFiles(dir: string) {
 }
 
 async function optimizeBuildForProduction(dir: string) {
-  const spinner = createSpinner({
+  await spinnerPrompts({
     initialMessage: "Creating an optimized production build...",
-    solution: "ora",
-    spinnerType: "bouncingBar",
+    successMessage: "Optimized production build created successfully.",
+    spinnerSolution: "ora",
+    spinnerType: "arc",
+    action: async (updateMessage) => {
+      await processFiles(dir);
+      updateMessage("Cleaning up unnecessary files...");
+      await deleteFiles(filesToDelete);
+    },
   });
-  spinner.start();
-
-  try {
-    await processFiles(dir);
-    spinner.updateMessage("Cleaning up unnecessary files...");
-    await deleteFiles(filesToDelete);
-    spinner.stop("Optimized production build created successfully.");
-  } catch (error) {
-    spinner.stop("Build process failed.");
-    console.error("An error occurred during build optimization:", error);
-    process.exit(1);
-  }
 }
 
 await optimizeBuildForProduction(outputDir).catch((error) => {

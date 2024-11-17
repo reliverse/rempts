@@ -4,7 +4,7 @@ import { withHooks } from "@/external/inquirer/src/hooks/hook-engine";
 import { errorHandler } from "~/utils/helpers/errors";
 import readline from "node:readline";
 
-import { prompt } from "~/mono";
+import { prompt } from "~/components/mono";
 import { colorize } from "~/utils/colorize";
 
 async function main() {

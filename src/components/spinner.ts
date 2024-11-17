@@ -4,58 +4,58 @@ import ora from "ora";
 import color from "picocolors";
 import { cursor, erase } from "sisteransi";
 
-import { removeCursor, restoreCursor } from "~/utils/terminal";
-
 type SimpleSpinnerType = "default" | "dottedCircle" | "boxSpinner";
 type OraAllowedSpinners = "dots" | "bouncingBar" | "arc";
 type OraSpinnerType = Extract<SpinnerName, OraAllowedSpinners>;
 
-type SpinnerReturnType = {
-  start: (msg?: string) => void;
-  stop: (finalMessage?: string, code?: number) => void;
-  updateMessage: (newMessage: string) => void;
-};
-
 type CreateSpinnerOptions<T extends "simple" | "ora"> = {
   initialMessage: string;
   delay?: number;
-  solution: T;
-} & (T extends "simple"
-  ? { spinnerType?: SimpleSpinnerType }
-  : { spinnerType?: OraSpinnerType });
+  spinnerSolution: T;
+  spinnerType?: T extends "simple" ? SimpleSpinnerType : OraSpinnerType;
+  action: (updateMessage: (message: string) => void) => Promise<void>;
+  successMessage?: string;
+};
 
-export function createSpinner<T extends "simple" | "ora">(
+export async function spinnerPrompts<T extends "simple" | "ora">(
   options: CreateSpinnerOptions<T>,
-): SpinnerReturnType {
-  const { initialMessage, delay = 100, solution, spinnerType } = options;
+): Promise<void> {
+  const {
+    initialMessage,
+    delay = 100,
+    spinnerSolution,
+    spinnerType,
+    action,
+    successMessage = "Task completed successfully.",
+  } = options;
 
   let message = initialMessage;
   let interval: NodeJS.Timer | null = null;
   let frameIndex = 0;
 
-  if (solution === "ora") {
+  if (spinnerSolution === "ora") {
     const oraSpinner = ora({
       text: initialMessage,
       spinner: spinnerType as OraSpinnerType,
     });
 
-    const start = (msg = ""): void => {
-      oraSpinner.text = msg || message;
+    try {
       oraSpinner.start();
-    };
 
-    const stop = (finalMessage = "", code = 0): void => {
-      code === 0
-        ? oraSpinner.succeed(finalMessage)
-        : oraSpinner.fail(finalMessage);
-    };
+      await action((newMessage: string) => {
+        message = newMessage;
+        oraSpinner.text = newMessage;
+      });
 
-    const updateMessage = (newMessage: string) => {
-      message = newMessage;
-      oraSpinner.text = newMessage;
-    };
-
-    return { start, stop, updateMessage };
+      oraSpinner.succeed(color.green(successMessage));
+    } catch (error) {
+      oraSpinner.fail(
+        color.red(
+          error instanceof Error ? error.message : "An unknown error occurred.",
+        ),
+      );
+      process.exit(1);
+    }
   } else {
     const simpleSpinners = {
       default: ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"],
@@ -71,18 +71,11 @@ export function createSpinner<T extends "simple" | "ora">(
     const handleInput = (data: Buffer) => {
       const key = data.toString();
       if (key === "\r" || key === "\n") {
-        // Ignore Enter key
         return;
       }
     };
 
-    const start = (msg = ""): void => {
-      if (interval) {
-        return; // Prevent multiple starts
-      }
-      message = msg || message;
-
-      // Check if stdin is a TTY and setRawMode is available
+    try {
       if (
         process.stdin.isTTY &&
         typeof process.stdin.setRawMode === "function"
@@ -92,8 +85,6 @@ export function createSpinner<T extends "simple" | "ora">(
         process.stdin.on("data", handleInput);
       }
 
-      removeCursor();
-
       interval = setInterval(() => {
         const frame = color.magenta(frames[frameIndex]);
         process.stdout.write(
@@ -101,16 +92,29 @@ export function createSpinner<T extends "simple" | "ora">(
         );
         frameIndex = (frameIndex + 1) % frames.length;
       }, delay);
-    };
 
-    const stop = (finalMessage = "", code = 0): void => {
-      if (!interval) {
-        return;
-      }
+      await action((newMessage: string) => {
+        message = newMessage;
+      });
+
       clearInterval(interval);
       interval = null;
 
-      // Clean up stdin if it was modified
+      process.stdout.write(
+        `\r${erase.line}${color.green("✔")} ${successMessage}\n`,
+      );
+    } catch (error) {
+      if (interval) {
+        clearInterval(interval);
+      }
+
+      process.stdout.write(
+        `\r${erase.line}${color.red("✖")} ${
+          error instanceof Error ? error.message : "An unknown error occurred."
+        }\n`,
+      );
+      process.exit(1);
+    } finally {
       if (
         process.stdin.isTTY &&
         typeof process.stdin.setRawMode === "function"
@@ -119,17 +123,6 @@ export function createSpinner<T extends "simple" | "ora">(
         process.stdin.pause();
         process.stdin.removeListener("data", handleInput);
       }
-
-      restoreCursor();
-
-      const statusSymbol = code === 0 ? color.green("✔") : color.red("✖");
-      process.stdout.write(`\r${erase.line}${statusSymbol} ${finalMessage}\n`);
-    };
-
-    const updateMessage = (newMessage: string) => {
-      message = newMessage;
-    };
-
-    return { start, stop, updateMessage };
+    }
   }
 }

@@ -12,7 +12,8 @@ import { passwordPrompt } from "~/components/password";
 import { selectPrompt } from "~/components/select";
 import { startPrompt } from "~/components/start";
 import { textPrompt } from "~/components/text";
-import { numSelectPrompt } from "./components/num-select";
+
+import { numSelectPrompt } from "./num-select";
 
 export async function prompt<T extends TSchema>(
   options: PromptOptions<T> & {

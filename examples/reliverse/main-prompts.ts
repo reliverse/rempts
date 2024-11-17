@@ -7,6 +7,7 @@ import { animateText } from "~/components/animate";
 import { pressAnyKeyPrompt } from "~/components/any-key";
 import { numSelectPrompt } from "~/components/num-select";
 import { promptsDisplayResults } from "~/components/results";
+import { spinnerPrompts } from "~/components/spinner";
 import {
   confirmPrompt,
   datePrompt,
@@ -23,7 +24,6 @@ import { fmt } from "~/utils/messages";
 
 import { basicConfig, extendedConfig } from "./main-configs";
 import { schema, type UserInput } from "./main-schema";
-import { exampleSpinner } from "./main-utils";
 
 const IDs = {
   start: "start",
@@ -210,14 +210,30 @@ export async function showConfirmPrompt(
     // Default value can be set both by the `defaultValue` property,
     // or by returning the value in your own function like this one.
     defaultValue: true,
-    action: async () => exampleSpinner(),
+    action: async () => await showSpinner(),
   });
   // A return value is unnecessary for prompts when the result is not needed later.
   return deps ?? false;
 }
 
 // Prompt ID is not required for the following
-// prompts, as they don't return any values.
+// components, as they don't return any values.
+
+export async function showSpinner() {
+  await spinnerPrompts({
+    initialMessage: "Some long-running task is in progress...",
+    spinnerSolution: "ora",
+    spinnerType: "arc",
+    successMessage: "Hooray! The task was a success!",
+    action: async (updateMessage) => {
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+      updateMessage(
+        "This is just an example with setTimeout(), nothing really happens...",
+      );
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+    },
+  });
+}
 
 export async function showAnyKeyPrompt(
   kind: "pm" | "privacy",

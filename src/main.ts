@@ -1,7 +1,8 @@
+export { colorize } from "~/utils/colorize";
 export { msg, fmt } from "~/utils/messages";
 export { animateText } from "~/components/animate";
 export { createAsciiArt } from "~/components/ascii-art";
-export { createSpinner } from "~/components/spinner";
+export { spinnerPrompts } from "~/components/spinner";
 export { startPrompt } from "~/components/start";
 export { textPrompt } from "~/components/text";
 export { selectPrompt } from "~/components/select";
@@ -12,4 +13,4 @@ export { nextStepsPrompt } from "~/components/next-steps";
 export { numberPrompt } from "~/components/number";
 export { passwordPrompt } from "~/components/password";
 export { endPrompt } from "~/components/end";
-export { prompt } from "~/mono";
+export { prompt } from "~/components/mono";

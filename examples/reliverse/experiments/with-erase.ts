@@ -6,7 +6,7 @@ import type {
   SymbolCharacterDeprecated,
 } from "~/types/dev";
 
-import { prompt } from "~/mono";
+import { prompt } from "~/components/mono";
 
 async function main() {
   console.log();

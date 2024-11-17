@@ -1,4 +1,4 @@
-import figlet, { type Fonts } from "figlet";
+import { textSync, type Fonts } from "figlet";
 
 export async function createAsciiArt({
   message,
@@ -13,6 +13,6 @@ export async function createAsciiArt({
     console.clear();
   }
 
-  const asciiArt = figlet.textSync(message, { font });
+  const asciiArt = textSync(message, { font });
   console.log(asciiArt);
 }

@@ -1,6 +1,6 @@
 // 3-basic-example.ts: A basic example demonstrating core functionalities of @reliverse/prompts. Everything in a single file.
 
-import { exampleSpinner } from "@/reliverse/main-utils";
+import { showSpinner } from "@/reliverse/main-prompts";
 
 import type { OptionalPromptOptions } from "~/types/prod";
 
@@ -40,7 +40,7 @@ async function main() {
     defaultValue: 50,
   });
 
-  await exampleSpinner();
+  await showSpinner();
 }
 
 await main().catch((error) => errorHandler(error));

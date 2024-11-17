@@ -79,13 +79,13 @@ Run `bun dev` to launch the [examples/run-example.ts](./examples/run-example.ts)
 |-----------------------------------------------|----------------------------------------------------|------------------------|---------------------|------------------------------|-----------------------------|-------------------|
 | **Full Node.js Modules Support**              | 🟢 ESM-only                                        | 🟡                    | 🟡                  | 🔴 CJS-only                 | 🔴 CJS-only                 | 🟡               |
 | **Codebase typesafety with intellisense**     | 🔵                                                 | 🟡                    | 🟡                  | 🟡                          | 🟡                          | 🟡               |
-| **Runtime typesafety with schema validation** | 🟢 TypeBox + Custom                                | 🟡                    | 🟡                  | 🟡                          | 🟡                          | 🟡               |
+| **Runtime typesafety with schema validation** | 🟢 TypeBox & Custom                                | 🟡                    | 🟡                  | 🟡                          | 🟡                          | 🟡               |
 | **Usage Examples**                            | 🟢                                                 | 🟡                    | 🟡                  | 🟡                          | 🟡                          | 🟡               |
-| **All-in-one prompts()**                      | 🟢 Separate + All-in-one                           | 🟡                    | 🟡                  | 🟢 Separate(?) + All-in-one | 🟡                          | 🟡               |
+| **Mono Component**                            | 🟢 Mono (All-In-One) & Separate                    | 🟡                    | 🟡                  | 🟢 Mono-only                | 🟡                          | 🟡               |
 | **Start Component**                           | 🟢                                                 | 🟡                    | 🟡                  | 🟡                          | 🟡                          | 🟡               |
 | **Text Component**                            | 🟢                                                 | 🟡                    | 🟡                  | 🟡                          | 🟡                          | 🟡               |
-| **Customization**                             | 🟢 Colors, Typography, Border, Variants, and more  | 🟡                    | 🟡                  | 🟡                          | 🟡                          | 🟡               |
-| **Title Animations**                          | 🟢 Includes 6 animations                           | 🟡                    | 🟡                  | 🟡                          | 🟡                          | 🟡               |
+| **Customization**                             | 🟢 Colors, typography, variants, borders, and more | 🟡                    | 🟡                  | 🟡                          | 🟡                          | 🟡               |
+| **Animated Text**                             | 🟢 Includes 6 animations                           | 🟡                    | 🟡                  | 🟡                          | 🟡                          | 🟡               |
 | **ASCII Art Component**                       | 🟢 Includes 290 fonts                              | 🟡                    | 🟡                  | 🟡                          | 🟡                          | 🟡               |
 | **Password Component**                        | 🟡                                                 | 🟡                    | 🟡                  | 🟡                          | 🟡                          | 🟡               |
 | **Number Component**                          | 🟡                                                 | 🟡                    | 🟡                  | 🟡                          | 🟡                          | 🟡               |
@@ -98,7 +98,7 @@ Run `bun dev` to launch the [examples/run-example.ts](./examples/run-example.ts)
 | **Error Handling**                            | 🟡                                                 | 🟡                    | 🟡                  | 🟡                          | 🟡                          | 🟡               |
 | **Ease of Setup**                             | 🟡                                                 | 🟡                    | 🟡                  | 🟡                          | 🟡                          | 🟡               |
 | **Crash Resilience**                          | 🟡                                                 | 🟡                    | 🟡                  | 🟡                          | 🟡                          | 🟡               |
-| **General DX**                                | 🔵 Clean TS code understandable for anyone         | 🟡                    | 🟡                  | 🔴 JS-only                  | 🔴 JS-only                  | 🟡               |
+| **General DX**                                | 🔵 Clean and understandable TypeScript code        | 🟡                    | 🟡                  | 🔴 JS-only                  | 🔴 JS-only                  | 🟡               |
 | **DX: Classes**                               | 🟢 Zero classes                                    | 🟡                    | 🟡                  | 🟡                          | 🟡                          | 🟡               |
 | **Documentation**                             | 🟡                                                 | 🟡                    | 🟡                  | 🔵                          | 🟢                          | 🟡               |
 | **Designed With UX in Mind**                  | 🔵                                                 | 🟡                    | 🟡                  | 🟡                          | 🟡                          | 🟡               |
@@ -109,13 +109,7 @@ Run `bun dev` to launch the [examples/run-example.ts](./examples/run-example.ts)
 
 This project wouldn’t exist without the amazing work of the following projects:
 
-- [@inquirer/prompts](https://github.com/SBoudrias/Inquirer.js#readme)
-- [terkelg/prompts](https://github.com/lu-jiejie/prompts-plus#readme#readme)
-- [@clack/prompts](https://github.com/bombshell-dev/clack#readme)
-- [create-t3-app](https://github.com/t3-oss/create-t3-app#readme)
-- [create-astro](https://github.com/withastro/astro/tree/main/packages/create-astro#readme)
-- [cronvel/terminal-kit](https://github.com/cronvel/terminal-kit#readme)
-- [unjs/consola](https://github.com/unjs/consola#readme)
+[@inquirer/prompts](https://github.com/SBoudrias/Inquirer.js#readme) | [terkelg/prompts](https://github.com/lu-jiejie/prompts-plus#readme) | [@clack/prompts](https://github.com/bombshell-dev/clack#readme) | [create-t3-app](https://github.com/t3-oss/create-t3-app#readme) | [create-astro](https://github.com/withastro/astro/tree/main/packages/create-astro#readme) | [cronvel/terminal-kit](https://github.com/cronvel/terminal-kit#readme) | [unjs/consola](https://github.com/unjs/consola#readme)
 
 ## Wrap-Up
 
