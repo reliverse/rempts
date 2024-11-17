@@ -2,7 +2,8 @@ import type { Static } from "@sinclair/typebox";
 
 import { Type } from "@sinclair/typebox";
 import { Value } from "@sinclair/typebox/value";
-import { dim } from "picocolors";
+
+import { msg } from "~/utils/messages";
 
 const ResultsSchema = Type.Object({
   username: Type.String(),
@@ -20,12 +21,28 @@ export async function promptsDisplayResults({
     throw new Error("Invalid results structure.");
   }
 
+  const title = "Your input results:";
+
   if (inline) {
     const formattedResults = Object.entries(results)
       .map(([key, value]) => `${key}: ${value}`)
       .join(", ");
-    console.log(dim(formattedResults));
+
+    msg({
+      type: "M_INFO",
+      title,
+      content: formattedResults,
+      titleColor: "cyan",
+      contentColor: "dim",
+    });
   } else {
-    console.log(`${dim(JSON.stringify(results, null, 2))}\n`);
+    const formattedResults = JSON.stringify(results, null, 2);
+    msg({
+      type: "M_INFO",
+      title,
+      content: formattedResults,
+      titleColor: "cyan",
+      contentColor: "dim",
+    });
   }
 }

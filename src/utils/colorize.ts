@@ -76,7 +76,6 @@ export function colorize(
       result = white(result);
       break;
     case "gray":
-    case "grey":
       result = gray(result);
       break;
     case "gradientGradient":

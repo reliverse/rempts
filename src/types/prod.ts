@@ -2,7 +2,9 @@ import type { AnimationName } from "@figliolia/chalk-animation";
 import type { TSchema } from "@sinclair/typebox";
 
 export type MsgType =
+  | "M_NULL"
   | "M_START"
+  | "M_MIDDLE"
   | "M_GENERAL"
   | "M_INFO"
   | "M_NEWLINE"
@@ -27,7 +29,9 @@ export type ColorName =
   | "red"
   | "green"
   | "yellow"
+  | "yellowBright"
   | "blue"
+  | "blueBright"
   | "magenta"
   | "cyan"
   | "cyanBright"
@@ -35,7 +39,6 @@ export type ColorName =
   | "bgCyanBright"
   | "white"
   | "gray"
-  | "grey"
   | "gradientGradient"
   | "rainbowGradient"
   | "cristalGradient"
@@ -56,7 +59,7 @@ export type MsgConfig = {
 
 export type FmtMsgOptions = {
   type: MsgType;
-  title: string;
+  title?: string;
   titleAfterAnim?: string;
   content?: string;
   titleColor?: ColorName;
@@ -73,6 +76,7 @@ export type FmtMsgOptions = {
       limit?: number;
     };
   };
+  errorMessage?: string;
 };
 
 export type RequiredPromptOptions = {
@@ -103,7 +107,6 @@ export type OptionalPromptOptions<T extends TSchema = any> = {
     };
   };
   action?: () => Promise<void>;
-
   border?: boolean;
   borderColor?: ColorName;
   clearConsole?: boolean;

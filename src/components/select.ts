@@ -1,4 +1,3 @@
-import type { Static, TSchema } from "@sinclair/typebox";
 import type { Key } from "node:readline";
 
 import { Value } from "@sinclair/typebox/value";

@@ -20,10 +20,16 @@ import {
   startPrompt,
   textPrompt,
 } from "~/main";
-import { fmt } from "~/utils/messages";
 
 import { basicConfig, extendedConfig } from "./main-configs";
 import { schema, type UserInput } from "./main-schema";
+import {
+  calculateAge,
+  createColorChoices,
+  displayUserRegistration,
+  hashPassword,
+  validateAge,
+} from "./main-utils";
 
 const IDs = {
   start: "start",
@@ -80,8 +86,10 @@ export async function askDir(username: string): Promise<UserInput["dir"]> {
 export async function showNumberPrompt(): Promise<UserInput["age"]> {
   const age = await numberPrompt({
     id: IDs.age,
+    ...extendedConfig,
     // Adding a hint helps users understand the expected input format.
-    hint: "Example: 25",
+    hint: "Default: 25",
+    defaultValue: "25",
     title: "Enter your age",
     // Define a schema to validate the input.
     // Errors are automatically handled and displayed based on the type.
@@ -116,16 +124,17 @@ export async function showSelectPrompt(): Promise<string> {
 }
 
 export async function showNumSelectPrompt(): Promise<UserInput["color"]> {
+  const choices = createColorChoices();
+
   const color = await numSelectPrompt({
     id: IDs.color,
     title: "Choose your favorite color",
-    choices: [
-      { title: "Red", id: "red" },
-      { title: "Green", id: "green" },
-      { title: "Blue", id: "blue" },
-    ] as const, // Define choices as const to make them literal types.
-    schema: schema.properties.color, // Use schema-defined color enum.
+    choices,
+    schema: schema.properties.color,
+    // Display choices in a single line
+    inline: true,
   });
+
   return color ?? "red";
 }
 
@@ -137,11 +146,18 @@ export async function showPasswordPrompt(): Promise<UserInput["password"]> {
   try {
     password = await passwordPrompt({
       id: IDs.password,
-      title: "Enter your password",
+      title: "Imagine a password",
       schema: schema.properties.password,
+      validate: (input) => {
+        if (!/[A-Z]/.test(input)) {
+          return "Password must contain an uppercase letter.";
+        }
+        return true;
+      },
     });
   } catch (error) {
     console.error("\nPassword prompt was aborted or something went wrong.");
+    // console.error(error);
   }
   // We can set default values for missing responses, especially
   // for the cases when we allow the user to cancel the prompt.
@@ -222,14 +238,13 @@ export async function showConfirmPrompt(
 export async function showSpinner() {
   await spinnerPrompts({
     initialMessage: "Some long-running task is in progress...",
+    successMessage: "Hooray! The long-running task was a success!",
+    errorMessage: "An error occurred while the long-running task!",
     spinnerSolution: "ora",
     spinnerType: "arc",
-    successMessage: "Hooray! The task was a success!",
     action: async (updateMessage) => {
       await new Promise((resolve) => setTimeout(resolve, 2000));
-      updateMessage(
-        "This is just an example with setTimeout(), nothing really happens...",
-      );
+      updateMessage("This is just an example, nothing really happens...");
       await new Promise((resolve) => setTimeout(resolve, 1000));
     },
   });
@@ -311,27 +326,14 @@ export async function showResults(userInput: UserInput) {
 }
 
 export async function doSomeFunStuff(userInput: UserInput) {
-  // For fun, create an age calculator based on the birthday to verify age accuracy.
-  // const calculatedAge =
-  //   new Date().getFullYear() - new Date(userInput.birthday).getFullYear();
-  // if (calculatedAge === userInput.age) {
-  //   console.log("Your age and birthday correspond!");
-  // } else {
-  //   console.log("Your age and birthday don't correspond!");
-  // }
+  // Just for fun, let's create an age calculator
+  // based on the birthday to verify age accuracy.
+  const calculatedAge = calculateAge(userInput.birthday);
+  validateAge(calculatedAge, userInput.age);
 
-  // Simulate password hashing and update the user input object
-  userInput.password = userInput.password.split("").reverse().join("");
+  // Hash the password and update the user input object
+  userInput.password = hashPassword(userInput.password);
 
-  // Access values by their keys
-  fmt({
-    type: "M_INFO",
-    title: `User successfully registered: ${userInput.username}`,
-    titleColor: "dim",
-  });
-
-  // Full intellisense is available when defining choices using an enum
-  if (userInput.color === "red") {
-    console.log("User's favorite color is red. Johnny Silverhand approves.");
-  }
+  // Display user registration information
+  displayUserRegistration(userInput);
 }

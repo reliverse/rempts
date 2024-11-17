@@ -10,24 +10,46 @@ import type { PromptOptions } from "~/types/prod";
 import { colorize } from "~/utils/colorize";
 
 export async function numSelectPrompt<T extends TSchema>(
-  options: PromptOptions<T>,
+  options: PromptOptions<T> & { inline?: boolean },
 ): Promise<Static<T>> {
-  const { title, choices, defaultValue, schema, titleColor, titleTypography } =
-    options;
+  const {
+    title,
+    choices,
+    defaultValue,
+    schema,
+    titleColor,
+    titleTypography,
+    inline = false,
+  } = options;
+
   if (!choices || choices.length === 0) {
     throw new Error("Choices are required for select prompt.");
   }
 
   const coloredTitle = colorize(title, titleColor, titleTypography);
   console.log(color.cyanBright(color.bold(coloredTitle)));
-  choices.forEach((choice, index) => {
-    const isDefault = defaultValue === index + 1 || defaultValue === choice.id;
-    console.log(
-      `${index + 1}) ${choice.title} ${
-        choice.description ? `- ${choice.description}` : ""
-      }${isDefault ? " (default)" : ""}`,
-    );
-  });
+
+  if (inline) {
+    // Display all choices in a single line
+    const inlineChoices = choices
+      .map(
+        (choice, index) =>
+          `${index + 1}) ${choice.title}${choice.description ? ` (${choice.description})` : ""}`,
+      )
+      .join(" / ");
+    console.log(inlineChoices);
+  } else {
+    // Display choices in separate lines
+    choices.forEach((choice, index) => {
+      const isDefault =
+        defaultValue === index + 1 || defaultValue === choice.id;
+      console.log(
+        `${index + 1}) ${choice.title} ${
+          choice.description ? `- ${choice.description}` : ""
+        }${isDefault ? " (default)" : ""}`,
+      );
+    });
+  }
 
   const rl = readline.createInterface({ input, output });
 

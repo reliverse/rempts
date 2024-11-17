@@ -6,9 +6,8 @@ import readline from "node:readline/promises";
 
 import type { PromptOptions } from "~/types/prod";
 
-import { colorize } from "~/utils/colorize";
-import { msg } from "~/utils/messages";
-import { applyVariant } from "~/utils/variants";
+import { bar, fmt, msg } from "~/utils/messages";
+import { deleteLastLines } from "~/utils/terminal";
 
 export async function numberPrompt<T extends TSchema>(
   options: PromptOptions<T>,
@@ -26,29 +25,39 @@ export async function numberPrompt<T extends TSchema>(
     contentColor,
     contentTypography,
     contentVariant,
+    borderColor,
   } = options;
 
   const rl = readline.createInterface({ input, output });
 
-  const coloredTitle = colorize(title, titleColor, titleTypography);
-  const coloredContent = content
-    ? colorize(content, contentColor, contentTypography)
-    : "";
-
-  const titleText = applyVariant([coloredTitle], titleVariant);
-  const contentText = coloredContent
-    ? applyVariant([coloredContent], contentVariant)
-    : "";
-
-  const promptLines = [titleText, contentText].filter(Boolean);
-  const promptText = promptLines.map((line) => line).join("\n");
-
-  const question = `${promptText}${
-    hint ? ` (${hint})` : ""
-  }${defaultValue !== undefined ? ` [${defaultValue}]` : ""}: `;
+  const question = fmt({
+    type: "M_GENERAL",
+    title,
+    titleColor,
+    titleTypography,
+    titleVariant,
+    content,
+    contentColor,
+    contentTypography,
+    contentVariant,
+    borderColor,
+    hint,
+  });
 
   while (true) {
     const answer = (await rl.question(question)) || defaultValue;
+
+    if (answer === defaultValue) {
+      deleteLastLines(3);
+      msg({
+        type: "M_MIDDLE",
+        title: fmt({
+          type: "M_NULL",
+          title: `  ${defaultValue}`,
+          borderColor,
+        }),
+      });
+    }
 
     const num = Number(answer);
     if (isNaN(num)) {

@@ -4,17 +4,20 @@ import ora from "ora";
 import color from "picocolors";
 import { cursor, erase } from "sisteransi";
 
+import { msg } from "~/utils/messages";
+
 type SimpleSpinnerType = "default" | "dottedCircle" | "boxSpinner";
 type OraAllowedSpinners = "dots" | "bouncingBar" | "arc";
 type OraSpinnerType = Extract<SpinnerName, OraAllowedSpinners>;
 
 type CreateSpinnerOptions<T extends "simple" | "ora"> = {
   initialMessage: string;
+  successMessage?: string;
+  errorMessage?: string;
   delay?: number;
   spinnerSolution: T;
   spinnerType?: T extends "simple" ? SimpleSpinnerType : OraSpinnerType;
   action: (updateMessage: (message: string) => void) => Promise<void>;
-  successMessage?: string;
 };
 
 export async function spinnerPrompts<T extends "simple" | "ora">(
@@ -22,11 +25,12 @@ export async function spinnerPrompts<T extends "simple" | "ora">(
 ): Promise<void> {
   const {
     initialMessage,
+    successMessage = "Task completed successfully.",
+    errorMessage = "An error occurred during the task.",
     delay = 100,
     spinnerSolution,
     spinnerType,
     action,
-    successMessage = "Task completed successfully.",
   } = options;
 
   let message = initialMessage;
@@ -47,13 +51,26 @@ export async function spinnerPrompts<T extends "simple" | "ora">(
         oraSpinner.text = newMessage;
       });
 
-      oraSpinner.succeed(color.green(successMessage));
+      oraSpinner.stop();
+
+      msg({
+        type: "M_INFO",
+        title: successMessage,
+        titleColor: "green",
+      });
     } catch (error) {
-      oraSpinner.fail(
-        color.red(
+      oraSpinner.stopAndPersist({
+        symbol: color.red("✖"),
+        text: errorMessage,
+      });
+
+      msg({
+        type: "M_ERROR",
+        title:
           error instanceof Error ? error.message : "An unknown error occurred.",
-        ),
-      );
+        titleColor: "red",
+      });
+
       process.exit(1);
     }
   } else {
@@ -103,6 +120,12 @@ export async function spinnerPrompts<T extends "simple" | "ora">(
       process.stdout.write(
         `\r${erase.line}${color.green("✔")} ${successMessage}\n`,
       );
+
+      msg({
+        type: "M_INFO",
+        title: successMessage,
+        titleColor: "green",
+      });
     } catch (error) {
       if (interval) {
         clearInterval(interval);
@@ -110,9 +133,17 @@ export async function spinnerPrompts<T extends "simple" | "ora">(
 
       process.stdout.write(
         `\r${erase.line}${color.red("✖")} ${
-          error instanceof Error ? error.message : "An unknown error occurred."
+          error instanceof Error ? errorMessage : "An unknown error occurred."
         }\n`,
       );
+
+      msg({
+        type: "M_ERROR",
+        title:
+          error instanceof Error ? error.message : "An unknown error occurred.",
+        titleColor: "red",
+      });
+
       process.exit(1);
     } finally {
       if (

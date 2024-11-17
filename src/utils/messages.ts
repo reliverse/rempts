@@ -1,7 +1,12 @@
 import { emojify } from "node-emoji";
-import { greenBright } from "picocolors";
+import { greenBright, redBright } from "picocolors";
 
-import type { FmtMsgOptions, MsgConfig, MsgType } from "~/types/prod";
+import type {
+  ColorName,
+  FmtMsgOptions,
+  MsgConfig,
+  MsgType,
+} from "~/types/prod";
 
 import { colorMap, typographyMap } from "~/utils/mapping";
 import { isUnicodeSupported } from "~/utils/platforms";
@@ -16,7 +21,7 @@ const s = {
   line: u("─", "—"),
   corner_top_right: u("»", "T"),
   step_active: u("◆", "♦"),
-  step_error: u("▲", "x"),
+  step_error: u("🗴", "x"),
   info: u("ℹ", "i"),
 };
 
@@ -58,8 +63,12 @@ function applyStyles(
   return styledText;
 }
 
-export function fmt(opts: FmtMsgOptions) {
-  if (opts.title.includes("│  ")) {
+export const bar = ({
+  borderColor = "viceGradient",
+}: { borderColor?: ColorName }): string => colorMap[borderColor](s.middle);
+
+export function fmt(opts: FmtMsgOptions): string {
+  if (opts.title?.includes("│  ")) {
     opts.title = opts.title.replace("│  ", "");
   }
 
@@ -67,9 +76,7 @@ export function fmt(opts: FmtMsgOptions) {
     opts.borderColor = "viceGradient";
   }
 
-  const bar = opts.borderColor
-    ? colorMap[opts.borderColor](s.middle)
-    : s.middle;
+  const formattedBar = bar({ borderColor: opts.borderColor });
 
   const prefixStartLine = opts.borderColor
     ? colorMap[opts.borderColor](s.start + s.line)
@@ -88,10 +95,24 @@ export function fmt(opts: FmtMsgOptions) {
     : `${s.line.repeat(58)}⊱`;
 
   const MSG_CONFIGS: Record<MsgType, MsgConfig> = {
+    M_NULL: {
+      symbol: "",
+      prefix: "",
+      suffix: "",
+      newLineBefore: false,
+      newLineAfter: true,
+    },
     M_START: {
       symbol: "",
       prefix: prefixStartLine,
-      suffix: ` ${suffixStartLine}\n${bar}`,
+      suffix: ` ${suffixStartLine}\n${formattedBar}`,
+      newLineBefore: false,
+      newLineAfter: false,
+    },
+    M_MIDDLE: {
+      symbol: formattedBar,
+      prefix: "",
+      suffix: "",
       newLineBefore: false,
       newLineAfter: false,
     },
@@ -111,27 +132,30 @@ export function fmt(opts: FmtMsgOptions) {
     },
     M_ERROR: {
       symbol: "",
-      prefix: `${bar}\n${s.step_error}`,
+      // prefix: `${formattedBar}\n${s.step_error}`,
+      prefix: redBright(s.step_error),
       newLineBefore: false,
       newLineAfter: true,
     },
     M_END: {
       symbol: "",
       prefix: "",
-      suffix: opts.border ? ` ${suffixEndLine}\n${bar}` : "",
+      suffix: opts.border ? ` ${suffixEndLine}\n${formattedBar}` : "",
       newLineBefore: false,
       newLineAfter: true,
     },
     M_END_ANIMATED: {
       symbol: "",
       prefix: greenBright(s.info),
-      suffix: opts.border ? `\n${bar}\n${prefixEndLine}${suffixEndLine}\n` : "",
+      suffix: opts.border
+        ? `\n${formattedBar}\n${prefixEndLine}${suffixEndLine}\n`
+        : "",
       newLineBefore: false,
       newLineAfter: false,
     },
     M_NEWLINE: {
       symbol: "",
-      prefix: bar,
+      prefix: formattedBar,
       newLineBefore: false,
       newLineAfter: false,
     },
@@ -154,6 +178,8 @@ export function fmt(opts: FmtMsgOptions) {
     : "";
 
   const border = applyStyles(s.middle, opts.borderColor);
+  const borderError = applyStyles(s.middle, "red");
+  const borderWithSpace = `${border}  `;
 
   let formattedTitle = "";
   if (opts.title) {
@@ -165,7 +191,17 @@ export function fmt(opts: FmtMsgOptions) {
       opts.borderColor,
     );
     if (opts.hint) {
-      formattedTitle += `\n${border}  ${colorMap.cristalGradient(opts.hint)}`;
+      formattedTitle += `\n${borderWithSpace}${colorMap.blueBright(opts.hint)}`;
+    }
+    if (opts.errorMessage) {
+      const formattedError = applyStyles(
+        opts.errorMessage,
+        "red",
+        "bold",
+        "",
+        opts.borderColor,
+      );
+      formattedTitle += `\n${borderError}  ${formattedError}`;
     }
   }
 
@@ -182,7 +218,7 @@ export function fmt(opts: FmtMsgOptions) {
           opts.borderColor,
         );
         if (opts.type !== "M_START") {
-          return `${border}  ${styledLine}`;
+          return `${borderWithSpace}${styledLine}`;
         } else {
           return styledLine;
         }
@@ -197,7 +233,7 @@ export function fmt(opts: FmtMsgOptions) {
     newLineBefore ? "\n" : "",
     formattedPrefix,
     text,
-    newLineAfter ? `\n${bar}  ` : "",
+    newLineAfter ? `\n${formattedBar}  ` : "",
     suffix,
   ]
     .filter(Boolean)
