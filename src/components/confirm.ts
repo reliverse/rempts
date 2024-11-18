@@ -7,7 +7,8 @@ import readline from "node:readline/promises";
 import type { PromptOptions } from "~/types/prod";
 
 import { colorize } from "~/utils/colorize";
-import { applyVariant } from "~/utils/variants";
+import { bar, fmt, msg, symbols } from "~/utils/messages";
+import { countLines, deleteLastLines } from "~/utils/terminal";
 
 export async function confirmPrompt<T extends TSchema>(
   options: PromptOptions<T>,
@@ -16,73 +17,110 @@ export async function confirmPrompt<T extends TSchema>(
     title,
     defaultValue,
     schema,
-    titleColor,
-    titleTypography,
+    titleColor = "cyanBright",
+    answerColor = "none",
+    titleTypography = "bold",
+    titleVariant,
     content,
     contentColor,
     contentTypography,
-    titleVariant,
     contentVariant,
+    borderColor = "viceGradient",
+    hintColor = "dim",
+    variantOptions,
     action,
   } = options;
+
   const rl = readline.createInterface({ input, output });
 
-  const coloredTitle = colorize(title, titleColor, titleTypography);
-  const coloredContent = content
-    ? colorize(content, contentColor, contentTypography)
-    : "";
+  let linesToDelete = 0;
+  let errorMessage = "";
 
-  const titleText = applyVariant([coloredTitle], titleVariant);
-  const contentText = coloredContent
-    ? applyVariant([coloredContent], contentVariant)
-    : "";
+  try {
+    while (true) {
+      if (linesToDelete > 0) {
+        deleteLastLines(linesToDelete);
+      }
 
-  const promptText = [titleText, contentText].filter(Boolean).join("\n");
+      const question = fmt({
+        type: errorMessage !== "" ? "M_ERROR" : "M_GENERAL",
+        title,
+        titleColor,
+        titleTypography,
+        titleVariant,
+        content,
+        contentColor,
+        contentTypography,
+        contentVariant,
+        borderColor,
+        variantOptions,
+        errorMessage,
+      });
 
-  let defaultHint = "";
-  if (defaultValue === true) {
-    defaultHint = "[Y/n]";
-  } else if (defaultValue === false) {
-    defaultHint = "[y/N]";
-  } else {
-    defaultHint = "[y/n]";
-  }
+      let defaultHint = "";
+      if (defaultValue === true) {
+        defaultHint = "[Y/n]";
+      } else if (defaultValue === false) {
+        defaultHint = "[y/N]";
+      } else {
+        defaultHint = "[y/n]";
+      }
 
-  const question = `${promptText} ${defaultHint}: `;
+      const fullPrompt = `${question}${colorize(defaultHint, hintColor)}: `;
 
-  while (true) {
-    const answer = (await rl.question(question)).toLowerCase();
-    let value: boolean;
-    if (!answer && defaultValue !== undefined) {
-      value = defaultValue as boolean;
-    } else if (answer === "y" || answer === "yes") {
-      value = true;
-    } else if (answer === "n" || answer === "no") {
-      value = false;
-    } else {
-      console.log('Please answer with "y" or "n".');
-      continue;
-    }
+      const formattedPrompt = fmt({
+        type: "M_NULL",
+        title: fullPrompt,
+      });
 
-    let isValid = true;
-    let errorMessage = "Invalid input.";
-    if (schema) {
-      isValid = Value.Check(schema, value);
-      if (!isValid) {
-        const errors = [...Value.Errors(schema, value)];
-        if (errors.length > 0) {
-          errorMessage = errors[0]?.message ?? "Invalid input.";
+      const questionLines = countLines(formattedPrompt);
+      linesToDelete = questionLines + 1; // +1 for the user's input line
+
+      const answer = (await rl.question(formattedPrompt)).toLowerCase().trim();
+
+      let value: boolean;
+
+      const formattedBar = bar({ borderColor });
+
+      if (!answer && defaultValue !== undefined) {
+        // Inject the used answer into the console
+        const injectedAnswer = defaultValue === true ? "y" : "n";
+        process.stdout.write(`${formattedBar}  ${injectedAnswer}\n`);
+        value = defaultValue as boolean;
+      } else if (answer === "y" || answer === "yes") {
+        value = true;
+      } else if (answer === "n" || answer === "no") {
+        value = false;
+      } else {
+        errorMessage = 'Please answer with "y" or "n".';
+        continue;
+      }
+
+      // Schema validation if provided
+      let isValid = true;
+      errorMessage = ""; // Reset errorMessage
+
+      if (schema) {
+        isValid = Value.Check(schema, value);
+        if (!isValid) {
+          const errors = [...Value.Errors(schema, value)];
+          errorMessage =
+            errors.length > 0
+              ? (errors[0]?.message ?? "Invalid input.")
+              : "Invalid input.";
         }
       }
-    }
-    if (isValid) {
-      rl.close();
-      if (action && value) {
-        await action();
+
+      if (isValid) {
+        msg({ type: "M_NEWLINE" });
+        rl.close();
+        if (action && value) {
+          await action();
+        }
+        return value as Static<T>;
       }
-      return value as Static<T>;
-    } else {
-      console.log(errorMessage);
     }
+  } finally {
+    rl.close();
   }
 }

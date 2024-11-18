@@ -5,13 +5,14 @@ import { msg } from "~/utils/messages";
 
 export async function endPrompt({
   title,
-  titleColor,
-  titleTypography,
+  titleColor = "cyanBright",
+  answerColor = "none",
+  titleTypography = "bold",
   titleVariant,
   titleAnimation,
   titleAnimationDelay,
   border = true,
-  borderColor = "none",
+  borderColor = "viceGradient",
 }: PromptOptions): Promise<void> {
   if (titleAnimation) {
     await animateText({

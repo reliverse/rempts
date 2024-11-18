@@ -7,8 +7,8 @@ import type { PromptStateDeprecated } from "~/types/dev";
 import { confirmPrompt } from "~/components/confirm";
 import { datePrompt } from "~/components/date";
 import { endPrompt } from "~/components/end";
-import { multiselectPrompt } from "~/components/multi-select";
 import { nextStepsPrompt } from "~/components/next-steps";
+import { multiSelectPrompt } from "~/components/num-multi-select";
 import { numberPrompt } from "~/components/number";
 import { passwordPrompt } from "~/components/password";
 import { selectPrompt } from "~/components/select";
@@ -50,7 +50,7 @@ export async function prompts<T extends TSchema>(
       value = await selectPrompt(options);
       break;
     case "multiselect":
-      value = await multiselectPrompt(options);
+      value = await multiSelectPrompt(options);
       break;
     case "password":
       value = await passwordPrompt(options);

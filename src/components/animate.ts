@@ -31,10 +31,10 @@ export async function animateText({
   anim,
   delay,
   type = "M_INFO",
-  titleColor = "none",
-  titleTypography,
+  titleColor = "cyanBright",
+  titleTypography = "bold",
   border = true,
-  borderColor,
+  borderColor = "viceGradient",
 }: {
   title: string;
   anim: AnimationName;

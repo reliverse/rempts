@@ -18,14 +18,15 @@ export async function textPrompt<T extends TSchema>(
     validate,
     defaultValue = "",
     schema,
-    titleColor,
-    titleTypography,
+    titleColor = "cyanBright",
+    answerColor = "none",
+    titleTypography = "bold",
     titleVariant,
     content,
     contentColor,
     contentTypography,
     contentVariant,
-    borderColor = "none",
+    borderColor = "viceGradient",
     variantOptions,
   } = options;
 

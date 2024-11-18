@@ -3,20 +3,21 @@ import { detect } from "detect-package-manager";
 import { emojify } from "node-emoji";
 import { bold } from "picocolors";
 
-import { animateText } from "~/components/animate";
 import { pressAnyKeyPrompt } from "~/components/any-key";
 import { numSelectPrompt } from "~/components/num-select";
 import { promptsDisplayResults } from "~/components/results";
-import { spinnerPrompts } from "~/components/spinner";
 import {
+  animateText,
   confirmPrompt,
   datePrompt,
   endPrompt,
-  multiselectPrompt,
+  msg,
+  multiSelectPrompt,
   nextStepsPrompt,
   numberPrompt,
   passwordPrompt,
   selectPrompt,
+  spinnerPrompts,
   startPrompt,
   textPrompt,
 } from "~/main";
@@ -26,7 +27,7 @@ import { schema, type UserInput } from "./main-schema";
 import {
   calculateAge,
   createColorChoices,
-  displayUserRegistration,
+  displayUserInputs,
   hashPassword,
   validateAge,
 } from "./main-utils";
@@ -62,10 +63,12 @@ export async function showTextPrompt(): Promise<UserInput["username"]> {
     id: IDs.username,
     title: "We're glad you're testing our interactive prompts library!",
     content: "Let's get to know each other!\nWhat's your username?",
+    hint: "Press <Enter> to use the default value. [Default: johnny911]",
+    defaultValue: "johnny911",
     schema: schema.properties.username,
     ...extendedConfig,
   });
-  return username ?? "johnny";
+  return username ?? "johnny911";
 }
 
 export async function askDir(username: string): Promise<UserInput["dir"]> {
@@ -77,8 +80,8 @@ export async function askDir(username: string): Promise<UserInput["dir"]> {
     schema: schema.properties.dir,
     ...extendedConfig,
     titleVariant: "doubleBox",
+    hint: "Default: ./prefilled-default-value",
     defaultValue: "./prefilled-default-value",
-    hint: "Press <Enter> to use the default value.",
   });
   return dir ?? "./prefilled-default-value";
 }
@@ -88,8 +91,8 @@ export async function showNumberPrompt(): Promise<UserInput["age"]> {
     id: IDs.age,
     ...extendedConfig,
     // Adding a hint helps users understand the expected input format.
-    hint: "Default: 25",
-    defaultValue: "25",
+    hint: "Default: 36",
+    defaultValue: "36",
     title: "Enter your age",
     // Define a schema to validate the input.
     // Errors are automatically handled and displayed based on the type.
@@ -129,10 +132,13 @@ export async function showNumSelectPrompt(): Promise<UserInput["color"]> {
   const color = await numSelectPrompt({
     id: IDs.color,
     title: "Choose your favorite color",
+    content:
+      "You are free to customize everything in your prompts using the following color palette.",
+    ...extendedConfig,
     choices,
+    defaultValue: "17",
+    hint: "Default: 17",
     schema: schema.properties.color,
-    // Display choices in a single line
-    inline: true,
   });
 
   return color ?? "red";
@@ -148,16 +154,20 @@ export async function showPasswordPrompt(): Promise<UserInput["password"]> {
       id: IDs.password,
       title: "Imagine a password",
       schema: schema.properties.password,
+      defaultValue: "silverHand2077",
+      hint: "Default: silverHand2077",
       validate: (input) => {
         if (!/[A-Z]/.test(input)) {
-          return "Password must contain an uppercase letter.";
+          return "Password must be latin letters and contain at least one uppercase letter.";
         }
         return true;
       },
     });
   } catch (error) {
-    console.error("\nPassword prompt was aborted or something went wrong.");
-    // console.error(error);
+    msg({
+      type: "M_ERROR",
+      title: "Password prompt was aborted or something went wrong.",
+    });
   }
   // We can set default values for missing responses, especially
   // for the cases when we allow the user to cancel the prompt.
@@ -170,18 +180,19 @@ export async function showDatePrompt(): Promise<UserInput["birthday"]> {
     dateKind: "birthday",
     dateFormat: "DD.MM.YYYY",
     title: "Enter your birthday",
-    hint: "Press <Enter> to use the default value",
+    hint: "Default: 16.11.1988",
     // You can set a default value for the prompt if desired.
-    defaultValue: "14.09.1999",
+    defaultValue: "16.11.1988",
     schema: schema.properties.birthday,
   });
   return birthdayDate ?? "16.11.1988";
 }
 
-export async function showMultiselectPrompt(): Promise<UserInput["features"]> {
-  const features = await multiselectPrompt({
+export async function showMultiSelectPrompt(): Promise<UserInput["features"]> {
+  const features = await multiSelectPrompt({
     id: IDs.features,
     title: "What features do you want to use?",
+    defaultValue: ["react", "typescript"],
     choices: [
       {
         title: "React",
@@ -221,8 +232,7 @@ export async function showConfirmPrompt(
     // @reliverse/prompts includes styled prompts, with the `title` color defaulting
     // to "cyanBright". Setting the color to "none" removes the default styling.
     content: "Spinners are helpful for long-running tasks.",
-    contentColor: "dim",
-    contentVariant: "underline",
+    ...extendedConfig,
     // Default value can be set both by the `defaultValue` property,
     // or by returning the value in your own function like this one.
     defaultValue: true,
@@ -260,7 +270,7 @@ export async function showAnyKeyPrompt(
     notification = `Before you continue, please note that you are only testing an example CLI app.\n│  None of your responses will be sent anywhere. No actions, such as installing dependencies, will actually take place;\n│  this is simply a simulation with a sleep timer and spinner. You can always review the source code to learn more.\n│  ============================\n│  ${notification}`;
   }
   if (kind === "pm" && pm === "bun" && username) {
-    notification += `\n\n${username}, did you know? Bun currently may crash if you press Enter while setTimeout\nis running. So please avoid doing that in the prompts after this one! 😅`;
+    notification += `\n│  ============================\n│  ${username}, did you know? Bun currently may crash if you press Enter while setTimeout\n│  is running. So please avoid doing that in the prompts after this one! 😅`;
   }
   await pressAnyKeyPrompt(notification);
 }
@@ -269,11 +279,8 @@ export async function showNextStepsPrompt() {
   await nextStepsPrompt({
     id: "nextSteps",
     title: "Next Steps",
-    titleColor: "none",
-    titleVariant: "banner",
-    content: "- Set up your profile\n║ - Add tasks\n║ - Review your dashboard",
-    contentColor: "white",
-    contentVariant: "doubleBox",
+    content: "- Set up your profile\n- Review your dashboard\n- Add tasks",
+    ...extendedConfig,
   });
 }
 
@@ -329,11 +336,11 @@ export async function doSomeFunStuff(userInput: UserInput) {
   // Just for fun, let's create an age calculator
   // based on the birthday to verify age accuracy.
   const calculatedAge = calculateAge(userInput.birthday);
-  validateAge(calculatedAge, userInput.age);
+  validateAge(calculatedAge, userInput.age, userInput.birthday);
 
   // Hash the password and update the user input object
   userInput.password = hashPassword(userInput.password);
 
   // Display user registration information
-  displayUserRegistration(userInput);
+  displayUserInputs(userInput);
 }

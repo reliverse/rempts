@@ -5,12 +5,13 @@ import readline from "node:readline/promises";
 
 import type { PromptOptions } from "~/types/prod";
 
-import { colorize } from "~/utils/colorize";
+import { fmt, msg } from "~/utils/messages";
+import { countLines, deleteLastLine, deleteLastLines } from "~/utils/terminal";
 
 // Define allowed date formats
 const dateFormatSchema = Type.Union([
   Type.RegExp(/^(\d{2})\.(\d{2})\.(\d{4})$/, { description: "DD.MM.YYYY" }),
-  Type.RegExp(/^(\d{2})\/(\d{2})\/(\d{4})$/, { description: "MM.DD.YYYY" }),
+  Type.RegExp(/^(\d{2})\/(\d{2})\/(\d{4})$/, { description: "MM/DD/YYYY" }),
   Type.RegExp(/^(\d{4})\.(\d{2})\.(\d{2})$/, { description: "YYYY.MM.DD" }),
 ]);
 
@@ -28,42 +29,77 @@ export async function datePrompt<T extends TSchema>(
     validate,
     defaultValue,
     schema,
-    titleColor,
-    titleTypography,
+    titleColor = "cyanBright",
+    answerColor = "none",
+    titleTypography = "bold",
+    titleVariant,
+    content,
+    contentColor,
+    contentTypography,
+    contentVariant,
+    borderColor = "viceGradient",
+    variantOptions,
   } = options;
+
   const rl = readline.createInterface({ input, output });
 
+  let linesToDelete = 0;
+  let errorMessage = "";
+
   try {
-    const coloredTitle = colorize(title, titleColor, titleTypography);
-    const question = `${coloredTitle}${
-      hint ? ` (${hint})` : ""
-    }${defaultValue ? ` [${defaultValue}]` : ""}: `;
-
     while (true) {
-      const answer =
-        (await rl.question(question)) || String(defaultValue || "");
-      let isValid = true;
-      let errorMessage = "Invalid date format.";
+      if (linesToDelete > 0) {
+        deleteLastLines(linesToDelete);
+      }
 
-      // Validate against date format schema
+      const question = fmt({
+        type: errorMessage !== "" ? "M_ERROR" : "M_GENERAL",
+        title: `${title} [Format: ${dateFormat}]`,
+        titleColor,
+        titleTypography,
+        titleVariant,
+        content,
+        contentColor,
+        contentTypography,
+        contentVariant,
+        borderColor,
+        hint,
+        variantOptions,
+        errorMessage,
+        addNewLineBefore: false,
+      });
+
+      const questionLines = countLines(question);
+      linesToDelete = questionLines + 1; // +1 for user's input
+
+      const answer = (await rl.question(question)).trim() || defaultValue;
+
+      // Display defaultValue if it is used
+      if (answer === defaultValue && defaultValue) {
+        deleteLastLine();
+        msg({
+          type: "M_MIDDLE",
+          title: `  ${defaultValue}`,
+          titleColor: answerColor,
+        });
+      }
+
       if (!Value.Check(dateFormatSchema, answer)) {
-        console.log(`Please enter a valid date in ${dateFormat} format.`);
+        errorMessage = `Please enter a valid date in ${dateFormat} format.`;
         continue;
       }
 
-      // Additional check if dateKind is "birthday"
       if (dateKind === "birthday") {
-        const parts = answer.split(/[.-/]/);
+        const parts = answer.split(/[./-]/);
         let date: Date;
 
-        // Parse according to date format
         if (dateFormat === "DD.MM.YYYY") {
           date = new Date(
             Number(parts[2]),
             Number(parts[1]) - 1,
             Number(parts[0]),
           );
-        } else if (dateFormat === "MM.DD.YYYY") {
+        } else if (dateFormat === "MM/DD/YYYY") {
           date = new Date(
             Number(parts[2]),
             Number(parts[0]) - 1,
@@ -79,29 +115,28 @@ export async function datePrompt<T extends TSchema>(
           date = new Date(answer);
         }
 
-        // Validate if the date is real
         if (
           isNaN(date.getTime()) ||
           date.getFullYear() < 1900 ||
           date > new Date()
         ) {
-          console.log("Please enter a valid birthday date (e.g., 14.09.1999).");
+          errorMessage =
+            "Please enter a valid birthday date (e.g., 14.09.1999).";
           continue;
         }
       }
 
-      // Schema validation if provided
+      let isValid = true;
+      errorMessage = ""; // Reset errorMessage
+
       if (schema) {
         isValid = Value.Check(schema, answer);
         if (!isValid) {
           const errors = [...Value.Errors(schema, answer)];
-          if (errors.length > 0) {
-            errorMessage = errors[0]?.message ?? "Invalid input.";
-          }
+          errorMessage = errors[0]?.message ?? "Invalid input.";
         }
       }
 
-      // Custom validation function
       if (validate && isValid) {
         const validation = await validate(answer);
         if (validation !== true) {
@@ -112,9 +147,9 @@ export async function datePrompt<T extends TSchema>(
       }
 
       if (isValid) {
+        msg({ type: "M_NEWLINE" });
+        rl.close();
         return answer;
-      } else {
-        console.log(errorMessage);
       }
     }
   } finally {

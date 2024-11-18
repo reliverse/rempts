@@ -5,9 +5,10 @@ import { msg } from "~/utils/messages";
 export async function nextStepsPrompt(options: PromptOptions): Promise<void> {
   const {
     title,
-    titleColor,
+    titleColor = "cyanBright",
+    answerColor = "none",
     titleVariant,
-    titleTypography,
+    titleTypography = "bold",
     content,
     contentColor,
     contentVariant,

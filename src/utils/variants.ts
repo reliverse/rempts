@@ -3,10 +3,10 @@ import type { ColorName, Variant } from "~/types/prod";
 import { colorMap } from "./mapping";
 
 export const variantMap = {
-  box: createBox,
+  // box: createBox,
   doubleBox: createDoubleBox,
-  banner: createBanner,
-  underline: createUnderline,
+  // banner: createBanner,
+  // underline: createUnderline,
 };
 
 export async function applyVariant(
@@ -18,29 +18,29 @@ export async function applyVariant(
   const linesArray = Array.isArray(lines) ? lines : [lines];
 
   switch (variant) {
-    case "box":
-      return createBox(linesArray, options?.limit);
+    // case "box":
+    //   return createBox(linesArray, options?.limit);
     case "doubleBox":
       return createDoubleBox(linesArray, options?.limit, borderColor);
-    case "banner":
-      return createBanner(linesArray);
-    case "underline":
-      return createUnderline(linesArray);
+    // case "banner":
+    //   return createBanner(linesArray);
+    // case "underline":
+    //   return createUnderline(linesArray);
     default:
       return linesArray.join("\n");
   }
 }
 
-function createBox(lines: string[], limit?: number): string {
-  const processedLines = processLines(lines, limit);
-  const maxLength = Math.max(...processedLines.map((line) => line.length));
-  const topBorder = `┌${"─".repeat(maxLength + 2)}┐`;
-  const bottomBorder = `└${"─".repeat(maxLength + 2)}┘`;
-  const middle = processedLines
-    .map((line) => `│ ${line.padEnd(maxLength)} │`)
-    .join("\n");
-  return `${topBorder}\n${middle}\n${bottomBorder}`;
-}
+// function createBox(lines: string[], limit?: number): string {
+//   const processedLines = processLines(lines, limit);
+//   const maxLength = Math.max(...processedLines.map((line) => line.length));
+//   const topBorder = `┌${"─".repeat(maxLength + 2)}┐`;
+//   const bottomBorder = `└${"─".repeat(maxLength + 2)}┘`;
+//   const middle = processedLines
+//     .map((line) => `│ ${line.padEnd(maxLength)} │`)
+//     .join("\n");
+//   return `${topBorder}\n${middle}\n${bottomBorder}`;
+// }
 
 function createDoubleBox(
   lines: string[],
@@ -72,15 +72,15 @@ function createDoubleBox(
   return `${topBorder}\n${middle}\n${bottomBorder}`;
 }
 
-function createBanner(lines: string[]): string {
-  const text = lines.join(" ");
-  const bannerLine = "*".repeat(text.length + 4);
-  return `${bannerLine}\n* ${text} *\n${bannerLine}`;
-}
+// function createBanner(lines: string[]): string {
+//   const text = lines.join(" ");
+//   const bannerLine = "*".repeat(text.length + 4);
+//   return `${bannerLine}\n* ${text} *\n${bannerLine}`;
+// }
 
-function createUnderline(lines: string[]): string {
-  return lines.map((line) => `${line}\n${"=".repeat(line.length)}`).join("\n");
-}
+// function createUnderline(lines: string[]): string {
+//   return lines.map((line) => `${line}\n${"=".repeat(line.length)}`).join("\n");
+// }
 
 function processLines(lines: string[] | string, limit?: number): string[] {
   const linesArray = Array.isArray(lines) ? lines : [lines];

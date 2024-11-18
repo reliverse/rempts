@@ -14,7 +14,8 @@ import { variantMap } from "~/utils/variants";
 
 const unicode = isUnicodeSupported();
 const u = (c: string, fallback: string) => (unicode ? c : fallback);
-const s = {
+export const symbols = {
+  pointer: u("👉", ">"),
   start: u("╭", "T"),
   middle: u("│", "|"),
   end: u("╰", "*"),
@@ -65,7 +66,8 @@ function applyStyles(
 
 export const bar = ({
   borderColor = "viceGradient",
-}: { borderColor?: ColorName }): string => colorMap[borderColor](s.middle);
+}: { borderColor?: ColorName }): string =>
+  colorMap[borderColor](symbols.middle);
 
 export function fmt(opts: FmtMsgOptions): string {
   if (opts.title?.includes("│  ")) {
@@ -79,28 +81,28 @@ export function fmt(opts: FmtMsgOptions): string {
   const formattedBar = bar({ borderColor: opts.borderColor });
 
   const prefixStartLine = opts.borderColor
-    ? colorMap[opts.borderColor](s.start + s.line)
-    : s.start + s.line;
+    ? colorMap[opts.borderColor](symbols.start + symbols.line)
+    : symbols.start + symbols.line;
 
   const prefixEndLine = opts.borderColor
-    ? colorMap[opts.borderColor](s.end + s.line)
-    : s.end + s.line;
+    ? colorMap[opts.borderColor](symbols.end + symbols.line)
+    : symbols.end + symbols.line;
 
   const suffixStartLine = opts.borderColor
-    ? colorMap[opts.borderColor](`${s.line.repeat(28)}⊱`)
-    : `${s.line.repeat(28)}⊱`;
+    ? colorMap[opts.borderColor](`${symbols.line.repeat(28)}⊱`)
+    : `${symbols.line.repeat(28)}⊱`;
 
   const suffixEndLine = opts.borderColor
-    ? colorMap[opts.borderColor](`${s.line.repeat(58)}⊱`)
-    : `${s.line.repeat(58)}⊱`;
+    ? colorMap[opts.borderColor](`${symbols.line.repeat(58)}⊱`)
+    : `${symbols.line.repeat(58)}⊱`;
 
   const MSG_CONFIGS: Record<MsgType, MsgConfig> = {
     M_NULL: {
       symbol: "",
       prefix: "",
       suffix: "",
-      newLineBefore: false,
-      newLineAfter: true,
+      newLineBefore: opts.addNewLineBefore ?? false,
+      newLineAfter: opts.addNewLineAfter ?? false,
     },
     M_START: {
       symbol: "",
@@ -118,14 +120,14 @@ export function fmt(opts: FmtMsgOptions): string {
     },
     M_GENERAL: {
       symbol: "",
-      prefix: greenBright(s.step_active),
+      prefix: greenBright(symbols.step_active),
       suffix: "",
-      newLineBefore: false,
-      newLineAfter: true,
+      newLineBefore: opts.addNewLineBefore ?? false,
+      newLineAfter: opts.addNewLineAfter ?? true,
     },
     M_INFO: {
       symbol: "",
-      prefix: greenBright(s.info),
+      prefix: greenBright(symbols.info),
       suffix: "",
       newLineBefore: false,
       newLineAfter: true,
@@ -133,7 +135,7 @@ export function fmt(opts: FmtMsgOptions): string {
     M_ERROR: {
       symbol: "",
       // prefix: `${formattedBar}\n${s.step_error}`,
-      prefix: redBright(s.step_error),
+      prefix: redBright(symbols.step_error),
       newLineBefore: false,
       newLineAfter: true,
     },
@@ -146,7 +148,7 @@ export function fmt(opts: FmtMsgOptions): string {
     },
     M_END_ANIMATED: {
       symbol: "",
-      prefix: greenBright(s.info),
+      prefix: greenBright(symbols.info),
       suffix: opts.border
         ? `\n${formattedBar}\n${prefixEndLine}${suffixEndLine}\n`
         : "",
@@ -177,8 +179,8 @@ export function fmt(opts: FmtMsgOptions): string {
     ? `${prefix}${opts.type === "M_START" ? " " : "  "}`
     : "";
 
-  const border = applyStyles(s.middle, opts.borderColor);
-  const borderError = applyStyles(s.middle, "red");
+  const border = applyStyles(symbols.middle, opts.borderColor);
+  const borderError = applyStyles(symbols.middle, "red");
   const borderWithSpace = `${border}  `;
 
   let formattedTitle = "";
@@ -230,7 +232,7 @@ export function fmt(opts: FmtMsgOptions): string {
 
   return [
     symbol,
-    newLineBefore ? "\n" : "",
+    newLineBefore ? `\n${formattedBar}  ` : "",
     formattedPrefix,
     text,
     newLineAfter ? `\n${formattedBar}  ` : "",

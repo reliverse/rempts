@@ -1,5 +1,8 @@
 import ansiEscapes from "ansi-escapes";
 import { cursor } from "sisteransi";
+import wrapAnsi from "wrap-ansi";
+
+import { msg } from "./messages";
 
 export function removeCursor() {
   process.stdout.write(cursor.hide);
@@ -14,17 +17,25 @@ export function deleteLastLine() {
 }
 
 export function deleteLastLines(count: number) {
+  if (count <= 0) {
+    msg({
+      type: "M_ERROR",
+      title: "Count is less than or equal to 0. Nothing to delete.",
+    });
+    return;
+  }
   process.stdout.write(ansiEscapes.eraseLines(count));
 }
 
-export function countLines(
-  text: string,
-  width = process.stdout.columns,
-): number {
+export function countLines(text: string): number {
+  const terminalWidth = process.stdout.columns || 80;
   const lines = text.split("\n");
-  return lines.reduce((total, line) => {
-    const lineLength = line.length;
-    const lineCount = Math.ceil(lineLength / width); // Account for wrapping
-    return total + lineCount;
-  }, 0);
+  let lineCount = 0;
+
+  for (const line of lines) {
+    const wrapped = wrapAnsi(line, terminalWidth, { hard: true });
+    lineCount += wrapped.split("\n").length;
+  }
+
+  return lineCount;
 }

@@ -2,10 +2,10 @@ import type { Static, TSchema } from "@sinclair/typebox";
 
 import { Value } from "@sinclair/typebox/value";
 
-import type { PromptOptions } from "~/types/prod";
+import type { ColorName, PromptOptions } from "~/types/prod";
 
-import { fmt } from "~/utils/messages";
-import { countLines, deleteLastLines } from "~/utils/terminal";
+import { bar, fmt } from "~/utils/messages";
+import { countLines, deleteLastLine, deleteLastLines } from "~/utils/terminal";
 
 export async function passwordPrompt<T extends TSchema>(
   options: PromptOptions<T>,
@@ -15,14 +15,16 @@ export async function passwordPrompt<T extends TSchema>(
     hint,
     validate,
     schema,
-    titleColor,
-    titleTypography,
+    defaultValue,
+    titleColor = "cyanBright",
+    answerColor = "none",
+    titleTypography = "bold",
     titleVariant,
     content,
     contentColor,
     contentTypography,
     contentVariant,
-    borderColor = "none",
+    borderColor = "viceGradient",
     variantOptions,
   } = options;
 
@@ -32,7 +34,7 @@ export async function passwordPrompt<T extends TSchema>(
   while (true) {
     const question = fmt({
       type: errorMessage !== "" ? "M_ERROR" : "M_GENERAL",
-      title,
+      title: `${title}${defaultValue ? ` [Default: ****]` : ""}`,
       titleColor,
       titleTypography,
       titleVariant,
@@ -55,9 +57,19 @@ export async function passwordPrompt<T extends TSchema>(
     process.stdout.write(question);
 
     // Read password input
-    const password = await readPassword();
+    const password = await readPassword(borderColor);
 
     linesToDelete = questionLines + 1; // +1 for the input line
+
+    const formattedBar = bar({ borderColor });
+
+    // Use defaultValue if no input is provided
+    if (!password.trim() && defaultValue !== undefined) {
+      deleteLastLines(2);
+      process.stdout.write(`${formattedBar}  ****`);
+      console.log(`\n${formattedBar}`);
+      return defaultValue as Static<T>;
+    }
 
     let isValid = true;
     errorMessage = ""; // Reset errorMessage
@@ -91,10 +103,12 @@ export async function passwordPrompt<T extends TSchema>(
 }
 
 // Helper function to read password input without echoing
-function readPassword(): Promise<string> {
+function readPassword(borderColor: ColorName): Promise<string> {
   return new Promise((resolve, reject) => {
     const stdin = process.stdin;
     let password = "";
+
+    const formattedBar = bar({ borderColor });
 
     stdin.setRawMode(true);
     stdin.resume();
@@ -108,8 +122,8 @@ function readPassword(): Promise<string> {
         stdin.setRawMode(false);
         stdin.pause();
         stdin.removeListener("data", onData);
-        process.stdout.write("\n");
-        resolve(password);
+        process.stdout.write(`\n${formattedBar}`);
+        resolve(password.trim()); // Ensure trimming whitespace
       } else if (char === "\u0003") {
         // Ctrl-C
         stdin.setRawMode(false);

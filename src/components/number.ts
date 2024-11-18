@@ -6,8 +6,8 @@ import readline from "node:readline/promises";
 
 import type { PromptOptions } from "~/types/prod";
 
-import { bar, fmt, msg } from "~/utils/messages";
-import { deleteLastLines } from "~/utils/terminal";
+import { fmt, msg } from "~/utils/messages";
+import { countLines, deleteLastLine, deleteLastLines } from "~/utils/terminal";
 
 export async function numberPrompt<T extends TSchema>(
   options: PromptOptions<T>,
@@ -18,61 +18,79 @@ export async function numberPrompt<T extends TSchema>(
     validate,
     defaultValue,
     schema,
-    titleColor,
-    titleTypography,
+    titleColor = "cyanBright",
+    answerColor = "none",
+    titleTypography = "bold",
     titleVariant,
     content,
     contentColor,
     contentTypography,
     contentVariant,
-    borderColor,
+    borderColor = "viceGradient",
+    variantOptions,
   } = options;
 
   const rl = readline.createInterface({ input, output });
 
-  const question = fmt({
-    type: "M_GENERAL",
-    title,
-    titleColor,
-    titleTypography,
-    titleVariant,
-    content,
-    contentColor,
-    contentTypography,
-    contentVariant,
-    borderColor,
-    hint,
-  });
+  let linesToDelete = 0;
+  let errorMessage = "";
 
   while (true) {
-    const answer = (await rl.question(question)) || defaultValue;
+    if (linesToDelete > 0) {
+      deleteLastLines(linesToDelete);
+    }
 
-    if (answer === defaultValue) {
-      deleteLastLines(3);
-      msg({
+    const question = fmt({
+      type: errorMessage !== "" ? "M_ERROR" : "M_GENERAL",
+      title,
+      titleColor,
+      titleTypography,
+      titleVariant,
+      content,
+      contentColor,
+      contentTypography,
+      contentVariant,
+      borderColor,
+      hint,
+      variantOptions,
+      errorMessage,
+    });
+
+    const questionLines = countLines(question);
+    const prompt = await rl.question(question);
+
+    linesToDelete = questionLines + 1;
+
+    const answer = prompt.trim() || defaultValue;
+
+    if (prompt.trim() === "" && defaultValue !== undefined) {
+      deleteLastLine();
+      const defaultMsg = fmt({
         type: "M_MIDDLE",
-        title: fmt({
-          type: "M_NULL",
-          title: `  ${defaultValue}`,
-          borderColor,
-        }),
+        title: `  ${defaultValue}`,
+        borderColor,
       });
+      console.log(defaultMsg);
+      linesToDelete += countLines(defaultMsg);
     }
 
     const num = Number(answer);
     if (isNaN(num)) {
-      msg({ type: "M_ERROR", title: "Please enter a valid number." });
+      errorMessage = "Please enter a valid number.";
       continue;
     }
 
     let isValid = true;
-    let errorMessage = "Invalid input.";
+    errorMessage = ""; // Reset errorMessage
+
     if (schema) {
       isValid = Value.Check(schema, num);
       if (!isValid) {
         const errors = [...Value.Errors(schema, num)];
         if (errors.length > 0) {
           errorMessage = errors[0]?.message ?? "Invalid input.";
+        } else {
+          errorMessage = "Invalid input.";
         }
       }
     }
@@ -84,11 +102,13 @@ export async function numberPrompt<T extends TSchema>(
           typeof validation === "string" ? validation : "Invalid input.";
       }
     }
+
     if (isValid) {
+      msg({ type: "M_NEWLINE" });
       rl.close();
       return num as Static<T>;
     } else {
-      msg({ type: "M_ERROR", title: errorMessage });
+      // Will re-prompt in the next iteration
     }
   }
 }

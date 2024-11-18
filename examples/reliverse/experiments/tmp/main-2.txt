@@ -51,7 +51,7 @@ export async function prompts<T extends TSchema>(
       value = await selectPrompt(options);
       break;
     case "multiselect":
-      value = await multiselectPrompt(options);
+      value = await multisSlectPrompt(options);
       break;
     case "password":
       value = await passwordPrompt(options);
@@ -259,7 +259,7 @@ async function selectPrompt<T extends TSchema>(
   }
 }
 
-async function multiselectPrompt<T extends TSchema>(
+async function multisSlectPrompt<T extends TSchema>(
   options: PromptOptions<T>,
 ): Promise<Static<T>> {
   const { title, choices, schema } = options;

@@ -31,9 +31,17 @@ export function calculateAge(birthday: string): number {
   return age;
 }
 
-export function validateAge(calculatedAge: number, userAge: number) {
+export function validateAge(
+  calculatedAge: number,
+  userAge: number,
+  birthday: string,
+) {
   const ageMessage =
-    "Based on your birthday date, you're " + calculatedAge + " years old.";
+    "Based on your birthday date (" +
+    birthday +
+    "), you're " +
+    calculatedAge +
+    " years old.";
 
   if (calculatedAge === userAge) {
     msg({
@@ -54,25 +62,20 @@ export function hashPassword(password: string): string {
   return password.split("").reverse().join("");
 }
 
-export function displayUserRegistration(userInput: UserInput) {
-  msg({
-    type: "M_INFO",
-    title: `User successfully registered: ${userInput.username}`,
-    titleColor: "dim",
-  });
-
-  // Full intellisense is available when defining choices using an enum
-  if (userInput.color === "red") {
+export function displayUserInputs(userInput: UserInput) {
+  const color = userInput.color as ColorName;
+  if (color === "red" || color === "redBright") {
+    userInput.color = "redBright" as ColorName;
     msg({
       type: "M_INFO",
       title: "User's favorite color is red. Johnny Silverhand approves.",
-      titleColor: userInput.color,
+      titleColor: userInput.color as ColorName,
     });
   } else {
     msg({
       type: "M_INFO",
-      title: `User's favorite color is: ${userInput.color}`,
-      titleColor: userInput.color as ColorName,
+      title: `User's favorite color is: ${color}`,
+      titleColor: color,
     });
   }
 }

@@ -22,7 +22,7 @@ export const schema = Type.Object({
   username: Type.String({
     minLength: 2,
     maxLength: 20,
-    pattern: "^[a-zA-Z0-9]+$",
+    pattern: "^[a-zA-Z0-9\u0400-\u04FF]+$",
   }),
   dir: Type.String({ minLength: 1 }),
   deps: Type.Boolean(),

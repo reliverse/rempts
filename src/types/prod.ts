@@ -27,7 +27,13 @@ export type ColorName =
   | "inverse"
   | "black"
   | "red"
+  | "redBright"
+  | "bgRed"
+  | "bgRedBright"
   | "green"
+  | "greenBright"
+  | "bgGreen"
+  | "bgGreenBright"
   | "yellow"
   | "yellowBright"
   | "blue"
@@ -77,6 +83,8 @@ export type FmtMsgOptions = {
     };
   };
   errorMessage?: string;
+  addNewLineBefore?: boolean;
+  addNewLineAfter?: boolean;
 };
 
 export type RequiredPromptOptions = {
@@ -97,7 +105,7 @@ export type OptionalPromptOptions<T extends TSchema = any> = {
   contentVariant?: Variant;
   hint?: string;
   validate?: (value: any) => boolean | string | Promise<boolean | string>;
-  defaultValue?: string | number | boolean;
+  defaultValue?: string | string[] | number | boolean;
   defaultColor?: ColorName;
   defaultTypography?: TypographyName;
   choices?: ChoiceOptions[];
@@ -110,6 +118,9 @@ export type OptionalPromptOptions<T extends TSchema = any> = {
   border?: boolean;
   borderColor?: ColorName;
   clearConsole?: boolean;
+  additionalLinesToDelete?: number;
+  answerColor?: ColorName;
+  hintColor?: ColorName;
 };
 
 export type PromptOptions<T extends TSchema = any> = RequiredPromptOptions &

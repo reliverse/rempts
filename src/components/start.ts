@@ -4,10 +4,11 @@ import { msg } from "~/utils/messages";
 
 export async function startPrompt({
   title,
-  titleColor,
-  titleTypography,
+  titleColor = "cyanBright",
+  answerColor = "none",
+  titleTypography = "bold",
   titleVariant,
-  borderColor = "none",
+  borderColor = "viceGradient",
   clearConsole = true,
 }: PromptOptions): Promise<void> {
   if (clearConsole) {
@@ -25,4 +26,13 @@ export async function startPrompt({
     titleVariant,
     borderColor,
   });
+
+  if (!process.stdout.isTTY) {
+    console.error(
+      "│  Your terminal does not support cursor manipulations.\n│  It's recommended to use a terminal which supports TTY.",
+    );
+    msg({
+      type: "M_NEWLINE",
+    });
+  }
 }
