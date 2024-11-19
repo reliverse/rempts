@@ -7,7 +7,7 @@ import { colorMap } from "~/utils/mapping";
 const colorKeys = Object.keys(colorMap) as [keyof typeof colorMap];
 
 // You can find the schema templates like this
-// one at https://docs.reliverse.org/prompts
+// one at https://docs.reliverse.org/relinka
 const colorSchema = Type.Enum(
   Object.keys(colorMap).reduce(
     (acc, key) => {
@@ -25,11 +25,13 @@ export const schema = Type.Object({
     pattern: "^[a-zA-Z0-9\u0400-\u04FF]+$",
   }),
   dir: Type.String({ minLength: 1 }),
-  deps: Type.Boolean(),
+  // deps: Type.Boolean(),
   password: Type.String({ minLength: 4 }),
   age: Type.Number({ minimum: 18, maximum: 99 }),
+  lang: Type.String(),
   color: colorSchema,
   birthday: Type.String({ minLength: 10, maxLength: 10 }),
+  langs: Type.Array(Type.String()),
   features: Type.Array(Type.String()),
 });
 

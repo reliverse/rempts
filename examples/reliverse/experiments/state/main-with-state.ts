@@ -11,7 +11,7 @@ import { nextStepsPrompt } from "~/components/next-steps";
 // import { multiSelectPrompt } from "~/components/num-multi-select";
 import { numberPrompt } from "~/components/number";
 import { passwordPrompt } from "~/components/password";
-import { selectPrompt } from "~/components/select";
+import { selectPrompt } from "~/components/select-2";
 
 import type { PromptOptionsWithState } from "./types-wth-state";
 

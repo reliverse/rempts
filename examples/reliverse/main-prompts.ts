@@ -4,6 +4,7 @@ import { emojify } from "node-emoji";
 import { bold } from "picocolors";
 
 import { pressAnyKeyPrompt } from "~/components/any-key";
+import { relinka } from "~/components/modules";
 import { numSelectPrompt } from "~/components/num-select";
 import { promptsDisplayResults } from "~/components/results";
 import {
@@ -12,11 +13,11 @@ import {
   datePrompt,
   endPrompt,
   msg,
-  multiSelectPrompt,
+  numMultiSelectPrompt,
   nextStepsPrompt,
   numberPrompt,
   passwordPrompt,
-  selectPrompt,
+  // selectPrompt,
   spinnerPrompts,
   startPrompt,
   textPrompt,
@@ -39,7 +40,7 @@ const IDs = {
   deps: "deps",
   password: "password",
   age: "age",
-  language: "language",
+  lang: "lang",
   color: "color",
   birthday: "birthday",
   features: "features",
@@ -109,22 +110,23 @@ export async function showNumberPrompt(): Promise<UserInput["age"]> {
   return age ?? 34;
 }
 
-// TODO: fix, currently works only if it's the first prompt
-// export async function showSelectPrompt(): Promise<string> {
-//   const language = await selectPrompt({
-//     id: IDs.language,
-//     title: "Choose your language",
-//     choices: [
-//       {
-//         title: "English",
-//         id: "en",
-//       },
-//       { title: "Other", id: "other" },
-//     ],
-//   });
+export async function showSelectPrompt(): Promise<string> {
+  const lang = await relinka.prompt("Choose your language", {
+    type: "select",
+    options: [
+      { label: "English", value: "English" },
+      { label: "Ukrainian", value: "Ukrainian" },
+      { label: "Other", value: "Other" },
+    ],
+    initial: "English",
+  });
 
-//   return language ?? "";
-// }
+  if (typeof lang !== "string") {
+    process.exit(0);
+  }
+
+  return lang.toString();
+}
 
 export async function showNumSelectPrompt(): Promise<UserInput["color"]> {
   const choices = createColorChoices();
@@ -188,8 +190,53 @@ export async function showDatePrompt(): Promise<UserInput["birthday"]> {
   return birthdayDate ?? "16.11.1988";
 }
 
-/* export async function showMultiSelectPrompt(): Promise<UserInput["features"]> {
-  const features = await multiSelectPrompt({
+export async function showMultiSelectPrompt(): Promise<string[]> {
+  const features = await relinka.prompt(
+    "Select your programming language(s) | Use <space> to select/deselect",
+    {
+      type: "multiselect",
+      options: [
+        {
+          label: "TypeScript",
+          value: "typescript",
+          hint: emojify(":blue_heart:"),
+        },
+        {
+          label: "JavaScript",
+          value: "javascript",
+          hint: emojify(":yellow_heart:"),
+        },
+        {
+          label: "CoffeeScript",
+          value: "coffeescript",
+          hint: emojify(":coffee:"),
+        },
+        {
+          label: "Python",
+          value: "python",
+          hint: emojify(":snake:"),
+        },
+        { label: "Java", value: "java", hint: emojify(":coffee:") },
+        { label: "C#", value: "csharp", hint: emojify(":hash:") },
+        { label: "Go", value: "go", hint: emojify(":dolphin:") },
+        { label: "Rust", value: "rust", hint: emojify(":crab:") },
+        { label: "Swift", value: "swift", hint: emojify(":apple:") },
+      ],
+      initial: ["javascript", "typescript"],
+    },
+  );
+
+  if (!Array.isArray(features)) {
+    process.exit(0);
+  }
+
+  return features.toString().split(",");
+}
+
+export async function showNumMultiSelectPrompt(): Promise<
+  UserInput["features"]
+> {
+  const features = await numMultiSelectPrompt({
     id: IDs.features,
     title: "What features do you want to use?",
     defaultValue: ["react", "typescript"],
@@ -215,9 +262,10 @@ export async function showDatePrompt(): Promise<UserInput["birthday"]> {
     schema: schema.properties.features,
   });
   return features ?? ["react", "typescript"];
-} */
+}
 
-export async function showConfirmPrompt(
+// TODO: fix bun crash
+/* export async function showConfirmPrompt(
   username: string,
 ): Promise<UserInput["deps"]> {
   await showAnyKeyPrompt("pm", username);
@@ -240,7 +288,7 @@ export async function showConfirmPrompt(
   });
   // A return value is unnecessary for prompts when the result is not needed later.
   return deps ?? false;
-}
+} */
 
 // Prompt ID is not required for the following
 // components, as they don't return any values.
@@ -301,7 +349,7 @@ export async function showEndPrompt() {
   await endPrompt({
     id: "end",
     title: emojify(
-      "ℹ  :books: Learn the docs here: https://docs.reliverse.org/prompts",
+      "ℹ  :books: Learn the docs here: https://docs.reliverse.org/relinka",
     ),
     titleAnimation: "glitch",
     ...basicConfig,

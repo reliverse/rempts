@@ -6,10 +6,10 @@ import {
   doSomeFunStuff,
   showAnimatedText,
   showAnyKeyPrompt,
-  showConfirmPrompt,
+  // showConfirmPrompt,
   showDatePrompt,
   showEndPrompt,
-  // showMultiSelectPrompt,
+  showNumMultiSelectPrompt,
   showNextStepsPrompt,
   showNumberPrompt,
   showNumSelectPrompt,
@@ -17,48 +17,40 @@ import {
   showResults,
   showStartPrompt,
   showTextPrompt,
+  showSelectPrompt,
+  showMultiSelectPrompt,
 } from "@/reliverse/main-prompts";
 import { type UserInput } from "@/reliverse/main-schema";
 
-import { multiSelectPrompt } from "~/components/multi-select";
-import { selectPrompt } from "~/components/select";
 import { errorHandler } from "~/utils/errors";
 
 export async function detailedExample() {
   await showStartPrompt();
   await showAnyKeyPrompt("privacy");
-
-  const selectOptions = ["Option 1", "Option 2", "Option 3", "Option 4"];
-  const multiSelectOptions = ["Option 1", "Option 2", "Option 3", "Option 4"];
-
-  const selectedOption = await selectPrompt(selectOptions);
-  console.log(`You selected: ${selectedOption}`);
-
-  const selectedOptions = await multiSelectPrompt(multiSelectOptions);
-  console.log("You selected:");
-  selectedOptions.forEach((option) => console.log(option));
-
   const username = await showTextPrompt();
   const dir = await askDir(username);
   const age = await showNumberPrompt();
+  const lang = await showSelectPrompt();
   const color = await showNumSelectPrompt();
   const password = await showPasswordPrompt();
   const birthday = await showDatePrompt();
-  // const features = await showMultiSelectPrompt();
-  const features = ["Feature 1", "Feature 2", "Feature 3"];
-  const deps = await showConfirmPrompt(username);
+  const langs = await showMultiSelectPrompt();
+  const features = await showNumMultiSelectPrompt();
+  // const deps = await showConfirmPrompt(username);
   const userInput = {
     username,
     dir,
     age,
+    lang,
     color,
     password,
     birthday,
+    langs,
     features,
-    deps,
+    // deps,
   } satisfies UserInput;
-  await showResults(userInput);
-  await doSomeFunStuff(userInput);
+  // await showResults(userInput);
+  // await doSomeFunStuff(userInput);
   await showNextStepsPrompt();
   await showAnimatedText();
   await showEndPrompt();

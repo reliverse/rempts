@@ -1,8 +1,8 @@
-import type { TreeItem } from "~/utils/helpers/utils/tree";
+import type { TreeItem } from "~/components/modules/helpers/tree";
 
+import { relinka, createRelinka } from "~/components/modules";
+import { formatTree } from "~/components/modules/helpers/tree";
 import { errorHandler } from "~/utils/errors";
-import { relinka, createRelinka } from "~/utils/helpers";
-import { formatTree } from "~/utils/helpers/utils/tree";
 
 import { reporterDemo } from "./reliverse/experiments/utils";
 

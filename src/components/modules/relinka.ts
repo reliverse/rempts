@@ -10,7 +10,7 @@ import type {
 } from "./types";
 
 import { LogTypes } from "./constants";
-import { isLogObj } from "./utils/log";
+import { isLogObj } from "./helpers/log";
 
 let paused = false;
 const queue: any[] = [];

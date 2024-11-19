@@ -3,12 +3,12 @@ import _stringWidth from "string-width";
 
 import type { LogLevel, LogType } from "../constants";
 import type { FormatOptions, LogObject } from "../types";
-import type { BoxOpts } from "../utils/box";
+import type { BoxOpts } from "../helpers/box";
 
 import { stripAnsi } from "../utils";
-import { box } from "../utils/box";
-import { colors } from "../utils/color";
-import { parseStack } from "../utils/error";
+import { box } from "../helpers/box";
+import { colors } from "../helpers/color";
+import { parseStack } from "../helpers/error";
 import { BasicReporter } from "./basic";
 
 export const TYPE_COLOR_MAP: Partial<Record<LogType, string>> = {
@@ -41,7 +41,6 @@ const TYPE_ICONS: Partial<Record<LogType, string>> = {
 };
 
 function stringWidth(str: string) {
-  // https://github.com/unjs/relinka/issues/204
   if (!Intl.Segmenter) {
     return stripAnsi(str).length;
   }

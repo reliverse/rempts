@@ -1,12 +1,12 @@
-# Reliverse Prompts
+# @reliverse/relinka
 
-[**Docs**](https://docs.reliverse.org/prompts) | [**npmjs.com**](https://npmjs.com/package/@reliverse/relinka) | [**GitHub**](https://github.com/reliverse/prompts)
+[**Docs**](https://docs.reliverse.org/relinka) | [**npmjs.com**](https://npmjs.com/package/@reliverse/relinka) | [**GitHub**](https://github.com/reliverse/relinka)
 
-[![Separator](./public/split.png)](https://docs.reliverse.org/prompts)
+[![Separator](./public/split.png)](https://docs.reliverse.org/relinka)
 
 @reliverse/relinka is a powerful library that enables seamless, type-safe, and resilient prompts for command-line applications. Crafted with simplicity and elegance, it provides developers with an intuitive and robust way to build interactive CLIs.
 
-[![CLI Example](./public/example.png)](https://docs.reliverse.org/prompts)
+[![CLI Example](./public/example.png)](https://docs.reliverse.org/relinka)
 
 ## Installation
 
@@ -23,7 +23,7 @@ bun add @reliverse/relinka # Replace 'bun' with npm, pnpm, or yarn if desired (d
 - **Flexible Prompt Types**: Supports a range of prompt types, including text, password, number, select, and multiselect.
 - **Crash Resilience**: Designed to handle cancellations and errors gracefully, ensuring stability.
 
-[![Confirm Prompt](./public/confirm.gif)](https://docs.reliverse.org/prompts)
+[![Confirm Prompt](./public/confirm.gif)](https://docs.reliverse.org/relinka)
 
 ## Prompt Types
 
@@ -36,13 +36,13 @@ Each type has its own validation and display logic. More types are planned for f
 - **Select**: Dropdown selection for multiple choices.
 - **Multiselect**: Allows users to select multiple items from a list.
 
-[![Multiselect Prompt](./public/list.gif)](https://docs.reliverse.org/prompts)
+[![Multiselect Prompt](./public/list.gif)](https://docs.reliverse.org/relinka)
 
 ## Input Validation
 
 All prompts support custom validation logic, providing immediate feedback to users.
 
-[![Number Prompt with Validation](./public/validate.gif)](https://docs.reliverse.org/prompts)
+[![Number Prompt with Validation](./public/validate.gif)](https://docs.reliverse.org/relinka)
 
 ## Contributing
 
@@ -51,8 +51,8 @@ All prompts support custom validation logic, providing immediate feedback to use
 Here is how to install the library for development:
 
 ```sh
-git clone https://github.com/reliverse/prompts.git
-cd prompts
+git clone https://github.com/reliverse/relinka.git
+cd relinka
 bun i
 ```
 
@@ -114,7 +114,7 @@ This project wouldn’t exist without the amazing work of the following projects
 
 ## Wrap-Up
 
-@reliverse/relinka is a versatile library designed to accelerate CLI development by providing customizable prompt components. Integrated into the [Reliverse CLI](https://github.com/blefnk/reliverse#readme), @reliverse/relinka enables you to create a unique design aligned with your CLI app’s aesthetics, similar to how @shadcn/ui supports customizable web UI components. Quickly get started by copying configurations from the [Reliverse Docs](https://docs.reliverse.org/prompts) and using components that fit your project, making it faster to bring your CLI app to life. You’re free to customize each component as desired, with default designs provided to ensure an attractive interface from the start.
+@reliverse/relinka is a versatile library designed to accelerate CLI development by providing customizable prompt components. Integrated into the [Reliverse CLI](https://github.com/blefnk/reliverse#readme), @reliverse/relinka enables you to create a unique design aligned with your CLI app’s aesthetics, similar to how @shadcn/ui supports customizable web UI components. Quickly get started by copying configurations from the [Reliverse Docs](https://docs.reliverse.org/relinka) and using components that fit your project, making it faster to bring your CLI app to life. You’re free to customize each component as desired, with default designs provided to ensure an attractive interface from the start.
 
 **Example Configuration:**
 

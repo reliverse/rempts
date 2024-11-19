@@ -5,8 +5,8 @@ import type {
   FormatOptions,
   RelinkaOptions,
 } from "../types";
-import { parseStack } from "../utils/error";
-import { writeStream } from "../utils/stream";
+import { parseStack } from "../helpers/error";
+import { writeStream } from "../helpers/stream";
 
 const bracket = (x: string) => (x ? `[${x}]` : "");
 

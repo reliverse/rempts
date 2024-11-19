@@ -1,6 +1,6 @@
-import type { RelinkaOptions } from "~/utils/helpers";
+import type { RelinkaOptions } from "~/components/modules";
 
-import { createRelinka } from "~/utils/helpers";
+import { createRelinka } from "~/components/modules";
 
 import { randomSentence } from "./sentence";
 
@@ -22,7 +22,7 @@ export function reporterDemo(
 
   relinka.error(new Error(randomSentence()));
 
-  const tagged = relinka.withTag("unjs").withTag("router");
+  const tagged = relinka.withTag("reliverse").withTag("relinka");
 
   for (const type of Object.keys(relinka.options.types).sort()) {
     tagged[type](randomSentence());
