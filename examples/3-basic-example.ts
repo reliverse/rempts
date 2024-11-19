@@ -1,11 +1,11 @@
-// 3-basic-example.ts: A basic example demonstrating core functionalities of @reliverse/prompts. Everything in a single file.
+// 3-basic-example.ts: A basic example demonstrating core functionalities of @reliverse/relinka. Everything in a single file.
 
 import { showSpinner } from "@/reliverse/main-prompts";
 
 import type { OptionalPromptOptions } from "~/types/prod";
 
 import { numberPrompt, textPrompt } from "~/main";
-import { errorHandler } from "~/utils/helpers/errors";
+import { errorHandler } from "~/utils/errors";
 
 export const basicConfig = {
   titleColor: "cyanBright",
@@ -23,7 +23,7 @@ async function main() {
   await textPrompt({
     id: "start",
     title: "Hello, Reliverse Community! 👋",
-    content: "You are testing the basic example of @reliverse/prompts",
+    content: "You are testing the basic example of @reliverse/relinka",
     ...extendedConfig,
     titleVariant: "box",
     contentVariant: "underline",

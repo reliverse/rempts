@@ -8,7 +8,7 @@ import { confirmPrompt } from "~/components/confirm";
 import { datePrompt } from "~/components/date";
 import { endPrompt } from "~/components/end";
 import { nextStepsPrompt } from "~/components/next-steps";
-import { multiSelectPrompt } from "~/components/num-multi-select";
+// import { multiSelectPrompt } from "~/components/num-multi-select";
 import { numberPrompt } from "~/components/number";
 import { passwordPrompt } from "~/components/password";
 import { selectPrompt } from "~/components/select";
@@ -18,7 +18,7 @@ import type { PromptOptionsWithState } from "./types-wth-state";
 import { startPrompt } from "./ui/start-with-state";
 import { textPrompt } from "./ui/text-with-state";
 
-export { createSpinner } from "~/components/spinner";
+// export { createSpinner } from "~/components/spinner";
 
 export async function prompts<T extends TSchema>(
   options: PromptOptionsWithState<T>,
@@ -46,12 +46,12 @@ export async function prompts<T extends TSchema>(
     case "confirm":
       value = await confirmPrompt(options);
       break;
-    case "select":
-      value = await selectPrompt(options);
-      break;
-    case "multiselect":
-      value = await multiSelectPrompt(options);
-      break;
+    // case "select":
+    //   value = await selectPrompt(options);
+    //   break;
+    // case "multiselect":
+    //   value = await multiSelectPrompt(options);
+    //   break;
     case "password":
       value = await passwordPrompt(options);
       break;

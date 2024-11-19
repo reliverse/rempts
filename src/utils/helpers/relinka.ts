@@ -3,10 +3,10 @@ import { defu } from "defu";
 import type { LogType, LogLevel } from "./constants";
 import type { PromptOptions } from "./prompt";
 import type {
-  ConsolaReporter,
+  RelinkaReporter,
   InputLogObject,
   LogObject,
-  ConsolaOptions,
+  RelinkaOptions,
 } from "./types";
 
 import { LogTypes } from "./constants";
@@ -16,13 +16,13 @@ let paused = false;
 const queue: any[] = [];
 
 /**
- * Consola class for logging management with support for pause/resume, mocking and customizable reporting.
+ * Relinka class for logging management with support for pause/resume, mocking and customizable reporting.
  * Provides flexible logging capabilities including level-based logging, custom reporters and integration options.
  *
- * @class Consola
+ * @class Relinka
  */
-export class Consola {
-  options: ConsolaOptions;
+export class Relinka {
+  options: RelinkaOptions;
 
   _lastLog: {
     serialized?: string;
@@ -32,14 +32,14 @@ export class Consola {
     timeout?: ReturnType<typeof setTimeout>;
   };
 
-  _mockFn?: ConsolaOptions["mockFn"];
+  _mockFn?: RelinkaOptions["mockFn"];
 
   /**
-   * Creates an instance of Consola with specified options or defaults.
+   * Creates an instance of Relinka with specified options or defaults.
    *
-   * @param {Partial<ConsolaOptions>} [options={}] - Configuration options for the Consola instance.
+   * @param {Partial<RelinkaOptions>} [options={}] - Configuration options for the Relinka instance.
    */
-  constructor(options: Partial<ConsolaOptions> = {}) {
+  constructor(options: Partial<RelinkaOptions> = {}) {
     // Options
     const types = options.types || LogTypes;
     this.options = defu(
@@ -48,7 +48,7 @@ export class Consola {
         defaults: { ...options.defaults },
         level: _normalizeLogLevel(options.level, types),
         reporters: [...(options.reporters || [])],
-      } as ConsolaOptions,
+      } as RelinkaOptions,
       {
         types: LogTypes,
         throttle: 1000,
@@ -58,7 +58,7 @@ export class Consola {
           colors: false,
           compact: true,
         },
-      } as Partial<ConsolaOptions>,
+      } as Partial<RelinkaOptions>,
     );
 
     // Create logger functions for current instance
@@ -69,9 +69,9 @@ export class Consola {
         ...types[type as LogType],
       };
       // @ts-expect-error TODO: fix ts
-      (this as unknown as ConsolaInstance)[type as LogType] =
+      (this as unknown as RelinkaInstance)[type as LogType] =
         this._wrapLogFn(defaults);
-      (this as unknown as ConsolaInstance)[type].raw = this._wrapLogFn(
+      (this as unknown as RelinkaInstance)[type].raw = this._wrapLogFn(
         defaults,
         true,
       );
@@ -87,7 +87,7 @@ export class Consola {
   }
 
   /**
-   * Gets the current log level of the Consola instance.
+   * Gets the current log level of the Relinka instance.
    *
    * @returns {number} The current log level.
    */
@@ -125,16 +125,16 @@ export class Consola {
   }
 
   /**
-   * Creates a new instance of Consola, inheriting options from the current instance, with possible overrides.
+   * Creates a new instance of Relinka, inheriting options from the current instance, with possible overrides.
    *
-   * @param {Partial<ConsolaOptions>} options - Optional overrides for the new instance. See {@link ConsolaOptions}.
-   * @returns {ConsolaInstance} A new Consola instance. See {@link ConsolaInstance}.
+   * @param {Partial<RelinkaOptions>} options - Optional overrides for the new instance. See {@link RelinkaOptions}.
+   * @returns {RelinkaInstance} A new Relinka instance. See {@link RelinkaInstance}.
    */
-  create(options: Partial<ConsolaOptions>): ConsolaInstance {
-    const instance = new Consola({
+  create(options: Partial<RelinkaOptions>): RelinkaInstance {
+    const instance = new Relinka({
       ...this.options,
       ...options,
-    }) as ConsolaInstance;
+    }) as RelinkaInstance;
 
     if (this._mockFn) {
       instance.mockTypes(this._mockFn);
@@ -144,12 +144,12 @@ export class Consola {
   }
 
   /**
-   * Creates a new Consola instance with the specified default log object properties.
+   * Creates a new Relinka instance with the specified default log object properties.
    *
    * @param {InputLogObject} defaults - Default properties to include in any log from the new instance. See {@link InputLogObject}.
-   * @returns {ConsolaInstance} A new Consola instance. See {@link ConsolaInstance}.
+   * @returns {RelinkaInstance} A new Relinka instance. See {@link RelinkaInstance}.
    */
-  withDefaults(defaults: InputLogObject): ConsolaInstance {
+  withDefaults(defaults: InputLogObject): RelinkaInstance {
     return this.create({
       ...this.options,
       defaults: {
@@ -160,12 +160,12 @@ export class Consola {
   }
 
   /**
-   * Creates a new Consola instance with a specified tag, which will be included in every log.
+   * Creates a new Relinka instance with a specified tag, which will be included in every log.
    *
    * @param {string} tag - The tag to include in each log of the new instance.
-   * @returns {ConsolaInstance} A new Consola instance. See {@link ConsolaInstance}.
+   * @returns {RelinkaInstance} A new Relinka instance. See {@link RelinkaInstance}.
    */
-  withTag(tag: string): ConsolaInstance {
+  withTag(tag: string): RelinkaInstance {
     return this.withDefaults({
       tag: this.options.defaults.tag
         ? this.options.defaults.tag + ":" + tag
@@ -174,25 +174,25 @@ export class Consola {
   }
 
   /**
-   * Adds a custom reporter to the Consola instance.
+   * Adds a custom reporter to the Relinka instance.
    * Reporters will be called for each log message, depending on their implementation and log level.
    *
-   * @param {ConsolaReporter} reporter - The reporter to add. See {@link ConsolaReporter}.
-   * @returns {Consola} The current Consola instance.
+   * @param {RelinkaReporter} reporter - The reporter to add. See {@link RelinkaReporter}.
+   * @returns {Relinka} The current Relinka instance.
    */
-  addReporter(reporter: ConsolaReporter) {
+  addReporter(reporter: RelinkaReporter) {
     this.options.reporters.push(reporter);
     return this;
   }
 
   /**
-   * Removes a custom reporter from the Consola instance.
+   * Removes a custom reporter from the Relinka instance.
    * If no reporter is specified, all reporters will be removed.
    *
-   * @param {ConsolaReporter} reporter - The reporter to remove. See {@link ConsolaReporter}.
-   * @returns {Consola} The current Consola instance.
+   * @param {RelinkaReporter} reporter - The reporter to remove. See {@link RelinkaReporter}.
+   * @returns {Relinka} The current Relinka instance.
    */
-  removeReporter(reporter: ConsolaReporter) {
+  removeReporter(reporter: RelinkaReporter) {
     if (reporter) {
       const i = this.options.reporters.indexOf(reporter);
       if (i >= 0) {
@@ -205,12 +205,12 @@ export class Consola {
   }
 
   /**
-   * Replaces all reporters of the Consola instance with the specified array of reporters.
+   * Replaces all reporters of the Relinka instance with the specified array of reporters.
    *
-   * @param {ConsolaReporter[]} reporters - The new reporters to set. See {@link ConsolaReporter}.
-   * @returns {Consola} The current Consola instance.
+   * @param {RelinkaReporter[]} reporters - The new reporters to set. See {@link RelinkaReporter}.
+   * @returns {Relinka} The current Relinka instance.
    */
-  setReporters(reporters: ConsolaReporter[]) {
+  setReporters(reporters: RelinkaReporter[]) {
     this.options.reporters = Array.isArray(reporters) ? reporters : [reporters];
     return this;
   }
@@ -226,7 +226,7 @@ export class Consola {
   }
 
   /**
-   * Overrides console methods with Consola logging methods for consistent logging.
+   * Overrides console methods with Relinka logging methods for consistent logging.
    */
   wrapConsole() {
     for (const type in this.options.types) {
@@ -235,14 +235,14 @@ export class Consola {
         (console as any)["__" + type] = (console as any)[type];
       }
       // Override
-      (console as any)[type] = (this as unknown as ConsolaInstance)[
+      (console as any)[type] = (this as unknown as RelinkaInstance)[
         type as LogType
       ].raw;
     }
   }
 
   /**
-   * Restores the original console methods, removing Consola overrides.
+   * Restores the original console methods, removing Relinka overrides.
    */
   restoreConsole() {
     for (const type in this.options.types) {
@@ -256,7 +256,7 @@ export class Consola {
   }
 
   /**
-   * Overrides standard output and error streams to redirect them through Consola.
+   * Overrides standard output and error streams to redirect them through Relinka.
    */
   wrapStd() {
     this._wrapStream(this.options.stdout, "log");
@@ -275,12 +275,12 @@ export class Consola {
 
     // Override
     (stream as any).write = (data: any) => {
-      (this as unknown as ConsolaInstance)[type].raw(String(data).trim());
+      (this as unknown as RelinkaInstance)[type].raw(String(data).trim());
     };
   }
 
   /**
-   * Restores the original standard output and error streams, removing the Consola redirection.
+   * Restores the original standard output and error streams, removing the Relinka redirection.
    */
   restoreStd() {
     this._restoreStream(this.options.stdout);
@@ -321,9 +321,9 @@ export class Consola {
   /**
    * Replaces logging methods with mocks if a mock function is provided.
    *
-   * @param {ConsolaOptions["mockFn"]} mockFn - The function to use for mocking logging methods. See {@link ConsolaOptions["mockFn"]}.
+   * @param {RelinkaOptions["mockFn"]} mockFn - The function to use for mocking logging methods. See {@link RelinkaOptions["mockFn"]}.
    */
-  mockTypes(mockFn?: ConsolaOptions["mockFn"]) {
+  mockTypes(mockFn?: RelinkaOptions["mockFn"]) {
     const _mockFn = mockFn || this.options.mockFn;
 
     this._mockFn = _mockFn;
@@ -334,11 +334,11 @@ export class Consola {
 
     for (const type in this.options.types) {
       // @ts-expect-error TODO: fix ts
-      (this as unknown as ConsolaInstance)[type as LogType] =
+      (this as unknown as RelinkaInstance)[type as LogType] =
         _mockFn(type as LogType, this.options.types[type as LogType]) ||
-        (this as unknown as ConsolaInstance)[type as LogType];
-      (this as unknown as ConsolaInstance)[type as LogType].raw = (
-        this as unknown as ConsolaInstance
+        (this as unknown as RelinkaInstance)[type as LogType];
+      (this as unknown as RelinkaInstance)[type as LogType].raw = (
+        this as unknown as RelinkaInstance
       )[type as LogType];
     }
   }
@@ -481,32 +481,32 @@ export type LogFn = {
   (message: InputLogObject | any, ...args: any[]): void;
   raw: (...args: any[]) => void;
 };
-export type ConsolaInstance = Consola & Record<LogType, LogFn>;
+export type RelinkaInstance = Relinka & Record<LogType, LogFn>;
 
 // Legacy support
 // @ts-expect-error TODO: fix ts
-Consola.prototype.add = Consola.prototype.addReporter;
+Relinka.prototype.add = Relinka.prototype.addReporter;
 // @ts-expect-error TODO: fix ts
-Consola.prototype.remove = Consola.prototype.removeReporter;
+Relinka.prototype.remove = Relinka.prototype.removeReporter;
 // @ts-expect-error TODO: fix ts
-Consola.prototype.clear = Consola.prototype.removeReporter;
+Relinka.prototype.clear = Relinka.prototype.removeReporter;
 // @ts-expect-error TODO: fix ts
-Consola.prototype.withScope = Consola.prototype.withTag;
+Relinka.prototype.withScope = Relinka.prototype.withTag;
 // @ts-expect-error TODO: fix ts
-Consola.prototype.mock = Consola.prototype.mockTypes;
+Relinka.prototype.mock = Relinka.prototype.mockTypes;
 // @ts-expect-error TODO: fix ts
-Consola.prototype.pause = Consola.prototype.pauseLogs;
+Relinka.prototype.pause = Relinka.prototype.pauseLogs;
 // @ts-expect-error TODO: fix ts
-Consola.prototype.resume = Consola.prototype.resumeLogs;
+Relinka.prototype.resume = Relinka.prototype.resumeLogs;
 
 /**
- * Utility for creating a new Consola instance with optional configuration.
+ * Utility for creating a new Relinka instance with optional configuration.
  *
- * @param {Partial<ConsolaOptions>} [options={}] - Optional configuration options for the new Consola instance. See {@link ConsolaOptions}.
- * @returns {ConsolaInstance} A new instance of Consola. See {@link ConsolaInstance}.
+ * @param {Partial<RelinkaOptions>} [options={}] - Optional configuration options for the new Relinka instance. See {@link RelinkaOptions}.
+ * @returns {RelinkaInstance} A new instance of Relinka. See {@link RelinkaInstance}.
  */
-export function createConsola(
-  options: Partial<ConsolaOptions> = {},
-): ConsolaInstance {
-  return new Consola(options) as ConsolaInstance;
+export function createRelinka(
+  options: Partial<RelinkaOptions> = {},
+): RelinkaInstance {
+  return new Relinka(options) as RelinkaInstance;
 }

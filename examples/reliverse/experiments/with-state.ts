@@ -1,5 +1,5 @@
 import { symbol } from "@/reliverse/experiments/utils/symbols";
-import { errorHandler } from "~/utils/helpers/errors";
+import { errorHandler } from "~/utils/errors";
 
 import type {
   PromptStateDeprecated,

@@ -12,7 +12,7 @@ export async function selectPrompt(options: string[]): Promise<string> {
 
     const render = () => {
       // Clear the console
-      // output.write("\x1B[2J\x1B[0f");
+      output.write("\x1B[2J\x1B[0f");
       options.forEach((option, index) => {
         if (index === selected) {
           output.write(`> ${option}\n`);

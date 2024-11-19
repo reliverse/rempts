@@ -40,7 +40,7 @@ export async function textPrompt<T extends TSchema>(
 
   const [state, setState] = useState<StateDeprecated>(initialState);
   const [answer, setAnswer] = useState<string | number | boolean>(
-    defaultValue || "",
+    defaultValue as string | number | boolean,
   );
   const [errorMessage, setErrorMessage] = useState<string>("");
 

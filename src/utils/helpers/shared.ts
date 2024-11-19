@@ -1,8 +1,8 @@
 export { LogLevels, LogTypes } from "./constants";
-export { Consola } from "./consola";
+export { Relinka } from "./relinka";
 
 export type * from "./types";
-export type { ConsolaInstance } from "./consola";
+export type { RelinkaInstance } from "./relinka";
 export type { LogLevel, LogType } from "./constants";
 export type {
   PromptOptions,

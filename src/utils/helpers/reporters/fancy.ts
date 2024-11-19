@@ -41,7 +41,7 @@ const TYPE_ICONS: Partial<Record<LogType, string>> = {
 };
 
 function stringWidth(str: string) {
-  // https://github.com/unjs/consola/issues/204
+  // https://github.com/unjs/relinka/issues/204
   if (!Intl.Segmenter) {
     return stripAnsi(str).length;
   }

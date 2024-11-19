@@ -1,36 +1,36 @@
 import { describe, test, expect } from "vitest";
 
-import type { ConsolaReporter, LogObject } from "../src";
+import type { RelinkaReporter, LogObject } from "~/utils/helpers";
 
-import { LogLevels, createConsola } from "../src";
+import { LogLevels, createRelinka } from "~/utils/helpers";
 
-describe("consola", () => {
+describe("relinka", () => {
   test("can set level", () => {
-    const consola = createConsola();
-    expect(consola.level).toBe(1);
+    const relinka = createRelinka();
+    expect(relinka.level).toBe(1);
 
     for (let i = 0; i <= 5; i++) {
-      consola.level = i;
-      expect(consola.level).toBe(i);
+      relinka.level = i;
+      expect(relinka.level).toBe(i);
     }
   });
 
   test("silent log level does't print logs", async () => {
     const logs: LogObject[] = [];
-    const TestReporter: ConsolaReporter = {
+    const TestReporter: RelinkaReporter = {
       log(logObj) {
         logs.push(logObj);
       },
     };
 
-    const consola = createConsola({
+    const relinka = createRelinka({
       throttle: 100,
       level: LogLevels.silent,
       reporters: [TestReporter],
     });
 
     for (let i = 0; i < 10; i++) {
-      consola.log("SPAM");
+      relinka.log("SPAM");
     }
 
     await wait(200);
@@ -39,19 +39,19 @@ describe("consola", () => {
 
   test("can see spams without ending log", async () => {
     const logs: LogObject[] = [];
-    const TestReporter: ConsolaReporter = {
+    const TestReporter: RelinkaReporter = {
       log(logObj) {
         logs.push(logObj);
       },
     };
 
-    const consola = createConsola({
+    const relinka = createRelinka({
       throttle: 100,
       level: LogLevels.info,
       reporters: [TestReporter],
     });
     for (let i = 0; i < 10; i++) {
-      consola.log("SPAM");
+      relinka.log("SPAM");
     }
     await wait(300);
     expect(logs.length).toBe(7);

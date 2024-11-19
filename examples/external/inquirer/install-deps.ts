@@ -1,7 +1,7 @@
 import type { InquirerReadline } from "@/external/inquirer/src/type/inquirer";
 
 import { withHooks } from "@/external/inquirer/src/hooks/hook-engine";
-import { errorHandler } from "~/utils/helpers/errors";
+import { errorHandler } from "~/utils/errors";
 import readline from "node:readline";
 
 import { prompt } from "~/components/mono";

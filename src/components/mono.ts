@@ -41,15 +41,15 @@ export async function prompt<T extends TSchema>(
     case "numSelect":
       value = await numSelectPrompt(options);
       break;
-    case "select":
-      value = await selectPrompt(options);
-      break;
-    case "multiSelect":
-      value = await multiSelectPrompt(options);
-      break;
-    case "numMultiSelect":
-      value = await numMultiSelectPrompt(options);
-      break;
+    // case "select":
+    //   value = await selectPrompt(options);
+    //   break;
+    // case "multiSelect":
+    //   value = await multiSelectPrompt(options);
+    //   break;
+    // case "numMultiSelect":
+    //   value = await numMultiSelectPrompt(options);
+    //   break;
     case "password":
       value = await passwordPrompt(options);
       break;

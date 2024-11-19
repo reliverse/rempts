@@ -2,7 +2,7 @@ import type { ChoiceOptionalOptions } from "~/types/prod";
 
 import { selectPrompt } from "~/components/select";
 import { colorize } from "~/utils/colorize";
-import { errorHandler } from "~/utils/helpers/errors";
+import { errorHandler } from "~/utils/errors";
 
 const selectPromptConfig = {
   description: colorize("(not finished)", "red"),
@@ -10,9 +10,11 @@ const selectPromptConfig = {
 } satisfies ChoiceOptionalOptions;
 
 async function examplesRunner() {
-  console.clear();
+  // console.clear();
 
-  const exampleToRun = await selectPrompt({
+  await import("./1-main-example");
+
+  /* const exampleToRun = await selectPrompt({
     id: "start",
     title: "Choose an example to run",
     content: colorize(
@@ -56,7 +58,7 @@ async function examplesRunner() {
 
   if (exampleToRun === "exit") {
     process.exit(0);
-  }
+  } */
 }
 
 await examplesRunner().catch((error) => errorHandler(error));

@@ -1,16 +1,16 @@
 import { formatWithOptions } from "node:util";
 import type {
   LogObject,
-  ConsolaReporter,
+  RelinkaReporter,
   FormatOptions,
-  ConsolaOptions,
+  RelinkaOptions,
 } from "../types";
 import { parseStack } from "../utils/error";
 import { writeStream } from "../utils/stream";
 
 const bracket = (x: string) => (x ? `[${x}]` : "");
 
-export class BasicReporter implements ConsolaReporter {
+export class BasicReporter implements RelinkaReporter {
   formatStack(stack: string, opts: FormatOptions) {
     return "  " + parseStack(stack).join("\n  ");
   }
@@ -61,7 +61,7 @@ export class BasicReporter implements ConsolaReporter {
     ]);
   }
 
-  log(logObj: LogObject, ctx: { options: ConsolaOptions }) {
+  log(logObj: LogObject, ctx: { options: RelinkaOptions }) {
     const line = this.formatLogObj(logObj, {
       columns: (ctx.options.stdout as any).columns || 0,
       ...ctx.options.formatOptions,

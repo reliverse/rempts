@@ -2,10 +2,9 @@
 
 import { createAsciiArt } from "~/components/ascii-art";
 import { prompt } from "~/components/mono";
+import { spinnerPrompts } from "~/components/spinner";
 import { colorize } from "~/utils/colorize";
-import { errorHandler } from "~/utils/helpers/errors";
-
-import { handleAnswer } from "./reliverse/experiments/state/utils/handleAnswer";
+import { errorHandler } from "~/utils/errors";
 
 async function main() {
   await prompt({
@@ -43,11 +42,22 @@ async function main() {
       { title: "Dec 17, 1996", id: "Dec 17, 1996" },
     ],
   });
-  await handleAnswer(
-    answer === "Dec 4th, 1995",
-    `Nice work ${playerName}. That's a legit answer!`,
-    `🫠 Game over, ${playerName}! You lose!`,
-  );
+
+  await spinnerPrompts({
+    initialMessage: "Checking answer...",
+    successMessage: "Answer checked successfully.",
+    spinnerSolution: "ora",
+    spinnerType: "arc",
+    action: async (updateMessage) => {
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+      updateMessage(
+        answer === "Dec 4th, 1995"
+          ? `Nice work ${playerName}. That's a legit answer!`
+          : `🫠 Game over, ${playerName}! You lose!`,
+      );
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+    },
+  });
 
   const message = `Congrats !\n $ 1 , 0 0 0 , 0 0 0`;
 

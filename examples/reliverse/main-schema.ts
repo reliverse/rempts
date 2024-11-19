@@ -39,7 +39,7 @@ export type UserInput = Static<typeof schema>;
 /* import { Type, type Static } from "@sinclair/typebox";
 import { colorMap } from "~/utils/mapping";
 
-// @reliverse/prompts allows you to define the schema once and reuse it for each prompt.
+// @reliverse/relinka allows you to define the schema once and reuse it for each prompt.
 // This is useful if you want to validate the input of multiple prompts using TypeBox.
 export const schema = Type.Object({
   username: Type.String({

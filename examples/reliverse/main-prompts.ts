@@ -48,7 +48,7 @@ const IDs = {
 export async function showStartPrompt() {
   await startPrompt({
     id: IDs.start,
-    title: `@reliverse/prompts v${version}`,
+    title: `@reliverse/relinka v${version}`,
     ...basicConfig,
     titleColor: "inverse",
     clearConsole: true,
@@ -110,21 +110,21 @@ export async function showNumberPrompt(): Promise<UserInput["age"]> {
 }
 
 // TODO: fix, currently works only if it's the first prompt
-export async function showSelectPrompt(): Promise<string> {
-  const language = await selectPrompt({
-    id: IDs.language,
-    title: "Choose your language",
-    choices: [
-      {
-        title: "English",
-        id: "en",
-      },
-      { title: "Other", id: "other" },
-    ],
-  });
+// export async function showSelectPrompt(): Promise<string> {
+//   const language = await selectPrompt({
+//     id: IDs.language,
+//     title: "Choose your language",
+//     choices: [
+//       {
+//         title: "English",
+//         id: "en",
+//       },
+//       { title: "Other", id: "other" },
+//     ],
+//   });
 
-  return language ?? "";
-}
+//   return language ?? "";
+// }
 
 export async function showNumSelectPrompt(): Promise<UserInput["color"]> {
   const choices = createColorChoices();
@@ -188,7 +188,7 @@ export async function showDatePrompt(): Promise<UserInput["birthday"]> {
   return birthdayDate ?? "16.11.1988";
 }
 
-export async function showMultiSelectPrompt(): Promise<UserInput["features"]> {
+/* export async function showMultiSelectPrompt(): Promise<UserInput["features"]> {
   const features = await multiSelectPrompt({
     id: IDs.features,
     title: "What features do you want to use?",
@@ -215,7 +215,7 @@ export async function showMultiSelectPrompt(): Promise<UserInput["features"]> {
     schema: schema.properties.features,
   });
   return features ?? ["react", "typescript"];
-}
+} */
 
 export async function showConfirmPrompt(
   username: string,
@@ -229,7 +229,7 @@ export async function showConfirmPrompt(
     titleColor: "red",
     titleVariant: "doubleBox",
     schema: schema.properties.deps,
-    // @reliverse/prompts includes styled prompts, with the `title` color defaulting
+    // @reliverse/relinka includes styled prompts, with the `title` color defaulting
     // to "cyanBright". Setting the color to "none" removes the default styling.
     content: "Spinners are helpful for long-running tasks.",
     ...extendedConfig,

@@ -1,10 +1,10 @@
 import type { LogLevel, LogType } from "./constants";
 
-export type ConsolaOptions = {
+export type RelinkaOptions = {
   /**
-   * An array of ConsolaReporter instances used to handle and output log messages.
+   * An array of RelinkaReporter instances used to handle and output log messages.
    */
-  reporters: ConsolaReporter[];
+  reporters: RelinkaReporter[];
 
   /**
    * A record mapping LogType to InputLogObject, defining the log configuration for each log type.
@@ -173,16 +173,16 @@ export type LogObject = {
   [key: string]: unknown;
 } & InputLogObject;
 
-export type ConsolaReporter = {
+export type RelinkaReporter = {
   /**
    * Defines how a log message is processed and displayed by this reporter.
    * @param logObj The LogObject containing the log information to process. See {@link LogObject}.
-   * @param ctx An object containing context information such as options. See {@link ConsolaOptions}.
+   * @param ctx An object containing context information such as options. See {@link RelinkaOptions}.
    */
   log: (
     logObj: LogObject,
     ctx: {
-      options: ConsolaOptions;
+      options: RelinkaOptions;
     },
   ) => void;
 };

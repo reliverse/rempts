@@ -8,7 +8,7 @@ import {
   cancel,
   text,
 } from "@/external/clack/src";
-import { errorHandler } from "~/utils/helpers/errors";
+import { errorHandler } from "~/utils/errors";
 import { setTimeout as sleep } from "node:timers/promises";
 import color from "picocolors";
 
