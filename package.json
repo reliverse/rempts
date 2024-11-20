@@ -1,6 +1,7 @@
 {
   "name": "@reliverse/relinka",
   "version": "1.0.2",
+  "type": "module",
   "description": "@reliverse/relinka is a powerful library that enables seamless, typesafe, and resilient prompts for command-line applications. Crafted with simplicity and elegance, it provides developers with an intuitive and robust way to build interactive CLIs.",
   "scripts": {
     "appts": "bun typecheck && bun lint && bun format",

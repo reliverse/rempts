@@ -1,17 +1,29 @@
+// @ts-nocheck
+
+// Definitions migrated from DefinitelyTyped.
+//
+// Special Thanks to: Berkay GURSOY <https://github.com/Berkays>
+//                    Daniel Perez Alvarez <https://github.com/unindented>
+//                    Kamontat Chantrachirathumrong <https://github.com/kamontat>
+//                    theweirdone <https://github.com/theweirdone>
+//                    whoaa512 <https://github.com/whoaa512>
+//                    John Reilly <https://github.com/johnnyreilly>
+//                    Christopher Hiller <https://github.com/boneskull>
+
 export = prompts;
 
-import { Readable, Writable } from 'stream';
-import { Kleur } from 'kleur';
+import { Readable, Writable } from "stream";
+import { Kleur } from "kleur";
 
 // add answer type when having only one question
 declare function prompts<V = any, T extends string = string>(
   questions: prompts.PromptObject<T>,
-  options?: prompts.Options
+  options?: prompts.Options,
 ): Promise<prompts.Answers<T, V>>;
 
 declare function prompts<T extends string = string>(
   questions: Array<prompts.PromptObject<T>>,
-  options?: prompts.Options
+  options?: prompts.Options,
 ): Promise<prompts.Answers<T>>;
 
 declare namespace prompts {
@@ -54,7 +66,6 @@ declare namespace prompts {
     function toggle(args: PromptObject): void;
   }
 
-  // Based upon: https://github.com/terkelg/prompts/blob/d7d2c37a0009e3235b2e88a7d5cdbb114ac271b2/lib/elements/select.js#L29
   interface Choice {
     title: string;
     value?: any;
@@ -65,7 +76,9 @@ declare namespace prompts {
   }
 
   interface Options {
-    onSubmit?: ((prompt: PromptObject, answer: any, answers: any[]) => void) | undefined;
+    onSubmit?:
+      | ((prompt: PromptObject, answer: any, answers: any[]) => void)
+      | undefined;
     onCancel?: ((prompt: PromptObject, answers: any) => void) | undefined;
   }
 
@@ -73,10 +86,15 @@ declare namespace prompts {
     type: PromptType | Falsy | PrevCaller<T, PromptType | Falsy>;
     name: ValueOrFunc<T>;
     message?: ValueOrFunc<string> | undefined;
-    initial?: InitialReturnValue | PrevCaller<T, InitialReturnValue | Promise<InitialReturnValue>> | undefined;
+    initial?:
+      | InitialReturnValue
+      | PrevCaller<T, InitialReturnValue | Promise<InitialReturnValue>>
+      | undefined;
     style?: string | PrevCaller<T, string | Falsy> | undefined;
     format?: PrevCaller<T, void> | undefined;
-    validate?: PrevCaller<T, boolean | string | Promise<boolean | string>> | undefined;
+    validate?:
+      | PrevCaller<T, boolean | string | Promise<boolean | string>>
+      | undefined;
     onState?: PrevCaller<T, void> | undefined;
     onRender?: ((kleur: Kleur) => void) | undefined;
     min?: number | PrevCaller<T, number | Falsy> | undefined;
@@ -103,12 +121,24 @@ declare namespace prompts {
   type PrevCaller<T extends string, R = T> = (
     prev: any,
     values: Answers<T>,
-    prompt: PromptObject
+    prompt: PromptObject,
   ) => R;
 
   type Falsy = false | null | undefined;
 
-  type PromptType = "text" | "password" | "invisible" | "number" | "confirm" | "list" | "toggle" | "select" | "multiselect" | "autocomplete" | "date" | "autocompleteMultiselect";
+  type PromptType =
+    | "text"
+    | "password"
+    | "invisible"
+    | "number"
+    | "confirm"
+    | "list"
+    | "toggle"
+    | "select"
+    | "multiselect"
+    | "autocomplete"
+    | "date"
+    | "autocompleteMultiselect";
 
   type ValueOrFunc<T extends string> = T | PrevCaller<T>;
 
