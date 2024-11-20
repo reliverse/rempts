@@ -1,21 +1,21 @@
 import type { TSchema, Static } from "@sinclair/typebox";
 
-import { symbol } from "@/reliverse/experiments/utils/symbols";
+import { symbol } from "@/reliverse/experiments/utils/symbols.js";
 
-import type { PromptStateDeprecated } from "~/types/dev";
+import type { PromptStateDeprecated } from "~/types/dev.js";
 
-import { confirmPrompt } from "~/components/confirm-two";
-import { datePrompt } from "~/components/date";
-import { endPrompt } from "~/components/end";
-import { nextStepsPrompt } from "~/components/next-steps";
+import { confirmPrompt } from "~/components/confirm-two.js";
+import { datePrompt } from "~/components/date.js";
+import { endPrompt } from "~/components/end.js";
+import { nextStepsPrompt } from "~/components/next-steps.js";
 // import { multiSelectPrompt } from "~/components/num-multi-select";
-import { numberPrompt } from "~/components/number";
-import { passwordPrompt } from "~/components/password-two";
+import { numberPrompt } from "~/components/number.js";
+import { passwordPrompt } from "~/components/password-two.js";
 
-import type { PromptOptionsWithState } from "./types-wth-state";
+import type { PromptOptionsWithState } from "./types-wth-state.js";
 
-import { startPrompt } from "./ui/start-with-state";
-import { textPrompt } from "./ui/text-with-state";
+import { startPrompt } from "./ui/start-with-state.js";
+import { textPrompt } from "./ui/text-with-state.js";
 
 // export { createSpinner } from "~/components/spinner";
 

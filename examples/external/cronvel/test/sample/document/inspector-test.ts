@@ -1,17 +1,15 @@
+import fs from "fs";
+import path from "path";
+import string from "string-kit";
+import Promise from "seventh";
+import termkit from "../..";
+
 // @ts-nocheck
 
 /*
 	The Object-viewer should have its own Document Element later.
 	For instance this is just a proof of concept.
 */
-
-const fs = require("fs");
-const path = require("path");
-
-const string = require("string-kit");
-const Promise = require("seventh");
-
-const termkit = require("../..");
 const term = termkit.terminal;
 
 if (process.argv.length <= 2) {

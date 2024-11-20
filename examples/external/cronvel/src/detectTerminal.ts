@@ -1,12 +1,10 @@
+import Promise from "seventh";
+import path from "path";
+import os from "os";
+import termkit from "./termkit.js";
+
 // @ts-nocheck
-
-const Promise = require("seventh");
 const exec = require("child_process").exec;
-const path = require("path");
-const os = require("os");
-
-const termkit = require("./termkit");
-
 // Try to guess the terminal without any async system call, using TERM and COLORTERM.
 // Argument 'unpipe' is used when we will get a TTY even if we haven't one ATM.
 exports.guessTerminal = function (unpipe) {

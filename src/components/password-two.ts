@@ -2,10 +2,10 @@ import type { Static, TSchema } from "@sinclair/typebox";
 
 import { Value } from "@sinclair/typebox/value";
 
-import type { ColorName, PromptOptions } from "~/types/prod";
+import type { ColorName, PromptOptions } from "~/types/prod.js";
 
-import { bar, fmt } from "~/utils/messages";
-import { countLines, deleteLastLine, deleteLastLines } from "~/utils/terminal";
+import { bar, fmt } from "~/utils/messages.js";
+import { countLines, deleteLastLine, deleteLastLines } from "~/utils/terminal.js";
 
 export async function passwordPrompt<T extends TSchema>(
   options: PromptOptions<T>,

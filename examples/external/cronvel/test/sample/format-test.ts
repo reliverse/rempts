@@ -1,9 +1,9 @@
+import string from "string-kit";
+import termkit from "../../src/termkit.js";
+
 // @ts-nocheck
 
 /* jshint unused:false */
-
-var string = require("string-kit");
-var termkit = require("../../src/termkit");
 var term = termkit.terminal;
 
 termkit.getDetectedTerminal(function (error, term_) {

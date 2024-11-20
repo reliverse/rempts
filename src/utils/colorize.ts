@@ -26,7 +26,7 @@ import {
   italic,
 } from "picocolors";
 
-import type { ColorName, TypographyName } from "~/types/prod";
+import type { ColorName, TypographyName } from "~/types/prod.js";
 
 export function colorize(
   text: string,

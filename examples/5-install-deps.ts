@@ -11,7 +11,7 @@ import {
   cancel,
   text,
 } from "~/components";
-import { errorHandler } from "~/utils/errors";
+import { errorHandler } from "~/utils/errors.js";
 
 async function main() {
   console.log();

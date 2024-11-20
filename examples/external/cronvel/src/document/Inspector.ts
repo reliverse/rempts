@@ -1,12 +1,11 @@
+import Element from "./Element.js";
+import Text from "./Text.js";
+import Button from "./Button.js";
+import RowMenu from "./RowMenu.js";
+import ColumnMenu from "./ColumnMenu.js";
+import string from "string-kit";
+
 // @ts-nocheck
-
-const Element = require("./Element");
-const Text = require("./Text");
-const Button = require("./Button");
-const RowMenu = require("./RowMenu");
-const ColumnMenu = require("./ColumnMenu");
-
-const string = require("string-kit");
 
 function Inspector(options) {
   // Clone options if necessary
@@ -70,7 +69,6 @@ function Inspector(options) {
   }
 }
 
-module.exports = Inspector;
 Element.inherit(Inspector);
 
 Inspector.prototype.needInput = true;
@@ -451,3 +449,5 @@ const userActions = Inspector.prototype.userActions;
 userActions.levelUp = function () {
   this.levelUp();
 };
+
+export default Inspector;

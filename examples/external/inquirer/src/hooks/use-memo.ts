@@ -1,4 +1,4 @@
-import { withPointer } from "./hook-engine";
+import { withPointer } from "./hook-engine.js";
 
 type PointerValue<Value> = {
   value: Value;

@@ -1,7 +1,6 @@
+import string from "string-kit";
+
 // @ts-nocheck
-
-const string = require("string-kit");
-
 const colorNameToIndexDict = {
   // ANSI
   black: 0,

@@ -4,9 +4,9 @@ import type {
   RelinkaReporter,
   FormatOptions,
   RelinkaOptions,
-} from "~/types/prod";
-import { parseStack } from "../utils/error";
-import { writeStream } from "../utils/stream";
+} from "~/types/prod.js";
+import { parseStack } from "../utils/error.js";
+import { writeStream } from "../utils/stream.js";
 
 const bracket = (x: string) => (x ? `[${x}]` : "");
 

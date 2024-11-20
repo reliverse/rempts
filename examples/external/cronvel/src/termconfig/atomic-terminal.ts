@@ -1,8 +1,7 @@
+import tree from "tree-kit";
+import xterm256 from "./xterm-256color.js";
+
 // @ts-nocheck
-
-const tree = require("tree-kit");
-const xterm256 = require("./xterm-256color");
-
 // Remove colors
 const defaultColor = "\x1b[39m"; // back to the default color, most of time it is the same than .white
 const bgDefaultColor = "\x1b[49m"; // back to the default color, most of time it is the same than .bgBlack
@@ -32,15 +31,15 @@ const esc = tree.extend(null, Object.create(xterm256.esc), {
 const keymap = Object.create(xterm256.keymap);
 const handler = Object.create(xterm256.handler);
 
-module.exports = {
-  esc: esc,
-  keymap: keymap,
-  handler: handler,
-  support: {
-    deltaEscapeSequence: true,
-    "256colors": true,
-    "24bitsColors": true, // DEPRECATED
-    trueColor: true,
-  },
-  colorRegister: require("../colorScheme/atomic-terminal.json"),
-};
+export default {
+      esc: esc,
+      keymap: keymap,
+      handler: handler,
+      support: {
+        deltaEscapeSequence: true,
+        "256colors": true,
+        "24bitsColors": true, // DEPRECATED
+        trueColor: true,
+      },
+      colorRegister: require("../colorScheme/atomic-terminal.json"),
+    };

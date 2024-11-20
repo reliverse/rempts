@@ -1,6 +1,6 @@
-// @ts-nocheck
+import fs from "fs";
 
-const fs = require("fs");
+// @ts-nocheck
 const term = require("..").terminal;
 
 var timeFactor = 10;

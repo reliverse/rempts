@@ -4,11 +4,11 @@ import { Value } from "@sinclair/typebox/value";
 import { stdout } from "node:process";
 import color from "picocolors";
 
-import type { PromptOptions } from "~/types/prod";
+import type { PromptOptions } from "~/types/prod.js";
 
-import { useKeyPress } from "~/hooks/useKeyPress";
-import { colorize } from "~/utils/colorize";
-import { resetCursorAndClear, moveCursorAndClear } from "~/utils/readline";
+import { useKeyPress } from "~/hooks/useKeyPress.js";
+import { colorize } from "~/utils/colorize.js";
+import { resetCursorAndClear, moveCursorAndClear } from "~/utils/readline.js";
 
 export async function selectPrompt(options: PromptOptions): Promise<string> {
   const {

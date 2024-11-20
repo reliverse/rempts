@@ -1,4 +1,4 @@
-import { type ColorName, colorize } from "./color";
+import { type ColorName, colorize } from "./color.js";
 
 export type TreeItemObject = {
   /**

@@ -1,3 +1,5 @@
+import path from "path";
+
 // @ts-nocheck
 
 /*
@@ -25,9 +27,6 @@
 	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 	SOFTWARE.
 */
-
-const path = require("path");
-
 if (
   process.browser ||
   require.cache[path.join(__dirname, "termkit-no-lazy-require")]
@@ -38,8 +37,6 @@ if (
 }
 
 const termkit = {};
-module.exports = termkit;
-
 const lazy = require("lazyness")(require);
 
 // Global config
@@ -150,3 +147,5 @@ lazy.properties(
   },
   true,
 );
+
+export default termkit;

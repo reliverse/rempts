@@ -1,6 +1,6 @@
-import type { ColorName, Variant } from "~/types/prod";
+import type { ColorName, Variant } from "~/types/prod.js";
 
-import { colorMap } from "./mapping";
+import { colorMap } from "./mapping.js";
 
 export const variantMap = {
   // box: createBox,

@@ -1,7 +1,7 @@
-// @ts-nocheck
+import tree from "tree-kit";
+import termkit from "../../src/termkit.js";
 
-var tree = require("tree-kit");
-var termkit = require("../../src/termkit");
+// @ts-nocheck
 var term = termkit.terminal;
 
 term.clear();

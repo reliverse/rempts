@@ -1,6 +1,6 @@
-// @ts-nocheck
+import Element from "./Element.js";
 
-const Element = require("./Element");
+// @ts-nocheck
 const framesChars = require("../spChars").box;
 
 function Border(options) {
@@ -47,7 +47,6 @@ function Border(options) {
   }
 }
 
-module.exports = Border;
 Element.inherit(Border);
 
 Border.prototype.preDrawSelf = function () {
@@ -128,3 +127,5 @@ Border.prototype.onParentResize = function () {
   this.outputHeight = this.parent.outputHeight + (this.shadow ? 3 : 2);
   this.draw();
 };
+
+export default Border;

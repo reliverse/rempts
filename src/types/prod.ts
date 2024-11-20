@@ -1,7 +1,7 @@
 import type { AnimationName } from "@figliolia/chalk-animation";
 import type { TSchema } from "@sinclair/typebox";
 
-import type { LogLevel, LogType } from "~/constants";
+import type { LogLevel, LogType } from "~/constants.js";
 
 export type State = "initial" | "active" | "cancel" | "submit" | "error";
 

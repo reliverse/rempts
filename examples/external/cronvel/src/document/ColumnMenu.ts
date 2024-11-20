@@ -1,10 +1,9 @@
+import Element from "./Element.js";
+import BaseMenu from "./BaseMenu.js";
+import Button from "./Button.js";
+import ToggleButton from "./ToggleButton.js";
+
 // @ts-nocheck
-
-const Element = require("./Element");
-const BaseMenu = require("./BaseMenu");
-const Button = require("./Button");
-const ToggleButton = require("./ToggleButton");
-
 // Inherit from BaseMenu for common methods
 
 function ColumnMenu(options) {
@@ -64,7 +63,6 @@ function ColumnMenu(options) {
   }
 }
 
-module.exports = ColumnMenu;
 Element.inherit(ColumnMenu, BaseMenu);
 
 ColumnMenu.prototype.inlineNewLine = true;
@@ -565,3 +563,5 @@ ColumnMenu.prototype.onParentResize = function () {
   this.initPage();
   this.draw();
 };
+
+export default ColumnMenu;

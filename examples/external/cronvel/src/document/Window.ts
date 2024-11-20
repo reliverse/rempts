@@ -1,7 +1,7 @@
-// @ts-nocheck
+import Element from "./Element.js";
+import Container from "./Container.js";
 
-const Element = require("./Element");
-const Container = require("./Container");
+// @ts-nocheck
 const framesChars = require("../spChars").box;
 
 function Window(options) {
@@ -45,7 +45,6 @@ function Window(options) {
   }
 }
 
-module.exports = Window;
 Element.inherit(Window, Container);
 
 Window.prototype.containerBorderSize = 1;
@@ -114,3 +113,4 @@ Window.prototype.preDrawSelf = function () {
 
 // Allow only the top-border/title-bar to be draggable?
 //Window.prototype.onDrag = function( data ) { Container.prototype.onDrag.call( this , data ) ; } ;
+export default Window;

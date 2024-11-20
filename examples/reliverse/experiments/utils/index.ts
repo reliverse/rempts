@@ -1,8 +1,8 @@
-import type { RelinkaOptions } from "~/types/prod";
+import type { RelinkaOptions } from "~/types/prod.js";
 
-import { createRelinka } from "~/create";
+import { createRelinka } from "~/create.js";
 
-import { randomSentence } from "./sentence";
+import { randomSentence } from "./sentence.js";
 
 export function reporterDemo(
   opts: Partial<RelinkaOptions & { fancy: boolean }>,

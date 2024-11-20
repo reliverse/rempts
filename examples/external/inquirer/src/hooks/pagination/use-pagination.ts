@@ -1,10 +1,10 @@
-import type { Prettify } from "../../type/utils";
+import type { Prettify } from "../../type/utils.js";
 
-import { type Theme } from "../theme";
-import { useRef } from "../use-ref";
-import { readlineWidth } from "../utils";
-import { lines, type Layout } from "./lines";
-import { finite, infinite } from "./position";
+import { type Theme } from "../theme.js";
+import { useRef } from "../use-ref.js";
+import { readlineWidth } from "../utils.js";
+import { lines, type Layout } from "./lines.js";
+import { finite, infinite } from "./position.js";
 
 export function usePagination<T>({
   items,

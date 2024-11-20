@@ -1,4 +1,4 @@
-import type { LogObject } from "~/types/prod";
+import type { LogObject } from "~/types/prod.js";
 
 /**
  * Defines the level of logs as specific numbers or special number types.

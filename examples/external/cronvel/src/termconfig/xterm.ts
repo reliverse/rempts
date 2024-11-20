@@ -1,7 +1,6 @@
+import string from "string-kit";
+
 // @ts-nocheck
-
-const string = require("string-kit");
-
 /* Escape sequences */
 
 // Mini-doc:
@@ -804,15 +803,15 @@ for (let i = 1; i <= 26; i++) {
     "\x1b" + String.fromCharCode(64 + i);
 }
 
-module.exports = {
-  esc: esc,
-  keymap: keymap,
-  handler: handler,
-  support: {
-    deltaEscapeSequence: true,
-    "256colors": false,
-    "24bitsColors": false, // DEPRECATED
-    trueColor: false,
-  },
-  colorRegister: require("../colorScheme/xterm.json"),
-};
+export default {
+      esc: esc,
+      keymap: keymap,
+      handler: handler,
+      support: {
+        deltaEscapeSequence: true,
+        "256colors": false,
+        "24bitsColors": false, // DEPRECATED
+        trueColor: false,
+      },
+      colorRegister: require("../colorScheme/xterm.json"),
+    };

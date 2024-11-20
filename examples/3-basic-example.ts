@@ -1,11 +1,11 @@
 // 3-basic-example.ts: A basic example demonstrating core functionalities of @reliverse/relinka. Everything in a single file.
 
-import { showSpinner } from "@/reliverse/main-prompts";
+import { showSpinner } from "@/reliverse/main-prompts.js";
 
-import type { OptionalPromptOptions } from "~/types/prod";
+import type { OptionalPromptOptions } from "~/types/prod.js";
 
-import { numberPrompt, textPrompt } from "~/main";
-import { errorHandler } from "~/utils/errors";
+import { numberPrompt, textPrompt } from "~/main.js";
+import { errorHandler } from "~/utils/errors.js";
 
 export const basicConfig = {
   titleColor: "cyanBright",

@@ -1,3 +1,5 @@
+import Promise from "seventh";
+
 // @ts-nocheck
 /*
 	Terminal Kit
@@ -25,8 +27,6 @@
 	SOFTWARE.
 */
 const term = require("..").terminal;
-const Promise = require("seventh");
-
 const rows = 3,
   cols = 100;
 const labels = new Array(cols).fill(0).map((x, i) => i);

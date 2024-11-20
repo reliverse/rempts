@@ -1,12 +1,11 @@
+import Element from "./Element.js";
+import Text from "./Text.js";
+import EditableTextBox from "./EditableTextBox.js";
+import SelectList from "./SelectList.js";
+import SelectListMulti from "./SelectListMulti.js";
+import string from "string-kit";
+
 // @ts-nocheck
-
-const Element = require("./Element");
-const Text = require("./Text");
-const EditableTextBox = require("./EditableTextBox");
-const SelectList = require("./SelectList");
-const SelectListMulti = require("./SelectListMulti");
-
-const string = require("string-kit");
 //const autoComplete = require( './autoComplete' ) ;
 
 // Labeled: american english, Labelled british english
@@ -106,7 +105,6 @@ function LabeledInput(options) {
   }
 }
 
-module.exports = LabeledInput;
 Element.inherit(LabeledInput);
 
 LabeledInput.prototype.needInput = true;
@@ -388,3 +386,5 @@ const userActions = LabeledInput.prototype.userActions;
 userActions.submit = function () {
   this.emit("submit", this.getValue(), undefined, this);
 };
+
+export default LabeledInput;

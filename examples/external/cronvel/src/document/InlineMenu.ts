@@ -1,11 +1,10 @@
+import Element from "./Element.js";
+import TextBox from "./TextBox.js";
+import RowMenu from "./RowMenu.js";
+import Promise from "seventh";
+import string from "string-kit";
+
 // @ts-nocheck
-
-const Element = require("./Element");
-const TextBox = require("./TextBox");
-const RowMenu = require("./RowMenu");
-
-const Promise = require("seventh");
-const string = require("string-kit");
 
 function InlineMenu(options) {
   // Clone options if necessary
@@ -66,7 +65,6 @@ function InlineMenu(options) {
   }
 }
 
-module.exports = InlineMenu;
 Element.inherit(InlineMenu, RowMenu);
 
 // Pre-compute page and eventually create Buttons automatically
@@ -78,3 +76,5 @@ InlineMenu.prototype.initChildren = function (noInitPage = false) {
     this.initPage();
   }
 };
+
+export default InlineMenu;

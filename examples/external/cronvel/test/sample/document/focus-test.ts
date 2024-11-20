@@ -1,9 +1,10 @@
+import termkit from "../../../src/termkit.js";
+
 // @ts-nocheck
 
 /* jshint unused:false */
 
 //console.error( "\n\n\n\n\n\n\n\n" ) ;
-var termkit = require("../../../src/termkit");
 var term = termkit.terminal;
 
 term.clear();

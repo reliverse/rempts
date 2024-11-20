@@ -1,8 +1,7 @@
+import tree from "tree-kit";
+import xterm from "./xterm.js";
+
 // @ts-nocheck
-
-const tree = require("tree-kit");
-const xterm = require("./xterm");
-
 const esc = tree.extend(null, Object.create(xterm.esc), {
   // Not supported...
   setClipboardLL: { na: true },
@@ -106,15 +105,15 @@ handler.mouseSGRProtocol = function mouseSGRProtocol(basename, buffer) {
   return result;
 };
 
-module.exports = {
-  esc: esc,
-  keymap: keymap,
-  handler: handler,
-  support: {
-    deltaEscapeSequence: true,
-    "256colors": false,
-    "24bitsColors": false, // DEPRECATED
-    trueColor: false,
-  },
-  colorRegister: require("../colorScheme/konsole.json"),
-};
+export default {
+      esc: esc,
+      keymap: keymap,
+      handler: handler,
+      support: {
+        deltaEscapeSequence: true,
+        "256colors": false,
+        "24bitsColors": false, // DEPRECATED
+        trueColor: false,
+      },
+      colorRegister: require("../colorScheme/konsole.json"),
+    };

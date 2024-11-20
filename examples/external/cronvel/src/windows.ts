@@ -3,7 +3,6 @@
 /*
 	Windows compatibility.
 */
-
-module.exports = function (termkit) {
-  termkit.globalConfig.preferProcessSigwinch = true;
-};
+export default function (termkit) {
+      termkit.globalConfig.preferProcessSigwinch = true;
+    };

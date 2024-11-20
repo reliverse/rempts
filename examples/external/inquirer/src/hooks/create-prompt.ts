@@ -3,12 +3,12 @@ import { AsyncResource } from "node:async_hooks";
 import * as readline from "node:readline";
 import { onExit as onSignalExit } from "signal-exit";
 
-import { type Prompt, type InquirerReadline } from "../type/inquirer";
-import { type Prettify } from "../type/utils";
-import { AbortPromptError, CancelPromptError, ExitPromptError } from "./errors";
-import { withHooks, effectScheduler } from "./hook-engine";
-import { PromisePolyfill } from "./promise-polyfill";
-import ScreenManager from "./screen-manager";
+import { type Prompt, type InquirerReadline } from "../type/inquirer.js";
+import { type Prettify } from "../type/utils.js";
+import { AbortPromptError, CancelPromptError, ExitPromptError } from "./errors.js";
+import { withHooks, effectScheduler } from "./hook-engine.js";
+import { PromisePolyfill } from "./promise-polyfill.js";
+import ScreenManager from "./screen-manager.js";
 
 type ViewFunction<Value, Config> = (
   config: Prettify<Config>,

@@ -1,11 +1,11 @@
+import tree from "tree-kit";
+import string from "string-kit";
+import NextGenEvents from "nextgen-events";
+import Promise from "seventh";
+import termkit from "./termkit.js";
+import defaultColorRegister from "./colorScheme/default.json" with { type: "json" };
+
 // @ts-nocheck
-
-const tree = require("tree-kit");
-const string = require("string-kit");
-const NextGenEvents = require("nextgen-events");
-const Promise = require("seventh");
-
-const termkit = require("./termkit");
 //function noop() {}
 
 /*
@@ -17,8 +17,6 @@ function Terminal(...args) {
 
 Terminal.prototype = Object.create(NextGenEvents.prototype);
 Terminal.prototype.constructor = Terminal;
-module.exports = Terminal;
-
 Terminal.create = function (createOptions) {
   // Default options...
   if (!createOptions || typeof createOptions !== "object") {
@@ -2227,8 +2225,6 @@ notChainable.getTerminfo = function (key) {
 /* Utilities */
 
 // Default colors, used for guessing
-var defaultColorRegister = require("./colorScheme/default.json");
-
 (function buildDefaultColorRegister() {
   var register, offset, factor, l;
 
@@ -2594,3 +2590,5 @@ notChainable.drawImage = function (filepath, options, callback) {
     callback,
   );
 };
+
+export default Terminal;

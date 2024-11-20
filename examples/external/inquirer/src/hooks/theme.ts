@@ -1,7 +1,7 @@
 import { figures } from "@/external/terkelg-tmp/src/lib/util";
 import { blue, bold, cyan, dim, green, red, yellow } from "picocolors";
 
-import type { Prettify } from "../type/utils";
+import type { Prettify } from "../type/utils.js";
 
 /**
  * Union type representing the possible statuses of a prompt.

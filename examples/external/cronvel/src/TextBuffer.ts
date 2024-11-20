@@ -1,10 +1,9 @@
+import misc from "./misc.js";
+import fs from "fs";
+import string from "string-kit";
+import termkit from "./termkit.js";
+
 // @ts-nocheck
-
-const misc = require("./misc");
-
-const fs = require("fs");
-const string = require("string-kit");
-
 // A buffer suitable for text editor
 
 function TextBuffer(options = {}) {
@@ -68,8 +67,6 @@ function TextBuffer(options = {}) {
   }
 }
 
-module.exports = TextBuffer;
-
 // Backward compatibility
 TextBuffer.create = (...args) => new TextBuffer(...args);
 
@@ -85,9 +82,6 @@ function Cell(char = " ", special = 1, attr = null, misc_ = null) {
 }
 
 TextBuffer.Cell = Cell;
-
-const termkit = require("./termkit");
-
 TextBuffer.prototype.getText = function () {
   return this.buffer.map((line) => string.unicode.fromCells(line)).join("");
 };
@@ -2624,3 +2618,5 @@ TextMachineApi.hint = function (context, buffer, hints) {
     }
   }
 };
+
+export default TextBuffer;

@@ -1,11 +1,10 @@
+import tree from "tree-kit";
+import Element from "./Element.js";
+import Button from "./Button.js";
+
 // @ts-nocheck
 
 /* Base class for menus (ColumnMenu, RowMenu, etc) */
-
-const tree = require("tree-kit");
-
-const Element = require("./Element");
-const Button = require("./Button");
 
 function BaseMenu(options = {}) {
   Element.call(this, options);
@@ -183,7 +182,6 @@ function BaseMenu(options = {}) {
   this.on("focus", this.onFocus);
 }
 
-module.exports = BaseMenu;
 Element.inherit(BaseMenu);
 
 BaseMenu.prototype.needInput = true;
@@ -613,3 +611,5 @@ userActions.submenu = function () {
     return false;
   }
 };
+
+export default BaseMenu;

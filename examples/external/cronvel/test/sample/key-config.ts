@@ -1,3 +1,5 @@
+import terminal from "..";
+
 // @ts-nocheck
 /*
 	Terminal Kit
@@ -28,8 +30,6 @@
 // this is a little utility for getting the correct key mappings for new terminals
 
 "use strict";
-
-const terminal = require("..");
 const inspect = require("util").inspect;
 
 let done = false;

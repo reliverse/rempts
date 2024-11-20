@@ -1,6 +1,6 @@
-// @ts-nocheck
+import termkit from "..";
 
-var termkit = require("..");
+// @ts-nocheck
 var term = termkit.terminal;
 var TextBuffer = termkit.TextBuffer;
 

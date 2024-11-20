@@ -1,6 +1,6 @@
-import type { PromptOptions } from "~/types/prod";
+import type { PromptOptions } from "~/types/prod.js";
 
-import { msg } from "~/utils/messages";
+import { msg } from "~/utils/messages.js";
 
 export async function nextStepsPrompt(options: PromptOptions): Promise<void> {
   const {

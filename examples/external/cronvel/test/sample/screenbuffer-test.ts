@@ -1,3 +1,5 @@
+import termkit from "terminal-kit";
+
 // @ts-nocheck
 /*
 	Terminal Kit
@@ -24,8 +26,6 @@
 	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 	SOFTWARE.
 */
-
-const termkit = require("terminal-kit");
 const term = termkit.terminal;
 
 let moved = 0;

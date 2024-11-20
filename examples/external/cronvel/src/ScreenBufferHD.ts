@@ -1,11 +1,10 @@
+import ScreenBuffer from "./ScreenBuffer.js";
+import misc from "./misc.js";
+import fs from "fs";
+import string from "string-kit";
+import termkit from "./termkit.js";
+
 // @ts-nocheck
-
-const ScreenBuffer = require("./ScreenBuffer");
-const misc = require("./misc");
-
-const fs = require("fs");
-const string = require("string-kit");
-
 /*
 	options:
 		* width: buffer width (default to dst.width)
@@ -21,10 +20,6 @@ const string = require("string-kit");
 function ScreenBufferHD(options = {}) {
   ScreenBuffer.call(this, options);
 }
-
-module.exports = ScreenBufferHD;
-
-const termkit = require("./termkit");
 
 ScreenBufferHD.prototype = Object.create(ScreenBuffer.prototype);
 ScreenBufferHD.prototype.constructor = ScreenBufferHD;
@@ -1296,3 +1291,5 @@ ScreenBufferHD.prototype.saveSyncV2 = function (filepath) {
 
 ScreenBufferHD.loadSync = ScreenBufferHD.loadSyncV2;
 ScreenBufferHD.prototype.saveSync = ScreenBufferHD.prototype.saveSyncV2;
+
+export default ScreenBufferHD;

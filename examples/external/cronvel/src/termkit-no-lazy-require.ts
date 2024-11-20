@@ -1,8 +1,6 @@
 // @ts-nocheck
 
 const termkit = {};
-module.exports = termkit;
-
 const lazy = require("lazyness")(require);
 
 // Global config
@@ -110,3 +108,5 @@ lazy.properties(
   },
   true,
 );
+
+export default termkit;

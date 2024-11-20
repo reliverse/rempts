@@ -1,12 +1,12 @@
-import { symbol } from "@/reliverse/experiments/utils/symbols";
+import { symbol } from "@/reliverse/experiments/utils/symbols.js";
 
 import type {
   PromptOptionsDeprecated,
   PromptStateDeprecated,
-} from "~/types/dev";
+} from "~/types/dev.js";
 
-import { colorize } from "~/utils/colorize";
-import { applyVariant } from "~/utils/variants";
+import { colorize } from "~/utils/colorize.js";
+import { applyVariant } from "~/utils/variants.js";
 
 export async function startPrompt(
   options: PromptOptionsDeprecated,

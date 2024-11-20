@@ -1,8 +1,7 @@
+import Promise from "seventh";
+import string from "string-kit";
+
 // @ts-nocheck
-
-const Promise = require("seventh");
-const string = require("string-kit");
-
 require("./patches");
 const execAsync = require("child_process").execAsync;
 const execFileAsync = require("child_process").execFileAsync;

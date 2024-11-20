@@ -1,14 +1,12 @@
+import fs from "fs";
+import tty from "tty";
+
 // @ts-nocheck
 
 //var exec = require( 'child_process' ).exec ;
 //var spawn = require( 'child_process' ).spawn ;
 var execSync = require("child_process").execSync;
-var fs = require("fs");
-var tty = require("tty");
-
 var tty_ = {};
-module.exports = tty_;
-
 var cachedGetPath;
 
 /*
@@ -121,3 +119,5 @@ tty_.getOutput = function getOutput() {
 
   return output;
 };
+
+export default tty_;

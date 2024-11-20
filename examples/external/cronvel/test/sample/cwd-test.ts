@@ -1,3 +1,5 @@
+import path from "path";
+
 // @ts-nocheck
 /*
 	Terminal Kit
@@ -24,8 +26,6 @@
 	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 	SOFTWARE.
 */
-
-var path = require("path");
 var term = require("../").terminal;
 
 term.cwd("file://" + path.resolve(process.cwd() + "/../../"));

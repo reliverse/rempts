@@ -1,7 +1,8 @@
+import termkit from "../..";
+
 // @ts-nocheck
 
 //console.error( "\n\n\n\n\n\n\n\n" ) ;
-const termkit = require("../..");
 const term = termkit.terminal;
 
 term.clear();

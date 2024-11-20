@@ -1,9 +1,8 @@
+import termkit from "..";
+import terminfo from "../../src/terminfo/terminfo.js";
+
 // @ts-nocheck
-
-const termkit = require("..");
 const term = termkit.terminal;
-const terminfo = require("../../src/terminfo/terminfo");
-
 var termName = process.argv[2] || process.env.TERM;
 var key = process.argv[3] || null;
 

@@ -1,9 +1,9 @@
+import termkit from "../../src/termkit.js";
+
 // @ts-nocheck
 
 /* jshint unused:false */
 /* global describe, it, before, after */
-
-var termkit = require("../../src/termkit");
 var term = termkit.terminal;
 var realTerm;
 

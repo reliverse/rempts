@@ -1,6 +1,6 @@
-import type { PromptOptions } from "./prompt";
+import type { PromptOptions } from "./prompt.js";
 
-import Prompt from "./prompt";
+import Prompt from "./prompt.js";
 
 type SelectKeyOptions<T extends { value: any }> = {
   options: T[];

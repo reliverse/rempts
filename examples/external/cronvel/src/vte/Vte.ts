@@ -1,14 +1,12 @@
+import ScreenBuffer from "../ScreenBuffer.js";
+import Rect from "../Rect.js";
+import string from "string-kit";
+import toInputSequence from "./toInputSequence.js";
+import SequencesReader from "./SequencesReader.js";
+import NextGenEvents from "nextgen-events";
+import Promise from "seventh";
+
 // @ts-nocheck
-
-const ScreenBuffer = require("../ScreenBuffer");
-const Rect = require("../Rect");
-const string = require("string-kit");
-const toInputSequence = require("./toInputSequence");
-const SequencesReader = require("./SequencesReader");
-
-const NextGenEvents = require("nextgen-events");
-const Promise = require("seventh");
-
 const spawn = require("child_process").spawn;
 
 const logRed = (...args) => console.error("\x1b[31m", ...args, "\x1b[m");
@@ -82,8 +80,6 @@ function Vte(options = {}) {
   //this.drawDebounce = Promise.debounceUpdate( this.drawDelay.bind( this ) ) ;
   this.drawDebounce = Promise.debounce(this.drawDelay.bind(this));
 }
-
-module.exports = Vte;
 
 Vte.prototype = Object.create(NextGenEvents.prototype);
 Vte.prototype.constructor = Vte;
@@ -1145,3 +1141,5 @@ Vte.prototype.onChildOutputCSI = function (type, args) {
 Vte.prototype.onChildOutputOSC = function (type, args) {
   logRed("OSC -- type:", type, ", args:", args);
 };
+
+export default Vte;

@@ -4,10 +4,10 @@ import { Value } from "@sinclair/typebox/value";
 import { stdin as input, stdout as output } from "node:process";
 import readline from "node:readline/promises";
 
-import type { PromptOptions } from "~/types/prod";
+import type { PromptOptions } from "~/types/prod.js";
 
-import { fmt, msg } from "~/utils/messages";
-import { countLines, deleteLastLine, deleteLastLines } from "~/utils/terminal";
+import { fmt, msg } from "~/utils/messages.js";
+import { countLines, deleteLastLine, deleteLastLines } from "~/utils/terminal.js";
 
 export async function numberPrompt<T extends TSchema>(
   options: PromptOptions<T>,

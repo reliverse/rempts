@@ -1,8 +1,8 @@
-// @ts-nocheck
+import termkit from "..";
+import Promise from "seventh";
 
-const termkit = require("..");
+// @ts-nocheck
 const term = termkit.terminal;
-const Promise = require("seventh");
 
 async function test() {
   term.clear();

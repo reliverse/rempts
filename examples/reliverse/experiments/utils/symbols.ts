@@ -1,7 +1,7 @@
-import type { StateDeprecated, SymbolCharacterDeprecated } from "~/types/dev";
+import type { StateDeprecated, SymbolCharacterDeprecated } from "~/types/dev.js";
 
-import { colorize } from "~/utils/colorize";
-import { isUnicodeSupported } from "~/utils/platforms";
+import { colorize } from "~/utils/colorize.js";
+import { isUnicodeSupported } from "~/utils/platforms.js";
 
 const unicode = isUnicodeSupported();
 const s = (c: string, fallback: string) => (unicode ? c : fallback);

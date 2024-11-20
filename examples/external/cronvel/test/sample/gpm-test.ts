@@ -1,10 +1,9 @@
+import termkit from "../../src/termkit.js";
+import gpm from "../../src/gpm.js";
+
 // @ts-nocheck
 
 /* jshint unused:false */
-
-var termkit = require("../../src/termkit");
-var gpm = require("../../src/gpm");
-
 var handler = gpm.createHandler({
   stdin: process.stdin,
   raw: false,

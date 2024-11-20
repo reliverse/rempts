@@ -1,8 +1,8 @@
 import { describe, test, expect } from "vitest";
 
-import type { RelinkaReporter, LogObject } from "~/types/prod";
+import type { RelinkaReporter, LogObject } from "~/types/prod.js";
 
-import { LogLevels } from "~/constants";
+import { LogLevels } from "~/constants.js";
 import { createRelinka } from "~/index";
 
 describe("relinka", () => {

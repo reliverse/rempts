@@ -1,16 +1,13 @@
+import net from "net";
+import NextGenEvents from "nextgen-events";
+import termkit from "./termkit.js";
+
 // @ts-nocheck
 
 /*
 	This module try to stay close to the original GPM lib written in C.
 */
-
-const net = require("net");
-const NextGenEvents = require("nextgen-events");
-const termkit = require("./termkit");
-
 const gpm = {};
-module.exports = gpm;
-
 /* GPM structures & constants */
 /* as found in the GPM source code: src/headers/gpm.h */
 
@@ -232,3 +229,5 @@ gpm.raw2terminalKitEvent = function (event) {
 
   return [name, terminalKitEvent];
 };
+
+export default gpm;

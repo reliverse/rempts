@@ -1,7 +1,7 @@
 import color from "picocolors";
 import { cursor, erase } from "sisteransi";
 
-import type { State } from "~/types/prod";
+import type { State } from "~/types/prod.js";
 
 import {
   block,
@@ -13,10 +13,10 @@ import {
   SelectKeyPrompt,
   SelectPrompt,
   TextPrompt,
-} from "~/components/main";
-import { isUnicodeSupported } from "~/utils/platforms";
+} from "~/components/main.js";
+import { isUnicodeSupported } from "~/utils/platforms.js";
 
-export { isCancel } from "~/components/prompt";
+export { isCancel } from "~/components/prompt.js";
 
 const unicode = isUnicodeSupported();
 const s = (c: string, fallback: string) => (unicode ? c : fallback);

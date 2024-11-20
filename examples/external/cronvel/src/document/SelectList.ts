@@ -1,10 +1,9 @@
+import Element from "./Element.js";
+import BaseMenu from "./BaseMenu.js";
+import ColumnMenu from "./ColumnMenu.js";
+import Button from "./Button.js";
+
 // @ts-nocheck
-
-const Element = require("./Element");
-const BaseMenu = require("./BaseMenu");
-const ColumnMenu = require("./ColumnMenu");
-const Button = require("./Button");
-
 // Inherit from ColumnMenu for common methods
 
 function SelectList(options) {
@@ -59,7 +58,6 @@ function SelectList(options) {
   }
 }
 
-module.exports = SelectList;
 Element.inherit(SelectList, ColumnMenu);
 
 SelectList.prototype.defaultOptions = {
@@ -219,3 +217,5 @@ SelectList.prototype.onClickOut = function () {
 SelectList.prototype.getValue = function () {
   return this.value;
 };
+
+export default SelectList;

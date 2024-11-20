@@ -1,8 +1,8 @@
-// @ts-nocheck
+import string from "string-kit";
+import Promise from "seventh";
 
-const string = require("string-kit");
+// @ts-nocheck
 const term = require("../../src/termkit").terminal;
-const Promise = require("seventh");
 
 async function test() {
   var fwa = string.unicode.toFullWidth("@"); // Get a full-width arobas

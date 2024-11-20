@@ -1,10 +1,10 @@
-import type { RelinkaOptions } from "~/types/prod";
+import type { RelinkaOptions } from "~/types/prod.js";
 
-import { BrowserReporter } from "~/components/browser-rep";
+import { BrowserReporter } from "~/components/browser-rep.js";
 
-import { createRelinka as _createRelinka } from "./relinka";
+import { createRelinka as _createRelinka } from "./relinka.js";
 
-export * from "./shared";
+export * from "./shared.js";
 
 /**
  * Creates a new Relinka instance configured specifically for browser environments.

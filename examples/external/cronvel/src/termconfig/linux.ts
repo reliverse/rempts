@@ -1,10 +1,9 @@
+import tree from "tree-kit";
+import string from "string-kit";
+import xterm from "./xterm.js";
+import gpm from "../gpm.js";
+
 // @ts-nocheck
-
-const tree = require("tree-kit");
-const string = require("string-kit");
-const xterm = require("./xterm");
-const gpm = require("../gpm");
-
 // shortcuts
 const bold = "\x1b[1m";
 const noBold = "\x1b[22m";
@@ -338,18 +337,18 @@ const keymap = tree.extend(null, Object.create(xterm.keymap), {
   KP_ENTER: "\x1bOM",
 });
 
-module.exports = {
-  esc: esc,
-  keymap: keymap,
-  handler: Object.create(xterm.handler),
-  support: {
-    deltaEscapeSequence: false,
-    "256colors": false,
-    "24bitsColors": false, // DEPRECATED
-    trueColor: false,
-  },
+export default {
+      esc: esc,
+      keymap: keymap,
+      handler: Object.create(xterm.handler),
+      support: {
+        deltaEscapeSequence: false,
+        "256colors": false,
+        "24bitsColors": false, // DEPRECATED
+        trueColor: false,
+      },
 
-  // This is the standard VGA palette, used by restorepalette
-  // http://linux.die.net/man/1/restorepalette
-  colorRegister: require("../colorScheme/linux.json"),
-};
+      // This is the standard VGA palette, used by restorepalette
+      // http://linux.die.net/man/1/restorepalette
+      colorRegister: require("../colorScheme/linux.json"),
+    };

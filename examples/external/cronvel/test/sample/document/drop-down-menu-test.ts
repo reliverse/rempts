@@ -1,7 +1,8 @@
+import termkit from "../../../src/termkit.js";
+
 // @ts-nocheck
 
 //console.error( "\n\n\n\n\n\n\n\n" ) ;
-const termkit = require("../../../src/termkit");
 const term = termkit.terminal;
 
 term.clear();

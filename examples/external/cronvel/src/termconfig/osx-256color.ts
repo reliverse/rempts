@@ -1,8 +1,7 @@
+import tree from "tree-kit";
+import xterm256Generic from "./xterm-256color.generic.js";
+
 // @ts-nocheck
-
-const tree = require("tree-kit");
-const xterm256Generic = require("./xterm-256color.generic");
-
 const keymap = tree.extend(null, Object.create(xterm256Generic.keymap), {
   UP: "\x1b[A",
   DOWN: "\x1b[B",
@@ -126,16 +125,16 @@ const keymap = tree.extend(null, Object.create(xterm256Generic.keymap), {
 	*/
 });
 
-module.exports = {
-  esc: Object.create(xterm256Generic.esc),
-  keymap: keymap,
-  // keymap: keymap ,
-  handler: Object.create(xterm256Generic.handler),
-  support: {
-    deltaEscapeSequence: true,
-    "256colors": true,
-    "24bitsColors": undefined, // DEPRECATED
-    trueColor: undefined, // maybe, maybe not
-  },
-  colorRegister: require("../colorScheme/gnome.json"),
-};
+export default {
+      esc: Object.create(xterm256Generic.esc),
+      keymap: keymap,
+      // keymap: keymap ,
+      handler: Object.create(xterm256Generic.handler),
+      support: {
+        deltaEscapeSequence: true,
+        "256colors": true,
+        "24bitsColors": undefined, // DEPRECATED
+        trueColor: undefined, // maybe, maybe not
+      },
+      colorRegister: require("../colorScheme/gnome.json"),
+    };

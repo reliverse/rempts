@@ -1,9 +1,8 @@
+import termkit from "../..";
+import Promise from "seventh";
+
 // @ts-nocheck
-
-const termkit = require("../..");
 const term = termkit.terminal;
-const Promise = require("seventh");
-
 term.clear();
 
 var document = term.createDocument({

@@ -1,10 +1,10 @@
+import Element from "./Element.js";
+import ScreenBuffer from "../ScreenBuffer.js";
+import termkit from "../termkit.js";
+
 // @ts-nocheck
 
 // Container: an enclosed surface (ScreenBuffer), with a viewport to allow scrolling.
-
-const Element = require("./Element");
-const ScreenBuffer = require("../ScreenBuffer");
-
 // Avoid requiring Slider at top-level, it could cause circular require troubles
 //const Slider = require( './Slider' ) ;
 
@@ -76,14 +76,10 @@ function Container(options) {
   }
 }
 
-module.exports = Container;
 Element.inherit(Container);
 
 Container.prototype.isContainer = true;
 Container.prototype.containerBorderSize = 0;
-
-const termkit = require("../termkit");
-
 Container.prototype.keyBindings = {
   UP: "tinyScrollUp",
   DOWN: "tinyScrollDown",
@@ -340,3 +336,5 @@ userActions.scrollTop = function () {
 userActions.scrollBottom = function () {
   this.scrollToBottom();
 };
+
+export default Container;

@@ -1,10 +1,10 @@
+import termkit from "..";
+
 // @ts-nocheck
 
 // https://fr.wikipedia.org/wiki/Cercle_chromatique#Hering
 
 // Cool lib to manipulate colors: https://github.com/gka/chroma
-
-const termkit = require("..");
 const term = termkit.terminal;
 
 // 4 primary colors

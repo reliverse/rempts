@@ -1,7 +1,6 @@
+import termkit from "./termkit.js";
+
 // @ts-nocheck
-
-const termkit = require("./termkit");
-
 /*
 	Custom 256-colors palette for ScreenBuffer, each color is 24 bits.
 	Enhance ScreenBuffer without relying on ScreenBufferHD.
@@ -111,8 +110,6 @@ function Palette(options = {}) {
 
   this.generate();
 }
-
-module.exports = Palette;
 
 Palette.prototype.colorNameToIndex = function (name) {
   name = name.toLowerCase();
@@ -405,3 +402,5 @@ Palette.prototype.clStep = function (
     }
   }
 };
+
+export default Palette;

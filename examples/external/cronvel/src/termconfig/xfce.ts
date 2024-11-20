@@ -1,8 +1,7 @@
+import tree from "tree-kit";
+import xterm256 from "./xterm-256color.js";
+
 // @ts-nocheck
-
-const tree = require("tree-kit");
-const xterm256 = require("./xterm-256color");
-
 const esc = tree.extend(null, Object.create(xterm256.esc), {
   // Not supported...
   setClipboardLL: { na: true },
@@ -22,15 +21,15 @@ const esc = tree.extend(null, Object.create(xterm256.esc), {
 const keymap = Object.create(xterm256.keymap);
 const handler = Object.create(xterm256.handler);
 
-module.exports = {
-  esc: esc,
-  keymap: keymap,
-  handler: handler,
-  support: {
-    deltaEscapeSequence: true,
-    "256colors": false,
-    "24bitsColors": false, // DEPRECATED
-    trueColor: false,
-  },
-  colorRegister: require("../colorScheme/xfce.json"),
-};
+export default {
+      esc: esc,
+      keymap: keymap,
+      handler: handler,
+      support: {
+        deltaEscapeSequence: true,
+        "256colors": false,
+        "24bitsColors": false, // DEPRECATED
+        trueColor: false,
+      },
+      colorRegister: require("../colorScheme/xfce.json"),
+    };

@@ -1,8 +1,8 @@
 import color from "picocolors";
 
-import type { PromptOptions } from "~/components/prompt";
+import type { PromptOptions } from "~/components/prompt.js";
 
-import Prompt from "~/components/prompt";
+import Prompt from "~/components/prompt.js";
 
 type PasswordOptions = {
   mask?: string;

@@ -1,7 +1,6 @@
+import terminal from "..";
+
 // @ts-nocheck
-
-const terminal = require("..");
-
 terminal.getDetectedTerminal((error, term) => {
   var i;
 

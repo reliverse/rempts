@@ -1,8 +1,8 @@
+import fs from "fs";
+
 // @ts-nocheck
 
 var term = require("terminal-kit").terminal;
-var fs = require("fs");
-
 term.cyan("Choose a file:\n");
 
 var items = fs.readdirSync(process.cwd());

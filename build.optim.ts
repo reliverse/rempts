@@ -1,7 +1,7 @@
 import fs from "fs-extra";
 import path from "pathe";
 
-import { spinnerPrompts } from "~/main";
+import { spinnerPrompts } from "~/main.js";
 
 const outputDir = path.resolve(__dirname, "output");
 

@@ -1,6 +1,6 @@
-// @ts-nocheck
+import termkit from "..";
 
-const termkit = require("..");
+// @ts-nocheck
 const term = termkit.terminal;
 
 var buffer = new termkit.ScreenBuffer({ dst: term, width: 8, height: 8 });

@@ -1,8 +1,8 @@
-// @ts-nocheck
+import Element from "./Element.js";
+import Text from "./Text.js";
+import Button from "./Button.js";
 
-const Element = require("./Element");
-const Text = require("./Text");
-const Button = require("./Button");
+// @ts-nocheck
 
 function ToggleButton(options) {
   // Clone options if necessary
@@ -20,7 +20,6 @@ function ToggleButton(options) {
   }
 }
 
-module.exports = ToggleButton;
 Element.inherit(ToggleButton, Button);
 
 ToggleButton.prototype.keyBindings = {
@@ -132,3 +131,5 @@ userActions.submit = function (key) {
     this,
   );
 };
+
+export default ToggleButton;

@@ -19,11 +19,11 @@ import {
   showTextPrompt,
   showSelectPrompt,
   showMultiSelectPrompt,
-} from "@/reliverse/main-prompts";
-import { type UserInput } from "@/reliverse/main-schema";
+} from "@/reliverse/main-prompts.js";
+import { type UserInput } from "@/reliverse/main-schema.js";
 
-import { rangePrompt } from "~/components/range";
-import { errorHandler } from "~/utils/errors";
+import { rangePrompt } from "~/components/range.js";
+import { errorHandler } from "~/utils/errors.js";
 
 export async function detailedExample() {
   await showStartPrompt();

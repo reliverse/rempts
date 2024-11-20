@@ -1,9 +1,9 @@
+import misc from "../misc.js";
+import string from "string-kit";
+import NextGenEvents from "nextgen-events";
+import termkit from "../termkit.js";
+
 // @ts-nocheck
-
-const misc = require("../misc");
-const string = require("string-kit");
-const NextGenEvents = require("nextgen-events");
-
 // Avoid requiring Document at top-level, it could cause circular require troubles
 //const Document = require( './Document' ) ;
 
@@ -129,14 +129,9 @@ function Element(options = {}) {
   }
 }
 
-module.exports = Element;
-
 Element.prototype = Object.create(NextGenEvents.prototype);
 Element.prototype.constructor = Element;
 Element.prototype.elementType = "Element";
-
-const termkit = require("../termkit");
-
 // Destroy the element and all its children, detaching them and removing listeners
 Element.prototype.destroy = function (isSubDestroy = false, noDraw = false) {
   if (this.destroyed) {
@@ -1014,4 +1009,6 @@ Element.prototype.needInput = false; // no need for input by default (used to co
 Element.prototype.outerDrag = false; // boolean, true if drag event are sent when out of bounds (e.g. useful for moving windows)
 
 Element.prototype.keyBindings = {}; // object, store key bindings, the key is a Terminal Kit key code, the value is an user-action name
-Element.prototype.userActions = {}; // object, the key is an user-action name, the value is a function... THIS IS INHERITED
+Element.prototype.userActions = {};
+
+export default Element;

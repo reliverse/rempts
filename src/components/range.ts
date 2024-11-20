@@ -9,7 +9,7 @@ import precision from "precision";
 import stringWidth from "string-width";
 import windowSize from "window-size";
 
-import wrap from "~/utils/skeleton";
+import wrap from "~/utils/skeleton.js";
 
 /**
  * Interface for RangePrompt options

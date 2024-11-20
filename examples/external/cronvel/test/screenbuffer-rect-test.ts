@@ -1,6 +1,6 @@
-// @ts-nocheck
+import termkit from "../lib/termkit";
 
-var termkit = require("../lib/termkit");
+// @ts-nocheck
 var term = termkit.terminal;
 var ScreenBuffer = termkit.ScreenBuffer;
 var Rect = termkit.Rect;

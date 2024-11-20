@@ -1,8 +1,7 @@
+import tree from "tree-kit";
+import xterm from "./xterm.js";
+
 // @ts-nocheck
-
-const tree = require("tree-kit");
-const xterm = require("./xterm");
-
 const esc = tree.extend(null, Object.create(xterm.esc), {
   // Not supported...
   setClipboardLL: { na: true },
@@ -31,15 +30,15 @@ const esc = tree.extend(null, Object.create(xterm.esc), {
 const keymap = Object.create(xterm.keymap);
 const handler = Object.create(xterm.handler);
 
-module.exports = {
-  esc: esc,
-  keymap: keymap,
-  handler: handler,
-  support: {
-    deltaEscapeSequence: true,
-    "256colors": false,
-    "24bitsColors": false, // DEPRECATED
-    trueColor: false,
-  },
-  colorRegister: require("../colorScheme/gnome.json"),
-};
+export default {
+      esc: esc,
+      keymap: keymap,
+      handler: handler,
+      support: {
+        deltaEscapeSequence: true,
+        "256colors": false,
+        "24bitsColors": false, // DEPRECATED
+        trueColor: false,
+      },
+      colorRegister: require("../colorScheme/gnome.json"),
+    };

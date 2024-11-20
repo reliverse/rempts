@@ -1,7 +1,8 @@
+import Promise from "seventh";
+
 // @ts-nocheck
 
 const term = require("..").terminal;
-const Promise = require("seventh");
 
 async function test() {
   term(

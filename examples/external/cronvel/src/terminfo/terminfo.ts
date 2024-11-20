@@ -1,3 +1,9 @@
+import fs from "fs";
+import tree from "tree-kit";
+import boolOptions from "./boolean-opts.json" with { type: "json" };
+import numberOptions from "./number-opts.json" with { type: "json" };
+import stringOptions from "./string-opts.json" with { type: "json" };
+
 // @ts-nocheck
 
 /*
@@ -33,14 +39,6 @@
 */
 
 "use strict";
-
-const fs = require("fs");
-const tree = require("tree-kit");
-
-const boolOptions = require("./boolean-opts.json");
-const numberOptions = require("./number-opts.json");
-const stringOptions = require("./string-opts.json");
-
 exports.getTerminfo = (termName) => {
   if ((!termName && process.platform === "win32") || termName === "win32") {
     return require("./windows-profile.json");

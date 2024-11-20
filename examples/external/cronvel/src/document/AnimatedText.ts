@@ -1,8 +1,8 @@
-// @ts-nocheck
+import Element from "./Element.js";
+import Text from "./Text.js";
+import spChars from "../spChars.js";
 
-const Element = require("./Element");
-const Text = require("./Text");
-const spChars = require("../spChars");
+// @ts-nocheck
 
 function AnimatedText(options) {
   // Clone options if necessary
@@ -43,7 +43,6 @@ function AnimatedText(options) {
   }
 }
 
-module.exports = AnimatedText;
 Element.inherit(AnimatedText, Text);
 
 AnimatedText.prototype.inlineCursorRestoreAfterDraw = true;
@@ -77,3 +76,5 @@ AnimatedText.prototype.autoUpdate = function () {
     this.frameDuration / this.animationSpeed,
   );
 };
+
+export default AnimatedText;

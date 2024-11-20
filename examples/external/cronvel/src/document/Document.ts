@@ -1,9 +1,8 @@
+import Element from "./Element.js";
+import Container from "./Container.js";
+import Promise from "seventh";
+
 // @ts-nocheck
-
-const Element = require("./Element");
-const Container = require("./Container");
-
-const Promise = require("seventh");
 
 function Document(options) {
   // Clone options if necessary
@@ -117,7 +116,6 @@ function Document(options) {
   }
 }
 
-module.exports = Document;
 Element.inherit(Document, Container);
 
 Document.prototype.destroy = function (isSubDestroy, noDraw = false) {
@@ -767,3 +765,5 @@ Document.prototype.onEventSourceResize = function (width, height) {
 
   this.draw();
 };
+
+export default Document;

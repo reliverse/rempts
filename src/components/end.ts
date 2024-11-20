@@ -1,7 +1,7 @@
-import type { PromptOptions } from "~/types/prod";
+import type { PromptOptions } from "~/types/prod.js";
 
-import { animateText } from "~/components/animate";
-import { msg } from "~/utils/messages";
+import { animateText } from "~/components/animate.js";
+import { msg } from "~/utils/messages.js";
 
 export async function endPrompt({
   title,

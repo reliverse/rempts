@@ -1,10 +1,10 @@
-// @ts-nocheck
+import string from "string-kit";
+import termkit from "..";
+import Promise from "seventh";
 
-const string = require("string-kit");
-const termkit = require("..");
+// @ts-nocheck
 const term = termkit.terminal;
 const SB = termkit.ScreenBufferHD;
-const Promise = require("seventh");
 
 async function test() {
   var attr;

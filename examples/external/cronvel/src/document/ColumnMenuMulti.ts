@@ -1,9 +1,8 @@
+import Element from "./Element.js";
+import ColumnMenu from "./ColumnMenu.js";
+import ToggleButton from "./ToggleButton.js";
+
 // @ts-nocheck
-
-const Element = require("./Element");
-const ColumnMenu = require("./ColumnMenu");
-const ToggleButton = require("./ToggleButton");
-
 // Inherit from ColumnMenu for common methods
 
 function ColumnMenuMulti(options) {
@@ -26,7 +25,6 @@ function ColumnMenuMulti(options) {
   }
 }
 
-module.exports = ColumnMenuMulti;
 Element.inherit(ColumnMenuMulti, ColumnMenu);
 
 ColumnMenuMulti.prototype.ButtonClass = ToggleButton;
@@ -150,3 +148,5 @@ const userActions = ColumnMenuMulti.prototype.userActions;
 userActions.submit = function () {
   this.emit("submit", this.value, undefined, this);
 };
+
+export default ColumnMenuMulti;

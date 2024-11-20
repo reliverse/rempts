@@ -1,13 +1,11 @@
+import Element from "./Element.js";
+import Slider from "./Slider.js";
+import ScreenBuffer from "../ScreenBuffer.js";
+import TextBuffer from "../TextBuffer.js";
+import Rect from "../Rect.js";
+import string from "string-kit";
+
 // @ts-nocheck
-
-const Element = require("./Element");
-const Slider = require("./Slider");
-
-const ScreenBuffer = require("../ScreenBuffer");
-const TextBuffer = require("../TextBuffer");
-const Rect = require("../Rect");
-
-const string = require("string-kit");
 
 function TextBox(options) {
   // Clone options if necessary
@@ -88,7 +86,6 @@ function TextBox(options) {
   }
 }
 
-module.exports = TextBox;
 Element.inherit(TextBox);
 
 // Support for strictInline mode
@@ -727,3 +724,5 @@ userActions.copyToSystemClipboard = function () {
       .catch(() => undefined);
   }
 };
+
+export default TextBox;

@@ -1,7 +1,7 @@
-// @ts-nocheck
+import Element from "./Element.js";
+import TextBox from "./TextBox.js";
 
-const Element = require("./Element");
-const TextBox = require("./TextBox");
+// @ts-nocheck
 const boxesChars = require("../spChars").box;
 
 function TextTable(options) {
@@ -114,7 +114,6 @@ function TextTable(options) {
   }
 }
 
-module.exports = TextTable;
 Element.inherit(TextTable);
 
 // Support for strictInline mode
@@ -647,3 +646,5 @@ TextTable.prototype.preDrawSelf = function () {
     this.borderChars.bottomRight,
   );
 };
+
+export default TextTable;

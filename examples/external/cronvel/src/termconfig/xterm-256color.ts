@@ -1,9 +1,8 @@
+import tree from "tree-kit";
+import xterm from "./xterm.js";
+import string from "string-kit";
+
 // @ts-nocheck
-
-const tree = require("tree-kit");
-const xterm = require("./xterm");
-const string = require("string-kit");
-
 // Remove colors
 const defaultColor = "\x1b[39m"; // back to the default color, most of time it is the same than .white
 const bgDefaultColor = "\x1b[49m"; // back to the default color, most of time it is the same than .bgBlack
@@ -48,15 +47,15 @@ const esc = tree.extend(null, Object.create(xterm.esc), {
 const keymap = Object.create(xterm.keymap);
 const handler = Object.create(xterm.handler);
 
-module.exports = {
-  esc: esc,
-  keymap: keymap,
-  handler: handler,
-  support: {
-    deltaEscapeSequence: true,
-    "256colors": true,
-    "24bitsColors": false, // DEPRECATED
-    trueColor: false,
-  },
-  colorRegister: xterm.colorRegister,
-};
+export default {
+      esc: esc,
+      keymap: keymap,
+      handler: handler,
+      support: {
+        deltaEscapeSequence: true,
+        "256colors": true,
+        "24bitsColors": false, // DEPRECATED
+        trueColor: false,
+      },
+      colorRegister: xterm.colorRegister,
+    };

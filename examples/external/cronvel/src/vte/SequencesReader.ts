@@ -1,13 +1,11 @@
+import fromOutputSequence from "./fromOutputSequence.js";
+import string from "string-kit";
+import NextGenEvents from "nextgen-events";
+import Promise from "seventh";
+
 // @ts-nocheck
 
-const fromOutputSequence = require("./fromOutputSequence");
-const string = require("string-kit");
-const NextGenEvents = require("nextgen-events");
-const Promise = require("seventh");
-
 function SequencesReader(options = {}) {}
-
-module.exports = SequencesReader;
 
 SequencesReader.prototype = Object.create(NextGenEvents.prototype);
 SequencesReader.prototype.constructor = SequencesReader;
@@ -372,3 +370,5 @@ SequencesReader.prototype.streamToEvent = async function (stream) {
     }
   }
 };
+
+export default SequencesReader;

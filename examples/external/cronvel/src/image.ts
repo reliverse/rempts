@@ -1,11 +1,8 @@
+import ndarray from "ndarray";
+import Promise from "seventh";
+
 // @ts-nocheck
-
-const ndarray = require("ndarray");
-const Promise = require("seventh");
-
 const image = {};
-module.exports = image;
-
 var getPixels;
 if (global.IS_BROWSER) {
   getPixels = require("@cronvel/get-pixels");
@@ -132,3 +129,5 @@ image.shrinkNdarrayImage = function shrinkNdarrayImage(pixels, options) {
 
   return shrinkedPixels;
 };
+
+export default image;

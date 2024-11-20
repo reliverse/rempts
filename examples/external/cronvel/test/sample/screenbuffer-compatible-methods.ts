@@ -1,9 +1,8 @@
+import terminal from "../../src/termkit.js";
+
 // @ts-nocheck
 
 /* jshint unused:false */
-
-var terminal = require("../../src/termkit");
-
 terminal.getDetectedTerminal(function (error, term) {
   var i;
 

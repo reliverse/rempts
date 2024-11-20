@@ -1,21 +1,21 @@
-import type { InquirerReadline } from "@/external/inquirer/src/type/inquirer";
+import type { InquirerReadline } from "@/external/inquirer/src/type/inquirer.js";
 import type { TSchema, Static } from "@sinclair/typebox";
 
 import {
   useEffect,
   useKeypress,
   type KeypressEvent,
-} from "@/external/inquirer/src/hooks";
-import { useState } from "@/external/inquirer/src/hooks/use-state";
-import { symbol } from "@/reliverse/experiments/utils/symbols";
+} from "@/external/inquirer/src/hooks/index.js";
+import { useState } from "@/external/inquirer/src/hooks/use-state.js";
+import { symbol } from "@/reliverse/experiments/utils/symbols.js";
 import { Value } from "@sinclair/typebox/value";
 import { stdin as input, stdout as output } from "node:process";
 import readline from "node:readline/promises";
 
-import type { PromptOptionsDeprecated, StateDeprecated } from "~/types/dev";
+import type { PromptOptionsDeprecated, StateDeprecated } from "~/types/dev.js";
 
-import { colorize } from "~/utils/colorize";
-import { applyVariant } from "~/utils/variants";
+import { colorize } from "~/utils/colorize.js";
+import { applyVariant } from "~/utils/variants.js";
 
 export async function textPrompt<T extends TSchema>(
   options: PromptOptionsDeprecated<T>,

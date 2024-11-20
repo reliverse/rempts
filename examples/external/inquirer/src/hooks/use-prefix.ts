@@ -1,10 +1,10 @@
 import { AsyncResource } from "node:async_hooks";
 
-import type { Theme, Status } from "./theme";
+import type { Theme, Status } from "./theme.js";
 
-import { makeTheme } from "./make-theme";
-import { useEffect } from "./use-effect";
-import { useState } from "./use-state";
+import { makeTheme } from "./make-theme.js";
+import { useEffect } from "./use-effect.js";
+import { useState } from "./use-state.js";
 
 export function usePrefix({
   status = "idle",

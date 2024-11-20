@@ -1,10 +1,9 @@
+import Element from "./Element.js";
+import TextBox from "./TextBox.js";
+import string from "string-kit";
+import Promise from "seventh";
+
 // @ts-nocheck
-
-const Element = require("./Element");
-const TextBox = require("./TextBox");
-
-const string = require("string-kit");
-const Promise = require("seventh");
 
 function EditableTextBox(options) {
   // Clone options if necessary
@@ -53,7 +52,6 @@ function EditableTextBox(options) {
   }
 }
 
-module.exports = EditableTextBox;
 Element.inherit(EditableTextBox, TextBox);
 
 EditableTextBox.prototype.needInput = true;
@@ -779,3 +777,5 @@ userActions.clearSystemClipboard = function () {
       .catch(() => undefined);
   }
 };
+
+export default EditableTextBox;

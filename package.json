@@ -1,6 +1,6 @@
 {
   "name": "@reliverse/relinka",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "@reliverse/relinka is a powerful library that enables seamless, typesafe, and resilient prompts for command-line applications. Crafted with simplicity and elegance, it provides developers with an intuitive and robust way to build interactive CLIs.",
   "scripts": {
     "appts": "bun typecheck && bun lint && bun format",
@@ -9,7 +9,8 @@
     "pub": "redrun build bunp",
     "lint": "eslint --cache --fix .",
     "format": "biome check --write .",
-    "optimize": "putout output --fix",
+    "optimize:tmp": "putout examples/external/terkelg --fix",
+    "optimize:output": "putout output --fix",
     "check": "bun test",
     "attw": "attw --pack",
     "tsc": "tshy",
@@ -20,10 +21,7 @@
     "test:tape": "tape test/*.js | tap-spec",
     "release": "bumpp & bun pub"
   },
-  "type": "module",
-  "publishConfig": {
-    "access": "public"
-  },
+  "publishConfig": { "access": "public" },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/reliverse/relinka.git"

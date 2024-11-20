@@ -205,16 +205,16 @@ const esc = {
 const handler = {};
 const keymap = {};
 
-module.exports = {
-  esc: esc,
-  keymap: keymap,
-  handler: handler,
-  support: {
-    deltaEscapeSequence: false,
-    "256colors": false,
-    "24bitsColors": false, // DEPRECATED
-    trueColor: false,
-  },
-  // Whatever...
-  colorRegister: require("../colorScheme/linux.json"),
-};
+export default {
+      esc: esc,
+      keymap: keymap,
+      handler: handler,
+      support: {
+        deltaEscapeSequence: false,
+        "256colors": false,
+        "24bitsColors": false, // DEPRECATED
+        trueColor: false,
+      },
+      // Whatever...
+      colorRegister: require("../colorScheme/linux.json"),
+    };

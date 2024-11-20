@@ -2,8 +2,8 @@
 
 import { AsyncLocalStorage, AsyncResource } from "node:async_hooks";
 
-import { type InquirerReadline } from "../type/inquirer";
-import { HookError, ValidationError } from "./errors";
+import { type InquirerReadline } from "../type/inquirer.js";
+import { HookError, ValidationError } from "./errors.js";
 
 type HookStore = {
   rl: InquirerReadline;

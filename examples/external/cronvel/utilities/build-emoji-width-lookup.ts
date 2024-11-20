@@ -1,3 +1,6 @@
+import fs from "fs";
+import termkit from "..";
+
 // @ts-nocheck
 
 "use strict";
@@ -5,10 +8,6 @@
 /*
 	Create lookup files for emoji width, by writing each emoji and check the cursor location.
 */
-
-const fs = require("fs");
-
-const termkit = require("..");
 const term = termkit.terminal;
 
 async function checkOne(lookup, codePoint) {

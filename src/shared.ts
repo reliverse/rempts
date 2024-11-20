@@ -1,13 +1,13 @@
-export { LogLevels, LogTypes } from "./constants";
-export { Relinka } from "./relinka";
+export { LogLevels, LogTypes } from "./constants.js";
+export { Relinka } from "./relinka.js";
 
-export type * from "./types";
-export type { RelinkaInstance } from "./relinka";
-export type { LogLevel, LogType } from "./constants";
+export type * from "./types.js";
+export type { RelinkaInstance } from "./relinka.js";
+export type { LogLevel, LogType } from "./constants.js";
 export type {
   PromptOptions,
   ConfirmPromptOptions,
   MultiSelectOptions,
   SelectPromptOptions,
   TextPromptOptions,
-} from "./prompt";
+} from "./prompt.js";

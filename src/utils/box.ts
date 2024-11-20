@@ -1,5 +1,5 @@
-import { getColor } from "./color";
-import { stripAnsi } from "./string";
+import { getColor } from "./color.js";
+import { stripAnsi } from "./string.js";
 
 export type BoxBorderStyle = {
   /**

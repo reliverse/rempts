@@ -1,6 +1,6 @@
-// @ts-nocheck
+import termkit from "..";
 
-const termkit = require("..");
+// @ts-nocheck
 const term = termkit.terminal;
 //const termios = require( 'termios' ) ;
 

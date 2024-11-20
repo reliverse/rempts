@@ -1,7 +1,7 @@
-// @ts-nocheck
+import Element from "./Element.js";
+import Container from "./Container.js";
 
-const Element = require("./Element");
-const Container = require("./Container");
+// @ts-nocheck
 const boxesChars = require("../spChars").box;
 
 function Layout(options) {
@@ -39,7 +39,6 @@ function Layout(options) {
   }
 }
 
-module.exports = Layout;
 Element.inherit(Layout);
 
 Layout.prototype.computeBoundingBoxes = function () {
@@ -378,3 +377,5 @@ Layout.prototype.drawRow = function (computed, tees, last) {
 Layout.prototype.onParentResize = function () {
   this.computeBoundingBoxes();
 };
+
+export default Layout;

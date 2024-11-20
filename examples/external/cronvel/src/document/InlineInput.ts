@@ -1,14 +1,12 @@
+import Element from "./Element.js";
+import TextBox from "./TextBox.js";
+import EditableTextBox from "./EditableTextBox.js";
+import RowMenu from "./RowMenu.js";
+import Promise from "seventh";
+import string from "string-kit";
+import computeAutoCompleteArray from "../autoComplete.js";
+
 // @ts-nocheck
-
-const Element = require("./Element");
-const TextBox = require("./TextBox");
-const EditableTextBox = require("./EditableTextBox");
-const RowMenu = require("./RowMenu");
-
-const Promise = require("seventh");
-const string = require("string-kit");
-const computeAutoCompleteArray = require("../autoComplete");
-
 /*
 	This is the Document-model version of .inputField().
 	Like an EditableTextBox, with a one-line hard-line-wrap TextBuffer, outputHeight start at 1 but can grow
@@ -144,7 +142,6 @@ function InlineInput(options) {
   }
 }
 
-module.exports = InlineInput;
 Element.inherit(InlineInput, EditableTextBox);
 
 // Has a fallback textBuffer for hint/placeholder
@@ -534,3 +531,5 @@ userActions.delete = function () {
     this.autoResizeAndDraw();
   }
 };
+
+export default InlineInput;

@@ -1,13 +1,11 @@
+import Element from "./Element.js";
+import BaseMenu from "./BaseMenu.js";
+import Button from "./Button.js";
+import ToggleButton from "./ToggleButton.js";
+import misc from "../misc.js";
+import string from "string-kit";
+
 // @ts-nocheck
-
-const Element = require("./Element");
-const BaseMenu = require("./BaseMenu");
-const Button = require("./Button");
-const ToggleButton = require("./ToggleButton");
-
-const misc = require("../misc");
-const string = require("string-kit");
-
 // Inherit from BaseMenu for common methods
 
 function RowMenu(options) {
@@ -50,7 +48,6 @@ function RowMenu(options) {
   }
 }
 
-module.exports = RowMenu;
 Element.inherit(RowMenu, BaseMenu);
 
 RowMenu.prototype.inlineNewLine = true;
@@ -453,3 +450,5 @@ RowMenu.prototype.preDrawSelf = function () {
     //console.error( string.format( "%Y" , this.buttons[this.buttons.length-1].content ));
   }
 };
+
+export default RowMenu;

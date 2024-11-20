@@ -1,8 +1,8 @@
-// @ts-nocheck
+import Element from "./Element.js";
+import LabeledInput from "./LabeledInput.js";
+import Button from "./Button.js";
 
-const Element = require("./Element");
-const LabeledInput = require("./LabeledInput");
-const Button = require("./Button");
+// @ts-nocheck
 
 function Form(options) {
   // Clone options if necessary
@@ -55,7 +55,6 @@ function Form(options) {
   }
 }
 
-module.exports = Form;
 Element.inherit(Form);
 
 Form.prototype.needInput = true;
@@ -281,3 +280,5 @@ userActions.previous = function () {
 userActions.next = function () {
   this.focusChild = this.focusNextChild();
 };
+
+export default Form;

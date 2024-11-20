@@ -1,7 +1,7 @@
-// @ts-nocheck
+import fs from "fs";
+import termkit from "terminal-kit";
 
-var fs = require("fs");
-var termkit = require("terminal-kit");
+// @ts-nocheck
 var term = termkit.terminal;
 
 var autoCompleter = function autoCompleter(inputString, callback) {

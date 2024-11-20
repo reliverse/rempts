@@ -1,9 +1,9 @@
-export * from "./utils/box";
-export * from "./utils/color";
+export * from "./utils/box.js";
+export * from "./utils/color.js";
 export {
   stripAnsi,
   centerAlign,
   rightAlign,
   leftAlign,
   align,
-} from "./utils/string";
+} from "./utils/string.js";

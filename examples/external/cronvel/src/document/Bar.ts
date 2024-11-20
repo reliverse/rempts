@@ -1,6 +1,6 @@
-// @ts-nocheck
+import Element from "./Element.js";
 
-const Element = require("./Element");
+// @ts-nocheck
 const builtinBarChars = require("../spChars").bar;
 
 function Bar(options) {
@@ -42,7 +42,6 @@ function Bar(options) {
   }
 }
 
-module.exports = Bar;
 Element.inherit(Bar);
 
 Bar.prototype.preDrawSelf = function () {
@@ -234,3 +233,5 @@ Bar.prototype.setValue = function (value, internalAndNoDraw) {
     this.draw();
   }
 };
+
+export default Bar;

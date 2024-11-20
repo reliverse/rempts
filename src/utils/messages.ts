@@ -6,11 +6,11 @@ import type {
   FmtMsgOptions,
   MsgConfig,
   MsgType,
-} from "~/types/prod";
+} from "~/types/prod.js";
 
-import { colorMap, typographyMap } from "~/utils/mapping";
-import { isUnicodeSupported } from "~/utils/platforms";
-import { variantMap } from "~/utils/variants";
+import { colorMap, typographyMap } from "~/utils/mapping.js";
+import { isUnicodeSupported } from "~/utils/platforms.js";
+import { variantMap } from "~/utils/variants.js";
 
 const unicode = isUnicodeSupported();
 const u = (c: string, fallback: string) => (unicode ? c : fallback);

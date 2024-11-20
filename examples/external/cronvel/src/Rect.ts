@@ -1,7 +1,6 @@
+import termkit from "./termkit.js";
+
 // @ts-nocheck
-
-const termkit = require("./termkit");
-
 /*
 	Rect: rectangular region, clipping, iterators for blitters, etc...
 
@@ -79,8 +78,6 @@ function Rect(xmin, ymin, xmax, ymax) {
     });
   }
 }
-
-module.exports = Rect;
 
 // Backward compatibility
 Rect.create = (...args) => new Rect(...args);
@@ -572,3 +569,5 @@ Rect.wrapIterator = function (p, iterator) {
     Rect.regionIterator(p, iterator);
   }
 };
+
+export default Rect;

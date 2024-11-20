@@ -1,10 +1,9 @@
+import fs from "fs";
+import termkit from "../../src/termkit.js";
+
 // @ts-nocheck
 
 /* jshint unused:false */
-
-var fs = require("fs");
-var termkit = require("../../src/termkit");
-
 termkit.getDetectedTerminal(function (error, term) {
   var autoCompleter = function autoCompleter(inputString, callback) {
     fs.readdir(__dirname, function (error, files) {

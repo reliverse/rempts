@@ -1,3 +1,6 @@
+import termkit from "..";
+import path from "path";
+
 // @ts-nocheck
 /*
 	Terminal Kit
@@ -24,12 +27,8 @@
 	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 	SOFTWARE.
 */
-
-const termkit = require("..");
 //const termkit = require( '../lib/termkit-no-lazy-require' ) ;
 const term = termkit.terminal;
-const path = require("path");
-
 if (process.argv.length <= 2) {
   term.magenta(
     "Usage is: ./%s <file-path> [-m] [<max-scale>]\n",

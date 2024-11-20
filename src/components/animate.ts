@@ -4,11 +4,11 @@ import {
   type AnimationName,
 } from "@figliolia/chalk-animation";
 
-import type { ColorName, MsgType, TypographyName } from "~/types/prod";
+import type { ColorName, MsgType, TypographyName } from "~/types/prod.js";
 
-import { deleteLastLine } from "~/utils/terminal";
+import { deleteLastLine } from "~/utils/terminal.js";
 
-import { msg } from "../utils/messages";
+import { msg } from "../utils/messages.js";
 
 export const animationMap: Record<AnimationName, (text: string) => Animation> =
   {

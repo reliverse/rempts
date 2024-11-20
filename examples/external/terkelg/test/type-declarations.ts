@@ -1,4 +1,4 @@
-import * as prompts from '../index';
+import * as prompts from '../index.js';
 
 type HasProperty<T, K> = K extends keyof T ? true : false;
 

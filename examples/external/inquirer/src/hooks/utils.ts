@@ -1,7 +1,7 @@
 import cliWidth from "cli-width";
 import wrapAnsi from "wrap-ansi";
 
-import { readline } from "./hook-engine";
+import { readline } from "./hook-engine.js";
 
 /**
  * Force line returns at specific width. This function is ANSI code friendly and it'll

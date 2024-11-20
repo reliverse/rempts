@@ -1,11 +1,10 @@
+import misc from "./misc.js";
+import fs from "fs";
+import string from "string-kit";
+import NextGenEvents from "nextgen-events";
+import termkit from "./termkit.js";
+
 // @ts-nocheck
-
-const misc = require("./misc");
-
-const fs = require("fs");
-const string = require("string-kit");
-const NextGenEvents = require("nextgen-events");
-
 /*
 	options:
 		* width: buffer width (default to dst.width)
@@ -55,16 +54,12 @@ function ScreenBuffer(options = {}) {
   }
 }
 
-module.exports = ScreenBuffer;
-
 ScreenBuffer.prototype = Object.create(NextGenEvents.prototype);
 ScreenBuffer.prototype.constructor = ScreenBuffer;
 ScreenBuffer.prototype.bitsPerColor = 8;
 
 // Backward compatibility
 ScreenBuffer.create = (...args) => new ScreenBuffer(...args);
-
-const termkit = require("./termkit");
 const Rect = termkit.Rect;
 
 /*
@@ -2200,3 +2195,5 @@ ScreenBuffer.prototype.saveSyncV2 = function (filepath) {
 
 ScreenBuffer.loadSync = ScreenBuffer.loadSyncV2;
 ScreenBuffer.prototype.saveSync = ScreenBuffer.prototype.saveSyncV2;
+
+export default ScreenBuffer;

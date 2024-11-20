@@ -1,12 +1,10 @@
+import Element from "./Element.js";
+import InlineInput from "./InlineInput.js";
+import fileHelpers from "../fileHelpers.js";
+import fs from "fs";
+import path from "path";
+
 // @ts-nocheck
-
-const Element = require("./Element");
-const InlineInput = require("./InlineInput");
-const fileHelpers = require("../fileHelpers");
-
-const fs = require("fs");
-const path = require("path");
-
 /*
 	An InlineInput that auto-complete filepath.
 */
@@ -39,7 +37,6 @@ function InlineFileInput(options) {
   this.initPromise = this.init();
 }
 
-module.exports = InlineFileInput;
 Element.inherit(InlineFileInput, InlineInput);
 
 InlineFileInput.prototype.init = async function () {
@@ -113,3 +110,5 @@ InlineFileInput.prototype.submit = async function () {
 
   this.emit("submit", filePath, undefined, this);
 };
+
+export default InlineFileInput;

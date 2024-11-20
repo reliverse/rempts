@@ -1,7 +1,7 @@
-// @ts-nocheck
+import Element from "./Element.js";
+import Text from "./Text.js";
 
-const Element = require("./Element");
-const Text = require("./Text");
+// @ts-nocheck
 
 function Button(options) {
   // Clone options if necessary
@@ -160,7 +160,6 @@ function Button(options) {
   }
 }
 
-module.exports = Button;
 Element.inherit(Button, Text);
 
 Button.prototype.needInput = true;
@@ -477,3 +476,5 @@ userActions.submit = function (key) {
   }
   this.submit(this.actionKeyBindings[key]);
 };
+
+export default Button;

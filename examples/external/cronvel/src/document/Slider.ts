@@ -1,8 +1,7 @@
+import Element from "./Element.js";
+import Button from "./Button.js";
+
 // @ts-nocheck
-
-const Element = require("./Element");
-const Button = require("./Button");
-
 // Default transfer function
 const IDENTITY = (v) => v;
 
@@ -69,7 +68,6 @@ function Slider(options) {
   }
 }
 
-module.exports = Slider;
 Element.inherit(Slider);
 
 Slider.prototype.needInput = true;
@@ -311,3 +309,5 @@ Slider.prototype.onDrag = function (data) {
 Slider.prototype.onWheel = function (data) {
   this.emit("slideStep", data.yDirection);
 };
+
+export default Slider;

@@ -5,13 +5,13 @@ import type {
   InputLogObject,
   LogObject,
   RelinkaOptions,
-} from "~/types/prod";
+} from "~/types/prod.js";
 
-import type { LogType, LogLevel } from "./constants";
-import type { PromptOptions } from "./prompt";
+import type { LogType, LogLevel } from "./constants.js";
+import type { PromptOptions } from "./prompt.js";
 
-import { LogTypes } from "./constants";
-import { isLogObj } from "./utils/log";
+import { LogTypes } from "./constants.js";
+import { isLogObj } from "./utils/log.js";
 
 let paused = false;
 const queue: any[] = [];

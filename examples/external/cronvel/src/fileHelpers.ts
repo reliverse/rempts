@@ -1,13 +1,10 @@
+import autoComplete from "./autoComplete.js";
+import fs from "fs";
+import path from "path";
+import Promise from "seventh";
+
 // @ts-nocheck
-
-const autoComplete = require("./autoComplete");
-
-const fs = require("fs");
-const path = require("path");
-
 //const string = require( 'string-kit' ) ;
-const Promise = require("seventh");
-
 // Like fs.readdir(), but performs fs.stat() for each file in order to add a '/' to directories
 exports.readdir = async (dir, accept = null) => {
   if (dir[dir.length - 1] !== "/") {

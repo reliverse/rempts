@@ -1,8 +1,8 @@
 import color from "picocolors";
 
-import type { PromptOptions } from "./prompt";
+import type { PromptOptions } from "./prompt.js";
 
-import Prompt from "./prompt";
+import Prompt from "./prompt.js";
 
 export type TextOptions = {
   placeholder?: string;

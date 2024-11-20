@@ -1,7 +1,8 @@
+import termkit from "..";
+
 // @ts-nocheck
 
 //require( '../lib/termkit' ).getDetectedTerminal( function( error , term ) {
-const termkit = require("..");
 const term = termkit.terminal;
 
 term.grabInput();

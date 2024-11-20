@@ -1,12 +1,12 @@
-import type { LogLevel } from "./constants";
-import type { RelinkaInstance } from "./relinka";
-import type { RelinkaOptions } from "~/types/prod";
+import type { LogLevel } from "./constants.js";
+import type { RelinkaInstance } from "./relinka.js";
+import type { RelinkaOptions } from "~/types/prod.js";
 
-import { BasicReporter } from "./components/basic-rep";
-import { LogLevels } from "./constants";
-import { createRelinka as _createRelinka } from "./relinka";
+import { BasicReporter } from "./components/basic-rep.js";
+import { LogLevels } from "./constants.js";
+import { createRelinka as _createRelinka } from "./relinka.js";
 
-export * from "./shared";
+export * from "./shared.js";
 
 /**
  * Factory function to create a new Relinka instance

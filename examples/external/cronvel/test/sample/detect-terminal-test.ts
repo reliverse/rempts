@@ -1,7 +1,7 @@
-// @ts-nocheck
+import os from "os";
+import termkit from "../../src/termkit.js";
 
-const os = require("os");
-const termkit = require("../../src/termkit");
+// @ts-nocheck
 const term = termkit.terminal;
 
 async function testTerminal(t) {

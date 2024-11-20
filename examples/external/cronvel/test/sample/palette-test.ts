@@ -1,18 +1,16 @@
+import termkit from "..";
+import Palette from "../../src/Palette.js";
+
 // @ts-nocheck
 
 // https://fr.wikipedia.org/wiki/Cercle_chromatique#Hering
 
 // Cool lib to manipulate colors: https://github.com/gka/chroma
-
-const termkit = require("..");
 const term = termkit.terminal;
 
 var i, j, z, scale, h, c, l, r, g, b;
 
 term.bold("\n\n=== Palette Class tests  ===\n\n");
-
-const Palette = require("../../src/Palette");
-
 var palette = new Palette();
 palette.generate();
 

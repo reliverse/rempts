@@ -1,9 +1,9 @@
-// @ts-nocheck
+import Element from "./Element.js";
+import ToggleButton from "./ToggleButton.js";
+import RowMenu from "./RowMenu.js";
+import ColumnMenuMixed from "./ColumnMenuMixed.js";
 
-const Element = require("./Element");
-const ToggleButton = require("./ToggleButton");
-const RowMenu = require("./RowMenu");
-const ColumnMenuMixed = require("./ColumnMenuMixed");
+// @ts-nocheck
 
 function DropDownMenu(options) {
   // Clone options if necessary
@@ -73,7 +73,6 @@ function DropDownMenu(options) {
   }
 }
 
-module.exports = DropDownMenu;
 Element.inherit(DropDownMenu, RowMenu);
 
 DropDownMenu.prototype.keyBindings = {
@@ -312,3 +311,5 @@ userActions.clearColumnMenu = function () {
   // Bubble up only if something was cleared
   return this.clearColumnMenu(true);
 };
+
+export default DropDownMenu;

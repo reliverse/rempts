@@ -1,3 +1,8 @@
+import Element from "./Element.js";
+import ColumnMenu from "./ColumnMenu.js";
+import Button from "./Button.js";
+import ToggleButton from "./ToggleButton.js";
+
 // @ts-nocheck
 
 /*
@@ -5,12 +10,6 @@
 	In fact it is closer from ColumnMenu in behavior: any click submit the button, not a key/value object.
 	This is useful to improve the DropDownMenu, where it is common to have menu items states (turned on/off).
 */
-
-const Element = require("./Element");
-const ColumnMenu = require("./ColumnMenu");
-const Button = require("./Button");
-const ToggleButton = require("./ToggleButton");
-
 // Inherit from ColumnMenu for common methods
 
 function ColumnMenuMixed(options) {
@@ -33,7 +32,6 @@ function ColumnMenuMixed(options) {
   }
 }
 
-module.exports = ColumnMenuMixed;
 Element.inherit(ColumnMenuMixed, ColumnMenu);
 
 ColumnMenuMixed.prototype.ButtonClass = null;
@@ -125,3 +123,5 @@ ColumnMenuMixed.prototype.onButtonToggle = function (
 
   this.emit("submit", button.key, buttonValue, this, button);
 };
+
+export default ColumnMenuMixed;

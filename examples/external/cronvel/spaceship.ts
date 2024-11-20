@@ -1,8 +1,7 @@
+import fs from "fs";
+import termkit from "../lib/termkit";
+
 // @ts-nocheck
-
-var fs = require("fs");
-
-var termkit = require("../lib/termkit");
 var term;
 var ScreenBuffer = termkit.ScreenBuffer;
 

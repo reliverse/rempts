@@ -1,6 +1,6 @@
-// @ts-nocheck
+import Element from "./Element.js";
 
-const Element = require("./Element");
+// @ts-nocheck
 
 function Text(options) {
   // Clone options if necessary
@@ -56,7 +56,6 @@ function Text(options) {
   }
 }
 
-module.exports = Text;
 Element.inherit(Text);
 
 Text.prototype.forceContentArray = true;
@@ -237,3 +236,5 @@ Text.prototype.postDrawSelf = function () {
     }
   }
 };
+
+export default Text;
