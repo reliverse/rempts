@@ -1,21 +1,19 @@
+import el from "./elements/index.js";
 'use strict';
 const $ = exports;
-const el = require('./elements');
 const noop = v => v;
-
-function toPrompt(type, args, opts={}) {
-  return new Promise((res, rej) => {
-    const p = new el[type](args);
-    const onAbort = opts.onAbort || noop;
-    const onSubmit = opts.onSubmit || noop;
-    const onExit = opts.onExit || noop;
-    p.on('state', args.onState || noop);
-    p.on('submit', x => res(onSubmit(x)));
-    p.on('exit', x => res(onExit(x)));
-    p.on('abort', x => rej(onAbort(x)));
-  });
+function toPrompt(type, args, opts = {}) {
+    return new Promise((res, rej) => {
+        const p = new el[type](args);
+        const onAbort = opts.onAbort || noop;
+        const onSubmit = opts.onSubmit || noop;
+        const onExit = opts.onExit || noop;
+        p.on('state', args.onState || noop);
+        p.on('submit', x => res(onSubmit(x)));
+        p.on('exit', x => res(onExit(x)));
+        p.on('abort', x => rej(onAbort(x)));
+    });
 }
-
 /**
  * Text prompt
  * @param {string} args.message Prompt message to display
@@ -28,7 +26,6 @@ function toPrompt(type, args, opts={}) {
  * @returns {Promise} Promise with user input
  */
 $.text = args => toPrompt('TextPrompt', args);
-
 /**
  * Password prompt with masked input
  * @param {string} args.message Prompt message to display
@@ -40,10 +37,9 @@ $.text = args => toPrompt('TextPrompt', args);
  * @returns {Promise} Promise with user input
  */
 $.password = args => {
-  args.style = 'password';
-  return $.text(args);
+    args.style = 'password';
+    return $.text(args);
 };
-
 /**
  * Prompt where input is invisible, like sudo
  * @param {string} args.message Prompt message to display
@@ -55,10 +51,9 @@ $.password = args => {
  * @returns {Promise} Promise with user input
  */
 $.invisible = args => {
-  args.style = 'invisible';
-  return $.text(args);
+    args.style = 'invisible';
+    return $.text(args);
 };
-
 /**
  * Number prompt
  * @param {string} args.message Prompt message to display
@@ -76,7 +71,6 @@ $.invisible = args => {
  * @returns {Promise} Promise with user input
  */
 $.number = args => toPrompt('NumberPrompt', args);
-
 /**
  * Date prompt
  * @param {string} args.message Prompt message to display
@@ -94,7 +88,6 @@ $.number = args => toPrompt('NumberPrompt', args);
  * @returns {Promise} Promise with user input
  */
 $.date = args => toPrompt('DatePrompt', args);
-
 /**
  * Classic yes/no prompt
  * @param {string} args.message Prompt message to display
@@ -105,7 +98,6 @@ $.date = args => toPrompt('DatePrompt', args);
  * @returns {Promise} Promise with user input
  */
 $.confirm = args => toPrompt('ConfirmPrompt', args);
-
 /**
  * List prompt, split intput string by `seperator`
  * @param {string} args.message Prompt message to display
@@ -118,12 +110,11 @@ $.confirm = args => toPrompt('ConfirmPrompt', args);
  * @returns {Promise} Promise with user input, in form of an `Array`
  */
 $.list = args => {
-  const sep = args.separator || ',';
-  return toPrompt('TextPrompt', args, {
-    onSubmit: str => str.split(sep).map(s => s.trim())
-  });
+    const sep = args.separator || ',';
+    return toPrompt('TextPrompt', args, {
+        onSubmit: str => str.split(sep).map(s => s.trim())
+    });
 };
-
 /**
  * Toggle/switch prompt
  * @param {string} args.message Prompt message to display
@@ -136,7 +127,6 @@ $.list = args => {
  * @returns {Promise} Promise with user input
  */
 $.toggle = args => toPrompt('TogglePrompt', args);
-
 /**
  * Interactive select prompt
  * @param {string} args.message Prompt message to display
@@ -149,7 +139,6 @@ $.toggle = args => toPrompt('TogglePrompt', args);
  * @returns {Promise} Promise with user input
  */
 $.select = args => toPrompt('SelectPrompt', args);
-
 /**
  * Interactive multi-select / autocompleteMultiselect prompt
  * @param {string} args.message Prompt message to display
@@ -163,27 +152,22 @@ $.select = args => toPrompt('SelectPrompt', args);
  * @returns {Promise} Promise with user input
  */
 $.multiselect = args => {
-  args.choices = [].concat(args.choices || []);
-  const toSelected = items => items.filter(item => item.selected).map(item => item.value);
-  return toPrompt('MultiselectPrompt', args, {
-    onAbort: toSelected,
-    onSubmit: toSelected
-  });
+    args.choices = [].concat(args.choices || []);
+    const toSelected = items => items.filter(item => item.selected).map(item => item.value);
+    return toPrompt('MultiselectPrompt', args, {
+        onAbort: toSelected,
+        onSubmit: toSelected
+    });
 };
-
 $.autocompleteMultiselect = args => {
-  args.choices = [].concat(args.choices || []);
-  const toSelected = items => items.filter(item => item.selected).map(item => item.value);
-  return toPrompt('AutocompleteMultiselectPrompt', args, {
-    onAbort: toSelected,
-    onSubmit: toSelected
-  });
+    args.choices = [].concat(args.choices || []);
+    const toSelected = items => items.filter(item => item.selected).map(item => item.value);
+    return toPrompt('AutocompleteMultiselectPrompt', args, {
+        onAbort: toSelected,
+        onSubmit: toSelected
+    });
 };
-
-const byTitle = (input, choices) => Promise.resolve(
-  choices.filter(item => item.title.slice(0, input.length).toLowerCase() === input.toLowerCase())
-);
-
+const byTitle = (input, choices) => Promise.resolve(choices.filter(item => item.title.slice(0, input.length).toLowerCase() === input.toLowerCase()));
 /**
  * Interactive auto-complete prompt
  * @param {string} args.message Prompt message to display
@@ -200,7 +184,7 @@ const byTitle = (input, choices) => Promise.resolve(
  * @returns {Promise} Promise with user input
  */
 $.autocomplete = args => {
-  args.suggest = args.suggest || byTitle;
-  args.choices = [].concat(args.choices || []);
-  return toPrompt('AutocompletePrompt', args);
+    args.suggest = args.suggest || byTitle;
+    args.choices = [].concat(args.choices || []);
+    return toPrompt('AutocompletePrompt', args);
 };

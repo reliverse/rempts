@@ -1,10 +1,8 @@
+import * as  from "./index.js";
 'use strict';
-
-const { prompt } = require('.');
-
+const { prompt } = ;
 let interval;
-
-(async function(){
+(async function () {
     const questions = [
         {
             type: 'text',
@@ -98,19 +96,17 @@ let interval;
             onRender(color) {
                 this.no = (this.no || 1);
                 this.msg = `Enter a number (e.g. ${color.cyan(this.no)})`;
-                if (!interval) interval = setInterval(() => {
-                    this.no += 1;
-                    this.render();
-                }, 1000);
+                if (!interval)
+                    interval = setInterval(() => {
+                        this.no += 1;
+                        this.render();
+                    }, 1000);
             }
         }
     ];
-
-    const answers = await prompt(questions, {onCancel:cleanup, onSubmit:cleanup});
+    const answers = await prompt(questions, { onCancel: cleanup, onSubmit: cleanup });
     console.log(answers);
 })();
-
 function cleanup() {
     clearInterval(interval);
 }
-
