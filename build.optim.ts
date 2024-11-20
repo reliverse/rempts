@@ -1,7 +1,8 @@
+// @ts-expect-error -- TODO: Module '"C:/B/L/reliverse/relinka/node_modules/@types/fs-extra/index"' has no default export.
 import fs from "fs-extra";
 import path from "pathe";
 
-import { spinnerPrompts } from "~/main.js";
+import { spinnerPrompts } from "./src/main";
 
 const outputDir = path.resolve(__dirname, "output");
 
@@ -74,7 +75,7 @@ async function optimizeBuildForProduction(dir: string) {
     successMessage: "Optimized production build created successfully.",
     spinnerSolution: "ora",
     spinnerType: "arc",
-    action: async (updateMessage) => {
+    action: async (updateMessage: (arg0: string) => void) => {
       await processFiles(dir);
       updateMessage("Cleaning up unnecessary files...");
       await deleteFiles(filesToDelete);
@@ -82,6 +83,7 @@ async function optimizeBuildForProduction(dir: string) {
   });
 }
 
+// @ts-expect-error -- TODO: Top-level 'await' expressions are only allowed when the 'module' option is set to 'es2022', 'esnext', 'system', 'node16', 'nodenext', or 'preserve', and the 'target' option is set to 'es2017' or higher.
 await optimizeBuildForProduction(outputDir).catch((error) => {
   console.error("An error occurred:", error);
   process.exit(1);

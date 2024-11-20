@@ -19,10 +19,10 @@
     "noImplicitOverride": true,
     "strictNullChecks": false,
     "noImplicitAny": false,
-    "module": "NodeNext",
+    "module": "ES2022",
     "noEmit": true,
     "lib": ["es2022"],
-    "moduleResolution": "nodenext"
+    "moduleResolution": "bundler"
   },
   "include": [
     "build.optim.ts",

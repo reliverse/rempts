@@ -6,6 +6,8 @@ export default defineConfig({
     exclude: ["dist", "node_modules", "output"],
     alias: {
       "~/": new URL("./src/", import.meta.url).pathname,
+      "@/*": new URL("./examples/*", import.meta.url).pathname,
+      "#/*": new URL("./addons/*", import.meta.url).pathname,
     },
     watch: false,
   },
