@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unnecessary-type-parameters */
-import { text, confirm, select, multiselect } from "./helpers/prompt";
+import { text, confirm, select, multiselect } from "./utils/prompt";
 
 type SelectOption = {
   label: string;

@@ -1,6 +1,8 @@
-import { BrowserReporter } from "./reporters/browser";
+import type { RelinkaOptions } from "~/types/prod";
+
+import { BrowserReporter } from "~/components/browser-rep";
+
 import { createRelinka as _createRelinka } from "./relinka";
-import type { RelinkaOptions } from "./types";
 
 export * from "./shared";
 

@@ -4,9 +4,9 @@ import { emojify } from "node-emoji";
 import { bold } from "picocolors";
 
 import { pressAnyKeyPrompt } from "~/components/any-key";
-import { relinka } from "~/components/modules";
 import { numSelectPrompt } from "~/components/num-select";
 import { promptsDisplayResults } from "~/components/results";
+import { relinka } from "~/index";
 import {
   animateText,
   confirmPrompt,

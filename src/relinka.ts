@@ -1,16 +1,17 @@
 import { defu } from "defu";
 
-import type { LogType, LogLevel } from "./constants";
-import type { PromptOptions } from "./prompt";
 import type {
   RelinkaReporter,
   InputLogObject,
   LogObject,
   RelinkaOptions,
-} from "./types";
+} from "~/types/prod";
+
+import type { LogType, LogLevel } from "./constants";
+import type { PromptOptions } from "./prompt";
 
 import { LogTypes } from "./constants";
-import { isLogObj } from "./helpers/log";
+import { isLogObj } from "./utils/log";
 
 let paused = false;
 const queue: any[] = [];

@@ -10,7 +10,7 @@ import { colorize } from "~/utils/colorize";
 import { bar, fmt, msg } from "~/utils/messages";
 import { countLines, deleteLastLine, deleteLastLines } from "~/utils/terminal";
 
-export async function numMultiSelectPrompt<T extends TSchema>(
+export async function multiselectPrompt<T extends TSchema>(
   options: PromptOptions<T>,
 ): Promise<Static<T>> {
   const {

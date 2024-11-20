@@ -1,143 +1,66 @@
-import type { Static, TSchema } from "@sinclair/typebox";
+import type { PromptOptions } from "~/components/prompt";
 
-import { Value } from "@sinclair/typebox/value";
-import { stdin as input, stdout as output } from "node:process";
-import readline from "node:readline/promises";
+import Prompt from "~/components/prompt";
 
-import type { PromptOptions } from "~/types/prod";
+type MultiSelectOptions<T extends { value: any }> = {
+  options: T[];
+  initialValues?: T["value"][];
+  required?: boolean;
+  cursorAt?: T["value"];
+} & PromptOptions<MultiSelectPrompt<T>>;
+export default class MultiSelectPrompt<
+  T extends { value: any },
+> extends Prompt {
+  options: T[];
+  cursor = 0;
 
-import { colorize } from "~/utils/colorize";
-import { bar, fmt, msg } from "~/utils/messages";
-import { countLines, deleteLastLine, deleteLastLines } from "~/utils/terminal";
-
-export async function numMultiSelectPrompt<T extends TSchema>(
-  options: PromptOptions<T>,
-): Promise<Static<T>> {
-  const {
-    title,
-    choices,
-    schema,
-    defaultValue,
-    titleColor = "cyanBright",
-    answerColor = "none",
-    titleTypography = "bold",
-    titleVariant,
-    hint,
-    content,
-    contentColor = "dim",
-    contentTypography,
-    contentVariant,
-    borderColor = "viceGradient",
-    variantOptions,
-  } = options;
-
-  if (!choices || choices.length === 0) {
-    throw new Error("Choices are required for multiselect prompt.");
+  private get _value() {
+    return this.options[this.cursor].value;
   }
 
-  const rl = readline.createInterface({ input, output });
+  private toggleAll() {
+    const allSelected = this.value.length === this.options.length;
+    this.value = allSelected ? [] : this.options.map((v) => v.value);
+  }
 
-  const formattedBar = bar({ borderColor });
+  private toggleValue() {
+    const selected = this.value.includes(this._value);
+    this.value = selected
+      ? this.value.filter((value: T["value"]) => value !== this._value)
+      : [...this.value, this._value];
+  }
 
-  let linesToDelete = 0;
-  let errorMessage = "";
+  constructor(opts: MultiSelectOptions<T>) {
+    super(opts, false);
 
-  try {
-    while (true) {
-      if (linesToDelete > 0) {
-        deleteLastLines(linesToDelete);
+    this.options = opts.options;
+    this.value = [...(opts.initialValues ?? [])];
+    this.cursor = Math.max(
+      this.options.findIndex(({ value }) => value === opts.cursorAt),
+      0,
+    );
+    this.on("key", (char) => {
+      if (char === "a") {
+        this.toggleAll();
       }
+    });
 
-      const question = fmt({
-        type: errorMessage !== "" ? "M_ERROR" : "M_GENERAL",
-        title: `${title}${defaultValue ? ` [Default: ${Array.isArray(defaultValue) ? defaultValue.join(", ") : defaultValue}]` : ""}`,
-        titleColor,
-        titleTypography,
-        titleVariant,
-        content,
-        contentColor,
-        contentTypography,
-        contentVariant,
-        borderColor,
-        hint,
-        variantOptions,
-        errorMessage,
-        addNewLineBefore: false,
-        addNewLineAfter: false,
-      });
-
-      // Generate choices text with formatted bar
-      const choicesText = choices
-        .map(
-          (choice, index) =>
-            `${formattedBar}  ${index + 1}) ${choice.title}${
-              choice.description ? ` - ${choice.description}` : ""
-            }`,
-        )
-        .join("\n");
-
-      const fullPrompt = `${question}\n${choicesText}\n${formattedBar}  ${colorize(`Enter your choices (comma-separated numbers between 1-${choices.length})`, contentColor)}:\n${formattedBar}  `;
-
-      const formattedPrompt = fmt({
-        type: "M_NULL",
-        title: fullPrompt,
-      });
-
-      const questionLines = countLines(formattedPrompt);
-      linesToDelete = questionLines + 1; // +1 for the user's input line
-
-      const answer = (await rl.question(formattedPrompt)).trim();
-
-      // Use defaultValue if no input is provided
-      if (!answer && defaultValue !== undefined) {
-        deleteLastLine();
-        msg({
-          type: "M_MIDDLE",
-          title: `  ${Array.isArray(defaultValue) ? defaultValue.join(", ") : defaultValue}`,
-          titleColor: answerColor,
-        });
-        msg({ type: "M_NEWLINE" });
-        return defaultValue as Static<T>;
+    this.on("cursor", (key) => {
+      switch (key) {
+        case "left":
+        case "up":
+          this.cursor =
+            this.cursor === 0 ? this.options.length - 1 : this.cursor - 1;
+          break;
+        case "down":
+        case "right":
+          this.cursor =
+            this.cursor === this.options.length - 1 ? 0 : this.cursor + 1;
+          break;
+        case "space":
+          this.toggleValue();
+          break;
       }
-
-      // Parse and validate selections
-      const selections = answer.split(",").map((s) => s.trim());
-      const invalidSelections = selections.filter((s) => {
-        const num = Number(s);
-        return isNaN(num) || num < 1 || num > choices.length;
-      });
-
-      if (invalidSelections.length > 0) {
-        errorMessage = `Invalid selections: ${invalidSelections.join(
-          ", ",
-        )}. Please enter numbers between 1 and ${choices.length}.`;
-        continue;
-      }
-
-      const selectedValues = selections.map((s) => choices[Number(s) - 1]?.id);
-
-      // Schema validation if provided
-      let isValid = true;
-      errorMessage = ""; // Reset errorMessage
-
-      if (schema) {
-        isValid = Value.Check(schema, selectedValues);
-        if (!isValid) {
-          const errors = [...Value.Errors(schema, selectedValues)];
-          errorMessage =
-            errors.length > 0
-              ? (errors[0]?.message ?? "Invalid input.")
-              : "Invalid input.";
-        }
-      }
-
-      if (isValid) {
-        msg({ type: "M_NEWLINE" });
-        rl.close();
-        return selectedValues as Static<T>;
-      }
-    }
-  } finally {
-    rl.close();
+    });
   }
 }

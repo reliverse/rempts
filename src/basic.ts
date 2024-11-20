@@ -1,10 +1,10 @@
-import type { RelinkaInstance } from "./relinka";
 import type { LogLevel } from "./constants";
-import type { RelinkaOptions } from "./types";
+import type { RelinkaInstance } from "./relinka";
+import type { RelinkaOptions } from "~/types/prod";
 
-import { createRelinka as _createRelinka } from "./relinka";
+import { BasicReporter } from "./components/basic-rep";
 import { LogLevels } from "./constants";
-import { BasicReporter } from "./reporters/basic";
+import { createRelinka as _createRelinka } from "./relinka";
 
 export * from "./shared";
 

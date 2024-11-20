@@ -1,126 +1,40 @@
-import type { TSchema, Static } from "@sinclair/typebox";
+import { cursor } from "sisteransi";
 
-import { Value } from "@sinclair/typebox/value";
-import { stdin as input, stdout as output } from "node:process";
-import readline from "node:readline/promises";
+import type { PromptOptions } from "./prompt";
 
-import type { PromptOptions } from "~/types/prod";
+import Prompt from "./prompt";
 
-import { colorize } from "~/utils/colorize";
-import { bar, fmt, msg, symbols } from "~/utils/messages";
-import { countLines, deleteLastLines } from "~/utils/terminal";
+type ConfirmOptions = {
+  active: string;
+  inactive: string;
+  initialValue?: boolean;
+} & PromptOptions<ConfirmPrompt>;
+export default class ConfirmPrompt extends Prompt {
+  get cursor() {
+    return this.value ? 0 : 1;
+  }
 
-export async function confirmPrompt<T extends TSchema>(
-  options: PromptOptions<T>,
-): Promise<Static<T>> {
-  const {
-    title,
-    defaultValue,
-    schema,
-    titleColor = "cyanBright",
-    answerColor = "none",
-    titleTypography = "bold",
-    titleVariant,
-    content,
-    contentColor,
-    contentTypography,
-    contentVariant,
-    borderColor = "viceGradient",
-    hintColor = "dim",
-    variantOptions,
-    action,
-  } = options;
+  private get _value() {
+    return this.cursor === 0;
+  }
 
-  const rl = readline.createInterface({ input, output });
+  constructor(opts: ConfirmOptions) {
+    super(opts, false);
+    this.value = !!opts.initialValue;
 
-  let linesToDelete = 0;
-  let errorMessage = "";
+    this.on("value", () => {
+      this.value = this._value;
+    });
 
-  try {
-    while (true) {
-      if (linesToDelete > 0) {
-        deleteLastLines(linesToDelete);
-      }
+    this.on("confirm", (confirm) => {
+      this.output.write(cursor.move(0, -1));
+      this.value = confirm;
+      this.state = "submit";
+      this.close();
+    });
 
-      const question = fmt({
-        type: errorMessage !== "" ? "M_ERROR" : "M_GENERAL",
-        title,
-        titleColor,
-        titleTypography,
-        titleVariant,
-        content,
-        contentColor,
-        contentTypography,
-        contentVariant,
-        borderColor,
-        variantOptions,
-        errorMessage,
-      });
-
-      let defaultHint = "";
-      if (defaultValue === true) {
-        defaultHint = "[Y/n]";
-      } else if (defaultValue === false) {
-        defaultHint = "[y/N]";
-      } else {
-        defaultHint = "[y/n]";
-      }
-
-      const fullPrompt = `${question}${colorize(defaultHint, hintColor)}: `;
-
-      const formattedPrompt = fmt({
-        type: "M_NULL",
-        title: fullPrompt,
-      });
-
-      const questionLines = countLines(formattedPrompt);
-      linesToDelete = questionLines + 1; // +1 for the user's input line
-
-      const answer = (await rl.question(formattedPrompt)).toLowerCase().trim();
-
-      let value: boolean;
-
-      const formattedBar = bar({ borderColor });
-
-      if (!answer && defaultValue !== undefined) {
-        // Inject the used answer into the console
-        const injectedAnswer = defaultValue === true ? "y" : "n";
-        process.stdout.write(`${formattedBar}  ${injectedAnswer}\n`);
-        value = defaultValue as boolean;
-      } else if (answer === "y" || answer === "yes") {
-        value = true;
-      } else if (answer === "n" || answer === "no") {
-        value = false;
-      } else {
-        errorMessage = 'Please answer with "y" or "n".';
-        continue;
-      }
-
-      // Schema validation if provided
-      let isValid = true;
-      errorMessage = ""; // Reset errorMessage
-
-      if (schema) {
-        isValid = Value.Check(schema, value);
-        if (!isValid) {
-          const errors = [...Value.Errors(schema, value)];
-          errorMessage =
-            errors.length > 0
-              ? (errors[0]?.message ?? "Invalid input.")
-              : "Invalid input.";
-        }
-      }
-
-      if (isValid) {
-        msg({ type: "M_NEWLINE" });
-        rl.close();
-        if (action && value) {
-          await action();
-        }
-        return value as Static<T>;
-      }
-    }
-  } finally {
-    rl.close();
+    this.on("cursor", () => {
+      this.value = !this.value;
+    });
   }
 }

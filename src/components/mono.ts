@@ -2,17 +2,17 @@ import type { TSchema, Static } from "@sinclair/typebox";
 
 import type { PromptOptions, PromptType } from "~/types/prod";
 
-import { confirmPrompt } from "~/components/confirm";
+import { confirmPrompt } from "~/components/confirm-two";
 import { datePrompt } from "~/components/date";
 import { endPrompt } from "~/components/end";
-import { multiSelectPrompt } from "~/components/multi-select-2";
+import { multiselectPrompt } from "~/components/multi-select-two";
 import { nextStepsPrompt } from "~/components/next-steps";
 import { numMultiSelectPrompt } from "~/components/num-multi-select";
 import { numberPrompt } from "~/components/number";
-import { passwordPrompt } from "~/components/password";
-import { selectPrompt } from "~/components/select-2";
+import { passwordPrompt } from "~/components/password-two";
+import { selectPrompt } from "~/components/select-two";
 import { startPrompt } from "~/components/start";
-import { textPrompt } from "~/components/text";
+import { textPrompt } from "~/components/text-two";
 
 import { numSelectPrompt } from "./num-select";
 

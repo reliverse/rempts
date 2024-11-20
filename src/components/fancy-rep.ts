@@ -1,15 +1,16 @@
 import isUnicodeSupported from "is-unicode-supported";
 import _stringWidth from "string-width";
 
+import type { FormatOptions, LogObject } from "~/types/prod";
+
 import type { LogLevel, LogType } from "../constants";
-import type { FormatOptions, LogObject } from "../types";
-import type { BoxOpts } from "../helpers/box";
+import type { BoxOpts } from "../utils/box";
 
 import { stripAnsi } from "../utils";
-import { box } from "../helpers/box";
-import { colors } from "../helpers/color";
-import { parseStack } from "../helpers/error";
-import { BasicReporter } from "./basic";
+import { box } from "../utils/box";
+import { colors } from "../utils/color";
+import { parseStack } from "../utils/error";
+import { BasicReporter } from "./basic-rep";
 
 export const TYPE_COLOR_MAP: Partial<Record<LogType, string>> = {
   info: "cyan",

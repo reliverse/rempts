@@ -1,9 +1,7 @@
 import color from "picocolors";
 import { cursor, erase } from "sisteransi";
 
-import { isUnicodeSupported } from "~/utils/platforms";
-
-import type { StateDeprecated } from "./main";
+import type { State } from "~/types/prod";
 
 import {
   block,
@@ -15,9 +13,10 @@ import {
   SelectKeyPrompt,
   SelectPrompt,
   TextPrompt,
-} from "./main";
+} from "~/components/main";
+import { isUnicodeSupported } from "~/utils/platforms";
 
-export { isCancel } from "./main";
+export { isCancel } from "~/components/prompt";
 
 const unicode = isUnicodeSupported();
 const s = (c: string, fallback: string) => (unicode ? c : fallback);
@@ -47,7 +46,7 @@ const S_SUCCESS = s("◆", "*");
 const S_WARN = s("▲", "!");
 const S_ERROR = s("■", "x");
 
-const symbol = (state: StateDeprecated) => {
+const symbol = (state: State) => {
   switch (state) {
     case "initial":
     case "active":

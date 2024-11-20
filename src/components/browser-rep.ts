@@ -1,4 +1,4 @@
-import type { LogObject } from "../types";
+import type { LogObject } from "~/types/prod";
 
 export class BrowserReporter {
   options: any;

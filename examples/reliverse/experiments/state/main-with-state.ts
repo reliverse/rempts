@@ -4,14 +4,13 @@ import { symbol } from "@/reliverse/experiments/utils/symbols";
 
 import type { PromptStateDeprecated } from "~/types/dev";
 
-import { confirmPrompt } from "~/components/confirm";
+import { confirmPrompt } from "~/components/confirm-two";
 import { datePrompt } from "~/components/date";
 import { endPrompt } from "~/components/end";
 import { nextStepsPrompt } from "~/components/next-steps";
 // import { multiSelectPrompt } from "~/components/num-multi-select";
 import { numberPrompt } from "~/components/number";
-import { passwordPrompt } from "~/components/password";
-import { selectPrompt } from "~/components/select-2";
+import { passwordPrompt } from "~/components/password-two";
 
 import type { PromptOptionsWithState } from "./types-wth-state";
 

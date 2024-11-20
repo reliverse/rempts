@@ -1,3 +1,6 @@
+import { setTimeout as sleep } from "node:timers/promises";
+import color from "picocolors";
+
 import {
   intro,
   outro,
@@ -7,10 +10,8 @@ import {
   isCancel,
   cancel,
   text,
-} from "@/external/clack/src";
+} from "~/components";
 import { errorHandler } from "~/utils/errors";
-import { setTimeout as sleep } from "node:timers/promises";
-import color from "picocolors";
 
 async function main() {
   console.log();

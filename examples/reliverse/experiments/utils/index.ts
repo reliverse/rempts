@@ -1,6 +1,6 @@
-import type { RelinkaOptions } from "~/components/modules";
+import type { RelinkaOptions } from "~/types/prod";
 
-import { createRelinka } from "~/components/modules";
+import { createRelinka } from "~/index";
 
 import { randomSentence } from "./sentence";
 

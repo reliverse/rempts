@@ -1,8 +1,9 @@
 import { describe, test, expect } from "vitest";
 
-import type { RelinkaReporter, LogObject } from "~/components/modules";
+import type { RelinkaReporter, LogObject } from "~/types/prod";
 
-import { LogLevels, createRelinka } from "~/components/modules";
+import { LogLevels } from "~/constants";
+import { createRelinka } from "~/index";
 
 describe("relinka", () => {
   test("can set level", () => {

@@ -7,6 +7,8 @@ import { WriteStream } from "node:tty";
 import { cursor, erase } from "sisteransi";
 import wrap from "wrap-ansi";
 
+import type { State } from "~/types/prod";
+
 function diffLines(a: string, b: string) {
   if (a === b) {
     return;
@@ -54,13 +56,6 @@ export type PromptOptions<Self extends Prompt> = {
   debug?: boolean;
 };
 
-export type StateDeprecated =
-  | "initial"
-  | "active"
-  | "cancel"
-  | "submit"
-  | "error";
-
 export default class Prompt {
   protected input: Readable;
   protected output: Writable;
@@ -70,7 +65,7 @@ export default class Prompt {
   private _render: (context: Omit<Prompt, "prompt">) => string | void;
   protected _cursor = 0;
 
-  public state: StateDeprecated = "initial";
+  public state: State = "initial";
   public value: any;
   public error = "";
 

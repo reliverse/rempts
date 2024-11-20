@@ -1,4 +1,4 @@
-import { relinka } from "~/components/modules";
+import { relinka } from "~/index";
 import { errorHandler } from "~/utils/errors";
 
 async function examplesRunner() {

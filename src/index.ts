@@ -1,13 +1,14 @@
 import { isDebug, isTest, isCI } from "std-env";
 
-import type { RelinkaInstance } from "./relinka";
-import type { LogLevel } from "./constants";
-import type { RelinkaOptions } from "./types";
+import type { RelinkaOptions } from "~/types/prod";
 
-import { createRelinka as _createRelinka } from "./relinka";
+import type { LogLevel } from "./constants";
+import type { RelinkaInstance } from "./relinka";
+
+import { BasicReporter } from "./components/basic-rep";
+import { FancyReporter } from "./components/fancy-rep";
 import { LogLevels } from "./constants";
-import { BasicReporter } from "./reporters/basic";
-import { FancyReporter } from "./reporters/fancy";
+import { createRelinka as _createRelinka } from "./relinka";
 
 export * from "./shared";
 
@@ -33,7 +34,8 @@ export function createRelinka(
     defaults: { level },
     stdout: process.stdout,
     stderr: process.stderr,
-    prompt: (...args) => import("./prompt").then((m) => m.prompt(...args)),
+    prompt: (...args: [any]) =>
+      import("~/prompt").then((m) => m.prompt(...args)),
     reporters: options.reporters || [
       (options.fancy ?? !(isCI || isTest))
         ? new FancyReporter()

@@ -1,8 +1,8 @@
-import type { TreeItem } from "~/components/modules/helpers/tree";
+import type { TreeItem } from "~/utils/tree";
 
-import { relinka, createRelinka } from "~/components/modules";
-import { formatTree } from "~/components/modules/helpers/tree";
+import { relinka, createRelinka } from "~/index";
 import { errorHandler } from "~/utils/errors";
+import { formatTree } from "~/utils/tree";
 
 import { reporterDemo } from "./reliverse/experiments/utils";
 
@@ -33,11 +33,13 @@ async function detailedExample() {
   // box
   relinka.box("=== box ===");
 
-  relinka.box(`I am the default banner`);
+  relinka.box(
+    `Welcome to @reliverse/relinka! You're going to test an 'experimental' example.`,
+  );
 
   relinka.box({
     title: "Box with options",
-    message: `I am a banner with different options`,
+    message: `You'll see an example of errors, but it's not a real error 😉`,
     style: {
       padding: 1,
       borderColor: "magenta",
@@ -46,8 +48,9 @@ async function detailedExample() {
   });
 
   relinka.box({
-    title: "Update available for `relinka`",
-    message: `\`v1.0.2\` → \`v2.0.0\`\n\nRun \`npm install -g relinka\` to update`,
+    title: "By the way",
+    // message: `\`v1.0.2\` → \`v2.0.0\`\n\nRun \`npm install -g relinka\` to update`,
+    message: `You can check \`@reliverse/relinka\` in the production usage\n\nJust run \`bunx -g reliverse@latest\``,
     style: {
       padding: 2,
       borderColor: "yellow",
@@ -275,7 +278,9 @@ async function detailedExample() {
       "universal",
       "unified",
       "prompt",
-      "clack",
+      "prompts",
+      "reliverse",
+      "relinka",
       "format",
       "error",
       "stacktrace",
