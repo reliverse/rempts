@@ -13,5 +13,8 @@
       "severity": "off"
     }
   ],
-  "openMultipleFiles.limit": 600
+  "openMultipleFiles.limit": 600,
+  "markdownlint.config": {
+    "MD033": false
+  }
 }

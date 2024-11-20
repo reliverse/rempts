@@ -22,6 +22,7 @@ import {
 } from "@/reliverse/main-prompts";
 import { type UserInput } from "@/reliverse/main-schema";
 
+import { rangePrompt } from "~/components/range";
 import { errorHandler } from "~/utils/errors";
 
 export async function detailedExample() {

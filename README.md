@@ -1,8 +1,26 @@
 # @reliverse/relinka
 
-[**Docs**](https://docs.reliverse.org/relinka) | [**npmjs.com**](https://npmjs.com/package/@reliverse/relinka) | [**GitHub**](https://github.com/reliverse/relinka)
+[**Docs**](.github/DOCS.md) | [**npmjs.com**](https://npmjs.com/package/@reliverse/relinka) | [**GitHub**](https://github.com/reliverse/relinka)
 
-[![Separator](./public/split.png)](https://docs.reliverse.org/relinka)
+<p align="left">
+  <a href="https://npmjs.org/package/@reliverse/relinka">
+    <img src="https://img.shields.io/npm/v/@reliverse/relinka.svg" alt="version" />
+  </a>
+  <!-- <a href="https://github.com/reliverse/relinka/actions/workflows/test.yml">
+    <img src="https://github.com/reliverse/relinka/actions/workflows/test.yml/badge.svg" alt="test" />
+  </a> -->
+  <a href="https://npmjs.org/package/@reliverse/relinka">
+    <img src="https://img.shields.io/npm/dm/@reliverse/prompts.svg" alt="downloads" />
+  </a>
+  <!-- <a href="https://licenses.dev/npm/@reliverse/relinka">
+    <img src="https://licenses.dev/b/npm/@reliverse/relinka" alt="licenses" />
+  </a> -->
+  <!---
+   <a href="https://packagephobia.now.sh/result?p=@reliverse/relinka">
+    <img src="https://packagephobia.now.sh/badge?p=@reliverse/relinka" alt="install size" />
+  </a>
+  --->
+</p>
 
 @reliverse/relinka is a powerful library that enables seamless, type-safe, and resilient prompts for command-line applications. Crafted with simplicity and elegance, it provides developers with an intuitive and robust way to build interactive CLIs.
 
@@ -75,7 +93,7 @@ Run `bun dev` to launch the [examples/run-example.ts](./examples/run-example.ts)
 - 🔵: Partially supported
 - 🔴: Not supported
 
-| **Feature**                                   | **@reliverse/relinka**                             | **@inquirer/prompts**  | **@clack/prompts**  | **@terkelg/prompts**         | **@cronvel/terminal-kit**   | **@unjs/consola** |
+| **Feature**                                   | **@reliverse/relinka**                             | **@inquirer/prompts**  | **@clack/prompts**  | **@reliverse/relinka**         | **@cronvel/terminal-kit**   | **@unjs/consola** |
 |-----------------------------------------------|----------------------------------------------------|------------------------|---------------------|------------------------------|-----------------------------|-------------------|
 | **Full Node.js Modules Support**              | 🟢 ESM-only                                        | 🟡                    | 🟡                  | 🔴 CJS-only                 | 🔴 CJS-only                 | 🟡               |
 | **Both terminal and browser support**         | 🟢                                                 | 🟡                    | 🟡                  | 🟡                          | 🟡                          | 🟢               |
@@ -106,12 +124,6 @@ Run `bun dev` to launch the [examples/run-example.ts](./examples/run-example.ts)
 
 **Related Links**: [ESM/CJS](https://dev.to/iggredible/what-the-heck-are-cjs-amd-umd-and-esm-ikm), ["Pure ESM package"](https://gist.github.com/sindresorhus/a39789f98801d908bbc7ff3ecc99d99c), [Clean code](https://github.com/ryanmcdermott/clean-code-javascript#readme), ["UX patterns for CLI tools"](https://lucasfcosta.com/2022/06/01/ux-patterns-cli-tools.html), [DX (Developer Experience)](https://github.blog/enterprise-software/collaboration/developer-experience-what-is-it-and-why-should-you-care), [TypeBox](https://github.com/sinclairzx81/typebox#readme), ["ANSI Escape Sequences"](https://gist.github.com/ConnerWill/d4b6c776b509add763e17f9f113fd25b)
 
-## Special Thanks
-
-This project wouldn’t exist without the amazing work of the following projects:
-
-[@inquirer/prompts](https://github.com/SBoudrias/Inquirer.js#readme) | [terkelg/prompts](https://github.com/lu-jiejie/prompts-plus#readme) | [@clack/prompts](https://github.com/bombshell-dev/clack#readme) | [create-t3-app](https://github.com/t3-oss/create-t3-app#readme) | [create-astro](https://github.com/withastro/astro/tree/main/packages/create-astro#readme) | [cronvel/terminal-kit](https://github.com/cronvel/terminal-kit#readme) | [unjs/consola](https://github.com/unjs/consola#readme)
-
 ## Wrap-Up
 
 @reliverse/relinka is a versatile library designed to accelerate CLI development by providing customizable prompt components. Integrated into the [Reliverse CLI](https://github.com/blefnk/reliverse#readme), @reliverse/relinka enables you to create a unique design aligned with your CLI app’s aesthetics, similar to how @shadcn/ui supports customizable web UI components. Quickly get started by copying configurations from the [Reliverse Docs](https://docs.reliverse.org/relinka) and using components that fit your project, making it faster to bring your CLI app to life. You’re free to customize each component as desired, with default designs provided to ensure an attractive interface from the start.
@@ -139,3 +151,20 @@ const username = await textPrompt({
   ...extendedConfig,
 });
 ```
+
+[![Separator](./public/split.png)](https://docs.reliverse.org/relinka)
+
+## Learn More
+
+- [Temporary Relinka Docs](.github/DOCS.md)
+- [Reliverse Docs](https://docs.reliverse.org)
+
+## Special Thanks
+
+This project wouldn’t exist without the amazing work of the huge number of contributors to the list of projects below. Many of the @reliverse/relinka prompts are based on the incredible work of:
+
+[@inquirer/prompts](https://github.com/SBoudrias/Inquirer.js#readme) | [reliverse/relinka](https://github.com/lu-jiejie/prompts-plus#readme) | [@clack/prompts](https://github.com/bombshell-dev/clack#readme) | [create-t3-app](https://github.com/t3-oss/create-t3-app#readme) | [create-astro](https://github.com/withastro/astro/tree/main/packages/create-astro#readme) | [cronvel/terminal-kit](https://github.com/cronvel/terminal-kit#readme) | [unjs/consola](https://github.com/unjs/consola#readme) | [nodejs/string_decoder](https://github.com/nodejs/string_decoder) | [TooTallNate/keypress](https://github.com/TooTallNate/keypress) | [derhuerst](https://github.com/derhuerst)
+
+## License
+
+[MIT](./LICENSE.md) © [Nazarii Korniienko](https://github.com/blefnk)

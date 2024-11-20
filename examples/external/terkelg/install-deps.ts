@@ -1,8 +1,8 @@
-import prompts from "./src/main";
+import prompts from "./index.js";
 
 import type { Kleur } from "kleur";
 
-import type { PromptObject, Answers } from "./src/types";
+import type { PromptObject, Answers } from "./index.d.ts";
 
 let interval: NodeJS.Timeout | undefined;
 

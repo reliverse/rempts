@@ -14,8 +14,11 @@
     "attw": "attw --pack",
     "tsc": "tshy",
     "knip": "knip",
+    "start": "node output/main.js",
     "dev": "bun examples/run-example.ts",
-    "dev:x": "tsx examples/run-example.ts"
+    "dev:x": "tsx examples/run-example.ts",
+    "test:tape": "tape test/*.js | tap-spec",
+    "release": "bumpp & bun pub"
   },
   "type": "module",
   "publishConfig": {
@@ -43,9 +46,11 @@
   "dependencies": {
     "@figliolia/chalk-animation": "^1.0.4",
     "@sinclair/typebox": "^0.33.17",
+    "ansi-diff-stream": "^1.2.1",
     "ansi-escapes": "^7.0.0",
     "chalk": "^5.3.0",
     "cli-spinners": "^3.2.0",
+    "cli-styles": "^1.0.0",
     "cli-width": "^4.1.0",
     "defu": "^6.1.4",
     "detect-package-manager": "^3.0.2",
@@ -53,6 +58,7 @@
     "fs-extra": "^11.2.0",
     "get-pixels": "^3.3.3",
     "gradient-string": "^3.0.0",
+    "kleur": "^4.1.5",
     "log-update": "^6.1.0",
     "mute-stream": "^2.0.0",
     "node-emoji": "^2.1.3",
@@ -60,7 +66,10 @@
     "ora": "^8.1.1",
     "pathe": "^1.1.2",
     "picocolors": "^1.1.1",
+    "precision": "^1.0.1",
     "sisteransi": "^1.0.5",
+    "string-width": "^7.2.0",
+    "window-size": "^1.1.1",
     "wrap-ansi": "^9.0.0"
   },
   "devDependencies": {
@@ -68,6 +77,7 @@
     "@biomejs/biome": "1.9.4",
     "@cspell/dict-npm": "^5.1.12",
     "@eslint/js": "^9.14.0",
+    "@types/ansi-diff-stream": "^1.2.3",
     "@types/bun": "^1.1.13",
     "@types/chalk-animation": "^1.6.3",
     "@types/eslint__js": "^8.42.3",
@@ -77,6 +87,8 @@
     "@types/node": "^22.9.0",
     "@types/sentencer": "^0.2.3",
     "@types/tape": "^5.6.4",
+    "@types/window-size": "^1.1.4",
+    "bumpp": "^9.8.1",
     "eslint": "^9.14.0",
     "eslint-plugin-perfectionist": "^3.9.1",
     "knip": "^5.36.2",
@@ -85,6 +97,7 @@
     "putout": "^36.11.0",
     "redrun": "^11.0.5",
     "sentencer": "^0.2.1",
+    "tap-spec": "^5.0.0",
     "tape": "^5.9.0",
     "tshy": "^3.0.2",
     "tsx": "^4.19.2",

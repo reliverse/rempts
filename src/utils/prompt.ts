@@ -3,6 +3,7 @@ import { cursor, erase } from "sisteransi";
 
 import type { State } from "~/types/prod";
 
+import { block } from "~/components/block";
 import ConfirmPrompt from "~/components/confirm";
 import GroupMultiSelectPrompt from "~/components/group-multiselect";
 import MultiSelectPrompt from "~/components/multi-select";
@@ -11,7 +12,6 @@ import { isCancel } from "~/components/prompt";
 import SelectPrompt from "~/components/select";
 import SelectKeyPrompt from "~/components/select-key";
 import TextPrompt from "~/components/text";
-import { block } from "~/utils/block";
 
 import { colors as color } from "./color";
 

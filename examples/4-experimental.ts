@@ -1,12 +1,30 @@
 import type { TreeItem } from "~/utils/tree";
 
-import { relinka, createRelinka } from "~/index";
+import { rangePrompt } from "~/components/range";
+import { relinka, createRelinka } from "~/create";
 import { errorHandler } from "~/utils/errors";
 import { formatTree } from "~/utils/tree";
 
 import { reporterDemo } from "./reliverse/experiments/utils";
 
 async function detailedExample() {
+  // box
+  relinka.box("=== box ===");
+
+  relinka.box(
+    `Welcome to @reliverse/relinka! You're going to test an 'experimental' example.`,
+  );
+
+  relinka.box({
+    title: "Box with options",
+    message: `You'll see an example of errors, but it's not a real error 😉`,
+    style: {
+      padding: 1,
+      borderColor: "magenta",
+      borderStyle: "double-single-rounded",
+    },
+  });
+
   // reporter
   relinka.box("=== reporter ===");
 
@@ -30,23 +48,6 @@ async function detailedExample() {
     });
   }
 
-  // box
-  relinka.box("=== box ===");
-
-  relinka.box(
-    `Welcome to @reliverse/relinka! You're going to test an 'experimental' example.`,
-  );
-
-  relinka.box({
-    title: "Box with options",
-    message: `You'll see an example of errors, but it's not a real error 😉`,
-    style: {
-      padding: 1,
-      borderColor: "magenta",
-      borderStyle: "double-single-rounded",
-    },
-  });
-
   relinka.box({
     title: "By the way",
     // message: `\`v1.0.2\` → \`v2.0.0\`\n\nRun \`npm install -g relinka\` to update`,
@@ -57,6 +58,23 @@ async function detailedExample() {
       borderStyle: "rounded",
     },
   });
+
+  // range
+  relinka.box("=== range ===");
+
+  try {
+    const value = await rangePrompt("How much ice cream would you like?", {
+      min: 0,
+      max: 10,
+      value: 2,
+      step: 0.1,
+      unit: "kg",
+    });
+
+    console.log(`You chose: ${value} kg`);
+  } catch (error) {
+    console.log("You aborted, having chosen:", (error as Error).message);
+  }
 
   // prompt
   relinka.box("=== prompt ===");

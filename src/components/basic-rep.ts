@@ -23,8 +23,6 @@ export class BasicReporter implements RelinkaReporter {
       return arg;
     });
 
-    // Only supported with Node >= 10
-    // https://nodejs.org/api/util.html#util_util_inspect_object_options
     return formatWithOptions(opts, ..._args);
   }
 

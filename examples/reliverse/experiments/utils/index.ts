@@ -1,6 +1,6 @@
 import type { RelinkaOptions } from "~/types/prod";
 
-import { createRelinka } from "~/index";
+import { createRelinka } from "~/create";
 
 import { randomSentence } from "./sentence";
 
