@@ -1,6 +1,8 @@
+// @ts-nocheck
+
 import tree from "tree-kit";
-import xterm256 from "./xterm-256color.js";
-import gnome from "./gnome.js";
+import xterm256 from "./xterm-256color";
+import gnome from "./gnome";
 
 // @ts-nocheck
 // Remove colors
@@ -23,22 +25,22 @@ const esc = tree.extend({ own: true }, Object.create(xterm256.esc), gnome.esc, {
 // So far, we derivate from xterm-256color and then just add specific things (owned properties)
 // of gnome, thus we achieve a clean inheritance model without duplicated code.
 export default {
-      esc: esc,
-      keymap: tree.extend(
-        { own: true },
-        Object.create(xterm256.keymap),
-        gnome.keymap,
-      ),
-      handler: tree.extend(
-        { own: true },
-        Object.create(xterm256.handler),
-        gnome.handler,
-      ),
-      support: {
-        deltaEscapeSequence: true,
-        "256colors": true,
-        "24bitsColors": true, // DEPRECATED
-        trueColor: true,
-      },
-      colorRegister: gnome.colorRegister,
-    };
+  esc: esc,
+  keymap: tree.extend(
+    { own: true },
+    Object.create(xterm256.keymap),
+    gnome.keymap,
+  ),
+  handler: tree.extend(
+    { own: true },
+    Object.create(xterm256.handler),
+    gnome.handler,
+  ),
+  support: {
+    deltaEscapeSequence: true,
+    "256colors": true,
+    "24bitsColors": true, // DEPRECATED
+    trueColor: true,
+  },
+  colorRegister: gnome.colorRegister,
+};

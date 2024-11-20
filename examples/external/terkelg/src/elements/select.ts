@@ -1,14 +1,8 @@
 // @ts-nocheck
 
 import color from "kleur";
-import Prompt from "./prompt.js";
-import {
-  style,
-  clear,
-  figures,
-  wrap,
-  entriesToDisplay,
-} from "../util/index.js";
+import Prompt from "./prompt";
+import { style, clear, figures, wrap, entriesToDisplay } from "../util/index";
 import { cursor } from "sisteransi";
 
 /**

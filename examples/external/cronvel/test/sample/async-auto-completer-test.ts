@@ -1,5 +1,7 @@
+// @ts-nocheck
+
 import fs from "fs";
-import termkit from "../../src/termkit.js";
+import termkit from "../../src/termkit";
 
 // @ts-nocheck
 

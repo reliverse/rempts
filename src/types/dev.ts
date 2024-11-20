@@ -1,6 +1,6 @@
 import type { TSchema } from "@sinclair/typebox";
 
-import type { OptionalPromptOptions, PromptType } from "~/types/prod.js";
+import type { OptionalPromptOptions, PromptType } from "~/types/prod";
 
 export type StateDeprecated =
   | "initial"

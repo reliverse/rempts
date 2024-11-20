@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import string from "string-kit";
 import termkit from "..";
 import Promise from "seventh";

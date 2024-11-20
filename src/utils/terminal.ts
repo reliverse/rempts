@@ -2,7 +2,7 @@ import ansiEscapes from "ansi-escapes";
 import { cursor } from "sisteransi";
 import wrapAnsi from "wrap-ansi";
 
-import { msg } from "./messages.js";
+import { msg } from "./messages";
 
 export function removeCursor() {
   process.stdout.write(cursor.hide);

@@ -4,7 +4,7 @@ import ora from "ora";
 import color from "picocolors";
 import { cursor, erase } from "sisteransi";
 
-import { msg } from "~/utils/messages.js";
+import { msg } from "~/utils/messages";
 
 type SimpleSpinnerType = "default" | "dottedCircle" | "boxSpinner";
 type OraAllowedSpinners = "dots" | "bouncingBar" | "arc";

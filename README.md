@@ -93,7 +93,7 @@ Run `bun dev` to launch the [examples/run-example.ts](./examples/run-example.ts)
 - 🔵: Partially supported
 - 🔴: Not supported
 
-| **Feature**                                   | **@reliverse/relinka**                             | **@inquirer/prompts**  | **@clack/prompts**  | **@reliverse/relinka**         | **@cronvel/terminal-kit**   | **@unjs/consola** |
+| **Feature**                                   | **@reliverse/relinka**                             | **@inquirer/prompts**  | **@clack/prompts**  | **@terkelg/prompts**         | **@cronvel/terminal-kit**   | **@unjs/consola** |
 |-----------------------------------------------|----------------------------------------------------|------------------------|---------------------|------------------------------|-----------------------------|-------------------|
 | **Full Node.js Modules Support**              | 🟢 ESM-only                                        | 🟡                    | 🟡                  | 🔴 CJS-only                 | 🔴 CJS-only                 | 🟡               |
 | **Both terminal and browser support**         | 🟢                                                 | 🟡                    | 🟡                  | 🟡                          | 🟡                          | 🟢               |
@@ -163,7 +163,7 @@ const username = await textPrompt({
 
 This project wouldn’t exist without the amazing work of the huge number of contributors to the list of projects below. Many of the @reliverse/relinka prompts are based on the incredible work of:
 
-[@inquirer/prompts](https://github.com/SBoudrias/Inquirer.js#readme) | [reliverse/relinka](https://github.com/lu-jiejie/prompts-plus#readme) | [@clack/prompts](https://github.com/bombshell-dev/clack#readme) | [create-t3-app](https://github.com/t3-oss/create-t3-app#readme) | [create-astro](https://github.com/withastro/astro/tree/main/packages/create-astro#readme) | [cronvel/terminal-kit](https://github.com/cronvel/terminal-kit#readme) | [unjs/consola](https://github.com/unjs/consola#readme) | [nodejs/string_decoder](https://github.com/nodejs/string_decoder) | [TooTallNate/keypress](https://github.com/TooTallNate/keypress) | [derhuerst](https://github.com/derhuerst)
+[@inquirer/prompts](https://github.com/SBoudrias/Inquirer.js#readme) | [terkelg/prompts](https://github.com/terkelg/prompts#readme) | [@clack/prompts](https://github.com/bombshell-dev/clack#readme) | [create-t3-app](https://github.com/t3-oss/create-t3-app#readme) | [create-astro](https://github.com/withastro/astro/tree/main/packages/create-astro#readme) | [cronvel/terminal-kit](https://github.com/cronvel/terminal-kit#readme) | [unjs/consola](https://github.com/unjs/consola#readme) | [nodejs/string_decoder](https://github.com/nodejs/string_decoder) | [TooTallNate/keypress](https://github.com/TooTallNate/keypress) | [derhuerst](https://github.com/derhuerst)
 
 ## License
 

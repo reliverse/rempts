@@ -1,4 +1,6 @@
-import termkit from "./termkit.js";
+// @ts-nocheck
+
+import termkit from "./termkit";
 
 // @ts-nocheck
 /*

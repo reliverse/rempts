@@ -1,7 +1,7 @@
 // @ts-nocheck
 
 import test from "tape";
-import TextPrompt from "../src/elements/text.js";
+import TextPrompt from "../src/elements/text";
 
 test("move", (t) => {
   t.plan(6);

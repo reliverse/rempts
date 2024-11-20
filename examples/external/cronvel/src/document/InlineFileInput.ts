@@ -1,6 +1,8 @@
-import Element from "./Element.js";
-import InlineInput from "./InlineInput.js";
-import fileHelpers from "../fileHelpers.js";
+// @ts-nocheck
+
+import Element from "./Element";
+import InlineInput from "./InlineInput";
+import fileHelpers from "../fileHelpers";
 import fs from "fs";
 import path from "path";
 

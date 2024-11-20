@@ -6,7 +6,7 @@ import type {
   PromptType,
   TypographyName,
   Variant,
-} from "~/types/prod.js";
+} from "~/types/prod";
 
 export type StateDeprecated =
   | "initial"

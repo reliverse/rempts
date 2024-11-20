@@ -1,10 +1,10 @@
 // 2-mono-example.ts: A fun example of a quiz game. Inspired by CLI-game created by Fireship. The example demonstrates how to use a mono prompt() component.
 
-import { createAsciiArt } from "~/components/ascii-art.js";
-import { prompt } from "~/components/mono.js";
-import { spinnerPrompts } from "~/components/spinner.js";
-import { colorize } from "~/utils/colorize.js";
-import { errorHandler } from "~/utils/errors.js";
+import { createAsciiArt } from "~/components/ascii-art";
+import { prompt } from "~/components/mono";
+import { spinnerPrompts } from "~/components/spinner";
+import { colorize } from "~/utils/colorize";
+import { errorHandler } from "~/utils/errors";
 
 async function main() {
   await prompt({

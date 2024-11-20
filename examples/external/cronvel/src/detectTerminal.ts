@@ -1,7 +1,9 @@
+// @ts-nocheck
+
 import Promise from "seventh";
 import path from "path";
 import os from "os";
-import termkit from "./termkit.js";
+import termkit from "./termkit";
 
 // @ts-nocheck
 const exec = require("child_process").exec;

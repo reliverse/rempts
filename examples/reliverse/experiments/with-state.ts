@@ -1,13 +1,13 @@
-import { symbol } from "@/reliverse/experiments/utils/symbols.js";
-import { errorHandler } from "~/utils/errors.js";
+import { symbol } from "@/reliverse/experiments/utils/symbols";
 
 import type {
   PromptStateDeprecated,
   SymbolCharacterDeprecated,
-} from "~/types/dev.js";
+} from "~/types/dev";
 
-import { prompt } from "~/components/mono.js";
-import { colorize } from "~/utils/colorize.js";
+import { prompt } from "~/components/mono";
+import { colorize } from "~/utils/colorize";
+import { errorHandler } from "~/utils/errors";
 
 async function main() {
   console.log();

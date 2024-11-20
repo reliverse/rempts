@@ -1,21 +1,21 @@
 import isUnicodeSupported from "is-unicode-supported";
 import { cursor, erase } from "sisteransi";
 
-import type { State } from "~/types/prod.js";
+import type { State } from "~/types/prod";
 
-import { block } from "~/components/block.js";
-import ConfirmPrompt from "~/components/confirm.js";
-import GroupMultiSelectPrompt from "~/components/group-multiselect.js";
-import MultiSelectPrompt from "~/components/multi-select.js";
-import PasswordPrompt from "~/components/password.js";
-import { isCancel } from "~/components/prompt.js";
-import SelectPrompt from "~/components/select.js";
-import SelectKeyPrompt from "~/components/select-key.js";
-import TextPrompt from "~/components/text.js";
+import { block } from "~/components/block";
+import ConfirmPrompt from "~/components/confirm";
+import GroupMultiSelectPrompt from "~/components/group-multiselect";
+import MultiSelectPrompt from "~/components/multi-select";
+import PasswordPrompt from "~/components/password";
+import { isCancel } from "~/components/prompt";
+import SelectPrompt from "~/components/select";
+import SelectKeyPrompt from "~/components/select-key";
+import TextPrompt from "~/components/text";
 
-import { colors as color } from "./color.js";
+import { colors as color } from "./color";
 
-export { isCancel } from "~/components/prompt.js";
+export { isCancel } from "~/components/prompt";
 
 const unicode = isUnicodeSupported();
 /**

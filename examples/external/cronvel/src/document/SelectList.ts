@@ -1,7 +1,9 @@
-import Element from "./Element.js";
-import BaseMenu from "./BaseMenu.js";
-import ColumnMenu from "./ColumnMenu.js";
-import Button from "./Button.js";
+// @ts-nocheck
+
+import Element from "./Element";
+import BaseMenu from "./BaseMenu";
+import ColumnMenu from "./ColumnMenu";
+import Button from "./Button";
 
 // @ts-nocheck
 // Inherit from ColumnMenu for common methods

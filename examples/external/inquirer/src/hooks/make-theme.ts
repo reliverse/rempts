@@ -1,6 +1,6 @@
-import type { Prettify, PartialDeep } from "../type/utils.js";
+import type { Prettify, PartialDeep } from "../type/utils";
 
-import { defaultTheme, type Theme } from "./theme.js";
+import { defaultTheme, type Theme } from "./theme";
 
 function isPlainObject(value: unknown): value is object {
   if (typeof value !== "object" || value === null) {

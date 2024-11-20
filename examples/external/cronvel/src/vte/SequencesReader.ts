@@ -1,4 +1,6 @@
-import fromOutputSequence from "./fromOutputSequence.js";
+// @ts-nocheck
+
+import fromOutputSequence from "./fromOutputSequence";
 import string from "string-kit";
 import NextGenEvents from "nextgen-events";
 import Promise from "seventh";

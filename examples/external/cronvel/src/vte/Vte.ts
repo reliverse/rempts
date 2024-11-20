@@ -1,8 +1,10 @@
-import ScreenBuffer from "../ScreenBuffer.js";
-import Rect from "../Rect.js";
+// @ts-nocheck
+
+import ScreenBuffer from "../ScreenBuffer";
+import Rect from "../Rect";
 import string from "string-kit";
-import toInputSequence from "./toInputSequence.js";
-import SequencesReader from "./SequencesReader.js";
+import toInputSequence from "./toInputSequence";
+import SequencesReader from "./SequencesReader";
 import NextGenEvents from "nextgen-events";
 import Promise from "seventh";
 

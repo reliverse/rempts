@@ -1,5 +1,7 @@
-import Element from "./Element.js";
-import Text from "./Text.js";
+// @ts-nocheck
+
+import Element from "./Element";
+import Text from "./Text";
 
 // @ts-nocheck
 

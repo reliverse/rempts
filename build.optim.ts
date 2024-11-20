@@ -8,7 +8,7 @@ const outputDir = path.resolve(__dirname, "output");
 
 const filesToDelete = [
   path.join(outputDir, "types/dev.d.ts"),
-  path.join(outputDir, "types/dev.js"),
+  path.join(outputDir, "types/dev"),
 ];
 
 async function deleteFiles(paths: string[]) {
@@ -53,7 +53,7 @@ async function processFiles(dir: string) {
 
     if (stat.isDirectory()) {
       await processFiles(filePath);
-    } else if (filePath.endsWith(".js") || filePath.endsWith(".d.ts")) {
+    } else if (filePath.endsWith("") || filePath.endsWith(".d.ts")) {
       const content = await fs.readFile(filePath, "utf8");
 
       const updatedContent = replaceImportPaths(

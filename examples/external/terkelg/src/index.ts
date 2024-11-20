@@ -1,6 +1,6 @@
 // @ts-nocheck
 
-import * as prompts from "./prompts.js";
+import * as prompts from "./prompts";
 
 const passOn = ["suggest", "format", "onState", "validate", "onRender", "type"];
 const noop = () => {};

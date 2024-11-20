@@ -1,6 +1,8 @@
-import Element from "./Element.js";
-import Text from "./Text.js";
-import Button from "./Button.js";
+// @ts-nocheck
+
+import Element from "./Element";
+import Text from "./Text";
+import Button from "./Button";
 
 // @ts-nocheck
 

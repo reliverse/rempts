@@ -1,8 +1,10 @@
-import Element from "./Element.js";
-import Slider from "./Slider.js";
-import ScreenBuffer from "../ScreenBuffer.js";
-import TextBuffer from "../TextBuffer.js";
-import Rect from "../Rect.js";
+// @ts-nocheck
+
+import Element from "./Element";
+import Slider from "./Slider";
+import ScreenBuffer from "../ScreenBuffer";
+import TextBuffer from "../TextBuffer";
+import Rect from "../Rect";
 import string from "string-kit";
 
 // @ts-nocheck

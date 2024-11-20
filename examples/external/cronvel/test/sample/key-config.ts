@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import terminal from "..";
 
 // @ts-nocheck

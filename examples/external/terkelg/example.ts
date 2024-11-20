@@ -1,5 +1,5 @@
-import prompt from "./index.js";
-import { errorHandler } from "~/utils/errors.js";
+import prompt from "./index";
+import { errorHandler } from "~/utils/errors";
 let interval: number | Timer;
 
 async function main() {

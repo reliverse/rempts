@@ -1,5 +1,7 @@
-import termkit from "../../src/termkit.js";
-import gpm from "../../src/gpm.js";
+// @ts-nocheck
+
+import termkit from "../../src/termkit";
+import gpm from "../../src/gpm";
 
 // @ts-nocheck
 

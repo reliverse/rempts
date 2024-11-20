@@ -1,9 +1,9 @@
-import { symbol } from "@/reliverse/experiments/utils/symbols.js";
+import { symbol } from "@/reliverse/experiments/utils/symbols";
 
-import type { StateDeprecated } from "~/types/dev.js";
+import type { StateDeprecated } from "~/types/dev";
 
-import { useEffect } from "./use-effect.js";
-import { useState } from "./use-state.js";
+import { useEffect } from "./use-effect";
+import { useState } from "./use-state";
 
 export function usePromptState(initialState: StateDeprecated) {
   const [state, setState] = useState<StateDeprecated>(initialState);

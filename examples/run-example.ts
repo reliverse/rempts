@@ -1,5 +1,5 @@
-import { relinka } from "~/create.js";
-import { errorHandler } from "~/utils/errors.js";
+import { relinka } from "~/create";
+import { errorHandler } from "~/utils/errors";
 
 async function examplesRunner() {
   const exampleToRun = await relinka.prompt("Choose an example to run", {

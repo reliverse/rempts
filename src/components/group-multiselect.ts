@@ -1,6 +1,6 @@
-import type { PromptOptions } from "./prompt.js";
+import type { PromptOptions } from "./prompt";
 
-import Prompt from "./prompt.js";
+import Prompt from "./prompt";
 
 type GroupMultiSelectOptions<T extends { value: any }> = {
   options: Record<string, T[]>;

@@ -1,6 +1,6 @@
-import type { InquirerReadline } from "../type/inquirer.js";
+import type { InquirerReadline } from "../type/inquirer";
 
-import { withPointer, effectScheduler } from "./hook-engine.js";
+import { withPointer, effectScheduler } from "./hook-engine";
 
 export function useEffect(
   cb: (rl: InquirerReadline) => void | (() => void),

@@ -1,7 +1,7 @@
 // @ts-nocheck
 
 import test from "tape";
-import * as prompt from "../index.js";
+import * as prompt from "../index";
 
 const { prompts } = prompt;
 test("basics", (t) => {

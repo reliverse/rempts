@@ -1,7 +1,9 @@
-import misc from "../misc.js";
+// @ts-nocheck
+
+import misc from "../misc";
 import string from "string-kit";
 import NextGenEvents from "nextgen-events";
-import termkit from "../termkit.js";
+import termkit from "../termkit";
 
 // @ts-nocheck
 // Avoid requiring Document at top-level, it could cause circular require troubles

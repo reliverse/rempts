@@ -1,15 +1,9 @@
 // @ts-nocheck
 
 import color from "kleur";
-import Prompt from "./prompt.js";
+import Prompt from "./prompt";
 import { erase, cursor } from "sisteransi";
-import {
-  style,
-  clear,
-  figures,
-  wrap,
-  entriesToDisplay,
-} from "../util/index.js";
+import { style, clear, figures, wrap, entriesToDisplay } from "../util/index";
 
 const getVal = (arr, i) => arr[i] && (arr[i].value || arr[i].title || arr[i]);
 const getTitle = (arr, i) => arr[i] && (arr[i].title || arr[i].value || arr[i]);

@@ -3,8 +3,8 @@ import gradient, { cristal, mind, passion, retro, vice } from "gradient-string";
 import { rainbow } from "gradient-string";
 import colors from "picocolors";
 
-import type { TypographyName } from "~/types/prod.js";
-import type { ColorName } from "~/types/prod.js";
+import type { TypographyName } from "~/types/prod";
+import type { ColorName } from "~/types/prod";
 
 export const colorMap: Record<ColorName, (text: string) => string> = {
   none: colors.reset,

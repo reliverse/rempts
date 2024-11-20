@@ -1,9 +1,9 @@
 import ansiEscapes from "ansi-escapes";
 import stripAnsi from "strip-ansi";
 
-import type { InquirerReadline } from "../type/inquirer.js";
+import type { InquirerReadline } from "../type/inquirer";
 
-import { breakLines, readlineWidth } from "./utils.js";
+import { breakLines, readlineWidth } from "./utils";
 
 const height = (content: string): number => content.split("\n").length;
 const lastLine = (content: string): string => content.split("\n").pop() ?? "";

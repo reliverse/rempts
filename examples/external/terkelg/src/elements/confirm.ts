@@ -1,8 +1,8 @@
 // @ts-nocheck
 
 import color from "kleur";
-import Prompt from "./prompt.js";
-import { style, clear } from "../util/index.js";
+import Prompt from "./prompt";
+import { style, clear } from "../util/index";
 import { erase, cursor } from "sisteransi";
 /**
  * ConfirmPrompt Base Element
@@ -17,68 +17,68 @@ import { erase, cursor } from "sisteransi";
  * @param {String} [opts.noOption] The "No" option when choosing between yes/no
  */
 class ConfirmPrompt extends Prompt {
-    constructor(opts = {}) {
-        super(opts);
-        this.msg = opts.message;
-        this.value = opts.initial;
-        this.initialValue = !!opts.initial;
-        this.yesMsg = opts.yes || 'yes';
-        this.yesOption = opts.yesOption || '(Y/n)';
-        this.noMsg = opts.no || 'no';
-        this.noOption = opts.noOption || '(y/N)';
-        this.render();
+  constructor(opts = {}) {
+    super(opts);
+    this.msg = opts.message;
+    this.value = opts.initial;
+    this.initialValue = !!opts.initial;
+    this.yesMsg = opts.yes || "yes";
+    this.yesOption = opts.yesOption || "(Y/n)";
+    this.noMsg = opts.no || "no";
+    this.noOption = opts.noOption || "(y/N)";
+    this.render();
+  }
+  reset() {
+    this.value = this.initialValue;
+    this.fire();
+    this.render();
+  }
+  exit() {
+    this.abort();
+  }
+  abort() {
+    this.done = this.aborted = true;
+    this.fire();
+    this.render();
+    this.out.write("\n");
+    this.close();
+  }
+  submit() {
+    this.value = this.value || false;
+    this.done = true;
+    this.aborted = false;
+    this.fire();
+    this.render();
+    this.out.write("\n");
+    this.close();
+  }
+  _(c, key) {
+    if (c.toLowerCase() === "y") {
+      this.value = true;
+      return this.submit();
     }
-    reset() {
-        this.value = this.initialValue;
-        this.fire();
-        this.render();
+    if (c.toLowerCase() === "n") {
+      this.value = false;
+      return this.submit();
     }
-    exit() {
-        this.abort();
-    }
-    abort() {
-        this.done = this.aborted = true;
-        this.fire();
-        this.render();
-        this.out.write('\n');
-        this.close();
-    }
-    submit() {
-        this.value = this.value || false;
-        this.done = true;
-        this.aborted = false;
-        this.fire();
-        this.render();
-        this.out.write('\n');
-        this.close();
-    }
-    _(c, key) {
-        if (c.toLowerCase() === 'y') {
-            this.value = true;
-            return this.submit();
-        }
-        if (c.toLowerCase() === 'n') {
-            this.value = false;
-            return this.submit();
-        }
-        return this.bell();
-    }
-    render() {
-        if (this.closed)
-            return;
-        if (this.firstRender)
-            this.out.write(cursor.hide);
-        else
-            this.out.write(clear(this.outputText, this.out.columns));
-        super.render();
-        this.outputText = [
-            style.symbol(this.done, this.aborted),
-            color.bold(this.msg),
-            style.delimiter(this.done),
-            this.done ? (this.value ? this.yesMsg : this.noMsg)
-                : color.gray(this.initialValue ? this.yesOption : this.noOption)
-        ].join(' ');
-        this.out.write(erase.line + cursor.to(0) + this.outputText);
-    }
+    return this.bell();
+  }
+  render() {
+    if (this.closed) return;
+    if (this.firstRender) this.out.write(cursor.hide);
+    else this.out.write(clear(this.outputText, this.out.columns));
+    super.render();
+    this.outputText = [
+      style.symbol(this.done, this.aborted),
+      color.bold(this.msg),
+      style.delimiter(this.done),
+      this.done
+        ? this.value
+          ? this.yesMsg
+          : this.noMsg
+        : color.gray(this.initialValue ? this.yesOption : this.noOption),
+    ].join(" ");
+    this.out.write(erase.line + cursor.to(0) + this.outputText);
+  }
 }
 export default ConfirmPrompt;

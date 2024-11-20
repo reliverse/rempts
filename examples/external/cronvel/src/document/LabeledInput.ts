@@ -1,8 +1,10 @@
-import Element from "./Element.js";
-import Text from "./Text.js";
-import EditableTextBox from "./EditableTextBox.js";
-import SelectList from "./SelectList.js";
-import SelectListMulti from "./SelectListMulti.js";
+// @ts-nocheck
+
+import Element from "./Element";
+import Text from "./Text";
+import EditableTextBox from "./EditableTextBox";
+import SelectList from "./SelectList";
+import SelectListMulti from "./SelectListMulti";
 import string from "string-kit";
 
 // @ts-nocheck

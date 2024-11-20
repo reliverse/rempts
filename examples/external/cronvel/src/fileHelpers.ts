@@ -1,4 +1,6 @@
-import autoComplete from "./autoComplete.js";
+// @ts-nocheck
+
+import autoComplete from "./autoComplete";
 import fs from "fs";
 import path from "path";
 import Promise from "seventh";

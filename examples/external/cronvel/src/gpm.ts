@@ -1,6 +1,8 @@
+// @ts-nocheck
+
 import net from "net";
 import NextGenEvents from "nextgen-events";
-import termkit from "./termkit.js";
+import termkit from "./termkit";
 
 // @ts-nocheck
 

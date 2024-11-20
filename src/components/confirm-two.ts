@@ -4,11 +4,11 @@ import { Value } from "@sinclair/typebox/value";
 import { stdin as input, stdout as output } from "node:process";
 import readline from "node:readline/promises";
 
-import type { PromptOptions } from "~/types/prod.js";
+import type { PromptOptions } from "~/types/prod";
 
-import { colorize } from "~/utils/colorize.js";
-import { bar, fmt, msg, symbols } from "~/utils/messages.js";
-import { countLines, deleteLastLines } from "~/utils/terminal.js";
+import { colorize } from "~/utils/colorize";
+import { bar, fmt, msg, symbols } from "~/utils/messages";
+import { countLines, deleteLastLines } from "~/utils/terminal";
 
 export async function confirmPrompt<T extends TSchema>(
   options: PromptOptions<T>,

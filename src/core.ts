@@ -1,2 +1,2 @@
-export { createRelinka } from "./relinka.js";
-export * from "./shared.js";
+export { createRelinka } from "./relinka";
+export * from "./shared";

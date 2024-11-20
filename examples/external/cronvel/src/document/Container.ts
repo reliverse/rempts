@@ -1,6 +1,8 @@
-import Element from "./Element.js";
-import ScreenBuffer from "../ScreenBuffer.js";
-import termkit from "../termkit.js";
+// @ts-nocheck
+
+import Element from "./Element";
+import ScreenBuffer from "../ScreenBuffer";
+import termkit from "../termkit";
 
 // @ts-nocheck
 

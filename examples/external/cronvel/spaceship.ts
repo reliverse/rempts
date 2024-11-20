@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import fs from "fs";
 import termkit from "../lib/termkit";
 

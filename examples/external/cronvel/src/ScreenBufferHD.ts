@@ -1,8 +1,10 @@
-import ScreenBuffer from "./ScreenBuffer.js";
-import misc from "./misc.js";
+// @ts-nocheck
+
+import ScreenBuffer from "./ScreenBuffer";
+import misc from "./misc";
 import fs from "fs";
 import string from "string-kit";
-import termkit from "./termkit.js";
+import termkit from "./termkit";
 
 // @ts-nocheck
 /*

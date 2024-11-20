@@ -2,8 +2,8 @@
 
 import color from "kleur";
 import { cursor } from "sisteransi";
-import MultiselectPrompt from "./multiselect.js";
-import { clear, style, figures } from "../util/index.js";
+import MultiselectPrompt from "./multiselect";
+import { clear, style, figures } from "../util/index";
 
 /**
  * MultiselectPrompt Base Element

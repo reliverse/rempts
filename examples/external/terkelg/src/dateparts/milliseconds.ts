@@ -1,6 +1,6 @@
 // @ts-nocheck
 
-import DatePart from "./datepart.js";
+import DatePart from "./datepart";
 
 class Milliseconds extends DatePart {
   constructor(opts = {}) {

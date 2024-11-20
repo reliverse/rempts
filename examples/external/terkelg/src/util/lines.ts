@@ -1,6 +1,6 @@
 // @ts-nocheck
 
-import strip from "./strip.js";
+import strip from "./strip";
 
 export default (function (msg, perLine) {
   let lines = String(strip(msg) || "").split(/\r?\n/);

@@ -2,16 +2,16 @@ import { setTimeout as sleep } from "node:timers/promises";
 import color from "picocolors";
 
 import {
+  cancel,
   intro,
+  isCancel,
   outro,
-  confirm,
   select,
   spinner,
-  isCancel,
-  cancel,
   text,
-} from "~/components";
-import { errorHandler } from "~/utils/errors.js";
+} from "~/components/component";
+import { confirmPrompt } from "~/main";
+import { errorHandler } from "~/utils/errors";
 
 async function main() {
   console.log();
@@ -27,8 +27,9 @@ async function main() {
     return process.exit(0);
   }
 
-  const shouldContinue = await confirm({
-    message: "Do you want to continue?",
+  const shouldContinue = await confirmPrompt({
+    title: "Do you want to continue?",
+    id: "shouldContinue",
   });
 
   if (isCancel(shouldContinue)) {

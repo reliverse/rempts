@@ -1,5 +1,7 @@
+// @ts-nocheck
+
 import termkit from "..";
-import Palette from "../../src/Palette.js";
+import Palette from "../../src/Palette";
 
 // @ts-nocheck
 

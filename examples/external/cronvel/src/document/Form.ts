@@ -1,6 +1,8 @@
-import Element from "./Element.js";
-import LabeledInput from "./LabeledInput.js";
-import Button from "./Button.js";
+// @ts-nocheck
+
+import Element from "./Element";
+import LabeledInput from "./LabeledInput";
+import Button from "./Button";
 
 // @ts-nocheck
 

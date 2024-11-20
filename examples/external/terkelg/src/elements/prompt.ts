@@ -1,7 +1,7 @@
 // @ts-nocheck
 
 import readline from "readline";
-import { action } from "../util/index.js";
+import { action } from "../util/index";
 import EventEmitter from "events";
 import { beep, cursor } from "sisteransi";
 import color from "kleur";

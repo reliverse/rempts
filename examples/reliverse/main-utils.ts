@@ -1,9 +1,9 @@
-import type { ChoiceOptions, ColorName } from "~/types/prod.js";
+import type { ChoiceOptions, ColorName } from "~/types/prod";
 
-import { colorMap } from "~/utils/mapping.js";
-import { msg } from "~/utils/messages.js";
+import { colorMap } from "~/utils/mapping";
+import { msg } from "~/utils/messages";
 
-import type { UserInput } from "./main-schema.js";
+import type { UserInput } from "./main-schema";
 
 export function createColorChoices(): ChoiceOptions[] {
   return Object.keys(colorMap).map((key) => ({

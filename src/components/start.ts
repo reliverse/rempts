@@ -1,6 +1,6 @@
-import type { PromptOptions } from "~/types/prod.js";
+import type { PromptOptions } from "~/types/prod";
 
-import { msg } from "~/utils/messages.js";
+import { msg } from "~/utils/messages";
 
 export async function startPrompt({
   title,

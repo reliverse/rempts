@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/prefer-reduce-type-parameter */
 import { Type, type Static } from "@sinclair/typebox";
 
-import { colorMap } from "~/utils/mapping.js";
+import { colorMap } from "~/utils/mapping";
 
 // Extract color keys from colorMap to create a ColorEnum type
 const colorKeys = Object.keys(colorMap) as [keyof typeof colorMap];

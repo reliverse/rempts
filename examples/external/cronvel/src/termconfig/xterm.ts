@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import string from "string-kit";
 
 // @ts-nocheck

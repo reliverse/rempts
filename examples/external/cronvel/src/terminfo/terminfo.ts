@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import fs from "fs";
 import tree from "tree-kit";
 import boolOptions from "./boolean-opts.json" with { type: "json" };

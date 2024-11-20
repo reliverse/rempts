@@ -1,5 +1,7 @@
+// @ts-nocheck
+
 import tree from "tree-kit";
-import xterm256 from "./xterm-256color.js";
+import xterm256 from "./xterm-256color";
 
 // @ts-nocheck
 const esc = tree.extend(null, Object.create(xterm256.esc), {
@@ -22,14 +24,14 @@ const keymap = Object.create(xterm256.keymap);
 const handler = Object.create(xterm256.handler);
 
 export default {
-      esc: esc,
-      keymap: keymap,
-      handler: handler,
-      support: {
-        deltaEscapeSequence: true,
-        "256colors": false,
-        "24bitsColors": false, // DEPRECATED
-        trueColor: false,
-      },
-      colorRegister: require("../colorScheme/xfce.json"),
-    };
+  esc: esc,
+  keymap: keymap,
+  handler: handler,
+  support: {
+    deltaEscapeSequence: true,
+    "256colors": false,
+    "24bitsColors": false, // DEPRECATED
+    trueColor: false,
+  },
+  colorRegister: require("../colorScheme/xfce.json"),
+};

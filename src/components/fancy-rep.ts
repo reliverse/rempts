@@ -1,16 +1,16 @@
 import isUnicodeSupported from "is-unicode-supported";
 import _stringWidth from "string-width";
 
-import type { FormatOptions, LogObject } from "~/types/prod.js";
+import type { FormatOptions, LogObject } from "~/types/prod";
 
-import type { LogLevel, LogType } from "../constants.js";
-import type { BoxOpts } from "../utils/box.js";
+import type { LogLevel, LogType } from "../constants";
+import type { BoxOpts } from "../utils/box";
 
-import { stripAnsi } from "../utils.js";
-import { box } from "../utils/box.js";
-import { colors } from "../utils/color.js";
-import { parseStack } from "../utils/error.js";
-import { BasicReporter } from "./basic-rep.js";
+import { stripAnsi } from "../utils";
+import { box } from "../utils/box";
+import { colors } from "../utils/color";
+import { parseStack } from "../utils/error";
+import { BasicReporter } from "./basic-rep";
 
 export const TYPE_COLOR_MAP: Partial<Record<LogType, string>> = {
   info: "cyan",

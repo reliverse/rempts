@@ -3,7 +3,7 @@ import type { Static } from "@sinclair/typebox";
 import { Type } from "@sinclair/typebox";
 import { Value } from "@sinclair/typebox/value";
 
-import { msg } from "~/utils/messages.js";
+import { msg } from "~/utils/messages";
 
 const ResultsSchema = Type.Object({
   username: Type.String(),

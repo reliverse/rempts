@@ -7,7 +7,7 @@ import type { BufferEncoding } from "typescript";
 import { Writable } from "stream";
 import { StringDecoder } from "string_decoder";
 
-import type { Keypress } from "~/types/keypress.js"; // Adjust the import path as necessary
+import type { Keypress } from "~/types/keypress"; // Adjust the import path as necessary
 
 // Regular expressions for parsing ANSI escape codes
 // biome-ignore lint/suspicious/noControlCharactersInRegex: <explanation>

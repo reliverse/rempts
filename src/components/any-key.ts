@@ -1,7 +1,7 @@
 import logUpdate from "log-update";
 
-import { colorize } from "~/utils/colorize.js";
-import { restoreCursor } from "~/utils/terminal.js";
+import { colorize } from "~/utils/colorize";
+import { restoreCursor } from "~/utils/terminal";
 
 const DEFAULT_MESSAGE = "Press any key to continue...";
 

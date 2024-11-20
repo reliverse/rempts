@@ -1,8 +1,8 @@
 // @ts-nocheck
 
 import color from "kleur";
-import Prompt from "./prompt.js";
-import { style, clear, figures } from "../util/index.js";
+import Prompt from "./prompt";
+import { style, clear, figures } from "../util/index";
 import { erase, cursor } from "sisteransi";
 import {
   DatePart,
@@ -14,7 +14,7 @@ import {
   Month,
   Seconds,
   Year,
-} from "../dateparts/index.js";
+} from "../dateparts/index";
 
 const regex =
   /\\(.)|"((?:\\["\\]|[^"])+)"|(D[Do]?|d{3,4}|d)|(M{1,4})|(YY(?:YY)?)|([aA])|([Hh]{1,2})|(m{1,2})|(s{1,2})|(S{1,4})|./g;

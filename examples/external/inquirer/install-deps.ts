@@ -1,11 +1,11 @@
-import type { InquirerReadline } from "@/external/inquirer/src/type/inquirer.js";
+import type { InquirerReadline } from "@/external/inquirer/src/type/inquirer";
 
-import { withHooks } from "@/external/inquirer/src/hooks/hook-engine.js";
-import { errorHandler } from "~/utils/errors.js";
+import { withHooks } from "@/external/inquirer/src/hooks/hook-engine";
 import readline from "node:readline";
 
-import { prompt } from "~/components/mono.js";
-import { colorize } from "~/utils/colorize.js";
+import { prompt } from "~/components/mono";
+import { colorize } from "~/utils/colorize";
+import { errorHandler } from "~/utils/errors";
 
 async function main() {
   const rl = readline.createInterface(

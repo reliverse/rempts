@@ -1,20 +1,20 @@
 import type { TSchema, Static } from "@sinclair/typebox";
 
-import type { PromptOptions, PromptType } from "~/types/prod.js";
+import type { PromptOptions, PromptType } from "~/types/prod";
 
-import { confirmPrompt } from "~/components/confirm-two.js";
-import { datePrompt } from "~/components/date.js";
-import { endPrompt } from "~/components/end.js";
-import { multiselectPrompt } from "~/components/multi-select-two.js";
-import { nextStepsPrompt } from "~/components/next-steps.js";
-import { numMultiSelectPrompt } from "~/components/num-multi-select.js";
-import { numberPrompt } from "~/components/number.js";
-import { passwordPrompt } from "~/components/password-two.js";
-import { selectPrompt } from "~/components/select-two.js";
-import { startPrompt } from "~/components/start.js";
-import { textPrompt } from "~/components/text-two.js";
+import { confirmPrompt } from "~/components/confirm-two";
+import { datePrompt } from "~/components/date";
+import { endPrompt } from "~/components/end";
+import { multiselectPrompt } from "~/components/multi-select-two";
+import { nextStepsPrompt } from "~/components/next-steps";
+import { numMultiSelectPrompt } from "~/components/num-multi-select";
+import { numberPrompt } from "~/components/number";
+import { passwordPrompt } from "~/components/password-two";
+import { selectPrompt } from "~/components/select-two";
+import { startPrompt } from "~/components/start";
+import { textPrompt } from "~/components/text-two";
 
-import { numSelectPrompt } from "./num-select.js";
+import { numSelectPrompt } from "./num-select";
 
 export async function prompt<T extends TSchema>(
   options: PromptOptions<T> & {

@@ -1,5 +1,7 @@
+// @ts-nocheck
+
 import termkit from "..";
-import terminfo from "../../src/terminfo/terminfo.js";
+import terminfo from "../../src/terminfo/terminfo";
 
 // @ts-nocheck
 const term = termkit.terminal;

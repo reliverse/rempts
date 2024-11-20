@@ -1,8 +1,10 @@
-import misc from "./misc.js";
+// @ts-nocheck
+
+import misc from "./misc";
 import fs from "fs";
 import string from "string-kit";
 import NextGenEvents from "nextgen-events";
-import termkit from "./termkit.js";
+import termkit from "./termkit";
 
 // @ts-nocheck
 /*

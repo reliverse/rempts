@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import ndarray from "ndarray";
 import Promise from "seventh";
 

@@ -1,12 +1,12 @@
-import { version } from "~/../package.json" with { type: "json" };
 import { detect } from "detect-package-manager";
 import { emojify } from "node-emoji";
 import { bold } from "picocolors";
 
-import { pressAnyKeyPrompt } from "~/components/any-key.js";
-import { numSelectPrompt } from "~/components/num-select.js";
-import { promptsDisplayResults } from "~/components/results.js";
-import { relinka } from "~/create.js";
+import { version } from "~/../package.json";
+import { pressAnyKeyPrompt } from "~/components/any-key";
+import { numSelectPrompt } from "~/components/num-select";
+import { promptsDisplayResults } from "~/components/results";
+import { relinka } from "~/create";
 import {
   animateText,
   confirmPrompt,
@@ -21,17 +21,17 @@ import {
   spinnerPrompts,
   startPrompt,
   textPrompt,
-} from "~/main.js";
+} from "~/main";
 
-import { basicConfig, extendedConfig } from "./main-configs.js";
-import { schema, type UserInput } from "./main-schema.js";
+import { basicConfig, extendedConfig } from "./main-configs";
+import { schema, type UserInput } from "./main-schema";
 import {
   calculateAge,
   createColorChoices,
   displayUserInputs,
   hashPassword,
   validateAge,
-} from "./main-utils.js";
+} from "./main-utils";
 
 const IDs = {
   start: "start",

@@ -1,5 +1,7 @@
-import Element from "./Element.js";
-import TextBox from "./TextBox.js";
+// @ts-nocheck
+
+import Element from "./Element";
+import TextBox from "./TextBox";
 import string from "string-kit";
 import Promise from "seventh";
 

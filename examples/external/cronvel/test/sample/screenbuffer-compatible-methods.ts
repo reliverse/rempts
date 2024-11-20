@@ -1,4 +1,6 @@
-import terminal from "../../src/termkit.js";
+// @ts-nocheck
+
+import terminal from "../../src/termkit";
 
 // @ts-nocheck
 

@@ -1,6 +1,8 @@
+// @ts-nocheck
+
 import tree from "tree-kit";
-import xterm256 from "./xterm-256color.js";
-import konsole from "./konsole.js";
+import xterm256 from "./xterm-256color";
+import konsole from "./konsole";
 
 // @ts-nocheck
 // Remove colors
@@ -28,22 +30,22 @@ const esc = tree.extend(
 // So far, we derivate from xterm-256color and then just add specific things (owned properties)
 // of konsole, thus we achieve a clean inheritance model without duplicated code.
 export default {
-      esc: esc,
-      keymap: tree.extend(
-        { own: true },
-        Object.create(xterm256.keymap),
-        konsole.keymap,
-      ),
-      handler: tree.extend(
-        { own: true },
-        Object.create(xterm256.handler),
-        konsole.handler,
-      ),
-      support: {
-        deltaEscapeSequence: true,
-        "256colors": true,
-        "24bitsColors": true, // DEPRECATED
-        trueColor: true,
-      },
-      colorRegister: konsole.colorRegister,
-    };
+  esc: esc,
+  keymap: tree.extend(
+    { own: true },
+    Object.create(xterm256.keymap),
+    konsole.keymap,
+  ),
+  handler: tree.extend(
+    { own: true },
+    Object.create(xterm256.handler),
+    konsole.handler,
+  ),
+  support: {
+    deltaEscapeSequence: true,
+    "256colors": true,
+    "24bitsColors": true, // DEPRECATED
+    trueColor: true,
+  },
+  colorRegister: konsole.colorRegister,
+};

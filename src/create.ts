@@ -1,16 +1,16 @@
 import { isDebug, isTest, isCI } from "std-env";
 
-import type { RelinkaOptions } from "~/types/prod.js";
+import type { RelinkaOptions } from "~/types/prod";
 
-import type { LogLevel } from "./constants.js";
-import type { RelinkaInstance } from "./relinka.js";
+import type { LogLevel } from "./constants";
+import type { RelinkaInstance } from "./relinka";
 
-import { BasicReporter } from "./components/basic-rep.js";
-import { FancyReporter } from "./components/fancy-rep.js";
-import { LogLevels } from "./constants.js";
-import { createRelinka as _createRelinka } from "./relinka.js";
+import { BasicReporter } from "./components/basic-rep";
+import { FancyReporter } from "./components/fancy-rep";
+import { LogLevels } from "./constants";
+import { createRelinka as _createRelinka } from "./relinka";
 
-export * from "./shared.js";
+export * from "./shared";
 
 /**
  * Factory function to create a new Relinka instance tailored for use in different environments.

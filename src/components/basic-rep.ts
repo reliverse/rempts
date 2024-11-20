@@ -1,12 +1,14 @@
 import { formatWithOptions } from "node:util";
+
 import type {
   LogObject,
   RelinkaReporter,
   FormatOptions,
   RelinkaOptions,
-} from "~/types/prod.js";
-import { parseStack } from "../utils/error.js";
-import { writeStream } from "../utils/stream.js";
+} from "~/types/prod";
+
+import { parseStack } from "../utils/error";
+import { writeStream } from "../utils/stream";
 
 const bracket = (x: string) => (x ? `[${x}]` : "");
 

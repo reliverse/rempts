@@ -1,6 +1,6 @@
 // @ts-nocheck
 
-import strip from "./strip.js";
+import strip from "./strip";
 import { erase, cursor } from "sisteransi";
 
 const width = (str) => [...strip(str)].length;

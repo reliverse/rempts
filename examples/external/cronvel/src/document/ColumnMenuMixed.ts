@@ -1,7 +1,9 @@
-import Element from "./Element.js";
-import ColumnMenu from "./ColumnMenu.js";
-import Button from "./Button.js";
-import ToggleButton from "./ToggleButton.js";
+// @ts-nocheck
+
+import Element from "./Element";
+import ColumnMenu from "./ColumnMenu";
+import Button from "./Button";
+import ToggleButton from "./ToggleButton";
 
 // @ts-nocheck
 

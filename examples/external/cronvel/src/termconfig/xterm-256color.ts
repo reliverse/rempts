@@ -1,5 +1,7 @@
+// @ts-nocheck
+
 import tree from "tree-kit";
-import xterm from "./xterm.js";
+import xterm from "./xterm";
 import string from "string-kit";
 
 // @ts-nocheck
@@ -48,14 +50,14 @@ const keymap = Object.create(xterm.keymap);
 const handler = Object.create(xterm.handler);
 
 export default {
-      esc: esc,
-      keymap: keymap,
-      handler: handler,
-      support: {
-        deltaEscapeSequence: true,
-        "256colors": true,
-        "24bitsColors": false, // DEPRECATED
-        trueColor: false,
-      },
-      colorRegister: xterm.colorRegister,
-    };
+  esc: esc,
+  keymap: keymap,
+  handler: handler,
+  support: {
+    deltaEscapeSequence: true,
+    "256colors": true,
+    "24bitsColors": false, // DEPRECATED
+    trueColor: false,
+  },
+  colorRegister: xterm.colorRegister,
+};

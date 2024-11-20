@@ -1,7 +1,9 @@
+// @ts-nocheck
+
 import NextGenEvents from "nextgen-events";
 import Promise from "seventh";
 import string from "string-kit";
-import autoComplete from "./autoComplete.js";
+import autoComplete from "./autoComplete";
 
 // @ts-nocheck
 const defaultKeyBindings = {
@@ -91,1147 +93,1147 @@ const defaultTokenRegExp = /\S+/g;
 			* input `string` the user input
 */
 export default function inputField(options, callback) {
-      if (typeof options === "function") {
-        callback = options;
-        options = {};
-      } else if (!options || typeof options !== "object") {
-        options = {};
-      }
+  if (typeof options === "function") {
+    callback = options;
+    options = {};
+  } else if (!options || typeof options !== "object") {
+    options = {};
+  }
 
-      if (options.echo === undefined) {
-        options.echo = true;
-      }
+  if (options.echo === undefined) {
+    options.echo = true;
+  }
 
-      if (typeof options.maxLength !== "number") {
-        options.maxLength = Infinity;
-      }
-      if (typeof options.minLength !== "number") {
-        options.minLength = 0;
-      }
+  if (typeof options.maxLength !== "number") {
+    options.maxLength = Infinity;
+  }
+  if (typeof options.minLength !== "number") {
+    options.minLength = 0;
+  }
 
-      if (options.echoChar && typeof options.echoChar !== "string") {
-        options.echoChar = "•";
-      }
+  if (options.echoChar && typeof options.echoChar !== "string") {
+    options.echoChar = "•";
+  }
 
-      if (options.autoCompleteMenu) {
-        if (typeof options.autoCompleteMenu !== "object") {
-          options.autoCompleteMenu = {};
-        }
-        options.autoCompleteMenu.exitOnUnexpectedKey = true;
-        delete options.autoCompleteMenu.y;
-      }
+  if (options.autoCompleteMenu) {
+    if (typeof options.autoCompleteMenu !== "object") {
+      options.autoCompleteMenu = {};
+    }
+    options.autoCompleteMenu.exitOnUnexpectedKey = true;
+    delete options.autoCompleteMenu.y;
+  }
 
-      var keyBindings = options.keyBindings || defaultKeyBindings;
+  var keyBindings = options.keyBindings || defaultKeyBindings;
 
-      if (
-        options.tokenRegExp &&
-        (!(options.tokenRegExp instanceof RegExp) ||
-          !options.tokenRegExp.flags.includes("g"))
-      ) {
-        throw new Error(
-          ".inputField(): if set, the 'tokenRegExp' option should be a RegExp with the 'g' flag",
-        );
-      }
+  if (
+    options.tokenRegExp &&
+    (!(options.tokenRegExp instanceof RegExp) ||
+      !options.tokenRegExp.flags.includes("g"))
+  ) {
+    throw new Error(
+      ".inputField(): if set, the 'tokenRegExp' option should be a RegExp with the 'g' flag",
+    );
+  }
 
-      if (!this.grabbing) {
-        this.grabInput();
-      }
+  if (!this.grabbing) {
+    this.grabInput();
+  }
 
-      var controller,
-        finished = false,
-        paused = false,
-        alreadyCleanedUp = false,
-        offset = options.cursorPosition !== undefined ? options.cursorPosition : -1,
-        echo = !!options.echo,
-        start = {},
-        end = {},
-        cursor = {},
-        endHint = {},
-        inputs = [],
-        inputIndex,
-        alwaysRedraw = options.tokenHook || options.autoCompleteHint,
-        hint = [],
-        meta = false;
+  var controller,
+    finished = false,
+    paused = false,
+    alreadyCleanedUp = false,
+    offset = options.cursorPosition !== undefined ? options.cursorPosition : -1,
+    echo = !!options.echo,
+    start = {},
+    end = {},
+    cursor = {},
+    endHint = {},
+    inputs = [],
+    inputIndex,
+    alwaysRedraw = options.tokenHook || options.autoCompleteHint,
+    hint = [],
+    meta = false;
 
-      var dynamic = {
-        style: options.style || this,
-        hintStyle: options.hintStyle || this.brightBlack,
-        tokenRegExp: options.tokenRegExp || defaultTokenRegExp,
-        autoComplete: options.autoComplete,
-        autoCompleteMenu: options.autoCompleteMenu,
-        autoCompleteHint: !!options.autoCompleteHint,
-      };
+  var dynamic = {
+    style: options.style || this,
+    hintStyle: options.hintStyle || this.brightBlack,
+    tokenRegExp: options.tokenRegExp || defaultTokenRegExp,
+    autoComplete: options.autoComplete,
+    autoCompleteMenu: options.autoCompleteMenu,
+    autoCompleteHint: !!options.autoCompleteHint,
+  };
 
-      // Now inputs is an array of input, input being an array of char (thanks to JS using UCS-2 instead of UTF-8)
+  // Now inputs is an array of input, input being an array of char (thanks to JS using UCS-2 instead of UTF-8)
 
-      if (Array.isArray(options.history)) {
-        inputs = options.history.map((str) =>
-          string.unicode.toArray(str).slice(0, options.maxLength),
-        );
-      }
+  if (Array.isArray(options.history)) {
+    inputs = options.history.map((str) =>
+      string.unicode.toArray(str).slice(0, options.maxLength),
+    );
+  }
 
-      if (options.default && typeof options.default === "string") {
-        inputs.push(
-          string.unicode.toArray(options.default).slice(0, options.maxLength),
-        );
-      } else {
-        inputs.push([]);
-      }
+  if (options.default && typeof options.default === "string") {
+    inputs.push(
+      string.unicode.toArray(options.default).slice(0, options.maxLength),
+    );
+  } else {
+    inputs.push([]);
+  }
 
-      var init = () => {
-        inputIndex = inputs.length - 1;
-        offset = boundOffset(offset);
+  var init = () => {
+    inputIndex = inputs.length - 1;
+    offset = boundOffset(offset);
 
-        if (options.y !== undefined) {
-          options.x = options.x || 1;
-          this.moveTo.eraseLineAfter(options.x, options.y);
-          finishInit(options.x, options.y);
-        } else {
-          // Get the cursor location before getting started
-          this.getCursorLocation((error, x, y) => {
-            if (error) {
-              // Some bad terminals (windows...) doesn't support cursor location request, we should fallback to a decent behavior.
-              // So we just move to the last line, create a new line, and add a little prompt (it would be misleading otherwise).
-              //cleanup( error ) ; return ;
-              this.row.eraseLineAfter(this.height)("\n> ");
-              x = 3;
-              y = this.height;
-            }
-
-            finishInit(x, y);
-          });
-        }
-      };
-
-      var finishInit = (x, y) => {
-        start.x = end.x = cursor.x = x;
-        start.y = end.y = cursor.y = y;
-
-        if (inputs[inputIndex].length) {
-          // There is already something (placeholder, ...), so redraw now!
-          computeAllCoordinate();
-          redraw();
-        }
-
-        this.on("key", onKey);
-        //controller.ready = true ;
-        controller.emit("ready");
-      };
-
-      var cleanup = (error, input) => {
-        if (alreadyCleanedUp) {
-          return;
-        }
-        alreadyCleanedUp = true;
-
-        finished = true;
-        this.removeListener("key", onKey);
-
-        if (error === "abort") {
-          return;
-        }
-
-        this.styleReset();
-
+    if (options.y !== undefined) {
+      options.x = options.x || 1;
+      this.moveTo.eraseLineAfter(options.x, options.y);
+      finishInit(options.x, options.y);
+    } else {
+      // Get the cursor location before getting started
+      this.getCursorLocation((error, x, y) => {
         if (error) {
-          if (callback) {
-            callback(error);
-          } else {
-            controller.promise.reject(error);
-          }
-          return;
+          // Some bad terminals (windows...) doesn't support cursor location request, we should fallback to a decent behavior.
+          // So we just move to the last line, create a new line, and add a little prompt (it would be misleading otherwise).
+          //cleanup( error ) ; return ;
+          this.row.eraseLineAfter(this.height)("\n> ");
+          x = 3;
+          y = this.height;
         }
 
-        var value;
+        finishInit(x, y);
+      });
+    }
+  };
 
-        if (typeof input === "string") {
-          value = input;
-        } else if (input) {
-          value = input.join("");
-        }
+  var finishInit = (x, y) => {
+    start.x = end.x = cursor.x = x;
+    start.y = end.y = cursor.y = y;
 
-        if (callback) {
-          callback(undefined, value);
-        } else {
-          controller.promise.resolve(value);
-        }
-      };
+    if (inputs[inputIndex].length) {
+      // There is already something (placeholder, ...), so redraw now!
+      computeAllCoordinate();
+      redraw();
+    }
 
-      // Compute the coordinate of the cursor and end of a string, given a start coordinate
-      var computeAllCoordinate = () => {
-        var scroll,
-          inputWidth = string.unicode.arrayWidth(inputs[inputIndex]),
-          hintWidth = string.unicode.arrayWidth(hint);
+    this.on("key", onKey);
+    //controller.ready = true ;
+    controller.emit("ready");
+  };
 
-        end = offsetCoordinate(inputWidth);
-        endHint = offsetCoordinate(inputWidth + hintWidth);
+  var cleanup = (error, input) => {
+    if (alreadyCleanedUp) {
+      return;
+    }
+    alreadyCleanedUp = true;
 
-        if (endHint.y > this.height) {
-          // We have gone out of the screen, scroll!
-          scroll = endHint.y - this.height;
+    finished = true;
+    this.removeListener("key", onKey);
 
-          dynamic.style.noFormat("\n".repeat(scroll));
+    if (error === "abort") {
+      return;
+    }
 
-          start.y -= scroll;
-          end.y -= scroll;
-          endHint.y -= scroll;
-        }
+    this.styleReset();
 
-        cursorCoordinate();
-      };
+    if (error) {
+      if (callback) {
+        callback(error);
+      } else {
+        controller.promise.reject(error);
+      }
+      return;
+    }
 
-      // Cursor coordinate from the current offset
-      var cursorCoordinate = () => {
-        cursor = offsetCoordinate(
-          string.unicode.arrayWidth(inputs[inputIndex], offset),
-        );
-      };
+    var value;
 
-      // Compute the coordinate of an offset, given a start coordinate
-      var offsetCoordinate = (offset_) => {
-        return {
-          x: 1 + ((start.x + offset_ - 1) % this.width),
-          y: start.y + Math.floor((start.x + offset_ - 1) / this.width),
-        };
-      };
+    if (typeof input === "string") {
+      value = input;
+    } else if (input) {
+      value = input.join("");
+    }
 
-      var boundOffset = (offset_) => {
-        if (typeof offset_ !== "number" || isNaN(offset_)) {
-          return inputs[inputIndex].length;
-        }
+    if (callback) {
+      callback(undefined, value);
+    } else {
+      controller.promise.resolve(value);
+    }
+  };
 
-        if (offset_ < 0) {
-          offset_ = inputs[inputIndex].length + 1 + offset_;
-        }
+  // Compute the coordinate of the cursor and end of a string, given a start coordinate
+  var computeAllCoordinate = () => {
+    var scroll,
+      inputWidth = string.unicode.arrayWidth(inputs[inputIndex]),
+      hintWidth = string.unicode.arrayWidth(hint);
 
-        if (offset_ < 0) {
-          offset_ = 0;
-        } else if (offset_ >= inputs[inputIndex].length) {
-          offset_ = inputs[inputIndex].length;
-        }
+    end = offsetCoordinate(inputWidth);
+    endHint = offsetCoordinate(inputWidth + hintWidth);
 
-        return offset_;
-      };
+    if (endHint.y > this.height) {
+      // We have gone out of the screen, scroll!
+      scroll = endHint.y - this.height;
 
-      // Compute the coordinate of the end of a string, given a start coordinate
-      var redraw = (extraLines, forceClear) => {
-        var i, hintCleared;
+      dynamic.style.noFormat("\n".repeat(scroll));
 
-        extraLines = extraLines || 0;
+      start.y -= scroll;
+      end.y -= scroll;
+      endHint.y -= scroll;
+    }
 
-        if (!dynamic.autoCompleteHint && forceClear) {
-          // Used by history, when autoCompleteHint is off, the current line is not erased
-          this.moveTo(end.x, end.y);
-          dynamic.style.noFormat.eraseLineAfter("");
-        }
+    cursorCoordinate();
+  };
 
-        this.moveTo(start.x, start.y);
+  // Cursor coordinate from the current offset
+  var cursorCoordinate = () => {
+    cursor = offsetCoordinate(
+      string.unicode.arrayWidth(inputs[inputIndex], offset),
+    );
+  };
 
-        if (options.tokenHook) {
-          writeTokens(inputs[inputIndex].join(""));
-        } else if (options.echoChar) {
-          dynamic.style.noFormat(
-            options.echoChar.repeat(inputs[inputIndex].length),
-          );
-        } else {
-          dynamic.style.noFormat(inputs[inputIndex].join(""));
-        }
+  // Compute the coordinate of an offset, given a start coordinate
+  var offsetCoordinate = (offset_) => {
+    return {
+      x: 1 + ((start.x + offset_ - 1) % this.width),
+      y: start.y + Math.floor((start.x + offset_ - 1) / this.width),
+    };
+  };
 
-        hintCleared = clearHint();
+  var boundOffset = (offset_) => {
+    if (typeof offset_ !== "number" || isNaN(offset_)) {
+      return inputs[inputIndex].length;
+    }
 
-        if (extraLines > 0) {
-          // If the previous input was using more lines, erase them now
-          for (i = 1; i <= extraLines; i++) {
-            this.moveTo(1, end.y + i);
-            dynamic.style.noFormat.eraseLineAfter("");
-          }
-        }
+    if (offset_ < 0) {
+      offset_ = inputs[inputIndex].length + 1 + offset_;
+    }
 
-        if (!hintCleared && (cursor.y < end.y || end.x === this.width)) {
-          this.moveTo(end.x, end.y);
-          dynamic.style.noFormat.eraseLineAfter("");
-        }
+    if (offset_ < 0) {
+      offset_ = 0;
+    } else if (offset_ >= inputs[inputIndex].length) {
+      offset_ = inputs[inputIndex].length;
+    }
 
-        this.moveTo(cursor.x, cursor.y);
-      };
+    return offset_;
+  };
 
-      // Not used internally for instance, only for controller.redrawCursor()
-      var redrawCursor = () => {
-        if (!controller.hasState("ready")) {
-          controller.once("ready", redrawCursor);
-          return;
-        }
-        this.moveTo(cursor.x, cursor.y);
-      };
+  // Compute the coordinate of the end of a string, given a start coordinate
+  var redraw = (extraLines, forceClear) => {
+    var i, hintCleared;
 
-      var pause = () => {
-        if (paused) {
-          return;
-        }
-        paused = true;
+    extraLines = extraLines || 0;
 
-        // Don't redraw now if not ready, it will be drawn once ready (avoid double-draw)
-        //if ( controller.hasState( 'ready' ) ) { redraw() ; }
-      };
+    if (!dynamic.autoCompleteHint && forceClear) {
+      // Used by history, when autoCompleteHint is off, the current line is not erased
+      this.moveTo(end.x, end.y);
+      dynamic.style.noFormat.eraseLineAfter("");
+    }
 
-      var resume = () => {
-        if (!paused) {
-          return;
-        }
-        paused = false;
+    this.moveTo(start.x, start.y);
 
-        // Don't redraw now if not ready, it will be drawn once ready (avoid double-draw)
-        if (controller.hasState("ready")) {
-          redraw();
-        }
-      };
+    if (options.tokenHook) {
+      writeTokens(inputs[inputIndex].join(""));
+    } else if (options.echoChar) {
+      dynamic.style.noFormat(
+        options.echoChar.repeat(inputs[inputIndex].length),
+      );
+    } else {
+      dynamic.style.noFormat(inputs[inputIndex].join(""));
+    }
 
-      var clearHint = () => {
-        // First, check if there are some hints to be cleared
-        if (!dynamic.autoCompleteHint) {
-          return false;
-        }
+    hintCleared = clearHint();
 
-        var y = end.y;
-
-        this.moveTo(end.x, end.y);
+    if (extraLines > 0) {
+      // If the previous input was using more lines, erase them now
+      for (i = 1; i <= extraLines; i++) {
+        this.moveTo(1, end.y + i);
         dynamic.style.noFormat.eraseLineAfter("");
+      }
+    }
 
-        // If the previous input was using more lines, erase them now
-        while (y < endHint.y) {
-          y++;
-          this.moveTo(1, y);
-          dynamic.style.noFormat.eraseLineAfter("");
+    if (!hintCleared && (cursor.y < end.y || end.x === this.width)) {
+      this.moveTo(end.x, end.y);
+      dynamic.style.noFormat.eraseLineAfter("");
+    }
+
+    this.moveTo(cursor.x, cursor.y);
+  };
+
+  // Not used internally for instance, only for controller.redrawCursor()
+  var redrawCursor = () => {
+    if (!controller.hasState("ready")) {
+      controller.once("ready", redrawCursor);
+      return;
+    }
+    this.moveTo(cursor.x, cursor.y);
+  };
+
+  var pause = () => {
+    if (paused) {
+      return;
+    }
+    paused = true;
+
+    // Don't redraw now if not ready, it will be drawn once ready (avoid double-draw)
+    //if ( controller.hasState( 'ready' ) ) { redraw() ; }
+  };
+
+  var resume = () => {
+    if (!paused) {
+      return;
+    }
+    paused = false;
+
+    // Don't redraw now if not ready, it will be drawn once ready (avoid double-draw)
+    if (controller.hasState("ready")) {
+      redraw();
+    }
+  };
+
+  var clearHint = () => {
+    // First, check if there are some hints to be cleared
+    if (!dynamic.autoCompleteHint) {
+      return false;
+    }
+
+    var y = end.y;
+
+    this.moveTo(end.x, end.y);
+    dynamic.style.noFormat.eraseLineAfter("");
+
+    // If the previous input was using more lines, erase them now
+    while (y < endHint.y) {
+      y++;
+      this.moveTo(1, y);
+      dynamic.style.noFormat.eraseLineAfter("");
+    }
+
+    this.moveTo(cursor.x, cursor.y);
+
+    return true;
+  };
+
+  // Compute the coordinate of the end of a string, given a start coordinate
+  var autoCompleteMenu = (menu) => {
+    paused = true;
+
+    this.singleLineMenu(menu, dynamic.autoCompleteMenu, (error, response) => {
+      // Unpause unconditionnally
+      paused = false;
+      if (error) {
+        return;
+      }
+
+      if (response.selectedText) {
+        // Prepend something before the text
+        if (menu.prefix) {
+          response.selectedText = menu.prefix + response.selectedText;
         }
 
+        // Append something after the text
+        if (menu.postfix) {
+          response.selectedText += menu.postfix;
+        }
+
+        response.selectedText = string.unicode
+          .toArray(response.selectedText)
+          .slice(0, options.maxLength);
+
+        inputs[inputIndex] = response.selectedText.concat(
+          inputs[inputIndex].slice(
+            offset,
+            options.maxLength + offset - response.selectedText.length,
+          ),
+        );
+
+        offset = response.selectedText.length;
+      }
+
+      if (echo) {
+        // Erase the menu
+        this.column.eraseLineAfter(1);
+
+        // If the input field was ending on the last line, we need to move it one line up
+        if (end.y >= this.height && start.y > 1) {
+          start.y--;
+        }
+
+        computeAllCoordinate();
+        redraw();
         this.moveTo(cursor.x, cursor.y);
+      }
 
-        return true;
-      };
+      if (response.unexpectedKey && response.unexpectedKey !== "TAB") {
+        // Forward the key to the event handler
+        onKey(response.unexpectedKey, undefined, response.unexpectedKeyData);
+      }
+    }).on("highlight", (eventData) => controller.emit("highlight", eventData));
+  };
 
-      // Compute the coordinate of the end of a string, given a start coordinate
-      var autoCompleteMenu = (menu) => {
-        paused = true;
+  var writeTokens = (text) => {
+    var match,
+      lastIndex,
+      lastEndIndex = 0,
+      tokens = [],
+      tokenStyle,
+      isEndOfInput;
 
-        this.singleLineMenu(menu, dynamic.autoCompleteMenu, (error, response) => {
-          // Unpause unconditionnally
-          paused = false;
+    // Reset dynamic stuffs
+    dynamic.style = options.style || this;
+    dynamic.hintStyle = options.hintStyle || this.brightBlack;
+    dynamic.tokenRegExp = options.tokenRegExp || defaultTokenRegExp;
+    dynamic.autoComplete = options.autoComplete;
+    dynamic.autoCompleteMenu = options.autoCompleteMenu;
+    dynamic.autoCompleteHint = !!options.autoCompleteHint;
+
+    dynamic.tokenRegExp.lastIndex = 0;
+
+    if (options.tokenResetHook) {
+      options.tokenResetHook(this, dynamic);
+    }
+
+    while ((match = dynamic.tokenRegExp.exec(text)) !== null) {
+      // Back-up that now, since it can be modified by the hook
+      lastIndex = dynamic.tokenRegExp.lastIndex;
+
+      if (match.index > lastEndIndex) {
+        dynamic.style.noFormat(text.slice(lastEndIndex, match.index));
+      }
+
+      isEndOfInput = match.index + match[0].length === text.length;
+
+      tokenStyle = options.tokenHook(
+        match[0],
+        isEndOfInput,
+        tokens,
+        this,
+        dynamic,
+      );
+
+      if (typeof tokenStyle === "function") {
+        tokenStyle.noFormat(match[0]);
+      } else if (typeof tokenStyle === "string") {
+        this.noFormat(tokenStyle);
+      } else {
+        dynamic.style.noFormat(match[0]);
+      }
+
+      tokens.push(match[0]);
+
+      lastEndIndex = match.index + match[0].length;
+
+      // Restore it, if it was modified
+      dynamic.tokenRegExp.lastIndex = lastIndex;
+    }
+
+    if (lastEndIndex < text.length) {
+      dynamic.style.noFormat(text.slice(lastEndIndex));
+    }
+  };
+
+  var autoCompleteHint = () => {
+    // The cursor should be at the end ATM
+    if (
+      !dynamic.autoComplete ||
+      !dynamic.autoCompleteHint ||
+      offset < inputs[inputIndex].length
+    ) {
+      return;
+    }
+
+    var autoCompleted,
+      inputText = inputs[inputIndex].join("");
+
+    var finishCompletion = () => {
+      if (Array.isArray(autoCompleted)) {
+        return;
+      }
+
+      hint = string.unicode
+        .toArray(autoCompleted.slice(inputText.length))
+        .slice(0, options.maxLength - inputs[inputIndex].length);
+
+      computeAllCoordinate();
+      this.moveTo(end.x, end.y); // computeAllCoordinate() can add some newline
+      dynamic.hintStyle.noFormat(hint.join(""));
+      this.moveTo(cursor.x, cursor.y);
+    };
+
+    if (Array.isArray(dynamic.autoComplete)) {
+      autoCompleted = autoComplete(
+        dynamic.autoComplete,
+        inputText,
+        dynamic.autoCompleteMenu,
+      );
+    } else if (typeof dynamic.autoComplete === "function") {
+      if (dynamic.autoComplete.length === 2) {
+        dynamic.autoComplete(inputText, (error, autoCompleted_) => {
           if (error) {
+            cleanup(error);
             return;
           }
 
-          if (response.selectedText) {
-            // Prepend something before the text
-            if (menu.prefix) {
-              response.selectedText = menu.prefix + response.selectedText;
-            }
+          autoCompleted = autoCompleted_;
+          finishCompletion();
+        });
+        return;
+      }
 
-            // Append something after the text
-            if (menu.postfix) {
-              response.selectedText += menu.postfix;
-            }
+      autoCompleted = dynamic.autoComplete(inputText);
 
-            response.selectedText = string.unicode
-              .toArray(response.selectedText)
-              .slice(0, options.maxLength);
+      if (Promise.isThenable(autoCompleted)) {
+        autoCompleted.then(
+          (autoCompleted_) => {
+            autoCompleted = autoCompleted_;
+            finishCompletion();
+          },
+          (error) => {
+            cleanup(error);
+          },
+        );
+        return;
+      }
+    }
 
-            inputs[inputIndex] = response.selectedText.concat(
-              inputs[inputIndex].slice(
-                offset,
-                options.maxLength + offset - response.selectedText.length,
-              ),
-            );
+    finishCompletion();
+  };
 
-            offset = response.selectedText.length;
-          }
+  // The main method: the key event handler
+  var onKey = (key, trash, data) => {
+    if (finished || paused) {
+      return;
+    }
 
-          if (echo) {
-            // Erase the menu
-            this.column.eraseLineAfter(1);
+    var leftPart,
+      autoCompleteUsed,
+      autoCompleted,
+      extraLines,
+      charToDelete,
+      cutOffset,
+      altKey,
+      lastOffset = offset;
 
-            // If the input field was ending on the last line, we need to move it one line up
-            if (end.y >= this.height && start.y > 1) {
-              start.y--;
-            }
+    // if previous keystroke triggered the 'meta' keybinding, prepend ALT_ to this key
+    if (meta) {
+      meta = false;
+      altKey = "ALT_" + key.toUpperCase();
 
-            computeAllCoordinate();
-            redraw();
-            this.moveTo(cursor.x, cursor.y);
-          }
+      if (data) {
+        data.isCharacter = false;
+      }
+      if (keyBindings[altKey]) {
+        key = altKey;
+      }
+    }
 
-          if (response.unexpectedKey && response.unexpectedKey !== "TAB") {
-            // Forward the key to the event handler
-            onKey(response.unexpectedKey, undefined, response.unexpectedKeyData);
-          }
-        }).on("highlight", (eventData) => controller.emit("highlight", eventData));
-      };
+    if (data && data.isCharacter) {
+      // if data.isCharacter, this is a regular UTF-8 character, not a special key
 
-      var writeTokens = (text) => {
-        var match,
-          lastIndex,
-          lastEndIndex = 0,
-          tokens = [],
-          tokenStyle,
-          isEndOfInput;
+      if (inputs[inputIndex].length >= options.maxLength) {
+        return;
+      }
 
-        // Reset dynamic stuffs
-        dynamic.style = options.style || this;
-        dynamic.hintStyle = options.hintStyle || this.brightBlack;
-        dynamic.tokenRegExp = options.tokenRegExp || defaultTokenRegExp;
-        dynamic.autoComplete = options.autoComplete;
-        dynamic.autoCompleteMenu = options.autoCompleteMenu;
-        dynamic.autoCompleteHint = !!options.autoCompleteHint;
+      // Insert version
+      //inputs[ inputIndex ] = inputs[ inputIndex ].slice( 0 , offset ) + key + inputs[ inputIndex ].slice( offset ) ;
+      inputs[inputIndex].splice(offset, 0, key);
+      offset++;
 
-        dynamic.tokenRegExp.lastIndex = 0;
-
-        if (options.tokenResetHook) {
-          options.tokenResetHook(this, dynamic);
-        }
-
-        while ((match = dynamic.tokenRegExp.exec(text)) !== null) {
-          // Back-up that now, since it can be modified by the hook
-          lastIndex = dynamic.tokenRegExp.lastIndex;
-
-          if (match.index > lastEndIndex) {
-            dynamic.style.noFormat(text.slice(lastEndIndex, match.index));
-          }
-
-          isEndOfInput = match.index + match[0].length === text.length;
-
-          tokenStyle = options.tokenHook(
-            match[0],
-            isEndOfInput,
-            tokens,
-            this,
-            dynamic,
-          );
-
-          if (typeof tokenStyle === "function") {
-            tokenStyle.noFormat(match[0]);
-          } else if (typeof tokenStyle === "string") {
-            this.noFormat(tokenStyle);
-          } else {
-            dynamic.style.noFormat(match[0]);
-          }
-
-          tokens.push(match[0]);
-
-          lastEndIndex = match.index + match[0].length;
-
-          // Restore it, if it was modified
-          dynamic.tokenRegExp.lastIndex = lastIndex;
-        }
-
-        if (lastEndIndex < text.length) {
-          dynamic.style.noFormat(text.slice(lastEndIndex));
-        }
-      };
-
-      var autoCompleteHint = () => {
-        // The cursor should be at the end ATM
-        if (
-          !dynamic.autoComplete ||
-          !dynamic.autoCompleteHint ||
-          offset < inputs[inputIndex].length
-        ) {
-          return;
-        }
-
-        var autoCompleted,
-          inputText = inputs[inputIndex].join("");
-
-        var finishCompletion = () => {
-          if (Array.isArray(autoCompleted)) {
-            return;
-          }
-
-          hint = string.unicode
-            .toArray(autoCompleted.slice(inputText.length))
-            .slice(0, options.maxLength - inputs[inputIndex].length);
-
+      if (echo) {
+        if (offset === inputs[inputIndex].length && !alwaysRedraw) {
+          dynamic.style.noFormat(options.echoChar || key);
+          // Now it's done by computeAllCoordinate()
+          //if ( cursor.x >= this.width ) { dynamic.style.noFormat( '\n' ) ; }
           computeAllCoordinate();
-          this.moveTo(end.x, end.y); // computeAllCoordinate() can add some newline
-          dynamic.hintStyle.noFormat(hint.join(""));
-          this.moveTo(cursor.x, cursor.y);
-        };
+        } else {
+          // redraw() is mandatory in insert mode
+          computeAllCoordinate();
+          redraw();
+          if (dynamic.autoCompleteHint) {
+            autoCompleteHint();
+          }
+        }
+      }
+    } else {
+      // Here we have a special key
 
-        if (Array.isArray(dynamic.autoComplete)) {
-          autoCompleted = autoComplete(
-            dynamic.autoComplete,
-            inputText,
-            dynamic.autoCompleteMenu,
-          );
-        } else if (typeof dynamic.autoComplete === "function") {
-          if (dynamic.autoComplete.length === 2) {
-            dynamic.autoComplete(inputText, (error, autoCompleted_) => {
-              if (error) {
-                cleanup(error);
-                return;
+      switch (keyBindings[key]) {
+        case "submit":
+          if (inputs[inputIndex].length < options.minLength) {
+            break;
+          }
+          clearHint();
+          cleanup(undefined, inputs[inputIndex]);
+          break;
+
+        case "cancel":
+          if (options.cancelable) {
+            cleanup();
+          }
+          break;
+
+        case "meta":
+          meta = true;
+          break;
+
+        case "backDelete":
+          if (inputs[inputIndex].length && offset > 0) {
+            charToDelete = inputs[inputIndex][offset - 1];
+            inputs[inputIndex].splice(offset - 1, 1);
+            offset--;
+
+            if (echo) {
+              // The cursor position check should happen BEFORE we modify it with computeAllCoordinate()
+              if (cursor.y < end.y || cursor.x === 1 || alwaysRedraw) {
+                computeAllCoordinate();
+                // Every time something is deleted, we need a redraw with the forceClear option on
+                redraw(undefined, true);
+                if (dynamic.autoCompleteHint) {
+                  autoCompleteHint();
+                }
+              } else {
+                computeAllCoordinate();
+
+                // .backDelete() does not work with full-width, Terminal Kit should stop using it until a reliable escape sequence combo is found
+                //this.backDelete() ;
+                if (string.unicode.isFullWidth(charToDelete)) {
+                  this.left(2);
+                  this.delete(2);
+                } else {
+                  this.left(1);
+                  this.delete(1);
+                }
               }
-
-              autoCompleted = autoCompleted_;
-              finishCompletion();
-            });
-            return;
+            }
           }
+          break;
 
-          autoCompleted = dynamic.autoComplete(inputText);
+        case "delete":
+          if (inputs[inputIndex].length && offset < inputs[inputIndex].length) {
+            charToDelete = inputs[inputIndex][offset];
+            inputs[inputIndex].splice(offset, 1);
 
-          if (Promise.isThenable(autoCompleted)) {
-            autoCompleted.then(
-              (autoCompleted_) => {
-                autoCompleted = autoCompleted_;
-                finishCompletion();
-              },
-              (error) => {
-                cleanup(error);
-              },
+            if (echo) {
+              // The cursor position check should happen BEFORE we modify it with computeAllCoordinate()
+              if (cursor.y < end.y || alwaysRedraw) {
+                computeAllCoordinate();
+                // Every time something is deleted, we need a redraw with the forceClear option on
+                redraw(undefined, true);
+                if (dynamic.autoCompleteHint) {
+                  autoCompleteHint();
+                }
+              } else {
+                computeAllCoordinate();
+                this.delete(string.unicode.isFullWidth(charToDelete) ? 2 : 1);
+              }
+            }
+          }
+          break;
+
+        case "deleteAllBefore":
+          if (inputs[inputIndex].length && offset > 0) {
+            //inputs[ inputIndex ] = inputs[ inputIndex ].slice( 0 , offset - 1 ) + inputs[ inputIndex ].slice( offset ) ;
+            inputs[inputIndex].splice(0, offset);
+            offset = 0;
+
+            if (echo) {
+              computeAllCoordinate();
+              // Need forceClear
+              redraw(undefined, true);
+            }
+          }
+          break;
+
+        case "deleteAllAfter":
+          if (inputs[inputIndex].length && offset < inputs[inputIndex].length) {
+            inputs[inputIndex].splice(
+              offset,
+              inputs[inputIndex].length - offset,
             );
-            return;
-          }
-        }
 
-        finishCompletion();
-      };
-
-      // The main method: the key event handler
-      var onKey = (key, trash, data) => {
-        if (finished || paused) {
-          return;
-        }
-
-        var leftPart,
-          autoCompleteUsed,
-          autoCompleted,
-          extraLines,
-          charToDelete,
-          cutOffset,
-          altKey,
-          lastOffset = offset;
-
-        // if previous keystroke triggered the 'meta' keybinding, prepend ALT_ to this key
-        if (meta) {
-          meta = false;
-          altKey = "ALT_" + key.toUpperCase();
-
-          if (data) {
-            data.isCharacter = false;
-          }
-          if (keyBindings[altKey]) {
-            key = altKey;
-          }
-        }
-
-        if (data && data.isCharacter) {
-          // if data.isCharacter, this is a regular UTF-8 character, not a special key
-
-          if (inputs[inputIndex].length >= options.maxLength) {
-            return;
-          }
-
-          // Insert version
-          //inputs[ inputIndex ] = inputs[ inputIndex ].slice( 0 , offset ) + key + inputs[ inputIndex ].slice( offset ) ;
-          inputs[inputIndex].splice(offset, 0, key);
-          offset++;
-
-          if (echo) {
-            if (offset === inputs[inputIndex].length && !alwaysRedraw) {
-              dynamic.style.noFormat(options.echoChar || key);
-              // Now it's done by computeAllCoordinate()
-              //if ( cursor.x >= this.width ) { dynamic.style.noFormat( '\n' ) ; }
+            if (echo) {
               computeAllCoordinate();
-            } else {
-              // redraw() is mandatory in insert mode
-              computeAllCoordinate();
-              redraw();
+              // Need forceClear
+              redraw(undefined, true);
               if (dynamic.autoCompleteHint) {
                 autoCompleteHint();
               }
             }
           }
-        } else {
-          // Here we have a special key
+          break;
 
-          switch (keyBindings[key]) {
-            case "submit":
-              if (inputs[inputIndex].length < options.minLength) {
-                break;
-              }
+        case "backward":
+          if (inputs[inputIndex].length && offset > 0) {
+            if (
+              dynamic.autoCompleteHint &&
+              offset === inputs[inputIndex].length
+            ) {
               clearHint();
-              cleanup(undefined, inputs[inputIndex]);
-              break;
+            }
 
-            case "cancel":
-              if (options.cancelable) {
-                cleanup();
-              }
-              break;
+            offset--;
 
-            case "meta":
-              meta = true;
-              break;
-
-            case "backDelete":
-              if (inputs[inputIndex].length && offset > 0) {
-                charToDelete = inputs[inputIndex][offset - 1];
-                inputs[inputIndex].splice(offset - 1, 1);
-                offset--;
-
-                if (echo) {
-                  // The cursor position check should happen BEFORE we modify it with computeAllCoordinate()
-                  if (cursor.y < end.y || cursor.x === 1 || alwaysRedraw) {
-                    computeAllCoordinate();
-                    // Every time something is deleted, we need a redraw with the forceClear option on
-                    redraw(undefined, true);
-                    if (dynamic.autoCompleteHint) {
-                      autoCompleteHint();
-                    }
-                  } else {
-                    computeAllCoordinate();
-
-                    // .backDelete() does not work with full-width, Terminal Kit should stop using it until a reliable escape sequence combo is found
-                    //this.backDelete() ;
-                    if (string.unicode.isFullWidth(charToDelete)) {
-                      this.left(2);
-                      this.delete(2);
-                    } else {
-                      this.left(1);
-                      this.delete(1);
-                    }
-                  }
-                }
-              }
-              break;
-
-            case "delete":
-              if (inputs[inputIndex].length && offset < inputs[inputIndex].length) {
-                charToDelete = inputs[inputIndex][offset];
-                inputs[inputIndex].splice(offset, 1);
-
-                if (echo) {
-                  // The cursor position check should happen BEFORE we modify it with computeAllCoordinate()
-                  if (cursor.y < end.y || alwaysRedraw) {
-                    computeAllCoordinate();
-                    // Every time something is deleted, we need a redraw with the forceClear option on
-                    redraw(undefined, true);
-                    if (dynamic.autoCompleteHint) {
-                      autoCompleteHint();
-                    }
-                  } else {
-                    computeAllCoordinate();
-                    this.delete(string.unicode.isFullWidth(charToDelete) ? 2 : 1);
-                  }
-                }
-              }
-              break;
-
-            case "deleteAllBefore":
-              if (inputs[inputIndex].length && offset > 0) {
-                //inputs[ inputIndex ] = inputs[ inputIndex ].slice( 0 , offset - 1 ) + inputs[ inputIndex ].slice( offset ) ;
-                inputs[inputIndex].splice(0, offset);
-                offset = 0;
-
-                if (echo) {
-                  computeAllCoordinate();
-                  // Need forceClear
-                  redraw(undefined, true);
-                }
-              }
-              break;
-
-            case "deleteAllAfter":
-              if (inputs[inputIndex].length && offset < inputs[inputIndex].length) {
-                inputs[inputIndex].splice(
-                  offset,
-                  inputs[inputIndex].length - offset,
-                );
-
-                if (echo) {
-                  computeAllCoordinate();
-                  // Need forceClear
-                  redraw(undefined, true);
-                  if (dynamic.autoCompleteHint) {
-                    autoCompleteHint();
-                  }
-                }
-              }
-              break;
-
-            case "backward":
-              if (inputs[inputIndex].length && offset > 0) {
-                if (
-                  dynamic.autoCompleteHint &&
-                  offset === inputs[inputIndex].length
-                ) {
-                  clearHint();
-                }
-
-                offset--;
-
-                if (echo) {
-                  computeAllCoordinate();
-                  this.moveTo(cursor.x, cursor.y);
-                }
-              }
-              break;
-
-            case "forward":
-              if (inputs[inputIndex].length && offset < inputs[inputIndex].length) {
-                offset++;
-
-                if (echo) {
-                  computeAllCoordinate();
-                  this.moveTo(cursor.x, cursor.y);
-                }
-
-                if (
-                  dynamic.autoCompleteHint &&
-                  offset === inputs[inputIndex].length
-                ) {
-                  autoCompleteHint();
-                }
-              }
-
-              break;
-
-            case "deletePreviousWord":
-              if (inputs[inputIndex].length && offset > 0) {
-                if (
-                  dynamic.autoCompleteHint &&
-                  offset === inputs[inputIndex].length
-                ) {
-                  clearHint();
-                }
-
-                cutOffset = offset--;
-
-                while (offset > 0 && inputs[inputIndex][offset] === " ") {
-                  offset--;
-                }
-                while (offset > 0 && inputs[inputIndex][offset - 1] !== " ") {
-                  offset--;
-                }
-
-                inputs[inputIndex].splice(offset, cutOffset - offset);
-
-                if (echo) {
-                  computeAllCoordinate();
-                  this.moveTo(cursor.x, cursor.y);
-                  redraw(undefined, true);
-                }
-              }
-              break;
-
-            case "deleteNextWord":
-              if (inputs[inputIndex].length && offset < inputs[inputIndex].length) {
-                cutOffset = offset;
-
-                while (
-                  offset < inputs[inputIndex].length &&
-                  inputs[inputIndex][offset] === " "
-                ) {
-                  offset++;
-                }
-                while (
-                  offset < inputs[inputIndex].length &&
-                  inputs[inputIndex][offset] !== " "
-                ) {
-                  offset++;
-                }
-                while (
-                  offset < inputs[inputIndex].length &&
-                  inputs[inputIndex][offset] === " "
-                ) {
-                  offset++;
-                }
-
-                inputs[inputIndex].splice(cutOffset, offset - cutOffset);
-                offset = Math.min(inputs[inputIndex].length, cutOffset);
-
-                if (echo) {
-                  computeAllCoordinate();
-                  this.moveTo(cursor.x, cursor.y);
-                  redraw(undefined, true);
-                }
-
-                if (
-                  dynamic.autoCompleteHint &&
-                  offset === inputs[inputIndex].length
-                ) {
-                  autoCompleteHint();
-                }
-              }
-              break;
-
-            case "previousWord":
-              if (inputs[inputIndex].length && offset > 0) {
-                if (
-                  dynamic.autoCompleteHint &&
-                  offset === inputs[inputIndex].length
-                ) {
-                  clearHint();
-                }
-
-                offset--;
-
-                while (offset > 0 && inputs[inputIndex][offset] === " ") {
-                  offset--;
-                }
-                while (offset > 0 && inputs[inputIndex][offset - 1] !== " ") {
-                  offset--;
-                }
-
-                if (echo) {
-                  computeAllCoordinate();
-                  this.moveTo(cursor.x, cursor.y);
-                }
-              }
-              break;
-
-            case "nextWord":
-              if (inputs[inputIndex].length && offset < inputs[inputIndex].length) {
-                while (
-                  offset < inputs[inputIndex].length &&
-                  inputs[inputIndex][offset] === " "
-                ) {
-                  offset++;
-                }
-                while (
-                  offset < inputs[inputIndex].length &&
-                  inputs[inputIndex][offset] !== " "
-                ) {
-                  offset++;
-                }
-
-                if (echo) {
-                  computeAllCoordinate();
-                  this.moveTo(cursor.x, cursor.y);
-                }
-
-                if (
-                  dynamic.autoCompleteHint &&
-                  offset === inputs[inputIndex].length
-                ) {
-                  autoCompleteHint();
-                }
-              }
-
-              break;
-
-            case "startOfInput":
-              if (
-                dynamic.autoCompleteHint &&
-                offset === inputs[inputIndex].length
-              ) {
-                clearHint();
-              }
-
-              offset = 0;
-
-              if (echo) {
-                computeAllCoordinate();
-                this.moveTo(cursor.x, cursor.y);
-              }
-              break;
-
-            case "endOfInput":
-              offset = inputs[inputIndex].length;
-
-              if (echo) {
-                computeAllCoordinate();
-                this.moveTo(cursor.x, cursor.y);
-              }
-
-              if (
-                dynamic.autoCompleteHint &&
-                lastOffset !== inputs[inputIndex].length
-              ) {
-                autoCompleteHint();
-              }
-
-              break;
-
-            case "historyNext":
-              if (inputIndex < inputs.length - 1) {
-                inputIndex++;
-                offset = inputs[inputIndex].length;
-
-                if (echo) {
-                  extraLines = end.y - start.y;
-                  computeAllCoordinate();
-                  extraLines -= end.y - start.y;
-                  redraw(extraLines, true);
-                  this.moveTo(cursor.x, cursor.y);
-                }
-
-                // Not sure if this is desirable
-                //if ( dynamic.autoCompleteHint ) { autoCompleteHint() ; }
-              }
-              break;
-
-            case "historyPrevious":
-              if (inputIndex > 0) {
-                inputIndex--;
-                offset = inputs[inputIndex].length;
-
-                if (echo) {
-                  extraLines = end.y - start.y;
-                  computeAllCoordinate();
-                  extraLines -= end.y - start.y;
-                  redraw(extraLines, true);
-                  this.moveTo(cursor.x, cursor.y);
-                }
-
-                // Not sure if this is desirable
-                //if ( dynamic.autoCompleteHint ) { autoCompleteHint() ; }
-              }
-              break;
-
-            case "autoCompleteUsingHistory":
-            case "autoComplete":
-              autoCompleteUsed =
-                keyBindings[key] === "autoCompleteUsingHistory"
-                  ? options.history
-                  : dynamic.autoComplete;
-
-              if (!autoCompleteUsed) {
-                break;
-              }
-
-              leftPart = inputs[inputIndex].slice(0, offset);
-
-              var finishCompletion = () => {
-                if (Array.isArray(autoCompleted)) {
-                  if (dynamic.autoCompleteMenu) {
-                    autoCompleteMenu(autoCompleted);
-                  }
-                  return;
-                }
-
-                leftPart = string.unicode
-                  .toArray(autoCompleted)
-                  .slice(0, options.maxLength);
-
-                inputs[inputIndex] = leftPart.concat(
-                  inputs[inputIndex].slice(
-                    offset,
-                    options.maxLength + offset - leftPart.length,
-                  ),
-                );
-
-                offset = leftPart.length;
-
-                if (echo) {
-                  computeAllCoordinate();
-                  redraw();
-                }
-              };
-
-              if (Array.isArray(autoCompleteUsed)) {
-                autoCompleted = autoComplete(
-                  autoCompleteUsed,
-                  leftPart.join(""),
-                  dynamic.autoCompleteMenu,
-                );
-              } else if (typeof autoCompleteUsed === "function") {
-                if (autoCompleteUsed.length === 2) {
-                  autoCompleteUsed(leftPart.join(""), (error, autoCompleted_) => {
-                    if (error) {
-                      cleanup(error);
-                      return;
-                    }
-
-                    autoCompleted = autoCompleted_;
-                    finishCompletion();
-                  });
-                  return;
-                }
-
-                autoCompleted = autoCompleteUsed(leftPart.join(""));
-
-                if (Promise.isThenable(autoCompleted)) {
-                  autoCompleted.then(
-                    (autoCompleted_) => {
-                      autoCompleted = autoCompleted_;
-                      finishCompletion();
-                    },
-                    (error) => {
-                      cleanup(error);
-                    },
-                  );
-                  return;
-                }
-              }
-
-              finishCompletion();
-
-              break;
+            if (echo) {
+              computeAllCoordinate();
+              this.moveTo(cursor.x, cursor.y);
+            }
           }
-        }
-      };
+          break;
 
-      // Return a controller for the input field
+        case "forward":
+          if (inputs[inputIndex].length && offset < inputs[inputIndex].length) {
+            offset++;
 
-      controller = Object.create(NextGenEvents.prototype);
+            if (echo) {
+              computeAllCoordinate();
+              this.moveTo(cursor.x, cursor.y);
+            }
 
-      controller.defineStates("ready");
+            if (
+              dynamic.autoCompleteHint &&
+              offset === inputs[inputIndex].length
+            ) {
+              autoCompleteHint();
+            }
+          }
 
-      // /!\ .ready is deprecated, it is now a getter to .hasState('ready')
-      Object.defineProperty(controller, "ready", {
-        get: function () {
-          return this.hasState("ready");
-        },
-      });
+          break;
 
-      // Tmp, for compatibility
-      controller.widgetType = "inputField";
+        case "deletePreviousWord":
+          if (inputs[inputIndex].length && offset > 0) {
+            if (
+              dynamic.autoCompleteHint &&
+              offset === inputs[inputIndex].length
+            ) {
+              clearHint();
+            }
 
-      // Stop everything and do not even call the callback
-      controller.abort = () => {
-        if (finished) {
-          return;
-        }
-        cleanup("abort");
-      };
+            cutOffset = offset--;
 
-      // Stop and call the completion callback with the current input
-      controller.stop = () => {
-        if (finished) {
-          return;
-        }
-        cleanup(undefined, inputs[inputIndex]);
-      };
+            while (offset > 0 && inputs[inputIndex][offset] === " ") {
+              offset--;
+            }
+            while (offset > 0 && inputs[inputIndex][offset - 1] !== " ") {
+              offset--;
+            }
 
-      // Pause and resume: the input field will not respond to event when paused
-      controller.pause = pause;
-      controller.resume = resume;
-      controller.focus = (value) => {
-        if (value) {
-          resume();
-        } else {
-          pause();
-        }
-      };
+            inputs[inputIndex].splice(offset, cutOffset - offset);
 
-      // Get the current input
-      controller.getInput = () => inputs[inputIndex].join("");
+            if (echo) {
+              computeAllCoordinate();
+              this.moveTo(cursor.x, cursor.y);
+              redraw(undefined, true);
+            }
+          }
+          break;
 
-      controller.value = controller.getInput;
+        case "deleteNextWord":
+          if (inputs[inputIndex].length && offset < inputs[inputIndex].length) {
+            cutOffset = offset;
 
-      // Get the current position
-      controller.getPosition = () => ({ x: start.x, y: start.y });
+            while (
+              offset < inputs[inputIndex].length &&
+              inputs[inputIndex][offset] === " "
+            ) {
+              offset++;
+            }
+            while (
+              offset < inputs[inputIndex].length &&
+              inputs[inputIndex][offset] !== " "
+            ) {
+              offset++;
+            }
+            while (
+              offset < inputs[inputIndex].length &&
+              inputs[inputIndex][offset] === " "
+            ) {
+              offset++;
+            }
 
-      // Hide the input field
-      controller.hide = () => {
-        if (!controller.hasState("ready")) {
-          controller.once("ready", controller.hide);
-          return;
-        }
+            inputs[inputIndex].splice(cutOffset, offset - cutOffset);
+            offset = Math.min(inputs[inputIndex].length, cutOffset);
 
-        var i, j;
+            if (echo) {
+              computeAllCoordinate();
+              this.moveTo(cursor.x, cursor.y);
+              redraw(undefined, true);
+            }
 
-        for (i = start.x, j = start.y; j <= end.y; i = 1, j++) {
-          this.moveTo.eraseLineAfter(i, j);
-        }
+            if (
+              dynamic.autoCompleteHint &&
+              offset === inputs[inputIndex].length
+            ) {
+              autoCompleteHint();
+            }
+          }
+          break;
 
-        echo = false;
-      };
+        case "previousWord":
+          if (inputs[inputIndex].length && offset > 0) {
+            if (
+              dynamic.autoCompleteHint &&
+              offset === inputs[inputIndex].length
+            ) {
+              clearHint();
+            }
 
-      // Show the input field
-      controller.show = () => {
-        if (!controller.hasState("ready")) {
-          controller.once("ready", controller.show);
-          return;
-        }
-        echo = true;
-        redraw();
-      };
+            offset--;
 
-      // Redraw the input field
-      controller.redraw = () => {
-        if (!controller.hasState("ready")) {
-          controller.once("ready", controller.redraw);
-          return;
-        }
-        redraw(undefined, true);
-      };
+            while (offset > 0 && inputs[inputIndex][offset] === " ") {
+              offset--;
+            }
+            while (offset > 0 && inputs[inputIndex][offset - 1] !== " ") {
+              offset--;
+            }
 
-      // Redraw the cursor
-      controller.redrawCursor = () => {
-        if (!controller.hasState("ready")) {
-          controller.once("ready", controller.redrawCursor);
-          return;
-        }
-        redrawCursor();
-      };
+            if (echo) {
+              computeAllCoordinate();
+              this.moveTo(cursor.x, cursor.y);
+            }
+          }
+          break;
 
-      controller.getCursorPosition = () => offset;
+        case "nextWord":
+          if (inputs[inputIndex].length && offset < inputs[inputIndex].length) {
+            while (
+              offset < inputs[inputIndex].length &&
+              inputs[inputIndex][offset] === " "
+            ) {
+              offset++;
+            }
+            while (
+              offset < inputs[inputIndex].length &&
+              inputs[inputIndex][offset] !== " "
+            ) {
+              offset++;
+            }
 
-      controller.setCursorPosition = (newOffset) => {
-        newOffset = boundOffset(newOffset);
+            if (echo) {
+              computeAllCoordinate();
+              this.moveTo(cursor.x, cursor.y);
+            }
 
-        if (newOffset !== offset) {
-          if (dynamic.autoCompleteHint && offset === inputs[inputIndex].length) {
+            if (
+              dynamic.autoCompleteHint &&
+              offset === inputs[inputIndex].length
+            ) {
+              autoCompleteHint();
+            }
+          }
+
+          break;
+
+        case "startOfInput":
+          if (
+            dynamic.autoCompleteHint &&
+            offset === inputs[inputIndex].length
+          ) {
             clearHint();
           }
 
-          offset = newOffset;
+          offset = 0;
+
+          if (echo) {
+            computeAllCoordinate();
+            this.moveTo(cursor.x, cursor.y);
+          }
+          break;
+
+        case "endOfInput":
+          offset = inputs[inputIndex].length;
 
           if (echo) {
             computeAllCoordinate();
             this.moveTo(cursor.x, cursor.y);
           }
 
-          if (dynamic.autoCompleteHint && offset === inputs[inputIndex].length) {
+          if (
+            dynamic.autoCompleteHint &&
+            lastOffset !== inputs[inputIndex].length
+          ) {
             autoCompleteHint();
           }
-        }
-      };
 
-      // Rebase the input field where the cursor is
-      controller.rebase = (x, y) => {
-        if (!controller.hasState("ready")) {
-          controller.once("ready", controller.rebase);
-          return;
-        }
+          break;
 
-        var rebaseTo = (x_, y_) => {
-          start.x = x_;
-          start.y = y_;
+        case "historyNext":
+          if (inputIndex < inputs.length - 1) {
+            inputIndex++;
+            offset = inputs[inputIndex].length;
 
-          if (options.echo) {
-            echo = true;
-            computeAllCoordinate();
-            redraw();
+            if (echo) {
+              extraLines = end.y - start.y;
+              computeAllCoordinate();
+              extraLines -= end.y - start.y;
+              redraw(extraLines, true);
+              this.moveTo(cursor.x, cursor.y);
+            }
+
+            // Not sure if this is desirable
+            //if ( dynamic.autoCompleteHint ) { autoCompleteHint() ; }
+          }
+          break;
+
+        case "historyPrevious":
+          if (inputIndex > 0) {
+            inputIndex--;
+            offset = inputs[inputIndex].length;
+
+            if (echo) {
+              extraLines = end.y - start.y;
+              computeAllCoordinate();
+              extraLines -= end.y - start.y;
+              redraw(extraLines, true);
+              this.moveTo(cursor.x, cursor.y);
+            }
+
+            // Not sure if this is desirable
+            //if ( dynamic.autoCompleteHint ) { autoCompleteHint() ; }
+          }
+          break;
+
+        case "autoCompleteUsingHistory":
+        case "autoComplete":
+          autoCompleteUsed =
+            keyBindings[key] === "autoCompleteUsingHistory"
+              ? options.history
+              : dynamic.autoComplete;
+
+          if (!autoCompleteUsed) {
+            break;
           }
 
-          controller.emit("rebased");
-        };
+          leftPart = inputs[inputIndex].slice(0, offset);
 
-        if (x !== undefined && y !== undefined) {
-          rebaseTo(x, y);
-          return;
-        }
+          var finishCompletion = () => {
+            if (Array.isArray(autoCompleted)) {
+              if (dynamic.autoCompleteMenu) {
+                autoCompleteMenu(autoCompleted);
+              }
+              return;
+            }
 
-        // First, disable echoing: getCursorLocation is async!
-        echo = false;
+            leftPart = string.unicode
+              .toArray(autoCompleted)
+              .slice(0, options.maxLength);
 
-        this.getCursorLocation((error, x_, y_) => {
-          if (error) {
-            // Some bad terminals (windows...) doesn't support cursor location request, we should fallback to a decent behavior.
-            // Here we just ignore the rebase.
-            //cleanup( error ) ;
-            return;
+            inputs[inputIndex] = leftPart.concat(
+              inputs[inputIndex].slice(
+                offset,
+                options.maxLength + offset - leftPart.length,
+              ),
+            );
+
+            offset = leftPart.length;
+
+            if (echo) {
+              computeAllCoordinate();
+              redraw();
+            }
+          };
+
+          if (Array.isArray(autoCompleteUsed)) {
+            autoCompleted = autoComplete(
+              autoCompleteUsed,
+              leftPart.join(""),
+              dynamic.autoCompleteMenu,
+            );
+          } else if (typeof autoCompleteUsed === "function") {
+            if (autoCompleteUsed.length === 2) {
+              autoCompleteUsed(leftPart.join(""), (error, autoCompleted_) => {
+                if (error) {
+                  cleanup(error);
+                  return;
+                }
+
+                autoCompleted = autoCompleted_;
+                finishCompletion();
+              });
+              return;
+            }
+
+            autoCompleted = autoCompleteUsed(leftPart.join(""));
+
+            if (Promise.isThenable(autoCompleted)) {
+              autoCompleted.then(
+                (autoCompleted_) => {
+                  autoCompleted = autoCompleted_;
+                  finishCompletion();
+                },
+                (error) => {
+                  cleanup(error);
+                },
+              );
+              return;
+            }
           }
 
-          rebaseTo(x_, y_);
-        });
-      };
+          finishCompletion();
 
-      controller.promise = new Promise();
+          break;
+      }
+    }
+  };
 
-      // Init the input field
-      init();
+  // Return a controller for the input field
 
-      return controller;
+  controller = Object.create(NextGenEvents.prototype);
+
+  controller.defineStates("ready");
+
+  // /!\ .ready is deprecated, it is now a getter to .hasState('ready')
+  Object.defineProperty(controller, "ready", {
+    get: function () {
+      return this.hasState("ready");
+    },
+  });
+
+  // Tmp, for compatibility
+  controller.widgetType = "inputField";
+
+  // Stop everything and do not even call the callback
+  controller.abort = () => {
+    if (finished) {
+      return;
+    }
+    cleanup("abort");
+  };
+
+  // Stop and call the completion callback with the current input
+  controller.stop = () => {
+    if (finished) {
+      return;
+    }
+    cleanup(undefined, inputs[inputIndex]);
+  };
+
+  // Pause and resume: the input field will not respond to event when paused
+  controller.pause = pause;
+  controller.resume = resume;
+  controller.focus = (value) => {
+    if (value) {
+      resume();
+    } else {
+      pause();
+    }
+  };
+
+  // Get the current input
+  controller.getInput = () => inputs[inputIndex].join("");
+
+  controller.value = controller.getInput;
+
+  // Get the current position
+  controller.getPosition = () => ({ x: start.x, y: start.y });
+
+  // Hide the input field
+  controller.hide = () => {
+    if (!controller.hasState("ready")) {
+      controller.once("ready", controller.hide);
+      return;
+    }
+
+    var i, j;
+
+    for (i = start.x, j = start.y; j <= end.y; i = 1, j++) {
+      this.moveTo.eraseLineAfter(i, j);
+    }
+
+    echo = false;
+  };
+
+  // Show the input field
+  controller.show = () => {
+    if (!controller.hasState("ready")) {
+      controller.once("ready", controller.show);
+      return;
+    }
+    echo = true;
+    redraw();
+  };
+
+  // Redraw the input field
+  controller.redraw = () => {
+    if (!controller.hasState("ready")) {
+      controller.once("ready", controller.redraw);
+      return;
+    }
+    redraw(undefined, true);
+  };
+
+  // Redraw the cursor
+  controller.redrawCursor = () => {
+    if (!controller.hasState("ready")) {
+      controller.once("ready", controller.redrawCursor);
+      return;
+    }
+    redrawCursor();
+  };
+
+  controller.getCursorPosition = () => offset;
+
+  controller.setCursorPosition = (newOffset) => {
+    newOffset = boundOffset(newOffset);
+
+    if (newOffset !== offset) {
+      if (dynamic.autoCompleteHint && offset === inputs[inputIndex].length) {
+        clearHint();
+      }
+
+      offset = newOffset;
+
+      if (echo) {
+        computeAllCoordinate();
+        this.moveTo(cursor.x, cursor.y);
+      }
+
+      if (dynamic.autoCompleteHint && offset === inputs[inputIndex].length) {
+        autoCompleteHint();
+      }
+    }
+  };
+
+  // Rebase the input field where the cursor is
+  controller.rebase = (x, y) => {
+    if (!controller.hasState("ready")) {
+      controller.once("ready", controller.rebase);
+      return;
+    }
+
+    var rebaseTo = (x_, y_) => {
+      start.x = x_;
+      start.y = y_;
+
+      if (options.echo) {
+        echo = true;
+        computeAllCoordinate();
+        redraw();
+      }
+
+      controller.emit("rebased");
     };
+
+    if (x !== undefined && y !== undefined) {
+      rebaseTo(x, y);
+      return;
+    }
+
+    // First, disable echoing: getCursorLocation is async!
+    echo = false;
+
+    this.getCursorLocation((error, x_, y_) => {
+      if (error) {
+        // Some bad terminals (windows...) doesn't support cursor location request, we should fallback to a decent behavior.
+        // Here we just ignore the rebase.
+        //cleanup( error ) ;
+        return;
+      }
+
+      rebaseTo(x_, y_);
+    });
+  };
+
+  controller.promise = new Promise();
+
+  // Init the input field
+  init();
+
+  return controller;
+}

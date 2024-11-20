@@ -1,7 +1,7 @@
 // @ts-nocheck
 
 import test from "tape";
-import { entriesToDisplay } from "../src/util/index.js";
+import { entriesToDisplay } from "../src/util/index";
 
 test("entriesToDisplay", (t) => {
   t.plan(11);

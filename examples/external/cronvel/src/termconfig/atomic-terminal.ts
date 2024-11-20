@@ -1,5 +1,7 @@
+// @ts-nocheck
+
 import tree from "tree-kit";
-import xterm256 from "./xterm-256color.js";
+import xterm256 from "./xterm-256color";
 
 // @ts-nocheck
 // Remove colors
@@ -32,14 +34,14 @@ const keymap = Object.create(xterm256.keymap);
 const handler = Object.create(xterm256.handler);
 
 export default {
-      esc: esc,
-      keymap: keymap,
-      handler: handler,
-      support: {
-        deltaEscapeSequence: true,
-        "256colors": true,
-        "24bitsColors": true, // DEPRECATED
-        trueColor: true,
-      },
-      colorRegister: require("../colorScheme/atomic-terminal.json"),
-    };
+  esc: esc,
+  keymap: keymap,
+  handler: handler,
+  support: {
+    deltaEscapeSequence: true,
+    "256colors": true,
+    "24bitsColors": true, // DEPRECATED
+    trueColor: true,
+  },
+  colorRegister: require("../colorScheme/atomic-terminal.json"),
+};

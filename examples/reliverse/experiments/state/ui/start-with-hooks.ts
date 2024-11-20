@@ -1,11 +1,11 @@
-import { useEffect } from "@/external/inquirer/src/hooks/index.js";
-import { useBar } from "@/external/inquirer/src/hooks/useBar.js";
-import { usePromptState } from "@/external/inquirer/src/hooks/usePromptState.js";
+import { useEffect } from "@/external/inquirer/src/hooks/index";
+import { useBar } from "@/external/inquirer/src/hooks/useBar";
+import { usePromptState } from "@/external/inquirer/src/hooks/usePromptState";
 
-import type { PromptOptionsDeprecated } from "~/types/dev.js";
+import type { PromptOptionsDeprecated } from "~/types/dev";
 
-import { colorize } from "~/utils/colorize.js";
-import { applyVariant } from "~/utils/variants.js";
+import { colorize } from "~/utils/colorize";
+import { applyVariant } from "~/utils/variants";
 
 export async function startPrompt(
   options: PromptOptionsDeprecated,

@@ -1,8 +1,10 @@
-import Element from "./Element.js";
-import BaseMenu from "./BaseMenu.js";
-import Button from "./Button.js";
-import ToggleButton from "./ToggleButton.js";
-import misc from "../misc.js";
+// @ts-nocheck
+
+import Element from "./Element";
+import BaseMenu from "./BaseMenu";
+import Button from "./Button";
+import ToggleButton from "./ToggleButton";
+import misc from "../misc";
 import string from "string-kit";
 
 // @ts-nocheck

@@ -1,10 +1,12 @@
-import Element from "./Element.js";
-import TextBox from "./TextBox.js";
-import EditableTextBox from "./EditableTextBox.js";
-import RowMenu from "./RowMenu.js";
+// @ts-nocheck
+
+import Element from "./Element";
+import TextBox from "./TextBox";
+import EditableTextBox from "./EditableTextBox";
+import RowMenu from "./RowMenu";
 import Promise from "seventh";
 import string from "string-kit";
-import computeAutoCompleteArray from "../autoComplete.js";
+import computeAutoCompleteArray from "../autoComplete";
 
 // @ts-nocheck
 /*

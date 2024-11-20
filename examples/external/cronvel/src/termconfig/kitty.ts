@@ -1,5 +1,7 @@
+// @ts-nocheck
+
 import tree from "tree-kit";
-import xterm256 from "./xterm-256color.js";
+import xterm256 from "./xterm-256color";
 
 // @ts-nocheck
 // Remove colors
@@ -21,14 +23,14 @@ const esc = tree.extend({ own: true }, Object.create(xterm256.esc), {
 
 // So far, we derivate from xterm-256color.
 export default {
-      esc: esc,
-      keymap: Object.create(xterm256.keymap),
-      handler: Object.create(xterm256.handler),
-      support: {
-        deltaEscapeSequence: true,
-        "256colors": true,
-        "24bitsColors": true, // DEPRECATED
-        trueColor: true,
-      },
-      colorRegister: require("../colorScheme/gnome.json"),
-    };
+  esc: esc,
+  keymap: Object.create(xterm256.keymap),
+  handler: Object.create(xterm256.handler),
+  support: {
+    deltaEscapeSequence: true,
+    "256colors": true,
+    "24bitsColors": true, // DEPRECATED
+    trueColor: true,
+  },
+  colorRegister: require("../colorScheme/gnome.json"),
+};

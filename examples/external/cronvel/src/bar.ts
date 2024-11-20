@@ -1,4 +1,6 @@
-import spChars from "./spChars.js";
+// @ts-nocheck
+
+import spChars from "./spChars";
 
 // @ts-nocheck
 /*
@@ -10,39 +12,39 @@ import spChars from "./spChars.js";
 			* str `boolean` (default: false) if true it outputs nothing, instead it returns a string
 */
 export default function (value, options) {
-      var str = "",
-        barString = "";
+  var str = "",
+    barString = "";
 
-      options = options || {};
+  options = options || {};
 
-      if (isNaN(value) || value < 0) {
-        value = 0;
-      } else if (value > 1) {
-        value = 1;
-      }
+  if (isNaN(value) || value < 0) {
+    value = 0;
+  } else if (value > 1) {
+    value = 1;
+  }
 
-      var innerSize = options.innerSize || 10;
-      var fullBlocks = Math.floor(value * innerSize);
-      var partialBlock = Math.round((value * innerSize - fullBlocks) * 8);
-      var barStyle = options.barStyle || this.blue;
+  var innerSize = options.innerSize || 10;
+  var fullBlocks = Math.floor(value * innerSize);
+  var partialBlock = Math.round((value * innerSize - fullBlocks) * 8);
+  var barStyle = options.barStyle || this.blue;
 
-      barString += "█".repeat(fullBlocks);
+  barString += "█".repeat(fullBlocks);
 
-      if (fullBlocks < innerSize) {
-        barString += spChars.enlargingBlock[partialBlock];
-        barString += " ".repeat(innerSize - fullBlocks - 1);
-      }
+  if (fullBlocks < innerSize) {
+    barString += spChars.enlargingBlock[partialBlock];
+    barString += " ".repeat(innerSize - fullBlocks - 1);
+  }
 
-      if (options.str) {
-        str += this.str.inverse("▉");
-        str += barStyle.str(barString);
-        str += this.str("▏");
-        return str;
-      }
+  if (options.str) {
+    str += this.str.inverse("▉");
+    str += barStyle.str(barString);
+    str += this.str("▏");
+    return str;
+  }
 
-      this.inverse("▉");
-      barStyle(barString);
-      this("▏");
+  this.inverse("▉");
+  barStyle(barString);
+  this("▏");
 
-      return this;
-    };
+  return this;
+}

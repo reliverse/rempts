@@ -1,7 +1,9 @@
+// @ts-nocheck
+
 import tree from "tree-kit";
 import string from "string-kit";
-import xterm from "./xterm.js";
-import gpm from "../gpm.js";
+import xterm from "./xterm";
+import gpm from "../gpm";
 
 // @ts-nocheck
 // shortcuts
@@ -338,17 +340,17 @@ const keymap = tree.extend(null, Object.create(xterm.keymap), {
 });
 
 export default {
-      esc: esc,
-      keymap: keymap,
-      handler: Object.create(xterm.handler),
-      support: {
-        deltaEscapeSequence: false,
-        "256colors": false,
-        "24bitsColors": false, // DEPRECATED
-        trueColor: false,
-      },
+  esc: esc,
+  keymap: keymap,
+  handler: Object.create(xterm.handler),
+  support: {
+    deltaEscapeSequence: false,
+    "256colors": false,
+    "24bitsColors": false, // DEPRECATED
+    trueColor: false,
+  },
 
-      // This is the standard VGA palette, used by restorepalette
-      // http://linux.die.net/man/1/restorepalette
-      colorRegister: require("../colorScheme/linux.json"),
-    };
+  // This is the standard VGA palette, used by restorepalette
+  // http://linux.die.net/man/1/restorepalette
+  colorRegister: require("../colorScheme/linux.json"),
+};
