@@ -1,17 +1,1 @@
-export { colorize } from "~/utils/colorize";
-export { msg, fmt } from "~/utils/messages";
-export { animateText } from "~/components/animate";
-export { createAsciiArt } from "~/components/ascii-art";
-export { spinnerPrompts } from "~/components/spinner";
-export { startPrompt } from "~/components/start";
-export { textPrompt } from "~/components/text-two";
-// export { selectPrompt } from "~/components/select";
-export { confirmPrompt } from "~/components/confirm-two";
-export { datePrompt } from "~/components/date";
-// export { multiSelectPrompt } from "~/components/multi-select";
-export { numMultiSelectPrompt } from "~/components/num-multi-select";
-export { nextStepsPrompt } from "~/components/next-steps";
-export { numberPrompt } from "~/components/number";
-export { passwordPrompt } from "~/components/password-two";
-export { endPrompt } from "~/components/end";
-export { prompt } from "~/components/mono";
+export * from "./prompts";

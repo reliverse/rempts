@@ -10,7 +10,7 @@ export default tseslint.config(
     ignores: [
       "**/.{git,next,astro,wxt}/",
       "**/{node_modules,dist,output,public,drizzle}/",
-      "examples/external/{cronvel,terkelg}/**/*.{js,ts}",
+      "examples/deprecated/**/*.{js,ts}",
     ],
   },
   eslint.configs.recommended,
@@ -69,6 +69,8 @@ export default tseslint.config(
       "@typescript-eslint/no-unsafe-call": "off",
       "@typescript-eslint/no-deprecated": "off",
       "@typescript-eslint/require-await": "off",
+      "@typescript-eslint/dot-notation": "off",
+      "@typescript-eslint/no-unnecessary-boolean-literal-compare": "off",
       "@typescript-eslint/consistent-type-definitions": ["error", "type"],
       "@typescript-eslint/consistent-type-imports": [
         "warn",
