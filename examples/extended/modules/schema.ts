@@ -25,7 +25,7 @@ export const schema = Type.Object({
     pattern: "^[a-zA-Z0-9\u0400-\u04FF]+$",
   }),
   dir: Type.String({ minLength: 1 }),
-  // deps: Type.Boolean(),
+  deps: Type.Boolean(),
   password: Type.String({ minLength: 4 }),
   age: Type.Number({ minimum: 18, maximum: 99 }),
   lang: Type.String(),

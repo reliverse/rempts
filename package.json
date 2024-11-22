@@ -1,6 +1,6 @@
 {
   "name": "@reliverse/relinka",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "type": "module",
   "description": "@reliverse/relinka is a powerful library that enables seamless, typesafe, and resilient prompts for command-line applications. Crafted with simplicity and elegance, it provides developers with an intuitive and robust way to build interactive CLIs.",
   "scripts": {
@@ -16,7 +16,7 @@
     "tsc": "tshy",
     "knip": "knip",
     "start": "node output/main.js",
-    "dev": "bun examples/simple/index.ts",
+    "dev": "bun examples/extended/index.ts",
     "dev:x": "tsx examples/extended/index.ts",
     "test:tape": "tape test/*.js | tap-spec",
     "release": "bumpp & bun pub"

@@ -4,6 +4,7 @@ import { bold } from "picocolors";
 
 import { version } from "~/../package.json";
 import { pressAnyKeyPrompt } from "~/components/anykey/index.js";
+import { progressbar } from "~/components/progressbar/index.js";
 import {
   animateText,
   confirmPromptTwo,
@@ -21,6 +22,7 @@ import {
 import { promptsDisplayResults } from "~/components/results/results.js";
 import { numSelectPrompt } from "~/components/select/num-select.js";
 import spinner from "~/components/spinner/index.js";
+import { colorize } from "~/utils/color.js";
 import { relinka } from "~/utils/create.js";
 
 import { basicConfig, extendedConfig } from "./configs.js";
@@ -265,12 +267,12 @@ export async function showNumMultiSelectPrompt(): Promise<
 }
 
 // TODO: fix bun crash
-/* export async function showConfirmPrompt(
+export async function showConfirmPrompt(
   username: string,
 ): Promise<UserInput["deps"]> {
   await showAnyKeyPrompt("pm", username);
 
-  const deps = await confirmPrompt({
+  const deps = await confirmPromptTwo({
     id: IDs.deps,
     title: "Do you want to see spinner in action?",
     // Intellisense will show you all available colors thanks to the enum.
@@ -288,7 +290,7 @@ export async function showNumMultiSelectPrompt(): Promise<
   });
   // A return value is unnecessary for prompts when the result is not needed later.
   return deps ?? false;
-} */
+}
 
 // Prompt ID is not required for the following
 // components, as they don't return any values.
@@ -356,6 +358,21 @@ export async function showEndPrompt() {
     titleColor: "retroGradient",
     titleTypography: "bold",
     titleAnimationDelay: 2000,
+  });
+}
+
+export async function showProgressBar() {
+  const symbol = colorize("greenBright", "◆");
+
+  await progressbar({
+    total: 100,
+    width: 10,
+    format: `${symbol}  Wait [:bar] :percent% | Elapsed: :elapsed s | ETA: :eta s`,
+    completeChar: "#",
+    incompleteChar: "-",
+    colorize: true, // Enable colorization
+    increment: 5, // Increment by 5
+    desiredTotalTime: 3000, // 3 seconds
   });
 }
 

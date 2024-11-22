@@ -6,7 +6,7 @@ import {
   doSomeFunStuff,
   showAnimatedText,
   showAnyKeyPrompt,
-  // showConfirmPrompt,
+  showConfirmPrompt,
   showDatePrompt,
   showEndPrompt,
   showNumMultiSelectPrompt,
@@ -19,21 +19,15 @@ import {
   showTextPrompt,
   showSelectPrompt,
   showMultiSelectPrompt,
+  showProgressBar,
 } from "@/extended/modules/prompts.js";
 import { type UserInput } from "@/extended/modules/schema.js";
 
-// import progressBar_ from "~/components/spinner/progressBar.js";
 import { errorHandler } from "~/utils/errors.js";
 
 export async function detailedExample() {
   await showStartPrompt();
   await showAnyKeyPrompt("privacy");
-
-  // progressBar_({
-  //   title: "Loading...",
-  //   percent: true,
-  // });
-
   const username = await showTextPrompt();
   const dir = await askDir(username);
   const age = await showNumberPrompt();
@@ -43,7 +37,7 @@ export async function detailedExample() {
   const birthday = await showDatePrompt();
   const langs = await showMultiSelectPrompt();
   const features = await showNumMultiSelectPrompt();
-  // const deps = await showConfirmPrompt(username);
+  const deps = await showConfirmPrompt(username);
   const userInput = {
     username,
     dir,
@@ -54,8 +48,9 @@ export async function detailedExample() {
     birthday,
     langs,
     features,
-    // deps,
+    deps,
   } satisfies UserInput;
+  await showProgressBar();
   await showResults(userInput);
   await doSomeFunStuff(userInput);
   await showNextStepsPrompt();

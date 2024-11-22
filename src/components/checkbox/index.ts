@@ -220,7 +220,7 @@ const checkbox = createPrompt(
       } else if (key.name === "i") {
         setItems(items.map(toggle));
       } else if (isNumberKey(key)) {
-        // Adjust index to start at 1
+        // We adjust index to start at 1
         const position = Number(key.name) - 1;
         const item = items[position];
         if (item != null && isSelectable(item)) {

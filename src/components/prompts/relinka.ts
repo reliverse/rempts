@@ -6,12 +6,11 @@ import type {
   LogObject,
   RelinkaOptions,
 } from "~/types/general.js";
+import type { LogType, LogLevel } from "~/utils/constants.js";
+import type { PromptOptions } from "~/utils/options.js";
 
-import type { LogType, LogLevel } from "../../utils/constants.js";
-import type { PromptOptions } from "../../utils/options.js";
-
-import { LogTypes } from "../../utils/constants.js";
-import { isLogObj } from "../../utils/log.js";
+import { LogTypes } from "~/utils/constants.js";
+import { isLogObj } from "~/utils/log.js";
 
 let paused = false;
 const queue: any[] = [];
