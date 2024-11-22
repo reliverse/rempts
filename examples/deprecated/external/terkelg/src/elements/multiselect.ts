@@ -2,7 +2,7 @@
 
 import color from "kleur";
 import { cursor } from "sisteransi";
-import Prompt from "./prompt";
+import Prompt from "./prompt.js";
 import { clear, figures, style, wrap, entriesToDisplay } from "../util/index";
 
 /**

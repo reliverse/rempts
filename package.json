@@ -1,6 +1,6 @@
 {
   "name": "@reliverse/relinka",
-  "version": "1.0.4",
+  "version": "1.0.8",
   "type": "module",
   "description": "@reliverse/relinka is a powerful library that enables seamless, typesafe, and resilient prompts for command-line applications. Crafted with simplicity and elegance, it provides developers with an intuitive and robust way to build interactive CLIs.",
   "scripts": {
@@ -16,8 +16,8 @@
     "tsc": "tshy",
     "knip": "knip",
     "start": "node output/main.js",
-    "dev": "bun examples/run-example.ts",
-    "dev:x": "tsx examples/run-example.ts",
+    "dev": "bun examples/simple/index.ts",
+    "dev:x": "tsx examples/extended/index.ts",
     "test:tape": "tape test/*.js | tap-spec",
     "release": "bumpp & bun pub"
   },
@@ -55,6 +55,7 @@
     "defu": "^6.1.4",
     "detect-package-manager": "^3.0.2",
     "external-editor": "^3.1.0",
+    "fast-glob": "^3.3.2",
     "figlet": "^1.8.0",
     "fs-extra": "^11.2.0",
     "get-pixels": "^3.3.3",
@@ -69,6 +70,7 @@
     "picocolors": "^1.1.1",
     "precision": "^1.0.1",
     "seventh": "^0.9.2",
+    "signal-exit": "^4.1.0",
     "sisteransi": "^1.0.5",
     "string-width": "^7.2.0",
     "window-size": "^1.1.1",
@@ -88,6 +90,7 @@
     "@types/mute-stream": "^0.0.4",
     "@types/node": "^22.9.1",
     "@types/sentencer": "^0.2.3",
+    "@types/signal-exit": "^3.0.4",
     "@types/tape": "^5.6.4",
     "@types/window-size": "^1.1.4",
     "bumpp": "^9.8.1",

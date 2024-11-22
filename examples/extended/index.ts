@@ -19,14 +19,21 @@ import {
   showTextPrompt,
   showSelectPrompt,
   showMultiSelectPrompt,
-} from "@/extended/modules/prompts";
-import { type UserInput } from "@/extended/modules/schema";
+} from "@/extended/modules/prompts.js";
+import { type UserInput } from "@/extended/modules/schema.js";
 
-import { errorHandler } from "~/unsorted/utils/errors";
+// import progressBar_ from "~/components/spinner/progressBar.js";
+import { errorHandler } from "~/utils/errors.js";
 
 export async function detailedExample() {
   await showStartPrompt();
   await showAnyKeyPrompt("privacy");
+
+  // progressBar_({
+  //   title: "Loading...",
+  //   percent: true,
+  // });
+
   const username = await showTextPrompt();
   const dir = await askDir(username);
   const age = await showNumberPrompt();

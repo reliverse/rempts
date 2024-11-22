@@ -1,7 +1,7 @@
 // @ts-nocheck
 
 import c from "kleur";
-import figures from "./figures";
+import figures from "./figures.js";
 
 // rendering user input.
 const styles = Object.freeze({

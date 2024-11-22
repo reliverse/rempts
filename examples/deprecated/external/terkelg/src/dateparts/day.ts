@@ -1,6 +1,6 @@
 // @ts-nocheck
 
-import DatePart from "./datepart";
+import DatePart from "./datepart.js";
 
 const pos = (n) => {
   n = n % 10;

@@ -1,6 +1,6 @@
 // @ts-nocheck
 
-import Element from "./Element";
+import Element from "./Element.js";
 import ScreenBuffer from "../ScreenBuffer";
 import termkit from "../termkit";
 

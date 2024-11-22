@@ -1,6 +1,6 @@
 // @ts-nocheck
 
-import fileHelpers from "./fileHelpers";
+import fileHelpers from "./fileHelpers.js";
 import path from "path";
 
 // @ts-nocheck

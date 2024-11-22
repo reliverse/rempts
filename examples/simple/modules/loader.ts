@@ -1,6 +1,11 @@
 import * as url from "node:url";
 
-import { createPrompt, useKeypress, usePrefix, isEnterKey } from "~/core";
+import {
+  createPrompt,
+  useKeypress,
+  usePrefix,
+  isEnterKey,
+} from "~/components/core/index.js";
 
 const loader = createPrompt((_config, done: (value: void) => void) => {
   const prefix = usePrefix({ status: "loading" });

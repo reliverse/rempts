@@ -1,7 +1,7 @@
 import * as url from "node:url";
 import colors from "picocolors";
 
-import { input } from "~/prompts";
+import { input } from "~/components/prompts/index.js";
 
 const hexRegEx = /(\d|[a-f])/gim;
 const isHex = (value: string) =>

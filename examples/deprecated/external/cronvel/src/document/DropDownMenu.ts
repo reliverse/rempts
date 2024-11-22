@@ -1,9 +1,9 @@
 // @ts-nocheck
 
-import Element from "./Element";
-import ToggleButton from "./ToggleButton";
-import RowMenu from "./RowMenu";
-import ColumnMenuMixed from "./ColumnMenuMixed";
+import Element from "./Element.js";
+import ToggleButton from "./ToggleButton.js";
+import RowMenu from "./RowMenu.js";
+import ColumnMenuMixed from "./ColumnMenuMixed.js";
 
 // @ts-nocheck
 

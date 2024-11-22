@@ -1,7 +1,7 @@
 // @ts-nocheck
 
-import Element from "./Element";
-import Slider from "./Slider";
+import Element from "./Element.js";
+import Slider from "./Slider.js";
 import ScreenBuffer from "../ScreenBuffer";
 import TextBuffer from "../TextBuffer";
 import Rect from "../Rect";

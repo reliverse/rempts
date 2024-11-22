@@ -1,7 +1,7 @@
 // @ts-nocheck
 
 import color from "kleur";
-import Prompt from "./prompt";
+import Prompt from "./prompt.js";
 import { cursor, erase } from "sisteransi";
 import { style, figures, clear, lines } from "../util/index";
 const isNumber = /[0-9]/;

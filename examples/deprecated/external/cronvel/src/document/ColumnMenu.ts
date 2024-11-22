@@ -1,9 +1,9 @@
 // @ts-nocheck
 
-import Element from "./Element";
-import BaseMenu from "./BaseMenu";
-import Button from "./Button";
-import ToggleButton from "./ToggleButton";
+import Element from "./Element.js";
+import BaseMenu from "./BaseMenu.js";
+import Button from "./Button.js";
+import ToggleButton from "./ToggleButton.js";
 
 // @ts-nocheck
 // Inherit from BaseMenu for common methods

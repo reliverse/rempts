@@ -1,6 +1,6 @@
 // @ts-nocheck
 
-import DatePart from "./datepart";
+import DatePart from "./datepart.js";
 
 class Year extends DatePart {
   constructor(opts = {}) {

@@ -4,7 +4,7 @@ import type {
   DistributiveMerge,
   PartialDeep,
   UnionToIntersection,
-} from "./utils";
+} from "./utils.js";
 
 test("DistributiveMerge", () => {
   expectTypeOf<

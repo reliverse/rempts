@@ -4,7 +4,7 @@ import tree from "tree-kit";
 import string from "string-kit";
 import NextGenEvents from "nextgen-events";
 import Promise from "seventh";
-import termkit from "./termkit";
+import termkit from "./termkit.js";
 import defaultColorRegister from "./colorScheme/default.json" with {
   type: "json",
 };

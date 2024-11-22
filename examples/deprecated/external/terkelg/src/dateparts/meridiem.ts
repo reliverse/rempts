@@ -1,6 +1,6 @@
 // @ts-nocheck
 
-import DatePart from "./datepart";
+import DatePart from "./datepart.js";
 
 class Meridiem extends DatePart {
   constructor(opts = {}) {

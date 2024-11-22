@@ -1,6 +1,6 @@
 // @ts-nocheck
 
-import termkit from "./termkit";
+import termkit from "./termkit.js";
 
 // @ts-nocheck
 /*

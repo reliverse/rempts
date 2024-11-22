@@ -1,7 +1,7 @@
 // @ts-nocheck
 
 import tree from "tree-kit";
-import xterm from "./xterm";
+import xterm from "./xterm.js";
 
 // @ts-nocheck
 // Fail-safe xterm-compatible

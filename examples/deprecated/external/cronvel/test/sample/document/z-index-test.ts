@@ -2,7 +2,6 @@
 
 import termkit from "../..";
 
-// @ts-nocheck
 const term = termkit.terminal;
 
 term.clear();

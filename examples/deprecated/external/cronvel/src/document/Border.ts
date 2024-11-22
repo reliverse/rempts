@@ -1,6 +1,6 @@
 // @ts-nocheck
 
-import Element from "./Element";
+import Element from "./Element.js";
 
 // @ts-nocheck
 const framesChars = require("../spChars").box;

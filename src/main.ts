@@ -1,1 +1,1 @@
-export * from "./prompts";
+export * from "./components/prompts/index.js";

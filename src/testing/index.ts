@@ -3,7 +3,7 @@ import MuteStream from "mute-stream";
 import { Stream } from "node:stream";
 import stripAnsi from "strip-ansi";
 
-import type { Prompt, Context } from "~/types";
+import type { Prompt, Context } from "~/types/index.js";
 
 const ignoredAnsi = new Set([ansiEscapes.cursorHide, ansiEscapes.cursorShow]);
 

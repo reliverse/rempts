@@ -1,9 +1,9 @@
 // @ts-nocheck
 
-import misc from "./misc";
+import misc from "./misc.js";
 import fs from "fs";
 import string from "string-kit";
-import termkit from "./termkit";
+import termkit from "./termkit.js";
 
 // @ts-nocheck
 // A buffer suitable for text editor

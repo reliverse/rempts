@@ -1,11 +1,11 @@
 // 3-basic-example.ts: A basic example demonstrating core functionalities of @reliverse/relinka. Everything in a single file.
 
-import { showSpinner } from "@/extended/modules/prompts";
+import { showSpinner } from "@/extended/modules/prompts.js";
 
-import type { OptionalPromptOptions } from "~/unsorted/types/general";
+import type { OptionalPromptOptions } from "~/types/general.js";
 
-import { numberPrompt, textPrompt } from "~/unsorted/main";
-import { errorHandler } from "~/unsorted/utils/errors";
+import { numberPromptTwo, textPromptTwo } from "~/components/prompts/index.js";
+import { errorHandler } from "~/utils/errors.js";
 
 export const basicConfig = {
   titleColor: "cyanBright",
@@ -20,7 +20,7 @@ export const extendedConfig = {
 } satisfies OptionalPromptOptions;
 
 async function main() {
-  await textPrompt({
+  await textPromptTwo({
     id: "start",
     title: "Hello, Reliverse Community! 👋",
     content: "You are testing the basic example of @reliverse/relinka",
@@ -30,7 +30,7 @@ async function main() {
     variantOptions: { box: { limit: 50 } },
   });
 
-  await numberPrompt({
+  await numberPromptTwo({
     id: "number",
     title: "Enter a number",
     content: "Type a number between 1 and 100",

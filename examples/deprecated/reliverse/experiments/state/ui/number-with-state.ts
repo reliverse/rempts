@@ -7,12 +7,12 @@ import readline from "node:readline/promises";
 import type {
   PromptOptionsDeprecated,
   StateDeprecated,
-} from "~/unsorted/types/internal";
+} from "~/types/internal.js";
 
-import { colorize } from "~/unsorted/utils/colorize";
-import { applyVariant } from "~/unsorted/utils/variants";
+import { colorize } from "~/utils/colorize.js";
+import { applyVariant } from "~/utils/variants.js";
 
-import { symbol } from "../../utils/symbols";
+import { symbol } from "../../utils/symbols.js";
 
 export async function numberPrompt<T extends TSchema>(
   options: PromptOptionsDeprecated<T>,

@@ -1,10 +1,10 @@
 import type {
   StateDeprecated,
   SymbolCharacterDeprecated,
-} from "~/unsorted/types/internal";
+} from "~/types/internal.js";
 
-import { colorize } from "~/unsorted/utils/colorize";
-import { isUnicodeSupported } from "~/unsorted/utils/platforms";
+import { colorize } from "~/utils/colorize.js";
+import { isUnicodeSupported } from "~/utils/platforms.js";
 
 const unicode = isUnicodeSupported();
 const s = (c: string, fallback: string) => (unicode ? c : fallback);

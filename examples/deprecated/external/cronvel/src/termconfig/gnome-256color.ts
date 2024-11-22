@@ -1,8 +1,8 @@
 // @ts-nocheck
 
 import tree from "tree-kit";
-import xterm256 from "./xterm-256color";
-import gnome from "./gnome";
+import xterm256 from "./xterm-256color.js";
+import gnome from "./gnome.js";
 
 // @ts-nocheck
 // Remove colors

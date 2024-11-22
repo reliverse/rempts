@@ -1,10 +1,10 @@
 // @ts-nocheck
 
-import Element from "./Element";
-import Text from "./Text";
-import Button from "./Button";
-import RowMenu from "./RowMenu";
-import ColumnMenu from "./ColumnMenu";
+import Element from "./Element.js";
+import Text from "./Text.js";
+import Button from "./Button.js";
+import RowMenu from "./RowMenu.js";
+import ColumnMenu from "./ColumnMenu.js";
 import string from "string-kit";
 
 // @ts-nocheck

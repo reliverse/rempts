@@ -9,9 +9,9 @@ import {
   select,
   spinner,
   text,
-} from "~/unsorted/components/component";
-import { confirmPrompt } from "~/unsorted/main";
-import { errorHandler } from "~/unsorted/utils/errors";
+} from "~/utils/component.js";
+import { confirmPrompt } from "~/components/confirm/confirm-two.js";
+import { errorHandler } from "~/utils/errors.js";
 
 async function main() {
   console.log();

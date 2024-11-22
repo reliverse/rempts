@@ -2,7 +2,7 @@
 
 import net from "net";
 import NextGenEvents from "nextgen-events";
-import termkit from "./termkit";
+import termkit from "./termkit.js";
 
 // @ts-nocheck
 

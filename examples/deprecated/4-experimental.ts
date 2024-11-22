@@ -1,11 +1,11 @@
-import type { TreeItem } from "~/unsorted/utils/tree";
+import type { TreeItem } from "~/utils/tree.js";
 
-import { rangePrompt } from "~/unsorted/components/range";
-import { relinka, createRelinka } from "~/unsorted/create";
-import { errorHandler } from "~/unsorted/utils/errors";
-import { formatTree } from "~/unsorted/utils/tree";
+import { rangePrompt } from "~/components/range/range.js";
+import { relinka, createRelinka } from "~/utils/create.js";
+import { errorHandler } from "~/utils/errors.js";
+import { formatTree } from "~/utils/tree.js";
 
-import { reporterDemo } from "./reliverse/experiments/utils/index";
+import { reporterDemo } from "./reliverse/experiments/utils/index.js";
 
 async function detailedExample() {
   // box

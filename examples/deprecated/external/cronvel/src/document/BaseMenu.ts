@@ -1,8 +1,8 @@
 // @ts-nocheck
 
 import tree from "tree-kit";
-import Element from "./Element";
-import Button from "./Button";
+import Element from "./Element.js";
+import Button from "./Button.js";
 
 // @ts-nocheck
 

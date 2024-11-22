@@ -1,6 +1,6 @@
 // @ts-nocheck
 
-import autoComplete from "./autoComplete";
+import autoComplete from "./autoComplete.js";
 import fs from "fs";
 import path from "path";
 import Promise from "seventh";

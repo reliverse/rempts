@@ -1,7 +1,7 @@
 // @ts-nocheck
 
 import tree from "tree-kit";
-import xterm256Generic from "./xterm-256color.generic";
+import xterm256Generic from "./xterm-256color.generic.js";
 
 // @ts-nocheck
 const keymap = tree.extend(null, Object.create(xterm256Generic.keymap), {

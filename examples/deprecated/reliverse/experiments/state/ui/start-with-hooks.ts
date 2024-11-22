@@ -1,9 +1,9 @@
-import type { PromptOptionsDeprecated } from "~/unsorted/types/internal";
+import type { PromptOptionsDeprecated } from "~/types/internal.js";
 
-import { useEffect } from "~/core/use-effect";
-import { usePromptState } from "~/unsorted/hooks/usePromptState";
-import { colorize } from "~/unsorted/utils/colorize";
-import { applyVariant } from "~/unsorted/utils/variants";
+import { useEffect } from "~/components/core/use-effect.js";
+import { usePromptState } from "~/components/core/usePromptState.js";
+import { colorize } from "~/utils/colorize.js";
+import { applyVariant } from "~/utils/variants.js";
 
 export async function startPrompt(
   options: PromptOptionsDeprecated,

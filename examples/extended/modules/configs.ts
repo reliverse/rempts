@@ -1,4 +1,4 @@
-import type { OptionalPromptOptions } from "~/unsorted/types/general";
+import type { OptionalPromptOptions } from "~/types/general.js";
 
 export const basicConfig = {
   titleColor: "cyanBright",

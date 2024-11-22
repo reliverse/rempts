@@ -1,7 +1,7 @@
 // @ts-nocheck
 
 import tree from "tree-kit";
-import xterm from "./xterm";
+import xterm from "./xterm.js";
 import string from "string-kit";
 
 // @ts-nocheck

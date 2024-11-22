@@ -1,7 +1,7 @@
 // @ts-nocheck
 
-import Element from "./Element";
-import Container from "./Container";
+import Element from "./Element.js";
+import Container from "./Container.js";
 
 // @ts-nocheck
 const boxesChars = require("../spChars").box;

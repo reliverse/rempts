@@ -4,11 +4,11 @@ import { Value } from "@sinclair/typebox/value";
 import { stdin as input, stdout as output } from "node:process";
 import readline from "node:readline/promises";
 
-import type { PromptOptionsDeprecated } from "~/unsorted/types/internal";
+import type { PromptOptionsDeprecated } from "~/types/internal.js";
 
-import { usePromptState } from "~/unsorted/hooks/usePromptState";
-import { colorize } from "~/unsorted/utils/colorize";
-import { applyVariant } from "~/unsorted/utils/variants";
+import { usePromptState } from "~/components/core/usePromptState.js";
+import { colorize } from "~/utils/colorize.js";
+import { applyVariant } from "~/utils/variants.js";
 
 export async function numberPrompt<T extends TSchema>(
   options: PromptOptionsDeprecated<T>,

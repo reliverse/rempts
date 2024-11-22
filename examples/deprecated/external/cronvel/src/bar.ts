@@ -1,6 +1,6 @@
 // @ts-nocheck
 
-import spChars from "./spChars";
+import spChars from "./spChars.js";
 
 // @ts-nocheck
 /*

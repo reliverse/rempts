@@ -13,10 +13,9 @@ export default defineBuildConfig({
   ],
   rollup: {
     emitCJS: false,
-    inlineDependencies: true,
     esbuild: {
       exclude: ["**/*.test.ts"],
-      target: "es2022",
+      target: "es2023",
       minify: true,
     },
   },

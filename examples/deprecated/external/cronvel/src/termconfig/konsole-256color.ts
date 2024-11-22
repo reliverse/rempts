@@ -1,8 +1,8 @@
 // @ts-nocheck
 
 import tree from "tree-kit";
-import xterm256 from "./xterm-256color";
-import konsole from "./konsole";
+import xterm256 from "./xterm-256color.js";
+import konsole from "./konsole.js";
 
 // @ts-nocheck
 // Remove colors

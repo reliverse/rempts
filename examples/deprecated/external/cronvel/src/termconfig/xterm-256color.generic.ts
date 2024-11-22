@@ -1,8 +1,8 @@
 // @ts-nocheck
 
 import tree from "tree-kit";
-import xterm256 from "./xterm-256color";
-import xtermGeneric from "./xterm.generic";
+import xterm256 from "./xterm-256color.js";
+import xtermGeneric from "./xterm.generic.js";
 
 // @ts-nocheck
 // Fail-safe xterm-compatible.

@@ -3,8 +3,8 @@
 import ScreenBuffer from "../ScreenBuffer";
 import Rect from "../Rect";
 import string from "string-kit";
-import toInputSequence from "./toInputSequence";
-import SequencesReader from "./SequencesReader";
+import toInputSequence from "./toInputSequence.js";
+import SequencesReader from "./SequencesReader.js";
 import NextGenEvents from "nextgen-events";
 import Promise from "seventh";
 

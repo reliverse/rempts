@@ -1,6 +1,6 @@
 import * as url from "node:url";
 
-import { password } from "~/prompts";
+import { password } from "~/components/prompts/index.js";
 
 const demo = async () => {
   console.log(

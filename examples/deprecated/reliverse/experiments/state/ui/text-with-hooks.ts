@@ -1,6 +1,6 @@
 import type { TSchema, Static } from "@sinclair/typebox";
 
-import { symbol } from "@/deprecated/reliverse/experiments/utils/symbols";
+import { symbol } from "@/deprecated/reliverse/experiments/utils/symbols.js";
 import { Value } from "@sinclair/typebox/value";
 import { stdin as input, stdout as output } from "node:process";
 import readline from "node:readline/promises";
@@ -8,12 +8,17 @@ import readline from "node:readline/promises";
 import type {
   PromptOptionsDeprecated,
   StateDeprecated,
-} from "~/unsorted/types/internal";
-import type { RelinkaReadline } from "~/unsorted/types/readline";
+} from "~/types/internal.js";
+import type { RelinkaReadline } from "~/types/readline.js";
 
-import { useState, useEffect, useKeypress, type KeypressEvent } from "~/core";
-import { colorize } from "~/unsorted/utils/colorize";
-import { applyVariant } from "~/unsorted/utils/variants";
+import {
+  useState,
+  useEffect,
+  useKeypress,
+  type KeypressEvent,
+} from "~/components/core/index.js";
+import { colorize } from "~/utils/colorize.js";
+import { applyVariant } from "~/utils/variants.js";
 
 export async function textPrompt<T extends TSchema>(
   options: PromptOptionsDeprecated<T>,

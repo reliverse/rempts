@@ -1,11 +1,16 @@
 {
   "version": "0.2",
   "language": "en",
-  "import": ["@cspell/dict-npm/cspell-ext.json"],
-  "ignorePaths": ["examples/deprecated"],
+  "import": [
+    "@cspell/dict-npm/cspell-ext.json"
+  ],
+  "ignorePaths": [
+    "examples/deprecated"
+  ],
   "words": [
     "alacritty",
     "alternar",
+    "anykey",
     "Approximative",
     "appts",
     "arethetypeswrong",

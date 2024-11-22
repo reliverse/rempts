@@ -1,8 +1,8 @@
 // @ts-nocheck
 
 import tree from "tree-kit";
-import xterm256 from "./xterm-256color";
-import rxvt from "./rxvt";
+import xterm256 from "./xterm-256color.js";
+import rxvt from "./rxvt.js";
 
 // @ts-nocheck
 const esc = tree.extend({ own: true }, Object.create(xterm256.esc), rxvt.esc, {

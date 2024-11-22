@@ -3,35 +3,35 @@ import { emojify } from "node-emoji";
 import { bold } from "picocolors";
 
 import { version } from "~/../package.json";
-import { pressAnyKeyPrompt } from "~/unsorted/components/any-key";
-import { numSelectPrompt } from "~/unsorted/components/num-select";
-import { promptsDisplayResults } from "~/unsorted/components/results";
-import { relinka } from "~/unsorted/create";
+import { pressAnyKeyPrompt } from "~/components/anykey/index.js";
 import {
   animateText,
-  confirmPrompt,
+  confirmPromptTwo,
   datePrompt,
   endPrompt,
   msg,
   numMultiSelectPrompt,
   nextStepsPrompt,
-  numberPrompt,
-  passwordPrompt,
+  numberPromptTwo,
+  passwordPromptTwo,
   // selectPrompt,
-  spinnerPrompts,
   startPrompt,
-  textPrompt,
-} from "~/unsorted/main";
+  textPromptTwo,
+} from "~/components/prompts/index.js";
+import { promptsDisplayResults } from "~/components/results/results.js";
+import { numSelectPrompt } from "~/components/select/num-select.js";
+import spinner from "~/components/spinner/index.js";
+import { relinka } from "~/utils/create.js";
 
-import { basicConfig, extendedConfig } from "./configs";
-import { schema, type UserInput } from "./schema";
+import { basicConfig, extendedConfig } from "./configs.js";
+import { schema, type UserInput } from "./schema.js";
 import {
   calculateAge,
   createColorChoices,
   displayUserInputs,
   hashPassword,
   validateAge,
-} from "./utils";
+} from "./utils.js";
 
 const IDs = {
   start: "start",
@@ -57,7 +57,7 @@ export async function showStartPrompt() {
 }
 
 export async function showTextPrompt(): Promise<UserInput["username"]> {
-  const username = await textPrompt({
+  const username = await textPromptTwo({
     // 'id' is the key in the userInput result object.
     // Choose any name for it, but ensure it’s unique.
     // Intellisense will show you all available IDs.
@@ -73,7 +73,7 @@ export async function showTextPrompt(): Promise<UserInput["username"]> {
 }
 
 export async function askDir(username: string): Promise<UserInput["dir"]> {
-  const dir = await textPrompt({
+  const dir = await textPromptTwo({
     id: IDs.dir,
     title: `Great! Nice to meet you, ${username}!`,
     content: "Where should we create your project?",
@@ -88,7 +88,7 @@ export async function askDir(username: string): Promise<UserInput["dir"]> {
 }
 
 export async function showNumberPrompt(): Promise<UserInput["age"]> {
-  const age = await numberPrompt({
+  const age = await numberPromptTwo({
     id: IDs.age,
     ...extendedConfig,
     // Adding a hint helps users understand the expected input format.
@@ -152,7 +152,7 @@ export async function showPasswordPrompt(): Promise<UserInput["password"]> {
   // Wrap password prompts with a try-catch block to handle cancellations,
   // which otherwise would terminate the process with an error.
   try {
-    password = await passwordPrompt({
+    password = await passwordPromptTwo({
       id: IDs.password,
       title: "Imagine a password",
       schema: schema.properties.password,
@@ -294,7 +294,7 @@ export async function showNumMultiSelectPrompt(): Promise<
 // components, as they don't return any values.
 
 export async function showSpinner() {
-  await spinnerPrompts({
+  await spinner({
     initialMessage: "Some long-running task is in progress...",
     successMessage: "Hooray! The long-running task was a success!",
     errorMessage: "An error occurred while the long-running task!",

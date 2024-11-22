@@ -16,5 +16,6 @@
   "openMultipleFiles.limit": 600,
   "markdownlint.config": {
     "MD033": false
-  }
+  },
+  "typescript.tsdk": "node_modules\\typescript\\lib"
 }

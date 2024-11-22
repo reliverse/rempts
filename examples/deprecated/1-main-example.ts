@@ -19,10 +19,10 @@ import {
   showTextPrompt,
   showSelectPrompt,
   showMultiSelectPrompt,
-} from "@/extended/modules/prompts";
-import { type UserInput } from "@/extended/modules/schema";
+} from "@/extended/modules/prompts.js";
+import { type UserInput } from "@/extended/modules/schema.js";
 
-import { errorHandler } from "~/unsorted/utils/errors";
+import { errorHandler } from "~/utils/errors.js";
 
 const hexRegEx = /(\d|[a-f])/gim;
 const isHex = (value: string) =>

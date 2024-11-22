@@ -2,7 +2,7 @@ import { promises as fs } from "node:fs";
 import path from "node:path";
 import * as url from "node:url";
 
-import { search } from "~/prompts";
+import { search } from "~/components/prompts/index.js";
 
 async function fileExists(filepath: string) {
   return fs.access(filepath).then(
@@ -31,6 +31,7 @@ const demo = async () => {
   answer = await search({
     message: "Select an npm package",
 
+    // @ts-expect-error - TODO: fix ts
     // biome-ignore lint/style/useDefaultParameterLast: <explanation>
     source: async (input = "relinka", { signal }) => {
       const response = await fetch(
@@ -54,6 +55,7 @@ const demo = async () => {
   answer = await search({
     message: "Select a file",
 
+    // @ts-expect-error - TODO: fix ts
     source: async (term = "") => {
       let dirPath = path.join(root, term);
       while (!(await isDirectory(dirPath)) && dirPath !== root) {

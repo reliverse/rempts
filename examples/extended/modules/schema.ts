@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/prefer-reduce-type-parameter */
 import { Type, type Static } from "@sinclair/typebox";
 
-import { colorMap } from "~/unsorted/utils/mapping";
+import { colorMap } from "~/utils/mapping.js";
 
 // Extract color keys from colorMap to create a ColorEnum type
 const colorKeys = Object.keys(colorMap) as [keyof typeof colorMap];
@@ -39,7 +39,7 @@ export const schema = Type.Object({
 export type UserInput = Static<typeof schema>;
 
 /* import { Type, type Static } from "@sinclair/typebox";
-import { colorMap } from "~/unsorted/utils/mapping";
+import { colorMap } from "~/unsorted/utils/mapping.js";
 
 // @reliverse/relinka allows you to define the schema once and reuse it for each prompt.
 // This is useful if you want to validate the input of multiple prompts using TypeBox.

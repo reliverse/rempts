@@ -1,7 +1,7 @@
 // @ts-nocheck
 
-import Element from "./Element";
-import Text from "./Text";
+import Element from "./Element.js";
+import Text from "./Text.js";
 import spChars from "../spChars";
 
 // @ts-nocheck

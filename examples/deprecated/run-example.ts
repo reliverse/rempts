@@ -1,5 +1,5 @@
-import { relinka } from "~/unsorted/create";
-import { errorHandler } from "~/unsorted/utils/errors";
+import { relinka } from "~/utils/create.js";
+import { errorHandler } from "~/utils/errors.js";
 
 async function examplesRunner() {
   const exampleToRun = await relinka.prompt("Choose an example to run", {
@@ -28,16 +28,16 @@ async function examplesRunner() {
 
   switch (exampleToRun) {
     case "1-main-example":
-      await import("./1-main-example");
+      await import("./1-main-example.js");
       break;
     case "2-mono-example":
-      await import("./2-mono-example");
+      await import("./2-mono-example.js");
       break;
     case "3-basic-example":
-      await import("./3-basic-example");
+      await import("./3-basic-example.js");
       break;
     case "4-experimental":
-      await import("./4-experimental");
+      await import("./4-experimental.js");
       break;
     default:
       break;

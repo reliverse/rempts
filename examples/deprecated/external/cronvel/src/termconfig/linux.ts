@@ -2,7 +2,7 @@
 
 import tree from "tree-kit";
 import string from "string-kit";
-import xterm from "./xterm";
+import xterm from "./xterm.js";
 import gpm from "../gpm";
 
 // @ts-nocheck

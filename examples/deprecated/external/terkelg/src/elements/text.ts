@@ -1,7 +1,7 @@
 // @ts-nocheck
 
 import color from "kleur";
-import Prompt from "./prompt";
+import Prompt from "./prompt.js";
 import { erase, cursor } from "sisteransi";
 import { style, clear, lines, figures } from "../util/index";
 /**

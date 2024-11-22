@@ -3,7 +3,7 @@
 import NextGenEvents from "nextgen-events";
 import Promise from "seventh";
 import string from "string-kit";
-import autoComplete from "./autoComplete";
+import autoComplete from "./autoComplete.js";
 
 // @ts-nocheck
 const defaultKeyBindings = {
