@@ -1,19 +1,20 @@
 // @ts-nocheck
 
-'use strict';
+"use strict";
 
-const Store = require('data-store');
-const { Input } = require('enquirer');
+const Store = require("data-store");
+const { Input } = require("enquirer");
 
 const prompt = new Input({
-  name: 'username',
-  message: 'GitHub username?',
+  name: "username",
+  message: "GitHub username?",
   history: {
     store: new Store({ path: `${__dirname}/username.json` }),
-    autosave: true
-  }
+    autosave: true,
+  },
 });
 
-prompt.run()
-  .then(answer => console.log('Answer:', answer))
+prompt
+  .run()
+  .then((answer) => console.log("Answer:", answer))
   .catch(console.error);

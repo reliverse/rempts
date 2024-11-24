@@ -1,9 +1,9 @@
 // @ts-nocheck
 
-'use strict';
+"use strict";
 
-const Prompt = require('../types/string');
-const completer = require('../completer');
+const Prompt = require("../types/string");
+const completer = require("../completer");
 
 class Input extends Prompt {
   constructor(options) {
@@ -13,8 +13,9 @@ class Input extends Prompt {
       let initial = history.values || this.initial;
       this.autosave = !!history.autosave;
       this.store = history.store;
-      this.data = this.store.get('values') || { past: [], present: initial };
-      this.initial = this.data.present || this.data.past[this.data.past.length - 1];
+      this.data = this.store.get("values") || { past: [], present: initial };
+      this.initial =
+        this.data.present || this.data.past[this.data.past.length - 1];
     }
   }
 
@@ -28,11 +29,11 @@ class Input extends Prompt {
   }
 
   altUp() {
-    return this.completion('prev');
+    return this.completion("prev");
   }
 
   altDown() {
-    return this.completion('next');
+    return this.completion("next");
   }
 
   prev() {
@@ -42,8 +43,8 @@ class Input extends Prompt {
 
   save() {
     if (!this.store) return;
-    this.data = completer('save', this.data, this.input);
-    this.store.set('values', this.data);
+    this.data = completer("save", this.data, this.input);
+    this.store.set("values", this.data);
   }
 
   submit() {

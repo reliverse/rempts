@@ -1,8 +1,8 @@
 // @ts-nocheck
 
-const { dim, green, red, yellow } = require('ansi-colors');
-const { Input } = require('enquirer');
-const color = t => t >= 7 ? green(t) : t > 3 ? yellow(t) : red(t);
+const { dim, green, red, yellow } = require("ansi-colors");
+const { Input } = require("enquirer");
+const color = (t) => (t >= 7 ? green(t) : t > 3 ? yellow(t) : red(t));
 let time = 5;
 let int;
 
@@ -13,24 +13,24 @@ let int;
  */
 
 const prompt = new Input({
-  name: 'name',
+  name: "name",
   header() {
-    return `${dim('You have')} ${color(time)} ${dim('seconds left to answer!')}`;
+    return `${dim("You have")} ${color(time)} ${dim("seconds left to answer!")}`;
   },
   separator() {
-    return ''; // hide separator
+    return ""; // hide separator
   },
   message(state) {
-    if (state.submitted && !state.input) return 'Really? Your own name?';
-    return state.submitted ? 'Well done,' : 'What is your full name!!!';
-  }
+    if (state.submitted && !state.input) return "Really? Your own name?";
+    return state.submitted ? "Well done," : "What is your full name!!!";
+  },
 });
 
-prompt.once('close', () => clearInterval(int));
-prompt.once('run', () => {
+prompt.once("close", () => clearInterval(int));
+prompt.once("run", () => {
   int = setInterval(() => {
     if (time-- === 0) {
-      prompt.state.input = '';
+      prompt.state.input = "";
       prompt.cancel();
     } else {
       prompt.render();
@@ -38,5 +38,4 @@ prompt.once('run', () => {
   }, 1000);
 });
 
-prompt.run()
-  .catch(console.error);
+prompt.run().catch(console.error);

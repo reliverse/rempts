@@ -75,8 +75,9 @@ export default class ScreenManager {
       promptLineUpDiff + (bottomContent ? height(bottomContent) : 0);
 
     // Return cursor to the input position (on top of the bottomContent)
-    if (bottomContentHeight > 0)
+    if (bottomContentHeight > 0) {
       output += ansiEscapes.cursorUp(bottomContentHeight);
+    }
 
     // Return cursor to the initial left offset.
     output += ansiEscapes.cursorTo(this.cursorPos.cols);

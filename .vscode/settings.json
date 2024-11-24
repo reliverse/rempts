@@ -17,5 +17,6 @@
   "markdownlint.config": {
     "MD033": false
   },
-  "typescript.tsdk": "node_modules\\typescript\\lib"
+  "typescript.tsdk": "node_modules\\typescript\\lib",
+  "eslint.ignoreUntitled": true
 }

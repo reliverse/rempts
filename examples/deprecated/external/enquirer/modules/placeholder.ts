@@ -1,8 +1,8 @@
 // @ts-nocheck
 
-'use strict';
+"use strict";
 
-const utils = require('./utils');
+const utils = require("./utils");
 
 /**
  * Render a placeholder value with cursor and styling based on the
@@ -20,40 +20,40 @@ const utils = require('./utils');
 module.exports = (prompt, options = {}) => {
   prompt.cursorHide();
 
-  let { input = '', initial = '', pos, showCursor = true, color } = options;
+  let { input = "", initial = "", pos, showCursor = true, color } = options;
   let style = color || prompt.styles.placeholder;
   let inverse = utils.inverse(prompt.styles.primary);
-  let blinker = str => inverse(prompt.styles.black(str));
+  let blinker = (str) => inverse(prompt.styles.black(str));
   let output = input;
-  let char = ' ';
+  let char = " ";
   let reverse = blinker(char);
 
   if (prompt.blink && prompt.blink.off === true) {
-    blinker = str => str;
-    reverse = '';
+    blinker = (str) => str;
+    reverse = "";
   }
 
-  if (showCursor && pos === 0 && initial === '' && input === '') {
+  if (showCursor && pos === 0 && initial === "" && input === "") {
     return blinker(char);
   }
 
-  if (showCursor && pos === 0 && (input === initial || input === '')) {
+  if (showCursor && pos === 0 && (input === initial || input === "")) {
     return blinker(initial[0]) + style(initial.slice(1));
   }
 
-  initial = utils.isPrimitive(initial) ? `${initial}` : '';
-  input = utils.isPrimitive(input) ? `${input}` : '';
+  initial = utils.isPrimitive(initial) ? `${initial}` : "";
+  input = utils.isPrimitive(input) ? `${input}` : "";
 
   let placeholder = initial && initial.startsWith(input) && initial !== input;
   let cursor = placeholder ? blinker(initial[input.length]) : reverse;
 
   if (pos !== input.length && showCursor === true) {
     output = input.slice(0, pos) + blinker(input[pos]) + input.slice(pos + 1);
-    cursor = '';
+    cursor = "";
   }
 
   if (showCursor === false) {
-    cursor = '';
+    cursor = "";
   }
 
   if (placeholder) {

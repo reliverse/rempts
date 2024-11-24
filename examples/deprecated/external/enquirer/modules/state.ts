@@ -1,27 +1,27 @@
 // @ts-nocheck
 
-'use strict';
+"use strict";
 
-const { define, width } = require('./utils');
+const { define, width } = require("./utils");
 
 class State {
   constructor(prompt) {
     let options = prompt.options;
-    define(this, '_prompt', prompt);
+    define(this, "_prompt", prompt);
     this.type = prompt.type;
     this.name = prompt.name;
-    this.message = '';
-    this.header = '';
-    this.footer = '';
-    this.error = '';
-    this.hint = '';
-    this.input = '';
+    this.message = "";
+    this.header = "";
+    this.footer = "";
+    this.error = "";
+    this.hint = "";
+    this.input = "";
     this.cursor = 0;
     this.index = 0;
     this.lines = 0;
     this.tick = 0;
-    this.prompt = '';
-    this.buffer = '';
+    this.prompt = "";
+    this.buffer = "";
     this.width = width(options.stdout || process.stdout);
     Object.assign(this, options);
     this.name = this.name || this.message;
@@ -49,22 +49,22 @@ class State {
     if (this.cancelled) return styles.cancelled;
     if (this.submitted) return styles.submitted;
     let color = this._color || styles[this.status];
-    return typeof color === 'function' ? color : styles.pending;
+    return typeof color === "function" ? color : styles.pending;
   }
 
   set loading(value) {
     this._loading = value;
   }
   get loading() {
-    if (typeof this._loading === 'boolean') return this._loading;
-    if (this.loadingChoices) return 'choices';
+    if (typeof this._loading === "boolean") return this._loading;
+    if (this.loadingChoices) return "choices";
     return false;
   }
 
   get status() {
-    if (this.cancelled) return 'cancelled';
-    if (this.submitted) return 'submitted';
-    return 'pending';
+    if (this.cancelled) return "cancelled";
+    if (this.submitted) return "submitted";
+    return "pending";
   }
 }
 

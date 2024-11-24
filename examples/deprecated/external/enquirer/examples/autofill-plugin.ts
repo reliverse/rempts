@@ -1,6 +1,6 @@
 // @ts-nocheck
 
-'use strict';
+"use strict";
 
 /**
  * Example "autofill" plugin - to achieve similar goal to autofill for web forms.
@@ -10,11 +10,11 @@
  */
 
 const autofill = (answers = {}) => {
-  return enquirer => {
+  return (enquirer) => {
     let prompt = enquirer.prompt.bind(enquirer);
     let context = { ...enquirer.answers, ...answers };
 
-    enquirer.prompt = async questions => {
+    enquirer.prompt = async (questions) => {
       let list = [].concat(questions || []);
       let choices = [];
 
@@ -27,10 +27,11 @@ const autofill = (answers = {}) => {
 
       if (choices.length) {
         let values = await enquirer.prompt({
-          type: 'multiselect',
-          name: 'autofill',
-          message: 'Would you like to autofill prompts with the following values?',
-          choices
+          type: "multiselect",
+          name: "autofill",
+          message:
+            "Would you like to autofill prompts with the following values?",
+          choices,
         });
 
         for (let item of list) {
@@ -49,18 +50,19 @@ const autofill = (answers = {}) => {
   };
 };
 
-const Enquirer = require('enquirer');
+const Enquirer = require("enquirer");
 const enquirer = new Enquirer();
 
-enquirer.use(autofill({ name: 'Jon Schlinkert', username: 'jonschlinkert' }));
+enquirer.use(autofill({ name: "Jon Schlinkert", username: "jonschlinkert" }));
 
 const questions = [
-  { type: 'input', name: 'name', message: 'What is your name?' },
-  { type: 'input', name: 'username', message: 'What is your username?' },
-  { type: 'input', name: 'email', message: 'What is your email?' },
-  { type: 'input', name: 'phone', message: 'What is your phone number?' }
+  { type: "input", name: "name", message: "What is your name?" },
+  { type: "input", name: "username", message: "What is your username?" },
+  { type: "input", name: "email", message: "What is your email?" },
+  { type: "input", name: "phone", message: "What is your phone number?" },
 ];
 
-enquirer.prompt(questions)
-  .then(answers => console.log(answers))
+enquirer
+  .prompt(questions)
+  .then((answers) => console.log(answers))
   .catch(console.error);

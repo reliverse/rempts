@@ -1,13 +1,14 @@
 // @ts-nocheck
 
-'use strict';
+"use strict";
 
-const { Input } = require('enquirer');
+const { Input } = require("enquirer");
 const prompt = new Input({
-  message: 'What is your username?',
-  hint: ' (start typing)'
+  message: "What is your username?",
+  hint: " (start typing)",
 });
 
-prompt.run()
-  .then(answer => console.log('ANSWER', answer))
+prompt
+  .run()
+  .then((answer) => console.log("ANSWER", answer))
   .catch(console.log);

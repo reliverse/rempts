@@ -1,6 +1,6 @@
 // @ts-nocheck
 
-const { Prompt } = require('enquirer');
+const { Prompt } = require("enquirer");
 
 class HaiKarate extends Prompt {
   constructor(options = {}) {
@@ -23,9 +23,8 @@ class HaiKarate extends Prompt {
 }
 
 const prompt = new HaiKarate({
-  message: 'How many sprays do you want?',
-  sprays: 10
+  message: "How many sprays do you want?",
+  sprays: 10,
 });
 
-prompt.run()
-  .then(console.log).catch(console.error);
+prompt.run().then(console.log).catch(console.error);

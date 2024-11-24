@@ -1,17 +1,17 @@
 // @ts-nocheck
 
-const { Snippet } = require('enquirer');
+const { Snippet } = require("enquirer");
 
-const pause = (ms = 1000) => new Promise(res => setTimeout(res, ms));
+const pause = (ms = 1000) => new Promise((res) => setTimeout(res, ms));
 const prompt = new Snippet({
-  name: 'Author Name',
-  fields: [{ name: 'name', message: 'Author Name' }],
-  template: 'hello ${name}'
+  name: "Author Name",
+  fields: [{ name: "name", message: "Author Name" }],
+  template: "hello ${name}",
 });
 
-const typed = '床前明月光，疑是地上霜。举头望明月，低头思故乡。';
+const typed = "床前明月光，疑是地上霜。举头望明月，低头思故乡。";
 
-prompt.once('run', async() => {
+prompt.once("run", async () => {
   for (const input of [...typed]) {
     await prompt.keypress(input);
 
@@ -22,9 +22,10 @@ prompt.once('run', async() => {
   prompt.submit();
 });
 
-prompt.run()
-  .then(answer => {
-    console.log('Answer:');
+prompt
+  .run()
+  .then((answer) => {
+    console.log("Answer:");
     console.log(answer);
   })
   .catch(console.log);

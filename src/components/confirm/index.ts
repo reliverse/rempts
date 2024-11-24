@@ -27,9 +27,12 @@ export default createPrompt<boolean, ConfirmConfig>((config, done) => {
 
   useKeypress((key, rl) => {
     if (isEnterKey(key)) {
-      let answer = config.default !== false;
-      if (/^(y|yes)/i.test(value)) answer = true;
-      else if (/^(n|no)/i.test(value)) answer = false;
+      let answer = config.default;
+      if (/^(y|yes)/i.test(value)) {
+        answer = true;
+      } else if (/^(n|no)/i.test(value)) {
+        answer = false;
+      }
 
       setValue(transformer(answer));
       setStatus("done");
@@ -45,7 +48,7 @@ export default createPrompt<boolean, ConfirmConfig>((config, done) => {
     formattedValue = theme.style.answer(value);
   } else {
     defaultValue = ` ${theme.style.defaultAnswer(
-      config.default === false ? "y/N" : "Y/n",
+      !config.default ? "y/N" : "Y/n",
     )}`;
   }
 

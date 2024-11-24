@@ -1,15 +1,15 @@
 // @ts-nocheck
 
-'use strict';
+"use strict";
 
-const { Snippet } = require('enquirer');
+const { Snippet } = require("enquirer");
 
 const prompt = new Snippet({
-  name: 'username',
-  message: 'Fill out the fields in package.json',
-  defaults: { name: 'awesome-lib', version: '0.1.0', license: 'MIT' },
-  required: ['name', 'version', 'description'],
-  initial: 'version',
+  name: "username",
+  message: "Fill out the fields in package.json",
+  defaults: { name: "awesome-lib", version: "0.1.0", license: "MIT" },
+  required: ["name", "version", "description"],
+  initial: "version",
   template: `{
   "name": "{{name}}",
   "description": "{{description}}",
@@ -29,9 +29,10 @@ const prompt = new Snippet({
   },
   "keywords": []
 }
-`
+`,
 });
 
-prompt.run()
-  .then(answer => console.log('Answer:', answer))
+prompt
+  .run()
+  .then((answer) => console.log("Answer:", answer))
   .catch(console.error);

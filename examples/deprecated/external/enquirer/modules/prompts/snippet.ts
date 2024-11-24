@@ -1,10 +1,10 @@
 // @ts-nocheck
 
-'use strict';
+"use strict";
 
-const stripAnsi = require('strip-ansi');
-const interpolate = require('../interpolate');
-const Prompt = require('../prompt');
+const stripAnsi = require("strip-ansi");
+const interpolate = require("../interpolate");
+const Prompt = require("../prompt");
 
 class SnippetPrompt extends Prompt {
   constructor(options) {
@@ -115,7 +115,8 @@ class SnippetPrompt extends Prompt {
   }
 
   format(value) {
-    let color = this.state.completed < 100 ? this.styles.warning : this.styles.success;
+    let color =
+      this.state.completed < 100 ? this.styles.warning : this.styles.success;
     if (this.state.submitted === true && this.state.completed !== 100) {
       color = this.styles.danger;
     }
@@ -125,24 +126,24 @@ class SnippetPrompt extends Prompt {
   async render() {
     let { index, keys = [], submitted, size } = this.state;
 
-    let newline = [this.options.newline, '\n'].find(v => v != null);
+    let newline = [this.options.newline, "\n"].find((v) => v != null);
     let prefix = await this.prefix();
     let separator = await this.separator();
     let message = await this.message();
 
-    let prompt = [prefix, message, separator].filter(Boolean).join(' ');
+    let prompt = [prefix, message, separator].filter(Boolean).join(" ");
     this.state.prompt = prompt;
 
     let header = await this.header();
-    let error = (await this.error()) || '';
-    let hint = (await this.hint()) || '';
-    let body = submitted ? '' : await this.interpolate(this.state);
+    let error = (await this.error()) || "";
+    let hint = (await this.hint()) || "";
+    let body = submitted ? "" : await this.interpolate(this.state);
 
-    let key = this.state.key = keys[index] || '';
+    let key = (this.state.key = keys[index] || "");
     let input = await this.format(key);
     let footer = await this.footer();
-    if (input) prompt += ' ' + input;
-    if (hint && !input && this.state.completed === 0) prompt += ' ' + hint;
+    if (input) prompt += " " + input;
+    if (hint && !input && this.state.completed === 0) prompt += " " + hint;
 
     this.clear(size);
     let lines = [header, prompt, body, footer, error.trim()];
@@ -152,7 +153,7 @@ class SnippetPrompt extends Prompt {
 
   getItem(name) {
     let { items, keys, index } = this.state;
-    let item = items.find(ch => ch.name === keys[index]);
+    let item = items.find((ch) => ch.name === keys[index]);
     if (item && item.input != null) {
       this.input = item.input;
       this.cursor = item.cursor;
@@ -161,24 +162,24 @@ class SnippetPrompt extends Prompt {
   }
 
   async submit() {
-    if (typeof this.interpolate !== 'function') await this.initialize();
+    if (typeof this.interpolate !== "function") await this.initialize();
     await this.interpolate(this.state, true);
 
     let { invalid, missing, output, values } = this.state;
     if (invalid.size) {
-      let err = '';
+      let err = "";
       for (let [key, value] of invalid) err += `Invalid ${key}: ${value}\n`;
       this.state.error = err;
       return super.submit();
     }
 
     if (missing.size) {
-      this.state.error = 'Required: ' + [...missing.keys()].join(', ');
+      this.state.error = "Required: " + [...missing.keys()].join(", ");
       return super.submit();
     }
 
-    let lines = stripAnsi(output).split('\n');
-    let result = lines.map(v => v.slice(1)).join('\n');
+    let lines = stripAnsi(output).split("\n");
+    let result = lines.map((v) => v.slice(1)).join("\n");
     this.value = { values, result };
     return super.submit();
   }

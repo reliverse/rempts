@@ -117,7 +117,9 @@ function normalizeChoices<Value>(
   choices: readonly (string | Separator)[],
 ): Item<Value>[] {
   return choices.map((choice) => {
-    if (Separator.isSeparator(choice)) return choice;
+    if (Separator.isSeparator(choice)) {
+      return choice;
+    }
 
     if (typeof choice === "string") {
       return {
@@ -203,7 +205,7 @@ const checkbox = createPrompt(
           let next = active;
           do {
             next = (next + offset + items.length) % items.length;
-          } while (!isSelectable(items[next]!));
+          } while (!isSelectable(items[next]));
           setActive(next);
         }
       } else if (isSpaceKey(key)) {

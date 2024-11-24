@@ -1,37 +1,37 @@
 // @ts-nocheck
 
-'use strict';
+"use strict";
 
-const { Snippet } = require('enquirer');
+const { Snippet } = require("enquirer");
 const prompt = new Snippet({
-  name: 'username',
-  message: 'Fill out the fields in package.json',
+  name: "username",
+  message: "Fill out the fields in package.json",
   required: true,
   fields: [
     {
-      name: 'name',
-      message: 'Project Name',
+      name: "name",
+      message: "Project Name",
       validate(value) {
-        return value === 'foo' ? 'Invalid: cannot use "foo"' : true;
-      }
+        return value === "foo" ? 'Invalid: cannot use "foo"' : true;
+      },
     },
     {
-      name: 'author_name',
-      message: 'Author Name'
+      name: "author_name",
+      message: "Author Name",
     },
     {
-      name: 'keywords',
-      message: 'Keywords (comma separated)',
+      name: "keywords",
+      message: "Keywords (comma separated)",
       result(value) {
-        return value ? JSON.stringify(value.split(',')) : [];
-      }
+        return value ? JSON.stringify(value.split(",")) : [];
+      },
     },
     {
-      name: 'license',
+      name: "license",
       validate(value) {
-        return value === 'MIT';
-      }
-    }
+        return value === "MIT";
+      },
+    },
   ],
   template: `{
   "name": "\${name}",
@@ -52,9 +52,10 @@ const prompt = new Snippet({
   },
   "keywords": \${keywords}
 }
-`
+`,
 });
 
-prompt.run()
-  .then(answer => console.log('Answer:', answer.result))
+prompt
+  .run()
+  .then((answer) => console.log("Answer:", answer.result))
   .catch(console.error);

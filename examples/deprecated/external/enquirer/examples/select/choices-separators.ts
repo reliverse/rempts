@@ -1,26 +1,27 @@
 // @ts-nocheck
 
-'use strict';
+"use strict";
 
-const colors = require('ansi-colors');
-const { Select } = require('enquirer');
+const colors = require("ansi-colors");
+const { Select } = require("enquirer");
 
 const prompt = new Select({
-  name: 'separator-example',
-  message: 'Pick your favorite color',
+  name: "separator-example",
+  message: "Pick your favorite color",
   choices: [
-    'apple',
-    'grape',
-    { role: 'separator', value: colors.dim('────') },
-    'watermelon',
-    'cherry',
-    'strawberry',
-    { role: 'separator', value: colors.dim('────') },
-    'lemon',
-    'orange'
-  ]
+    "apple",
+    "grape",
+    { role: "separator", value: colors.dim("────") },
+    "watermelon",
+    "cherry",
+    "strawberry",
+    { role: "separator", value: colors.dim("────") },
+    "lemon",
+    "orange",
+  ],
 });
 
-prompt.run()
-  .then(answer => console.log('Answer:', answer))
+prompt
+  .run()
+  .then((answer) => console.log("Answer:", answer))
   .catch(console.error);

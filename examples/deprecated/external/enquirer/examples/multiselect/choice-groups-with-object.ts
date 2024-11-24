@@ -1,23 +1,23 @@
 // @ts-nocheck
 
-'use strict';
+"use strict";
 
-const { MultiSelect } = require('enquirer');
+const { MultiSelect } = require("enquirer");
 
 const prompt = new MultiSelect({
-  name: 'example-groups',
-  message: 'Take your pick',
+  name: "example-groups",
+  message: "Take your pick",
   choices: normalize({
-    local: ['one', 'two'],
-    global: ['three', 'four'],
+    local: ["one", "two"],
+    global: ["three", "four"],
     other: [],
-    default: { message: 'Five' }
-  })
+    default: { message: "Five" },
+  }),
 });
 
 function normalize(obj) {
   if (Array.isArray(obj)) {
-    return obj.map(ch => typeof ch === 'string' ? { name: ch } : ch);
+    return obj.map((ch) => (typeof ch === "string" ? { name: ch } : ch));
   }
 
   let choices = [];
@@ -36,6 +36,7 @@ function normalize(obj) {
   return choices;
 }
 
-prompt.run()
-  .then(answer => console.log('Answer:', answer))
+prompt
+  .run()
+  .then((answer) => console.log("Answer:", answer))
   .catch(console.error);

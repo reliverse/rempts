@@ -80,7 +80,9 @@ export function lines<T>({
   while (bufferPointer < pageSize && layoutPointer < layoutsInPage.length) {
     for (const line of renderItemAt(layoutPointer)) {
       pageBuffer[bufferPointer++] = line;
-      if (bufferPointer >= pageSize) break;
+      if (bufferPointer >= pageSize) {
+        break;
+      }
     }
     layoutPointer++;
   }
@@ -91,7 +93,9 @@ export function lines<T>({
   while (bufferPointer >= 0 && layoutPointer >= 0) {
     for (const line of renderItemAt(layoutPointer).reverse()) {
       pageBuffer[bufferPointer--] = line;
-      if (bufferPointer < 0) break;
+      if (bufferPointer < 0) {
+        break;
+      }
     }
     layoutPointer--;
   }

@@ -1,36 +1,37 @@
 // @ts-nocheck
 
-'use strict';
+"use strict";
 
-const { Survey } = require('enquirer');
+const { Survey } = require("enquirer");
 
 const prompt = new Survey({
-  name: 'experience',
-  message: 'Please rate your experience',
+  name: "experience",
+  message: "Please rate your experience",
   choices: [
     {
-      name: 'interface',
-      message: 'The website has a friendly interface.'
+      name: "interface",
+      message: "The website has a friendly interface.",
     },
     {
-      name: 'navigation',
-      message: 'The website is easy to navigate.'
+      name: "navigation",
+      message: "The website is easy to navigate.",
     },
     {
-      name: 'images',
-      message: 'The website usually has good images.'
+      name: "images",
+      message: "The website usually has good images.",
     },
     {
-      name: 'upload',
-      message: 'The website makes it easy to upload images.'
+      name: "upload",
+      message: "The website makes it easy to upload images.",
     },
     {
-      name: 'colors',
-      message: 'The website has a pleasing color palette.'
-    }
-  ]
+      name: "colors",
+      message: "The website has a pleasing color palette.",
+    },
+  ],
 });
 
-prompt.run()
-  .then(value => console.log('ANSWERS:', value))
+prompt
+  .run()
+  .then((value) => console.log("ANSWERS:", value))
   .catch(console.error);

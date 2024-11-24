@@ -1,15 +1,15 @@
 // @ts-nocheck
 
-'use strict';
+"use strict";
 
-const yosay = require('yosay');
-const { Input } = require('enquirer');
+const yosay = require("yosay");
+const { Input } = require("enquirer");
 
 const prompt = new Input({
-  message: 'What is your username?',
-  header: yosay('Welcome to my awesome generator!'),
-  footer: 'This is \na footer\nwith a\nfew\nlines\n',
-  initial: 'jonschlinkert'
+  message: "What is your username?",
+  header: yosay("Welcome to my awesome generator!"),
+  footer: "This is \na footer\nwith a\nfew\nlines\n",
+  initial: "jonschlinkert",
 });
 
 prompt.footer = () => {
@@ -21,9 +21,10 @@ prompt.footer = () => {
   delete state.header;
   delete state.footer;
   delete state.buffer;
-  return '\n' + prompt.options.footer + '\n' + JSON.stringify(state, null, 2);
+  return "\n" + prompt.options.footer + "\n" + JSON.stringify(state, null, 2);
 };
 
-prompt.run()
-  .then(answer => console.log('ANSWER', answer))
+prompt
+  .run()
+  .then((answer) => console.log("ANSWER", answer))
   .catch(console.log);

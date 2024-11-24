@@ -27,7 +27,9 @@ function getListSearch(
   )[],
 ) {
   return (term = "") => {
-    if (!term) return choices;
+    if (!term) {
+      return choices;
+    }
 
     return choices.filter((choice) => {
       return (
@@ -236,7 +238,9 @@ describe("search prompt", () => {
     const { answer, events, getScreen } = await render(search, {
       message: "Select a Canadian province",
       source: (term: string | void) => {
-        if (!term) return Promise.resolve([]);
+        if (!term) {
+          return Promise.resolve([]);
+        }
 
         throw new Error("You're being rate limited");
       },
@@ -499,9 +503,12 @@ describe("search prompt", () => {
       message: "Select a Canadian province",
       source: getListSearch(PROVINCES),
       validate: (value: string) => {
-        if (value === "NB")
+        if (value === "NB") {
           return "New Brunswick is unavailable at the moment.";
-        if (value === "AB") return false; // Test default error
+        }
+        if (value === "AB") {
+          return false;
+        } // Test default error
         return true;
       },
     });

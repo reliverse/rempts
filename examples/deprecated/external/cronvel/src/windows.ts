@@ -4,5 +4,5 @@
 	Windows compatibility.
 */
 export default function (termkit) {
-      termkit.globalConfig.preferProcessSigwinch = true;
-    };
+  termkit.globalConfig.preferProcessSigwinch = true;
+}

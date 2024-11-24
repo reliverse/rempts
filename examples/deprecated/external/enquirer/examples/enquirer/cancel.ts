@@ -1,30 +1,31 @@
 // @ts-nocheck
 
-'use strict';
+"use strict";
 
-const { prompt } = require('enquirer');
+const { prompt } = require("enquirer");
 
-(async() => {
+(async () => {
   let questions = [
     {
-      type: 'input',
-      name: 'foo',
+      type: "input",
+      name: "foo",
       onRun() {
-        this.cancel('cancelled');
-      }
+        this.cancel("cancelled");
+      },
     },
     {
-      type: 'input',
-      name: 'bar'
+      type: "input",
+      name: "bar",
     },
     {
-      type: 'input',
-      name: 'baz'
-    }
+      type: "input",
+      name: "baz",
+    },
   ];
 
   for (let question of questions) {
     await prompt(question);
   }
-
-})().then(console.log).catch(console.log);
+})()
+  .then(console.log)
+  .catch(console.log);

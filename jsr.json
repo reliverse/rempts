@@ -24,7 +24,7 @@
       "merged.txt",
       "typestat.json",
       "vitest.config.ts",
-      "eslint.config.js",
+      "eslint.config.ts",
       "cspell.json"
     ]
   }

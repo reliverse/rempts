@@ -1,15 +1,15 @@
 // @ts-nocheck
 
-'use strict';
+"use strict";
 
-const BooleanPrompt = require('../types/boolean');
+const BooleanPrompt = require("../types/boolean");
 
 class TogglePrompt extends BooleanPrompt {
   async initialize() {
     await super.initialize();
     this.value = this.initial = this.resolve(this.options.initial);
-    this.disabled = this.options.disabled || 'no';
-    this.enabled = this.options.enabled || 'yes';
+    this.disabled = this.options.disabled || "no";
+    this.enabled = this.options.enabled || "yes";
     await this.render();
   }
 
@@ -57,17 +57,17 @@ class TogglePrompt extends BooleanPrompt {
     this.toggle();
   }
 
-  dispatch(ch = '', key) {
+  dispatch(ch = "", key) {
     switch (ch.toLowerCase()) {
-      case ' ':
+      case " ":
         return this.toggle();
-      case '1':
-      case 'y':
-      case 't':
+      case "1":
+      case "y":
+      case "t":
         return this.enable();
-      case '0':
-      case 'n':
-      case 'f':
+      case "0":
+      case "n":
+      case "f":
         return this.disable();
       default: {
         return this.alert();
@@ -76,12 +76,12 @@ class TogglePrompt extends BooleanPrompt {
   }
 
   format() {
-    let active = str => this.styles.primary.underline(str);
+    let active = (str) => this.styles.primary.underline(str);
     let value = [
       this.value ? this.disabled : active(this.disabled),
-      this.value ? active(this.enabled) : this.enabled
+      this.value ? active(this.enabled) : this.enabled,
     ];
-    return value.join(this.styles.muted(' / '));
+    return value.join(this.styles.muted(" / "));
   }
 
   async render() {
@@ -96,13 +96,13 @@ class TogglePrompt extends BooleanPrompt {
     let help = (await this.error()) || (await this.hint());
     let footer = await this.footer();
 
-    let prompt = [prefix, message, separator, output].join(' ');
+    let prompt = [prefix, message, separator, output].join(" ");
     this.state.prompt = prompt;
 
-    if (help && !prompt.includes(help)) prompt += ' ' + help;
+    if (help && !prompt.includes(help)) prompt += " " + help;
 
     this.clear(size);
-    this.write([header, prompt, footer].filter(Boolean).join('\n'));
+    this.write([header, prompt, footer].filter(Boolean).join("\n"));
     this.write(this.margin[2]);
     this.restore();
   }

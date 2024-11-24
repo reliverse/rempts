@@ -144,7 +144,7 @@ async function removeDistDirectory() {
 }
 
 /**
- * Copies the 'src' directory to 'dist' when '--jsr' flag is provided.
+ * Copies the 'src' directory to 'dist-jsr' when '--jsr' flag is provided.
  */
 async function copySrcToDist() {
   try {
@@ -154,7 +154,7 @@ async function copySrcToDist() {
     });
     debug && console.log(`Copied 'src' to '${outputDir}'`);
   } catch (error) {
-    console.error(`Error copying 'src' to 'dist':`, error);
+    console.error(`Error copying 'src' to 'dist-jsr':`, error);
     throw error;
   }
 }
@@ -175,9 +175,9 @@ async function optimizeBuildForProduction(dir: string) {
     spinnerType: "arc",
     action: async (updateMessage: (arg0: string) => void) => {
       if (isJSR) {
-        updateMessage("Removing existing 'dist' directory...");
-        await removeDistDirectory(); // Remove 'dist' before copying
-        updateMessage("Copying 'src' to 'dist'...");
+        updateMessage("Removing existing 'dist-jsr' directory...");
+        await removeDistDirectory(); // Remove 'dist-jsr' before copying
+        updateMessage("Copying 'src' to 'dist-jsr'...");
         await copySrcToDist();
       }
       updateMessage("Processing files...");

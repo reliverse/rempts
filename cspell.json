@@ -2,7 +2,7 @@
   "version": "0.2",
   "language": "en",
   "import": ["@cspell/dict-npm/cspell-ext.json"],
-  "ignorePaths": ["examples/deprecated"],
+  "ignorePaths": ["examples/deprecated", "dist-jsr", "dist-npm"],
   "words": [
     "alacritty",
     "alternar",

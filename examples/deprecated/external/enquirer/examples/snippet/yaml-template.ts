@@ -1,17 +1,17 @@
 // @ts-nocheck
 
-'use strict';
+"use strict";
 
-const colors = require('ansi-colors');
-const { Snippet } = require('enquirer');
+const colors = require("ansi-colors");
+const { Snippet } = require("enquirer");
 const prompt = new Snippet({
-  name: 'username',
-  message: 'Fill out the fields in package.json',
+  name: "username",
+  message: "Fill out the fields in package.json",
   values: {
-    name: 'awesome-lib'
+    name: "awesome-lib",
   },
   styles: {
-    primary: colors.blue
+    primary: colors.blue,
   },
   template: `
   name: "#{name}"
@@ -27,9 +27,10 @@ const prompt = new Snippet({
     test: mocha
   keywords:
 
-`
+`,
 });
 
-prompt.run()
-  .then(answer => console.log('Answer:', answer))
+prompt
+  .run()
+  .then((answer) => console.log("Answer:", answer))
   .catch(console.error);

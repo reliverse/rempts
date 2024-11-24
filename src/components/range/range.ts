@@ -258,7 +258,9 @@ export class RangePrompt extends EventEmitter {
     if (this.value !== null) {
       this.value = +(this.value + this.step).toFixed(precision(this.step));
       // Ensure value does not exceed max
-      if (this.value > this.max) this.value = this.max;
+      if (this.value > this.max) {
+        this.value = this.max;
+      }
     }
     this.emit("change");
     this.render();
@@ -276,7 +278,9 @@ export class RangePrompt extends EventEmitter {
     if (this.value !== null) {
       this.value = +(this.value - this.step).toFixed(precision(this.step));
       // Ensure value does not go below min
-      if (this.value < this.min) this.value = this.min;
+      if (this.value < this.min) {
+        this.value = this.min;
+      }
     }
     this.emit("change");
     this.render();
@@ -293,7 +297,9 @@ export class RangePrompt extends EventEmitter {
     }
 
     const now = Date.now();
-    if (now - this.lastHit > 1000) this.typed = ""; // Reset if more than 1s elapsed
+    if (now - this.lastHit > 1000) {
+      this.typed = "";
+    } // Reset if more than 1s elapsed
     this.typed += n;
     this.lastHit = now;
 
@@ -304,8 +310,12 @@ export class RangePrompt extends EventEmitter {
     }
 
     let newValue = v;
-    if (newValue > this.max) newValue = this.max;
-    if (newValue < this.min) newValue = this.min;
+    if (newValue > this.max) {
+      newValue = this.max;
+    }
+    if (newValue < this.min) {
+      newValue = this.min;
+    }
 
     this.value = newValue;
     this.emit("change");
@@ -392,8 +402,12 @@ const isFloat = /^[0-9.]+$/;
  * @returns Wrapped RangePrompt instance
  */
 export const rangePrompt = (msg: string, opt?: RangePromptOptions) => {
-  if (typeof msg !== "string") throw new Error("Message must be string.");
-  if (Array.isArray(opt) || typeof opt !== "object") opt = {};
+  if (typeof msg !== "string") {
+    throw new Error("Message must be string.");
+  }
+  if (Array.isArray(opt) || typeof opt !== "object") {
+    opt = {};
+  }
 
   const prompt = new RangePrompt(msg, opt);
   return wrap(prompt);

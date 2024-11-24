@@ -3,7 +3,13 @@
 import color from "kleur";
 import Prompt from "../../../examples/deprecated/external/terkelg/src/elements/prompt.js";
 import { erase, cursor } from "sisteransi";
-import { style, clear, figures, wrap, entriesToDisplay } from "../../../examples/deprecated/external/terkelg/src/util/index.js";
+import {
+  style,
+  clear,
+  figures,
+  wrap,
+  entriesToDisplay,
+} from "../../../examples/deprecated/external/terkelg/src/util/index.js";
 
 const getVal = (arr, i) => arr[i] && (arr[i].value || arr[i].title || arr[i]);
 const getTitle = (arr, i) => arr[i] && (arr[i].title || arr[i].value || arr[i]);

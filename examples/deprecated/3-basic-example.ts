@@ -1,6 +1,6 @@
 // 3-basic-example.ts: A basic example demonstrating core functionalities of @reliverse/relinka. Everything in a single file.
 
-import { showSpinner } from "@/extended/modules/prompts.js";
+import { showSpinner } from "@/src/prompts.js";
 
 import type { OptionalPromptOptions } from "~/types/general.js";
 

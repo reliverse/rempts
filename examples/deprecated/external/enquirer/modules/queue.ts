@@ -1,6 +1,6 @@
 // @ts-nocheck
 
-'use strict';
+"use strict";
 
 module.exports = class Queue {
   _queue = [];

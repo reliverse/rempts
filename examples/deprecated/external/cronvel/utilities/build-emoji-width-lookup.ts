@@ -5,7 +5,7 @@ import termkit from "..";
 
 // @ts-nocheck
 
-"use strict";
+("use strict");
 
 /*
 	Create lookup files for emoji width, by writing each emoji and check the cursor location.

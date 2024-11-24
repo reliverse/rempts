@@ -1,18 +1,18 @@
 // @ts-nocheck
 
-const AuthPrompt = require('../../lib/types/auth');
-const express = require('express');
-const open = require('open');
-const axios = require('axios');
+const AuthPrompt = require("../../lib/types/auth");
+const express = require("express");
+const open = require("open");
+const axios = require("axios");
 
-const choices = [{ name: 'oauth', message: 'Github OAuth login' }];
+const choices = [{ name: "oauth", message: "Github OAuth login" }];
 
 class OAuthServer {
   constructor(options) {
     this.options = options;
     this.prompt = this.options.prompt;
     this.app = express();
-    this.app.get('/', (req, res) => {
+    this.app.get("/", (req, res) => {
       const code = req.query.code;
       axios
         .post(
@@ -22,24 +22,24 @@ class OAuthServer {
           {},
           {
             headers: {
-              Accept: 'application/json'
-            }
-          }
+              Accept: "application/json",
+            },
+          },
         )
-        .then(response => {
+        .then((response) => {
           const accessToken = response.data.access_token;
           this.token = accessToken;
-          res.send('Enquirer: Github OAuth Server is up');
+          res.send("Enquirer: Github OAuth Server is up");
           this.prompt.submit();
         })
-        .catch(e => console.log('axios error', e));
+        .catch((e) => console.log("axios error", e));
     });
     this.token = null;
   }
 
   start() {
     return new Promise((resolve, reject) => {
-      this.server = this.app.listen(this.options.port, err => {
+      this.server = this.app.listen(this.options.port, (err) => {
         if (err) {
           return reject(err);
         }
@@ -66,7 +66,7 @@ class OAuth extends AuthPrompt.create(authenticate) {
     this.server = new OAuthServer({
       ...this.options,
       prompt: this,
-      port: 9000
+      port: 9000,
     });
   }
 
@@ -79,7 +79,9 @@ class OAuth extends AuthPrompt.create(authenticate) {
 
   render() {
     this.clear();
-    this.write(`\nOpen this URL in browser if it doesn't open automatically:\n${this.url}`);
+    this.write(
+      `\nOpen this URL in browser if it doesn't open automatically:\n${this.url}`,
+    );
   }
 }
 
@@ -92,12 +94,16 @@ class OAuth extends AuthPrompt.create(authenticate) {
  * while registering a new OAuth application in Github
  */
 const prompt = new OAuth({
-  name: 'oauth',
-  client_id: 'a3f315d8990032f30936',
-  client_secret: '2785a2397550f17a6bc95bdddbea7d4c7ba2b662'
+  name: "oauth",
+  client_id: "a3f315d8990032f30936",
+  client_secret: "2785a2397550f17a6bc95bdddbea7d4c7ba2b662",
 });
 
 prompt
   .run()
-  .then(token => console.log(`\nYou've successfully logged in using Github.\nToken: ${token}`))
+  .then((token) =>
+    console.log(
+      `\nYou've successfully logged in using Github.\nToken: ${token}`,
+    ),
+  )
   .catch(console.error);

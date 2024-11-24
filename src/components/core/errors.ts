@@ -1,6 +1,6 @@
 export class AbortPromptError extends Error {
-  override name = 'AbortPromptError';
-  override message = 'Prompt was aborted';
+  override name = "AbortPromptError";
+  override message = "Prompt was aborted";
 
   constructor(options?: { cause?: unknown }) {
     super();
@@ -9,18 +9,18 @@ export class AbortPromptError extends Error {
 }
 
 export class CancelPromptError extends Error {
-  override name = 'CancelPromptError';
-  override message = 'Prompt was canceled';
+  override name = "CancelPromptError";
+  override message = "Prompt was canceled";
 }
 
 export class ExitPromptError extends Error {
-  override name = 'ExitPromptError';
+  override name = "ExitPromptError";
 }
 
 export class HookError extends Error {
-  override name = 'HookError';
+  override name = "HookError";
 }
 
 export class ValidationError extends Error {
-  override name = 'ValidationError';
+  override name = "ValidationError";
 }

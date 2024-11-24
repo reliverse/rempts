@@ -40,7 +40,7 @@ import stringOptions from "./string-opts.json" with { type: "json" };
 	Licensed under the MIT license.
 */
 
-"use strict";
+("use strict");
 exports.getTerminfo = (termName) => {
   if ((!termName && process.platform === "win32") || termName === "win32") {
     return require("./windows-profile.json");

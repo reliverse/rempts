@@ -1,14 +1,20 @@
 // @ts-nocheck
 
-const { generateHOTP } = require('./hotp');
+const { generateHOTP } = require("./hotp");
 
 /*
  * This is an implementation of Time-Based One Time Password (TOTP) algorithm
  * specified in RFC 6238 (https://tools.ietf.org/html/rfc6238)
  */
-function generateTOTP(secret, window = 0, timeStepInSeconds = 30, initialTime = 0, otpLength = 6) {
+function generateTOTP(
+  secret,
+  window = 0,
+  timeStepInSeconds = 30,
+  initialTime = 0,
+  otpLength = 6,
+) {
   if (!secret) {
-    throw new Error('Secret is required');
+    throw new Error("Secret is required");
   }
 
   const currentTime = Date.now();
@@ -30,12 +36,12 @@ function verifyTOTP(token, secret, window = 1) {
       throw new Error();
     }
   } catch (e) {
-    console.error('Invalid token');
+    console.error("Invalid token");
     return false;
   }
 
   if (Math.abs(+window) > 10) {
-    console.error('Window size is too large');
+    console.error("Window size is too large");
     return false;
   }
 
@@ -51,5 +57,5 @@ function verifyTOTP(token, secret, window = 1) {
 
 module.exports = {
   generateTOTP,
-  verifyTOTP
+  verifyTOTP,
 };

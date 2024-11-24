@@ -1,26 +1,24 @@
 // @ts-nocheck
 
-'use strict';
+"use strict";
 
-const colors = require('ansi-colors');
-const { MultiSelect } = require('enquirer');
+const colors = require("ansi-colors");
+const { MultiSelect } = require("enquirer");
 
 const prompt = new MultiSelect({
-  name: 'food',
-  message: 'What are your favorite foods?',
+  name: "food",
+  message: "What are your favorite foods?",
   choices: [
-    'Lasagna',
-    'Pizza',
+    "Lasagna",
+    "Pizza",
     {
-      name: 'Funnel Cakes',
-      disabled: colors.red('Not today!'),
-      indicator: '-'
+      name: "Funnel Cakes",
+      disabled: colors.red("Not today!"),
+      indicator: "-",
     },
-    'Chicken Curry',
-    'Tacos'
-  ]
+    "Chicken Curry",
+    "Tacos",
+  ],
 });
 
-prompt.run()
-  .then(console.log)
-  .catch(console.log);
+prompt.run().then(console.log).catch(console.log);

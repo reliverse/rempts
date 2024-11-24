@@ -806,14 +806,14 @@ for (let i = 1; i <= 26; i++) {
 }
 
 export default {
-      esc: esc,
-      keymap: keymap,
-      handler: handler,
-      support: {
-        deltaEscapeSequence: true,
-        "256colors": false,
-        "24bitsColors": false, // DEPRECATED
-        trueColor: false,
-      },
-      colorRegister: require("../colorScheme/xterm.json"),
-    };
+  esc: esc,
+  keymap: keymap,
+  handler: handler,
+  support: {
+    deltaEscapeSequence: true,
+    "256colors": false,
+    "24bitsColors": false, // DEPRECATED
+    trueColor: false,
+  },
+  colorRegister: require("../colorScheme/xterm.json"),
+};

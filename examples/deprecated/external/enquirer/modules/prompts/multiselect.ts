@@ -1,8 +1,8 @@
 // @ts-nocheck
 
-'use strict';
+"use strict";
 
-const Select = require('./select');
+const Select = require("./select");
 
 class MultiSelect extends Select {
   constructor(options) {

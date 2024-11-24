@@ -17,25 +17,59 @@ export const action = (key: Keypress): string | false => {
   const code = key.raw.charCodeAt(0);
 
   if (key.ctrl) {
-    if (key.name === "a") return "first";
-    if (key.name === "c") return "abort";
-    if (key.name === "d") return "abort";
-    if (key.name === "e") return "last";
-    if (key.name === "g") return "reset";
+    if (key.name === "a") {
+      return "first";
+    }
+    if (key.name === "c") {
+      return "abort";
+    }
+    if (key.name === "d") {
+      return "abort";
+    }
+    if (key.name === "e") {
+      return "last";
+    }
+    if (key.name === "g") {
+      return "reset";
+    }
   }
-  if (key.name === "return") return "submit";
-  if (key.name === "enter") return "submit"; // ctrl + J
-  if (key.name === "backspace") return "delete";
-  if (key.name === "abort") return "abort";
-  if (key.name === "escape") return "abort";
-  if (key.name === "tab") return "next";
+  if (key.name === "return") {
+    return "submit";
+  }
+  if (key.name === "enter") {
+    return "submit";
+  } // ctrl + J
+  if (key.name === "backspace") {
+    return "delete";
+  }
+  if (key.name === "abort") {
+    return "abort";
+  }
+  if (key.name === "escape") {
+    return "abort";
+  }
+  if (key.name === "tab") {
+    return "next";
+  }
 
-  if (key.name === "up") return "up";
-  if (key.name === "down") return "down";
-  if (key.name === "right") return "right";
-  if (key.name === "left") return "left";
-  if (code === 8747) return "left"; // alt + B
-  if (code === 402) return "right"; // alt + F
+  if (key.name === "up") {
+    return "up";
+  }
+  if (key.name === "down") {
+    return "down";
+  }
+  if (key.name === "right") {
+    return "right";
+  }
+  if (key.name === "left") {
+    return "left";
+  }
+  if (code === 8747) {
+    return "left";
+  } // alt + B
+  if (code === 402) {
+    return "right";
+  } // alt + F
 
   return false;
 };
@@ -91,8 +125,12 @@ const wrap = (p: RangePrompt): Promise<number | null> => {
    */
   const onKey = (key: Keypress) => {
     const a = action(key);
-    if (a === "abort") return wrappedPrompt.close();
-    if (a === false) return wrappedPrompt._(key.raw);
+    if (a === "abort") {
+      return wrappedPrompt.close();
+    }
+    if (a === false) {
+      return wrappedPrompt._(key.raw);
+    }
     if (typeof wrappedPrompt[a] === "function") {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
       (wrappedPrompt[a] as Function)(key);
@@ -118,7 +156,9 @@ const wrap = (p: RangePrompt): Promise<number | null> => {
    * Pause the prompt by removing listeners and showing the cursor
    */
   const pause = () => {
-    if (!offKeypress) return;
+    if (!offKeypress) {
+      return;
+    }
     offKeypress();
     offKeypress = null;
     if (offResize) {
@@ -132,7 +172,9 @@ const wrap = (p: RangePrompt): Promise<number | null> => {
    * Resume the prompt by adding listeners and hiding the cursor
    */
   const resume = () => {
-    if (offKeypress) return;
+    if (offKeypress) {
+      return;
+    }
     offKeypress = listenForKeys(process.stdin, onKey);
     offResize = onResize(process.stdout, onNewSize);
     process.stdout.write(esc.cursorHide);
@@ -149,7 +191,9 @@ const wrap = (p: RangePrompt): Promise<number | null> => {
      * Close the prompt and resolve or reject the Promise
      */
     wrappedPrompt.close = () => {
-      if (isClosed) return;
+      if (isClosed) {
+        return;
+      }
       isClosed = true;
 
       wrappedPrompt.out.unpipe(process.stdout); // Now valid as 'out' is Differ

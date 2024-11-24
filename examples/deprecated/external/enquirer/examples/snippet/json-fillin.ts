@@ -1,10 +1,10 @@
 // @ts-nocheck
 
-'use strict';
+"use strict";
 
-const { Snippet } = require('enquirer');
-const pkg = { name: 'my-awesome-lib' };
-const required = ['name', 'description', 'version'];
+const { Snippet } = require("enquirer");
+const pkg = { name: "my-awesome-lib" };
+const required = ["name", "description", "version"];
 const template = {};
 
 for (let name of required) {
@@ -12,13 +12,14 @@ for (let name of required) {
 }
 
 const prompt = new Snippet({
-  name: 'username',
-  message: 'Fill out the fields in package.json',
+  name: "username",
+  message: "Fill out the fields in package.json",
   required,
   initial: pkg,
-  template: JSON.stringify(template, null, 2)
+  template: JSON.stringify(template, null, 2),
 });
 
-prompt.run()
-  .then(answer => console.log('Answer:', answer))
+prompt
+  .run()
+  .then((answer) => console.log("Answer:", answer))
   .catch(console.error);

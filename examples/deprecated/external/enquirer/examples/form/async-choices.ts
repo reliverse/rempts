@@ -1,9 +1,9 @@
 // @ts-nocheck
 
-'use strict';
+"use strict";
 
-const path = require('path');
-const { Form, Input } = require('enquirer');
+const path = require("path");
+const { Form, Input } = require("enquirer");
 
 /**
  * This example shows how prompts can be used to populate choices.
@@ -14,9 +14,9 @@ const { Form, Input } = require('enquirer');
  * since we know in advance that we only need to define a few options.
  */
 
-const input = (name, message, initial) => prompt => {
+const input = (name, message, initial) => (prompt) => {
   const p = new Input({ name, message, initial });
-  return p.run().then(value => ({ name, message, initial: value, value }));
+  return p.run().then((value) => ({ name, message, initial: value, value }));
 };
 
 /**
@@ -29,23 +29,24 @@ const input = (name, message, initial) => prompt => {
  */
 
 const prompt = new Form({
-  name: 'user',
-  message: 'Please review your answers:',
+  name: "user",
+  message: "Please review your answers:",
   choices: [
-    input('name', 'Project name', path.basename(process.cwd())),
-    input('author', 'Author name', 'jonschlinkert'),
-    input('username', 'GitHub username/org', 'enquirer'),
+    input("name", "Project name", path.basename(process.cwd())),
+    input("author", "Author name", "jonschlinkert"),
+    input("username", "GitHub username/org", "enquirer"),
     {
-      name: 'repo',
-      message: 'Repository URL',
+      name: "repo",
+      message: "Repository URL",
       onChoice(state, choice, i) {
         let { name, username } = this.values;
         choice.initial = `https://github.com/${username}/${name}`;
-      }
-    }
-  ]
+      },
+    },
+  ],
 });
 
-prompt.run()
-  .then(answers => console.log('ANSWERS:', answers))
+prompt
+  .run()
+  .then((answers) => console.log("ANSWERS:", answers))
   .catch(console.error);

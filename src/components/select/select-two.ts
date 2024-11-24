@@ -40,7 +40,9 @@ export async function selectPrompt(options: PromptOptions): Promise<string> {
             choice.id === defaultValue || index + 1 === Number(defaultValue),
         )
       : 0;
-  if (selectedIndex === -1) selectedIndex = 0;
+  if (selectedIndex === -1) {
+    selectedIndex = 0;
+  }
 
   function renderChoices() {
     if (!choices) {

@@ -155,7 +155,7 @@ const expand = createPrompt(
       const selectedChoice = choices.find(
         (choice): choice is NormalizedChoice<Value> =>
           !Separator.isSeparator(choice) && choice.key === value.toLowerCase(),
-      )!;
+      );
       return `${prefix} ${message} ${theme.style.answer(selectedChoice.name)}`;
     }
 
@@ -165,7 +165,9 @@ const expand = createPrompt(
     let longChoices = "";
     let shortChoices = allChoices
       .map((choice) => {
-        if (Separator.isSeparator(choice)) return "";
+        if (Separator.isSeparator(choice)) {
+          return "";
+        }
 
         if (choice.key === defaultKey) {
           return choice.key.toUpperCase();

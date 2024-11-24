@@ -5,18 +5,18 @@ import colors from "picocolors";
 import figures from "~/components/figures/index.js";
 import { select } from "~/components/prompts/index.js";
 
-import checkboxDemo from "./modules/checkbox.js";
-import confirmDemo from "./modules/confirm.js";
-import editorDemo from "./modules/editor.js";
-import expandDemo from "./modules/expand.js";
-import inputDemo from "./modules/input.js";
-import loaderDemo from "./modules/loader.js";
-import numberDemo from "./modules/number.js";
-import passwordDemo from "./modules/password.js";
-import rawlistDemo from "./modules/rawlist.js";
-import searchDemo from "./modules/search.js";
-import selectDemo from "./modules/select.js";
-import timeoutDemo from "./modules/timeout.js";
+import checkboxDemo from "./src/simple/checkbox.js";
+import confirmDemo from "./src/simple/confirm.js";
+import editorDemo from "./src/simple/editor.js";
+import expandDemo from "./src/simple/expand.js";
+import inputDemo from "./src/simple/input.js";
+import loaderDemo from "./src/simple/loader.js";
+import numberDemo from "./src/simple/number.js";
+import passwordDemo from "./src/simple/password.js";
+import rawlistDemo from "./src/simple/rawlist.js";
+import searchDemo from "./src/simple/search.js";
+import selectDemo from "./src/simple/select.js";
+import timeoutDemo from "./src/simple/timeout.js";
 
 const demos = {
   checkbox: checkboxDemo,

@@ -1,16 +1,16 @@
 // @ts-nocheck
 
-'use strict';
+"use strict";
 
-const Select = require('./select');
-const Form = require('./form');
+const Select = require("./select");
+const Form = require("./form");
 const form = Form.prototype;
 
 class Editable extends Select {
   constructor(options) {
     super({ ...options, multiple: true });
-    this.align = [this.options.align, 'left'].find(v => v != null);
-    this.emptyError = '';
+    this.align = [this.options.align, "left"].find((v) => v != null);
+    this.emptyError = "";
     this.values = {};
   }
 
@@ -18,7 +18,7 @@ class Editable extends Select {
     let choice = this.focused;
     let parent = choice.parent || {};
     if (!choice.editable && !parent.editable) {
-      if (char === 'a' || char === 'i') return super[char]();
+      if (char === "a" || char === "i") return super[char]();
     }
     return form.dispatch.call(this, char, key);
   }
@@ -48,23 +48,23 @@ class Editable extends Select {
   }
 
   async indicator(choice, i) {
-    let symbol = choice.indicator || '';
+    let symbol = choice.indicator || "";
     let value = choice.editable ? symbol : super.indicator(choice, i);
-    return await this.resolve(value, this.state, choice, i) || '';
+    return (await this.resolve(value, this.state, choice, i)) || "";
   }
 
   indent(choice) {
-    return choice.role === 'heading' ? '' : (choice.editable ? ' ' : '  ');
+    return choice.role === "heading" ? "" : choice.editable ? " " : "  ";
   }
 
   async renderChoice(choice, i) {
-    choice.indent = '';
+    choice.indent = "";
     if (choice.editable) return form.renderChoice.call(this, choice, i);
     return super.renderChoice(choice, i);
   }
 
   error() {
-    return '';
+    return "";
   }
 
   footer() {
@@ -75,18 +75,19 @@ class Editable extends Select {
     let result = true;
 
     for (let choice of this.choices) {
-      if (typeof choice.validate !== 'function') {
+      if (typeof choice.validate !== "function") {
         continue;
       }
 
-      if (choice.role === 'heading') {
+      if (choice.role === "heading") {
         continue;
       }
 
       let val = choice.parent ? this.value[choice.parent.name] : this.value;
 
       if (choice.editable) {
-        val = choice.value === choice.name ? choice.initial || '' : choice.value;
+        val =
+          choice.value === choice.name ? choice.initial || "" : choice.value;
       } else if (!this.isDisabled(choice)) {
         val = choice.enabled === true;
       }
@@ -99,7 +100,7 @@ class Editable extends Select {
     }
 
     if (result !== true) {
-      this.state.error = typeof result === 'string' ? result : 'Invalid Input';
+      this.state.error = typeof result === "string" ? result : "Invalid Input";
     }
 
     return result;
@@ -107,7 +108,7 @@ class Editable extends Select {
 
   submit() {
     if (this.focused.newChoice === true) return super.submit();
-    if (this.choices.some(ch => ch.newChoice)) {
+    if (this.choices.some((ch) => ch.newChoice)) {
       return this.alert();
     }
 
@@ -116,16 +117,14 @@ class Editable extends Select {
     for (let choice of this.choices) {
       let val = choice.parent ? this.value[choice.parent.name] : this.value;
 
-      if (choice.role === 'heading') {
+      if (choice.role === "heading") {
         this.value[choice.name] = {};
         continue;
       }
 
       if (choice.editable) {
-        val[choice.name] = choice.value === choice.name
-          ? (choice.initial || '')
-          : choice.value;
-
+        val[choice.name] =
+          choice.value === choice.name ? choice.initial || "" : choice.value;
       } else if (!this.isDisabled(choice)) {
         val[choice.name] = choice.enabled === true;
       }

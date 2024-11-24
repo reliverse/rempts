@@ -1,15 +1,14 @@
 // @ts-nocheck
 
-'use strict';
+"use strict";
 
-const FormPrompt = require('../prompts/form');
+const FormPrompt = require("../prompts/form");
 
 const defaultAuthenticate = () => {
-  throw new Error('expected prompt to have a custom authenticate method');
+  throw new Error("expected prompt to have a custom authenticate method");
 };
 
 const factory = (authenticate = defaultAuthenticate) => {
-
   class AuthPrompt extends FormPrompt {
     constructor(options) {
       super(options);

@@ -1,53 +1,54 @@
 // @ts-nocheck
 
-'use strict';
+"use strict";
 
-const colors = require('ansi-colors');
-const { Scale } = require('enquirer');
+const colors = require("ansi-colors");
+const { Scale } = require("enquirer");
 const prompt = new Scale({
-  name: 'experience',
-  message: 'Please rate your experience',
+  name: "experience",
+  message: "Please rate your experience",
   messageWidth: 30,
-  margin: '    ',
+  margin: "    ",
   edgeLength: 3,
   margin: [1, 1, 1, 0],
   styles: { primary: colors.blue },
   scale: [
-    { name: '1', message: 'Strongly Disagree' },
-    { name: '2', message: 'Disagree' },
-    { name: '3', message: 'Neutral' },
-    { name: '4', message: 'Agree' },
-    { name: '5', message: 'Strongly Agree' }
+    { name: "1", message: "Strongly Disagree" },
+    { name: "2", message: "Disagree" },
+    { name: "3", message: "Neutral" },
+    { name: "4", message: "Agree" },
+    { name: "5", message: "Strongly Agree" },
   ],
   choices: [
     {
-      name: 'interface',
-      message: 'A. The website has a friendly interface.',
-      initial: 2
+      name: "interface",
+      message: "A. The website has a friendly interface.",
+      initial: 2,
     },
     {
-      name: 'navigation',
-      message: 'B. The website is easy to navigate.',
-      initial: 2
+      name: "navigation",
+      message: "B. The website is easy to navigate.",
+      initial: 2,
     },
     {
-      name: 'images',
-      message: 'C. The website usually has good images.',
-      initial: 2
+      name: "images",
+      message: "C. The website usually has good images.",
+      initial: 2,
     },
     {
-      name: 'upload',
-      message: 'D. The website makes it easy to upload images.',
-      initial: 2
+      name: "upload",
+      message: "D. The website makes it easy to upload images.",
+      initial: 2,
     },
     {
-      name: 'colors',
-      message: 'E. The website has a pleasing color palette.',
-      initial: 2
-    }
-  ]
+      name: "colors",
+      message: "E. The website has a pleasing color palette.",
+      initial: 2,
+    },
+  ],
 });
 
-prompt.run()
-  .then(value => console.log('ANSWERS:', value))
+prompt
+  .run()
+  .then((value) => console.log("ANSWERS:", value))
   .catch(console.error);

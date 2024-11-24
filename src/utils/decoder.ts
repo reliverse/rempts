@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-redundant-type-constituents */
 import { Buffer } from "safe-buffer";
 
 /**
@@ -36,7 +37,9 @@ const isEncoding: (encoding: BufferEncoding | string) => boolean =
 function _normalizeEncoding(
   enc?: BufferEncoding | string,
 ): BufferEncoding | undefined {
-  if (!enc) return "utf8";
+  if (!enc) {
+    return "utf8";
+  }
   let retried = false;
   let encoding = String(enc);
 
@@ -58,7 +61,9 @@ function _normalizeEncoding(
       case "hex":
         return encoding as BufferEncoding;
       default:
-        if (retried) return undefined;
+        if (retried) {
+          return undefined;
+        }
         encoding = encoding.toLowerCase();
         retried = true;
     }
@@ -79,7 +84,7 @@ function normalizeEncoding(enc?: BufferEncoding | string): BufferEncoding {
   ) {
     throw new Error("Unknown encoding: " + enc);
   }
-  return (nenc as BufferEncoding) || (enc as BufferEncoding);
+  return nenc || (enc as BufferEncoding);
 }
 
 /**
@@ -134,13 +139,17 @@ export class StringDecoder {
    * @returns The decoded string.
    */
   write(buf: Buffer): string {
-    if (buf.length === 0) return "";
+    if (buf.length === 0) {
+      return "";
+    }
     let r: string | undefined;
     let i: number;
 
     if (this.lastNeed) {
-      r = this.fillLast!(buf);
-      if (r === undefined) return "";
+      r = this.fillLast(buf);
+      if (r === undefined) {
+        return "";
+      }
       i = this.lastNeed;
       this.lastNeed = 0;
     } else {
@@ -177,7 +186,9 @@ export class StringDecoder {
 function utf8FillLast(this: StringDecoder, buf: Buffer): string | undefined {
   const p = this.lastTotal - this.lastNeed;
   const r = utf8CheckExtraBytes(this, buf, p);
-  if (r !== undefined) return r;
+  if (r !== undefined) {
+    return r;
+  }
 
   if (this.lastNeed <= buf.length) {
     buf.copy(this.lastChar, p, 0, this.lastNeed);
@@ -196,7 +207,9 @@ function utf8FillLast(this: StringDecoder, buf: Buffer): string | undefined {
  */
 function utf8Text(this: StringDecoder, buf: Buffer, i: number): string {
   const total = utf8CheckIncomplete(this, buf, i);
-  if (!this.lastNeed) return buf.toString("utf8", i);
+  if (!this.lastNeed) {
+    return buf.toString("utf8", i);
+  }
 
   this.lastTotal = total;
   const end = buf.length - (total - this.lastNeed);
@@ -211,7 +224,9 @@ function utf8Text(this: StringDecoder, buf: Buffer, i: number): string {
  */
 function utf8End(this: StringDecoder, buf?: Buffer): string {
   const r = buf?.length ? this.write(buf) : "";
-  if (this.lastNeed) return r + "\ufffd";
+  if (this.lastNeed) {
+    return r + "\ufffd";
+  }
   return r;
 }
 
@@ -221,10 +236,15 @@ function utf8End(this: StringDecoder, buf?: Buffer): string {
  * @returns The type indicator.
  */
 function utf8CheckByte(byte: number): number {
-  if (byte <= 0x7f) return 0;
-  else if (byte >> 5 === 0x06) return 2;
-  else if (byte >> 4 === 0x0e) return 3;
-  else if (byte >> 3 === 0x1e) return 4;
+  if (byte <= 0x7f) {
+    return 0;
+  } else if (byte >> 5 === 0x06) {
+    return 2;
+  } else if (byte >> 4 === 0x0e) {
+    return 3;
+  } else if (byte >> 3 === 0x1e) {
+    return 4;
+  }
   return byte >> 6 === 0x02 ? -1 : -2;
 }
 
@@ -241,27 +261,40 @@ function utf8CheckIncomplete(
   i: number,
 ): number {
   let j = buf.length - 1;
-  if (j < i) return 0;
+  if (j < i) {
+    return 0;
+  }
 
   let nb = utf8CheckByte(buf[j]);
   if (nb >= 0) {
-    if (nb > 0) self.lastNeed = nb - 1;
+    if (nb > 0) {
+      self.lastNeed = nb - 1;
+    }
     return nb;
   }
 
-  if (--j < i || nb === -2) return 0;
-  nb = utf8CheckByte(buf[j]);
-  if (nb >= 0) {
-    if (nb > 0) self.lastNeed = nb - 2;
-    return nb;
+  if (--j < i || nb === -2) {
+    return 0;
   }
-
-  if (--j < i || nb === -2) return 0;
   nb = utf8CheckByte(buf[j]);
   if (nb >= 0) {
     if (nb > 0) {
-      if (nb === 2) nb = 0;
-      else self.lastNeed = nb - 3;
+      self.lastNeed = nb - 2;
+    }
+    return nb;
+  }
+
+  if (--j < i || nb === -2) {
+    return 0;
+  }
+  nb = utf8CheckByte(buf[j]);
+  if (nb >= 0) {
+    if (nb > 0) {
+      if (nb === 2) {
+        nb = 0;
+      } else {
+        self.lastNeed = nb - 3;
+      }
     }
     return nb;
   }
@@ -349,7 +382,9 @@ function utf16End(this: StringDecoder, buf?: Buffer): string {
  */
 function base64Text(this: StringDecoder, buf: Buffer, i: number): string {
   const n = (buf.length - i) % 3;
-  if (n === 0) return buf.toString("base64", i);
+  if (n === 0) {
+    return buf.toString("base64", i);
+  }
 
   this.lastNeed = 3 - n;
   this.lastTotal = 3;

@@ -1,6 +1,7 @@
-import cliWidth from 'cli-width';
-import wrapAnsi from 'wrap-ansi';
-import { readline } from './hook-engine.js';
+import cliWidth from "cli-width";
+import wrapAnsi from "wrap-ansi";
+
+import { readline } from "./hook-engine.js";
 
 /**
  * Force line returns at specific width. This function is ANSI code friendly and it'll
@@ -11,13 +12,13 @@ import { readline } from './hook-engine.js';
  */
 export function breakLines(content: string, width: number): string {
   return content
-    .split('\n')
+    .split("\n")
     .flatMap((line) =>
       wrapAnsi(line, width, { trim: false, hard: true })
-        .split('\n')
+        .split("\n")
         .map((str) => str.trimEnd()),
     )
-    .join('\n');
+    .join("\n");
 }
 
 /**

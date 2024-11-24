@@ -1,8 +1,8 @@
 // @ts-nocheck
 
-'use strict';
+"use strict";
 
-const StringPrompt = require('../types/string');
+const StringPrompt = require("../types/string");
 
 class PasswordPrompt extends StringPrompt {
   constructor(options) {
@@ -11,7 +11,7 @@ class PasswordPrompt extends StringPrompt {
   }
 
   format(input = this.input) {
-    if (!this.keypressed) return '';
+    if (!this.keypressed) return "";
     let color = this.state.submitted ? this.styles.primary : this.styles.muted;
     return color(this.symbols.asterisk.repeat(input.length));
   }

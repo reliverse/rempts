@@ -1,11 +1,11 @@
 // @ts-nocheck
 
-'use strict';
+"use strict";
 
-const assert = require('assert');
-const support = require('./support');
+const assert = require("assert");
+const support = require("./support");
 const { nextTick } = support(assert);
-const Invisible = require('../lib/prompts/invisible');
+const Invisible = require("../lib/prompts/invisible");
 let prompt;
 
 class Prompt extends Invisible {
@@ -14,62 +14,59 @@ class Prompt extends Invisible {
   }
 }
 
-describe('invisible prompt', function() {
-  describe('options.initial', () => {
-    it('should use options.initial without typing', () => {
+describe("invisible prompt", function () {
+  describe("options.initial", () => {
+    it("should use options.initial without typing", () => {
       prompt = new Prompt({
-        message: 'prompt-invisible',
-        initial: 'woohooo!'
+        message: "prompt-invisible",
+        initial: "woohooo!",
       });
 
-      prompt.once('run', () => prompt.submit());
+      prompt.once("run", () => prompt.submit());
 
-      return prompt.run()
-        .then(function(answer) {
-          assert.equal(answer, 'woohooo!');
-        });
+      return prompt.run().then(function (answer) {
+        assert.equal(answer, "woohooo!");
+      });
     });
 
-    it('should use options.initial after typing', () => {
+    it("should use options.initial after typing", () => {
       prompt = new Prompt({
-        message: 'prompt-invisible',
-        initial: 'woohooo!'
+        message: "prompt-invisible",
+        initial: "woohooo!",
       });
 
-      let backspace = { name: 'backspace' };
+      let backspace = { name: "backspace" };
 
-      prompt.on('run', async() => {
-        await prompt.keypress('f');
-        await prompt.keypress('o');
-        await prompt.keypress('o');
+      prompt.on("run", async () => {
+        await prompt.keypress("f");
+        await prompt.keypress("o");
+        await prompt.keypress("o");
         await prompt.keypress(null, backspace);
         await prompt.keypress(null, backspace);
         await prompt.keypress(null, backspace);
         await prompt.submit();
       });
 
-      return prompt.run()
-        .then(function(answer) {
-          assert.equal(answer, 'woohooo!');
-        });
+      return prompt.run().then(function (answer) {
+        assert.equal(answer, "woohooo!");
+      });
     });
   });
 
-  describe('prompt.value', () => {
-    it('should output the un-modified value', () => {
-      prompt = new Prompt({ message: 'Enter some invisible text' });
+  describe("prompt.value", () => {
+    it("should output the un-modified value", () => {
+      prompt = new Prompt({ message: "Enter some invisible text" });
 
-      prompt.on('run', async() => {
-        await nextTick(async() => prompt.keypress('f'));
-        await nextTick(async() => prompt.keypress('o'));
-        await nextTick(async() => prompt.keypress('o'));
-        await nextTick(async() => prompt.submit());
+      prompt.on("run", async () => {
+        await nextTick(async () => prompt.keypress("f"));
+        await nextTick(async () => prompt.keypress("o"));
+        await nextTick(async () => prompt.keypress("o"));
+        await nextTick(async () => prompt.submit());
       });
 
-      return prompt.run()
-        .then(answer => {
-          assert.equal(answer, 'foo');
-        });
+      return prompt.run().then((answer) => {
+        assert.equal(answer, "foo");
+      });
     });
   });
 });

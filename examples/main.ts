@@ -21,8 +21,8 @@ import {
   showMultiselectPrompt,
   showProgressBar,
   showTogglePrompt,
-} from "@/extended/modules/prompts.js";
-import { type UserInput } from "@/extended/modules/schema.js";
+} from "@/src/prompts.js";
+import { type UserInput } from "@/src/schema.js";
 
 import { errorHandler } from "~/utils/errors.js";
 

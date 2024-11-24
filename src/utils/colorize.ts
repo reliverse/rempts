@@ -113,10 +113,11 @@ export function colorize(
     "viceGradient",
   ];
 
-  if (gradientColors.includes(colorName ?? "") && typography)
+  if (gradientColors.includes(colorName ?? "") && typography) {
     throw new Error(
       "[colorize] Cannot apply typography to gradient color.\n│  Use regular colorize()'s color or remove typography.",
     );
+  }
 
   if (!gradientColors.includes(colorName ?? "") && typography) {
     switch (typography) {

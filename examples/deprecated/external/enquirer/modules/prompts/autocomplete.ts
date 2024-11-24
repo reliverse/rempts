@@ -1,14 +1,14 @@
 // @ts-nocheck
 
-'use strict';
+"use strict";
 
-const Select = require('./select');
+const Select = require("./select");
 
 const highlight = (input, color) => {
-  const regex = input ? new RegExp(input, 'ig') : /$^/;
+  const regex = input ? new RegExp(input, "ig") : /$^/;
 
-  return str => {
-    return input ? str.replace(regex, match => color(match)) : str;
+  return (str) => {
+    return input ? str.replace(regex, (match) => color(match)) : str;
   };
 };
 
@@ -66,26 +66,28 @@ class AutoComplete extends Select {
   }
 
   suggest(input = this.input, choices = this.state._choices) {
-    if (typeof this.options.suggest === 'function') {
+    if (typeof this.options.suggest === "function") {
       return this.options.suggest.call(this, input, choices);
     }
     let str = input.toLowerCase();
-    return choices.filter(ch => ch.message.toLowerCase().includes(str));
+    return choices.filter((ch) => ch.message.toLowerCase().includes(str));
   }
 
   pointer() {
-    return '';
+    return "";
   }
 
   format() {
     if (!this.focused) return this.input;
 
     if (this.options.multiple && this.state.submitted) {
-      return this.selected.map(ch => this.styles.primary(ch.message)).join(', ');
+      return this.selected
+        .map((ch) => this.styles.primary(ch.message))
+        .join(", ");
     }
 
     if (this.state.submitted) {
-      let value = this.value = this.input = this.focused.value;
+      let value = (this.value = this.input = this.focused.value);
       return this.styles.primary(value);
     }
 
@@ -93,7 +95,7 @@ class AutoComplete extends Select {
   }
 
   async render() {
-    if (this.state.status !== 'pending') return super.render();
+    if (this.state.status !== "pending") return super.render();
     const hl = this.options.highlight || this.styles.complement;
 
     const style = (input, color) => {
@@ -104,14 +106,14 @@ class AutoComplete extends Select {
 
     const color = highlight(this.input, style);
     const choices = this.choices;
-    this.choices = choices.map(ch => ({ ...ch, message: color(ch.message) }));
+    this.choices = choices.map((ch) => ({ ...ch, message: color(ch.message) }));
     await super.render();
     this.choices = choices;
   }
 
   submit() {
     if (this.options.multiple) {
-      this.value = this.selected.map(ch => ch.name);
+      this.value = this.selected.map((ch) => ch.name);
     }
     return super.submit();
   }

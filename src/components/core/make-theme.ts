@@ -3,7 +3,9 @@ import type { Prettify, PartialDeep } from "~/types/index.js";
 import { defaultTheme, type Theme } from "./theme.js";
 
 function isPlainObject(value: unknown): value is object {
-  if (typeof value !== "object" || value === null) return false;
+  if (typeof value !== "object" || value === null) {
+    return false;
+  }
 
   let proto: unknown = value;
   while (Object.getPrototypeOf(proto) !== null) {

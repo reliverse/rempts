@@ -1,9 +1,9 @@
 // @ts-nocheck
 
-'use strict';
+"use strict";
 
-const utils = require('./utils');
-const colors = require('ansi-colors');
+const utils = require("./utils");
+const colors = require("ansi-colors");
 
 const styles = {
   default: colors.noop,
@@ -115,14 +115,14 @@ const styles = {
   },
   get highlight() {
     return this._highlight || this.inverse;
-  }
+  },
 };
 
 styles.merge = (options = {}) => {
-  if (options.styles && typeof options.styles.enabled === 'boolean') {
+  if (options.styles && typeof options.styles.enabled === "boolean") {
     colors.enabled = options.styles.enabled;
   }
-  if (options.styles && typeof options.styles.visible === 'boolean') {
+  if (options.styles && typeof options.styles.visible === "boolean") {
     colors.visible = options.styles.visible;
   }
 

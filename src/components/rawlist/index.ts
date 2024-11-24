@@ -50,7 +50,9 @@ function normalizeChoices<Value>(
 ): (NormalizedChoice<Value> | Separator)[] {
   let index = 0;
   return choices.map((choice) => {
-    if (Separator.isSeparator(choice)) return choice;
+    if (Separator.isSeparator(choice)) {
+      return choice;
+    }
 
     index += 1;
     if (typeof choice === "string") {

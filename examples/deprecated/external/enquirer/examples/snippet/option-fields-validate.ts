@@ -1,12 +1,12 @@
 // @ts-nocheck
 
-'use strict';
+"use strict";
 
-const { Snippet } = require('enquirer');
+const { Snippet } = require("enquirer");
 
 const prompt = new Snippet({
-  name: 'username',
-  message: 'Fill out the fields in package.json',
+  name: "username",
+  message: "Fill out the fields in package.json",
   template: `{
   "name": "\${name}",
   "description": "\${description:This is a great project}",
@@ -38,26 +38,27 @@ const prompt = new Snippet({
     //   },
     // },
     {
-      name: 'name',
+      name: "name",
       validate(value) {
-        return value !== '' && value !== 'Jon';
-      }
+        return value !== "" && value !== "Jon";
+      },
     },
     {
-      name: 'username',
+      name: "username",
       validate(value) {
-        return value !== '' && value !== 'jon';
-      }
-    }
+        return value !== "" && value !== "jon";
+      },
+    },
     // {
     //   name: 'license',
     //   validate(value) {
     //     return value !== 'MIT';
     //   }
     // }
-  ]
+  ],
 });
 
-prompt.run()
-  .then(answer => console.log('Answer:', answer.result))
+prompt
+  .run()
+  .then((answer) => console.log("Answer:", answer.result))
   .catch(console.error);

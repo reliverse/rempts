@@ -1,3 +1,3 @@
 // @ts-nocheck
 
-module.exports = require('../types/number');
+module.exports = require("../types/number");

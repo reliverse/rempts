@@ -375,7 +375,7 @@ export class Relinka {
 
     // Aliases
     if (logObj.message) {
-      logObj.args!.unshift(logObj.message);
+      logObj.args.unshift(logObj.message);
       delete logObj.message;
     }
     if (logObj.additional) {
@@ -383,7 +383,7 @@ export class Relinka {
         logObj.additional = logObj.additional.split("\n");
       }
 
-      logObj.args!.push("\n" + logObj.additional.join("\n"));
+      logObj.args.push("\n" + logObj.additional.join("\n"));
       delete logObj.additional;
     }
 
@@ -478,6 +478,7 @@ function _normalizeLogLevel(
 }
 
 export type LogFn = {
+  // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
   (message: InputLogObject | any, ...args: any[]): void;
   raw: (...args: any[]) => void;
 };

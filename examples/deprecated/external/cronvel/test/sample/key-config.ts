@@ -31,7 +31,7 @@ import terminal from "..";
 
 // this is a little utility for getting the correct key mappings for new terminals
 
-"use strict";
+("use strict");
 const inspect = require("util").inspect;
 
 let done = false;

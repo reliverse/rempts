@@ -1,26 +1,26 @@
 // @ts-nocheck
 
-'use strict';
+"use strict";
 
-const Events = require('events');
-const { prompt } = require('enquirer');
+const Events = require("events");
+const { prompt } = require("enquirer");
 
-(async() => {
+(async () => {
   const client = createSearchClient();
 
   const answers = await prompt({
-    type: 'autocomplete',
-    name: 'flavor',
-    message: 'Pick your favorite flavor',
+    type: "autocomplete",
+    name: "flavor",
+    message: "Pick your favorite flavor",
     limit: 10,
     suggest(typed, choices) {
       // get a stream of choices back that match our results
       const stream = client.search(typed);
-      this.once('submit', () => stream.cancel());
+      this.once("submit", () => stream.cancel());
 
       // when a choice is found, we cache that result on the `list` to be used later
       const list = [];
-      stream.on('data', async(choice) => {
+      stream.on("data", async (choice) => {
         list.push(choice);
 
         // convert all of the currently found choices from the list into choice items that
@@ -41,14 +41,13 @@ const { prompt } = require('enquirer');
     },
     hint() {
       if (!this.visible.length && !this.input) {
-        return 'Start typing to search';
+        return "Start typing to search";
       }
     },
-    choices: []
+    choices: [],
   });
 
   console.log(answers);
-
 })().catch(console.log);
 
 function createSearchClient() {
@@ -69,14 +68,14 @@ function createSearchClient() {
       this.interval = setInterval(() => {
         let choice = this.options.choices[i++];
         if (choice && choice.includes(filter)) {
-          events.emit('data', choice);
+          events.emit("data", choice);
         }
       }, this.options.interval);
 
       this.timeout = setTimeout(() => {
         clearInterval(this.interval);
         this.interval = null;
-        events.emit('end');
+        events.emit("end");
       }, this.options.timeout);
 
       events.cancel = this.stop.bind(this);
@@ -95,23 +94,23 @@ function createSearchClient() {
     interval: 120,
     timeout: 3000,
     choices: [
-      'almond',
-      'apple',
-      'banana',
-      'cherry',
-      'chocolate',
-      'cinnamon',
-      'coconut',
-      'cotton candy',
-      'grape',
-      'nougat',
-      'orange',
-      'pear',
-      'pineapple',
-      'strawberry',
-      'vanilla',
-      'watermelon',
-      'wintergreen'
-    ]
+      "almond",
+      "apple",
+      "banana",
+      "cherry",
+      "chocolate",
+      "cinnamon",
+      "coconut",
+      "cotton candy",
+      "grape",
+      "nougat",
+      "orange",
+      "pear",
+      "pineapple",
+      "strawberry",
+      "vanilla",
+      "watermelon",
+      "wintergreen",
+    ],
   });
 }

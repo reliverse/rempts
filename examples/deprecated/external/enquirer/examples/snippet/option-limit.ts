@@ -1,11 +1,11 @@
 // @ts-nocheck
 
-'use strict';
+"use strict";
 
-const { Snippet } = require('enquirer');
+const { Snippet } = require("enquirer");
 const prompt = new Snippet({
-  name: 'username',
-  message: 'Fill out the fields in package.json',
+  name: "username",
+  message: "Fill out the fields in package.json",
   limit: 10,
   template: `{
   "name": "{{name}}",
@@ -26,9 +26,10 @@ const prompt = new Snippet({
   },
   "keywords": []
 }
-`
+`,
 });
 
-prompt.run()
-  .then(answer => console.log('Answer:', answer))
+prompt
+  .run()
+  .then((answer) => console.log("Answer:", answer))
   .catch(console.error);

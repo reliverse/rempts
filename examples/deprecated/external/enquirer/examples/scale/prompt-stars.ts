@@ -1,23 +1,23 @@
 // @ts-nocheck
 
-'use strict';
+"use strict";
 
-const colors = require('ansi-colors');
-const { Scale } = require('enquirer');
+const colors = require("ansi-colors");
+const { Scale } = require("enquirer");
 const prompt = new Scale({
-  name: 'experience',
-  message: 'Please rate your experience',
+  name: "experience",
+  message: "Please rate your experience",
   scale: 5,
-  symbols: { line: ' ' },
+  symbols: { line: " " },
   edgeLength: 1,
   styles: {
-    primary: colors.blue
+    primary: colors.blue,
   },
   format() {
-    return '';
+    return "";
   },
   renderScaleHeading() {
-    return '';
+    return "";
   },
   scaleIndicator(choice, item, i) {
     let enabled = choice.scaleIndex >= item.index;
@@ -30,14 +30,15 @@ const prompt = new Scale({
     return this.styles.dark(on);
   },
   choices: [
-    { name: 'shipping', message: '1. Shipping', initial: 2 },
-    { name: 'price', message: '2. Price', initial: 2 },
-    { name: 'quality', message: '3. Quality', initial: 2 },
-    { name: 'communication', message: '4. Communication', initial: 2 },
-    { name: 'experience', message: '5. Overall Experience', initial: 2 }
-  ]
+    { name: "shipping", message: "1. Shipping", initial: 2 },
+    { name: "price", message: "2. Price", initial: 2 },
+    { name: "quality", message: "3. Quality", initial: 2 },
+    { name: "communication", message: "4. Communication", initial: 2 },
+    { name: "experience", message: "5. Overall Experience", initial: 2 },
+  ],
 });
 
-prompt.run()
-  .then(value => console.log(value))
+prompt
+  .run()
+  .then((value) => console.log(value))
   .catch(console.error);

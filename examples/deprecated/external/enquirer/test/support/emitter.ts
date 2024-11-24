@@ -1,16 +1,15 @@
 // @ts-nocheck
 
-'use strict';
+"use strict";
 
-const Events = require('events');
+const Events = require("events");
 
 class InputStream extends Events {
   write(str) {
-    this.emit('write', str);
+    this.emit("write", str);
   }
 
-  close() {
-  }
+  close() {}
 }
 
 // class OutputStream extends Events {
@@ -23,10 +22,10 @@ class InputStream extends Events {
 // }
 
 function listener(input, onKeypress) {
-  input.on('keypress', onKeypress);
+  input.on("keypress", onKeypress);
 
   const off = () => {
-    input.off('keypress', onKeypress);
+    input.off("keypress", onKeypress);
   };
 
   return off;

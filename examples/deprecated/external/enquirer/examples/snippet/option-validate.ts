@@ -1,30 +1,30 @@
 // @ts-nocheck
 
-'use strict';
+"use strict";
 
-const colors = require('ansi-colors');
-const semver = require('semver');
-const { Snippet } = require('enquirer');
+const colors = require("ansi-colors");
+const semver = require("semver");
+const { Snippet } = require("enquirer");
 const prompt = new Snippet({
-  name: 'username',
-  message: 'Fill out the fields in package.json',
+  name: "username",
+  message: "Fill out the fields in package.json",
   defaults: {
-    name: 'awesome-lib',
-    version: '0.1.0',
-    license: 'MIT'
+    name: "awesome-lib",
+    version: "0.1.0",
+    license: "MIT",
   },
-  required: 'description',
-  initial: 'version',
+  required: "description",
+  initial: "version",
   fields: [
     {
-      name: 'version',
+      name: "version",
       validate(value, state, field) {
-        if (field && field.name === 'version' && !semver.valid(value)) {
-          return colors.red('expected a valid semver value');
+        if (field && field.name === "version" && !semver.valid(value)) {
+          return colors.red("expected a valid semver value");
         }
         return true;
-      }
-    }
+      },
+    },
   ],
   template: `{
   "name": "{{name}}",
@@ -45,9 +45,10 @@ const prompt = new Snippet({
   },
   "keywords": []
 }
-`
+`,
 });
 
-prompt.run()
-  .then(answer => console.log('Answer:', answer))
+prompt
+  .run()
+  .then((answer) => console.log("Answer:", answer))
   .catch(console.error);

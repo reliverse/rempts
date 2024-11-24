@@ -1,18 +1,18 @@
 // @ts-nocheck
 
-'use strict';
+"use strict";
 
-const stripAnsi = require('strip-ansi');
-const SelectPrompt = require('./select');
-const placeholder = require('../placeholder');
+const stripAnsi = require("strip-ansi");
+const SelectPrompt = require("./select");
+const placeholder = require("../placeholder");
 
 class FormPrompt extends SelectPrompt {
   constructor(options) {
     super({ ...options, multiple: true });
-    this.type = 'form';
+    this.type = "form";
     this.initial = this.options.initial;
-    this.align = [this.options.align, 'right'].find(v => v != null);
-    this.emptyError = '';
+    this.align = [this.options.align, "right"].find((v) => v != null);
+    this.emptyError = "";
     this.values = {};
   }
 
@@ -21,7 +21,7 @@ class FormPrompt extends SelectPrompt {
     if (first === true) this._index = this.index;
     this.index = this._index;
     this.values = {};
-    this.choices.forEach(choice => choice.reset && choice.reset());
+    this.choices.forEach((choice) => choice.reset && choice.reset());
     return this.render();
   }
 
@@ -33,7 +33,8 @@ class FormPrompt extends SelectPrompt {
     let choice = this.focused;
     if (!choice) return this.alert();
     let { cursor, input } = choice;
-    choice.value = choice.input = input.slice(0, cursor) + char + input.slice(cursor);
+    choice.value = choice.input =
+      input.slice(0, cursor) + char + input.slice(cursor);
     choice.cursor++;
     return this.render();
   }
@@ -42,7 +43,8 @@ class FormPrompt extends SelectPrompt {
     let choice = this.focused;
     if (!choice || choice.cursor <= 0) return this.alert();
     let { cursor, input } = choice;
-    choice.value = choice.input = input.slice(0, cursor - 1) + input.slice(cursor);
+    choice.value = choice.input =
+      input.slice(0, cursor - 1) + input.slice(cursor);
     choice.cursor--;
     return this.render();
   }
@@ -97,37 +99,38 @@ class FormPrompt extends SelectPrompt {
     let ch = this.focused;
     if (!ch) return this.alert();
     if (ch.cursor === 0) return super.prev();
-    ch.value = ch.input = '';
+    ch.value = ch.input = "";
     ch.cursor = 0;
     return this.render();
   }
 
   separator() {
-    return '';
+    return "";
   }
 
   format(value) {
-    return !this.state.submitted ? super.format(value) : '';
+    return !this.state.submitted ? super.format(value) : "";
   }
 
   pointer() {
-    return '';
+    return "";
   }
 
   indicator(choice) {
-    return choice.input ? '⦿' : '⊙';
+    return choice.input ? "⦿" : "⊙";
   }
 
   async choiceSeparator(choice, i) {
-    let sep = await this.resolve(choice.separator, this.state, choice, i) || ':';
-    return sep ? ' ' + this.styles.disabled(sep) : '';
+    let sep =
+      (await this.resolve(choice.separator, this.state, choice, i)) || ":";
+    return sep ? " " + this.styles.disabled(sep) : "";
   }
 
   async renderChoice(choice, i) {
     await this.onChoice(choice, i);
 
     let { state, styles } = this;
-    let { cursor, initial = '', name, input = '' } = choice;
+    let { cursor, initial = "", name, input = "" } = choice;
     let { muted, submitted, primary, danger } = styles;
 
     let focused = this.index === i;
@@ -135,22 +138,23 @@ class FormPrompt extends SelectPrompt {
     let sep = await this.choiceSeparator(choice, i);
     let msg = choice.message;
 
-    if (this.align === 'right') msg = msg.padStart(this.longest + 1, ' ');
-    if (this.align === 'left') msg = msg.padEnd(this.longest + 1, ' ');
+    if (this.align === "right") msg = msg.padStart(this.longest + 1, " ");
+    if (this.align === "left") msg = msg.padEnd(this.longest + 1, " ");
 
     // re-populate the form values (answers) object
-    let value = this.values[name] = (input || initial);
-    let color = input ? 'success' : 'dark';
+    let value = (this.values[name] = input || initial);
+    let color = input ? "success" : "dark";
 
     if ((await validate.call(choice, value, this.state)) !== true) {
-      color = 'danger';
+      color = "danger";
     }
 
     let style = styles[color];
-    let indicator = style(await this.indicator(choice, i)) + (choice.pad || '');
+    let indicator = style(await this.indicator(choice, i)) + (choice.pad || "");
 
     let indent = this.indent(choice);
-    let line = () => [indent, indicator, msg + sep, input ].filter(Boolean).join(' ');
+    let line = () =>
+      [indent, indicator, msg + sep, input].filter(Boolean).join(" ");
 
     if (state.submitted) {
       msg = stripAnsi(msg);
@@ -180,9 +184,9 @@ class FormPrompt extends SelectPrompt {
     }
 
     if (choice.error) {
-      input += (input ? ' ' : '') + danger(choice.error.trim());
+      input += (input ? " " : "") + danger(choice.error.trim());
     } else if (choice.hint) {
-      input += (input ? ' ' : '') + muted(choice.hint.trim());
+      input += (input ? " " : "") + muted(choice.hint.trim());
     }
 
     return line();

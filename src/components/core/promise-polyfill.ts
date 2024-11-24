@@ -10,6 +10,6 @@ export class PromisePolyfill<T> extends Promise<T> {
       reject = rej;
     });
 
-    return { promise, resolve: resolve!, reject: reject! };
+    return { promise, resolve: resolve, reject: reject };
   }
 }

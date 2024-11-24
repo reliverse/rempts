@@ -1,14 +1,14 @@
 import isUnicodeSupported from "is-unicode-supported";
 import _stringWidth from "string-width";
 
-import type { LogLevel, LogType } from "~/utils/constants.js";
 import type { FormatOptions, LogObject } from "~/types/general.js";
 import type { BoxOpts } from "~/utils/box.js";
+import type { LogLevel, LogType } from "~/utils/constants.js";
 
-import { stripAnsi } from "~/utils/utils.js";
 import { box } from "~/utils/box.js";
 import { colors } from "~/utils/color.js";
 import { parseStack } from "~/utils/error.js";
+import { stripAnsi } from "~/utils/utils.js";
 
 import { BasicReporter } from "./basic.js";
 

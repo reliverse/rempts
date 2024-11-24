@@ -1,19 +1,19 @@
 // @ts-nocheck
 
-const crypto = require('crypto');
-const base32 = require('hi-base32');
+const crypto = require("crypto");
+const base32 = require("hi-base32");
 
 /*
  * This is an implementation of HMAC-Based One Time Password (HOTP) algorithm
  * specified in RFC 4226 (https://tools.ietf.org/html/rfc4226)
  */
-function generateHOTP(secret, counter, otpLength = 6, hmacAlgorithm = 'sha1') {
+function generateHOTP(secret, counter, otpLength = 6, hmacAlgorithm = "sha1") {
   if (!secret) {
-    throw new Error('Secret is required');
+    throw new Error("Secret is required");
   }
 
   if (!counter) {
-    throw new Error('Counter is required');
+    throw new Error("Counter is required");
   }
 
   const decodedSecret = base32.decode.asBytes(secret);
@@ -47,5 +47,5 @@ function dynamicTruncationFn(hmacValue) {
 }
 
 module.exports = {
-  generateHOTP
+  generateHOTP,
 };

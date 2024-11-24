@@ -130,7 +130,7 @@ export async function prompt<
       message,
       defaultValue: (opts as TextPromptOptions).default,
       placeholder: (opts as TextPromptOptions).placeholder,
-      initialValue: (opts as TextPromptOptions).initial!,
+      initialValue: (opts as TextPromptOptions).initial,
     })) as any;
   }
 

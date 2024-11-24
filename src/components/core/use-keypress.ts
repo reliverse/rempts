@@ -17,7 +17,9 @@ export function useKeypress(
   useEffect((rl) => {
     let ignore = false;
     const handler = withUpdates((_input: string, event: KeypressEvent) => {
-      if (ignore) return;
+      if (ignore) {
+        return;
+      }
       void signal.current(event, rl);
     });
 

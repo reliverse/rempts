@@ -1,16 +1,16 @@
 // @ts-nocheck
 
-'use strict';
+"use strict";
 
-const isTerm = process.env.TERM_PROGRAM === 'Apple_Terminal';
-const stripAnsi = require('strip-ansi');
-const utils = require('./utils');
-const ansi = module.exports = exports;
-const ESC = '\u001b[';
-const BEL = '\u0007';
+const isTerm = process.env.TERM_PROGRAM === "Apple_Terminal";
+const stripAnsi = require("strip-ansi");
+const utils = require("./utils");
+const ansi = (module.exports = exports);
+const ESC = "\u001b[";
+const BEL = "\u0007";
 let hidden = false;
 
-const code = ansi.code = {
+const code = (ansi.code = {
   bell: BEL,
   beep: BEL,
   beginning: `${ESC}G`,
@@ -21,14 +21,14 @@ const code = ansi.code = {
   line: `${ESC}2K`,
   lineEnd: `${ESC}K`,
   lineStart: `${ESC}1K`,
-  restorePosition: ESC + (isTerm ? '8' : 'u'),
-  savePosition: ESC + (isTerm ? '7' : 's'),
+  restorePosition: ESC + (isTerm ? "8" : "u"),
+  savePosition: ESC + (isTerm ? "7" : "s"),
   screen: `${ESC}2J`,
   show: `${ESC}?25h`,
-  up: `${ESC}1J`
-};
+  up: `${ESC}1J`,
+});
 
-const cursor = ansi.cursor = {
+const cursor = (ansi.cursor = {
   get hidden() {
     return hidden;
   },
@@ -47,24 +47,26 @@ const cursor = ansi.cursor = {
   nextLine: (count = 1) => `${ESC}E`.repeat(count),
   prevLine: (count = 1) => `${ESC}F`.repeat(count),
 
-  up: (count = 1) => count ? `${ESC}${count}A` : '',
-  down: (count = 1) => count ? `${ESC}${count}B` : '',
-  right: (count = 1) => count ? `${ESC}${count}C` : '',
-  left: (count = 1) => count ? `${ESC}${count}D` : '',
+  up: (count = 1) => (count ? `${ESC}${count}A` : ""),
+  down: (count = 1) => (count ? `${ESC}${count}B` : ""),
+  right: (count = 1) => (count ? `${ESC}${count}C` : ""),
+  left: (count = 1) => (count ? `${ESC}${count}D` : ""),
 
   to(x, y) {
     return y ? `${ESC}${y + 1};${x + 1}H` : `${ESC}${x + 1}G`;
   },
 
   move(x = 0, y = 0) {
-    let res = '';
-    res += (x < 0) ? cursor.left(-x) : (x > 0) ? cursor.right(x) : '';
-    res += (y < 0) ? cursor.up(-y) : (y > 0) ? cursor.down(y) : '';
+    let res = "";
+    res += x < 0 ? cursor.left(-x) : x > 0 ? cursor.right(x) : "";
+    res += y < 0 ? cursor.up(-y) : y > 0 ? cursor.down(y) : "";
     return res;
   },
   strLen(str) {
     // to suport chinese
-    var realLength = 0, len = str.length, charCode = -1;
+    var realLength = 0,
+      len = str.length,
+      charCode = -1;
     for (var i = 0; i < len; i++) {
       charCode = str.charCodeAt(i);
       if (charCode >= 0 && charCode <= 128) realLength += 1;
@@ -74,9 +76,9 @@ const cursor = ansi.cursor = {
   },
   restore(state = {}) {
     let { after, cursor, initial, input, prompt, size, value } = state;
-    initial = utils.isPrimitive(initial) ? String(initial) : '';
-    input = utils.isPrimitive(input) ? String(input) : '';
-    value = utils.isPrimitive(value) ? String(value) : '';
+    initial = utils.isPrimitive(initial) ? String(initial) : "";
+    input = utils.isPrimitive(input) ? String(input) : "";
+    value = utils.isPrimitive(value) ? String(value) : "";
 
     if (size) {
       let codes = ansi.cursor.up(size) + ansi.cursor.to(this.strLen(prompt));
@@ -88,17 +90,20 @@ const cursor = ansi.cursor = {
     }
 
     if (value || after) {
-      let pos = (!input && !!initial) ? - this.strLen(initial) : -this.strLen(input) + cursor;
+      let pos =
+        !input && !!initial
+          ? -this.strLen(initial)
+          : -this.strLen(input) + cursor;
       if (after) pos -= this.strLen(after);
-      if (input === '' && initial && !prompt.includes(initial)) {
+      if (input === "" && initial && !prompt.includes(initial)) {
         pos += this.strLen(initial);
       }
       return ansi.cursor.move(pos);
     }
-  }
-};
+  },
+});
 
-const erase = ansi.erase = {
+const erase = (ansi.erase = {
   screen: code.screen,
   up: code.up,
   down: code.down,
@@ -106,22 +111,26 @@ const erase = ansi.erase = {
   lineEnd: code.lineEnd,
   lineStart: code.lineStart,
   lines(n) {
-    let str = '';
+    let str = "";
     for (let i = 0; i < n; i++) {
-      str += ansi.erase.line + (i < n - 1 ? ansi.cursor.up(1) : '');
+      str += ansi.erase.line + (i < n - 1 ? ansi.cursor.up(1) : "");
     }
     if (n) str += ansi.code.beginning;
     return str;
-  }
-};
+  },
+});
 
-ansi.clear = (input = '', columns = process.stdout.columns) => {
+ansi.clear = (input = "", columns = process.stdout.columns) => {
   if (!columns) return erase.line + cursor.to(0);
-  let width = str => [...stripAnsi(str)].length;
+  let width = (str) => [...stripAnsi(str)].length;
   let lines = input.split(/\r?\n/);
   let rows = 0;
   for (let line of lines) {
     rows += 1 + Math.floor(Math.max(width(line) - 1, 0) / columns);
   }
-  return (erase.line + cursor.prevLine()).repeat(rows - 1) + erase.line + cursor.to(0);
+  return (
+    (erase.line + cursor.prevLine()).repeat(rows - 1) +
+    erase.line +
+    cursor.to(0)
+  );
 };

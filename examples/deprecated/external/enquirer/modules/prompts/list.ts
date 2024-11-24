@@ -1,14 +1,14 @@
 // @ts-nocheck
 
-'use strict';
+"use strict";
 
-const StringPrompt = require('../types/string');
+const StringPrompt = require("../types/string");
 
 class ListPrompt extends StringPrompt {
   constructor(options = {}) {
     super(options);
     this.sep = this.options.separator || /, */;
-    this.initial = options.initial || '';
+    this.initial = options.initial || "";
   }
 
   split(input = this.value) {
@@ -16,12 +16,13 @@ class ListPrompt extends StringPrompt {
   }
 
   format() {
-    let style = this.state.submitted ? this.styles.primary : val => val;
-    return this.list.map(style).join(', ');
+    let style = this.state.submitted ? this.styles.primary : (val) => val;
+    return this.list.map(style).join(", ");
   }
 
   async submit(value) {
-    let result = this.state.error || await this.validate(this.list, this.state);
+    let result =
+      this.state.error || (await this.validate(this.list, this.state));
     if (result !== true) {
       this.state.error = result;
       return super.submit();

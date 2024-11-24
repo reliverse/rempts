@@ -1,9 +1,6 @@
 {
   "values": {
-    "past": [
-      "doowb",
-      "jonschlinkert"
-    ],
+    "past": ["doowb", "jonschlinkert"],
     "present": ""
   }
 }

@@ -1,6 +1,6 @@
 // @ts-nocheck
 
-const Enquirer = require('enquirer');
+const Enquirer = require("enquirer");
 const { Prompt } = Enquirer;
 
 /**
@@ -30,8 +30,8 @@ class CustomPrompt extends Prompt {
     let prefix = this.style(this.symbols.prefix[this.state.status]);
     let msg = this.styles.strong(this.state.message);
     let sep = this.styles.muted(this.symbols.separator[this.state.status]);
-    let prompt = [prefix, msg, sep].filter(Boolean).join(' ');
-    this.write(prompt + ' ' + this.input);
+    let prompt = [prefix, msg, sep].filter(Boolean).join(" ");
+    this.write(prompt + " " + this.input);
   }
 }
 
@@ -39,13 +39,14 @@ const enquirer = new Enquirer();
 
 // register your custom prompt "type" using whatever name you want.
 // you can even override built-in prompts if necessary.
-enquirer.register('custom-input', CustomPrompt);
+enquirer.register("custom-input", CustomPrompt);
 
 // run your custom prompt
-enquirer.prompt({
-  type: 'custom-input', //<= specify your custom type to run the prompt
-  name: 'username',
-  message: 'What is your username?'
-})
-  .then(answers => console.log('ANSWERS:', answers))
+enquirer
+  .prompt({
+    type: "custom-input", //<= specify your custom type to run the prompt
+    name: "username",
+    message: "What is your username?",
+  })
+  .then((answers) => console.log("ANSWERS:", answers))
   .catch(console.error);

@@ -1,17 +1,18 @@
 // @ts-nocheck
 
-'use strict';
+"use strict";
 
-module.exports = function(assert) {
+module.exports = function (assert) {
   const utils = {};
-  utils.expect = (expected, msg) => actual => assert.deepEqual(actual, expected, msg);
-  utils.nextTick = fn => {
+  utils.expect = (expected, msg) => (actual) =>
+    assert.deepEqual(actual, expected, msg);
+  utils.nextTick = (fn) => {
     return new Promise((resolve, reject) => {
       process.nextTick(() => fn().then(resolve).catch(reject));
     });
   };
 
-  utils.immediate = fn => {
+  utils.immediate = (fn) => {
     return new Promise((resolve, reject) => {
       setImmediate(() => fn().then(resolve).catch(reject));
     });
@@ -23,21 +24,21 @@ module.exports = function(assert) {
     });
   };
 
-  utils.keypresses = async(prompt, chars) => {
+  utils.keypresses = async (prompt, chars) => {
     for (const ch of chars) {
       await utils.timeout(() => prompt.keypress(ch));
     }
   };
 
-  assert.has = function(a, b, msg) {
+  assert.has = function (a, b, msg) {
     if (Array.isArray(a)) {
-      assert(Array.isArray(b), 'expected an array');
+      assert(Array.isArray(b), "expected an array");
       for (let i = 0; i < b.length; i++) assert.has(a[i], b[i], msg);
       return;
     }
 
-    if (typeof a === 'string') {
-      assert.equal(typeof b, 'string', 'expected a string');
+    if (typeof a === "string") {
+      assert.equal(typeof b, "string", "expected a string");
       assert(a.includes(b), msg);
       return;
     }

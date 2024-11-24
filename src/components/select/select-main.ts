@@ -39,7 +39,9 @@ export async function selectPrompt<T extends string>(params: {
   let selectedIndex = initial
     ? options.findIndex((option) => option.value === initial)
     : 0;
-  if (selectedIndex === -1) selectedIndex = 0;
+  if (selectedIndex === -1) {
+    selectedIndex = 0;
+  }
 
   const rl = readline.createInterface({ input, output });
   readline.emitKeypressEvents(input, rl);

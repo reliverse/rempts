@@ -1,8 +1,8 @@
 // @ts-nocheck
 
-'use strict';
+"use strict";
 
-const Select = require('../lib/prompts/select');
+const Select = require("../lib/prompts/select");
 
 class HorizontalSelect extends Select {
   right() {
@@ -14,13 +14,15 @@ class HorizontalSelect extends Select {
   }
 
   pointer() {
-    return '';
+    return "";
   }
 
   async renderChoices() {
-    if (this.state.submitted) return ' ';
+    if (this.state.submitted) return " ";
     let sep = this.options.sep || ` ${this.styles.muted(this.symbols.middot)} `;
-    let choices = this.visible.map(async(ch, i) => await this.renderChoice(ch, i));
+    let choices = this.visible.map(
+      async (ch, i) => await this.renderChoice(ch, i),
+    );
     let visible = await Promise.all(choices);
     return visible.join(sep);
   }

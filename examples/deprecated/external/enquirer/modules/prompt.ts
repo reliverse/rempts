@@ -1,15 +1,15 @@
 // @ts-nocheck
 
-'use strict';
+"use strict";
 
-const Events = require('events');
-const stripAnsi = require('strip-ansi');
-const keypress = require('./keypress');
-const timer = require('./timer');
-const State = require('./state');
-const theme = require('./theme');
-const utils = require('./utils');
-const ansi = require('./ansi');
+const Events = require("events");
+const stripAnsi = require("strip-ansi");
+const keypress = require("./keypress");
+const timer = require("./timer");
+const State = require("./state");
+const theme = require("./theme");
+const utils = require("./utils");
+const ansi = require("./ansi");
 
 /**
  * Base class for creating a new Prompt.
@@ -25,7 +25,7 @@ class Prompt extends Events {
     theme(this);
     timer(this);
     this.state = new State(this);
-    this.initial = [options.initial, options.default].find(v => v != null);
+    this.initial = [options.initial, options.default].find((v) => v != null);
     this.stdout = options.stdout || process.stdout;
     this.stdin = options.stdin || process.stdin;
     this.scale = options.scale || 1;
@@ -37,14 +37,18 @@ class Prompt extends Events {
 
   async keypress(input, event = {}) {
     this.keypressed = true;
-    let key = keypress.action(input, keypress(input, event), this.options.actions);
+    let key = keypress.action(
+      input,
+      keypress(input, event),
+      this.options.actions,
+    );
     this.state.keypress = key;
-    this.emit('keypress', input, key);
-    this.emit('state', this.state.clone());
+    this.emit("keypress", input, key);
+    this.emit("state", this.state.clone());
 
     const fn = this.options[key.action] || this[key.action] || this.dispatch;
 
-    if (typeof fn === 'function') {
+    if (typeof fn === "function") {
       return await fn.call(this, input, key);
     }
 
@@ -54,7 +58,7 @@ class Prompt extends Events {
   alert() {
     delete this.state.alert;
     if (this.options.show === false) {
-      this.emit('alert');
+      this.emit("alert");
     } else {
       this.stdout.write(ansi.code.beep);
     }
@@ -63,7 +67,7 @@ class Prompt extends Events {
   cursorHide() {
     this.stdout.write(ansi.cursor.hide());
     const releaseOnExit = utils.onExit(() => this.cursorShow());
-    this.on('close', () => {
+    this.on("close", () => {
       this.cursorShow();
       releaseOnExit();
     });
@@ -83,7 +87,7 @@ class Prompt extends Events {
 
   clear(lines = 0) {
     let buffer = this.state.buffer;
-    this.state.buffer = '';
+    this.state.buffer = "";
     if ((!buffer && !lines) || this.options.show === false) return;
     this.stdout.write(ansi.cursor.down(lines) + ansi.clear(buffer, this.width));
   }
@@ -92,9 +96,9 @@ class Prompt extends Events {
     if (this.state.closed || this.options.show === false) return;
 
     let { prompt, after, rest } = this.sections();
-    let { cursor, initial = '', input = '', value = '' } = this;
+    let { cursor, initial = "", input = "", value = "" } = this;
 
-    let size = this.state.size = rest.length;
+    let size = (this.state.size = rest.length);
     let state = { after, cursor, initial, input, prompt, size, value };
     let codes = ansi.cursor.restore(state);
     if (codes) {
@@ -109,12 +113,12 @@ class Prompt extends Events {
     let idx = buf.indexOf(prompt);
     let header = buf.slice(0, idx);
     let rest = buf.slice(idx);
-    let lines = rest.split('\n');
+    let lines = rest.split("\n");
     let first = lines[0];
     let last = lines[lines.length - 1];
-    let promptLine = prompt + (input ? ' ' + input : '');
+    let promptLine = prompt + (input ? " " + input : "");
     let len = promptLine.length;
-    let after = len < first.length ? first.slice(len + 1) : '';
+    let after = len < first.length ? first.slice(len + 1) : "";
     return { header, prompt: first, after, rest: lines.slice(1), last };
   }
 
@@ -129,17 +133,18 @@ class Prompt extends Events {
       await this.options.onSubmit.call(this, this.name, this.value, this);
     }
 
-    let result = this.state.error || await this.validate(this.value, this.state);
+    let result =
+      this.state.error || (await this.validate(this.value, this.state));
     if (result !== true) {
-      let error = '\n' + this.symbols.pointer + ' ';
+      let error = "\n" + this.symbols.pointer + " ";
 
-      if (typeof result === 'string') {
+      if (typeof result === "string") {
         error += result.trim();
       } else {
-        error += 'Invalid input';
+        error += "Invalid input";
       }
 
-      this.state.error = '\n' + this.styles.danger(error);
+      this.state.error = "\n" + this.styles.danger(error);
       this.state.submitted = false;
       await this.render();
       await this.alert();
@@ -153,7 +158,7 @@ class Prompt extends Events {
     await this.close();
 
     this.value = await this.result(this.value);
-    this.emit('submit', this.value);
+    this.emit("submit", this.value);
   }
 
   async cancel(err) {
@@ -162,11 +167,11 @@ class Prompt extends Events {
     await this.render();
     await this.close();
 
-    if (typeof this.options.onCancel === 'function') {
+    if (typeof this.options.onCancel === "function") {
       await this.options.onCancel.call(this, this.name, this.value, this);
     }
 
-    this.emit('cancel', await this.error(err));
+    this.emit("cancel", await this.error(err));
   }
 
   async close() {
@@ -178,23 +183,25 @@ class Prompt extends Events {
       if (sections.rest) {
         this.write(ansi.cursor.down(sections.rest.length));
       }
-      this.write('\n'.repeat(lines));
-    } catch (err) { /* do nothing */ }
+      this.write("\n".repeat(lines));
+    } catch (err) {
+      /* do nothing */
+    }
 
-    this.emit('close');
+    this.emit("close");
   }
 
   start() {
     if (!this.stop && this.options.show !== false) {
       this.stop = keypress.listen(this, this.keypress.bind(this));
-      this.once('close', this.stop);
-      this.emit('start', this);
+      this.once("close", this.stop);
+      this.emit("start", this);
     }
   }
 
   async skip() {
     this.skipped = this.options.skip === true;
-    if (typeof this.options.skip === 'function') {
+    if (typeof this.options.skip === "function") {
       this.skipped = await this.options.skip.call(this, this.name, this.value);
     }
     return this.skipped;
@@ -206,22 +213,22 @@ class Prompt extends Events {
     this.format = () => format.call(this, this.value);
     this.result = () => result.call(this, this.value);
 
-    if (typeof options.initial === 'function') {
+    if (typeof options.initial === "function") {
       this.initial = await options.initial.call(this, this);
     }
 
-    if (typeof options.onRun === 'function') {
+    if (typeof options.onRun === "function") {
       await options.onRun.call(this, this);
     }
 
     // if "options.onSubmit" is defined, we wrap the "submit" method to guarantee
     // that "onSubmit" will always called first thing inside the submit
     // method, regardless of how it's handled in inheriting prompts.
-    if (typeof options.onSubmit === 'function') {
+    if (typeof options.onSubmit === "function") {
       let onSubmit = options.onSubmit.bind(this);
       let submit = this.submit.bind(this);
       delete this.options.onSubmit;
-      this.submit = async() => {
+      this.submit = async () => {
         await onSubmit(this.name, this.value, this);
         return submit();
       };
@@ -232,13 +239,13 @@ class Prompt extends Events {
   }
 
   render() {
-    throw new Error('expected prompt to have a custom render method');
+    throw new Error("expected prompt to have a custom render method");
   }
 
   run() {
-    return new Promise(async(resolve, reject) => {
-      this.once('submit', resolve);
-      this.once('cancel', reject);
+    return new Promise(async (resolve, reject) => {
+      this.once("submit", resolve);
+      this.once("cancel", reject);
 
       if (await this.skip()) {
         this.render = () => {};
@@ -246,7 +253,7 @@ class Prompt extends Events {
       }
 
       await this.initialize();
-      this.emit('run');
+      this.emit("run");
     });
   }
 
@@ -256,7 +263,7 @@ class Prompt extends Events {
     state.timer = timer;
     let value = options[name] || state[name] || symbols[name];
     let val = choice && choice[name] != null ? choice[name] : await value;
-    if (val === '') return val;
+    if (val === "") return val;
 
     let res = await this.resolve(val, state, choice, i);
     if (!res && choice && choice[name]) {
@@ -266,11 +273,12 @@ class Prompt extends Events {
   }
 
   async prefix() {
-    let element = await this.element('prefix') || this.symbols;
+    let element = (await this.element("prefix")) || this.symbols;
     let timer = this.timers && this.timers.prefix;
     let state = this.state;
     state.timer = timer;
-    if (utils.isObject(element)) element = element[state.status] || element.pending;
+    if (utils.isObject(element))
+      element = element[state.status] || element.pending;
     if (!utils.hasColor(element)) {
       let style = this.styles[state.status] || this.styles.pending;
       return style(element);
@@ -279,7 +287,7 @@ class Prompt extends Events {
   }
 
   async message() {
-    let message = await this.element('message');
+    let message = await this.element("message");
     if (!utils.hasColor(message)) {
       return this.styles.strong(message);
     }
@@ -287,7 +295,7 @@ class Prompt extends Events {
   }
 
   async separator() {
-    let element = await this.element('separator') || this.symbols;
+    let element = (await this.element("separator")) || this.symbols;
     let timer = this.timers && this.timers.separator;
     let state = this.state;
     state.timer = timer;
@@ -301,25 +309,28 @@ class Prompt extends Events {
   }
 
   async pointer(choice, i) {
-    let val = await this.element('pointer', choice, i);
+    let val = await this.element("pointer", choice, i);
 
-    if (typeof val === 'string' && utils.hasColor(val)) {
+    if (typeof val === "string" && utils.hasColor(val)) {
       return val;
     }
 
     if (val) {
       let styles = this.styles;
       let focused = this.index === i;
-      let style = focused ? styles.primary : val => val;
-      let ele = await this.resolve(val[focused ? 'on' : 'off'] || val, this.state);
+      let style = focused ? styles.primary : (val) => val;
+      let ele = await this.resolve(
+        val[focused ? "on" : "off"] || val,
+        this.state,
+      );
       let styled = !utils.hasColor(ele) ? style(ele) : ele;
-      return focused ? styled : ' '.repeat(ele.length);
+      return focused ? styled : " ".repeat(ele.length);
     }
   }
 
   async indicator(choice, i) {
-    let val = await this.element('indicator', choice, i);
-    if (typeof val === 'string' && utils.hasColor(val)) {
+    let val = await this.element("indicator", choice, i);
+    if (typeof val === "string" && utils.hasColor(val)) {
       return val;
     }
 
@@ -327,11 +338,11 @@ class Prompt extends Events {
       let styles = this.styles;
       let enabled = choice.enabled === true;
       let style = enabled ? styles.success : styles.dark;
-      let ele = val[enabled ? 'on' : 'off'] || val;
+      let ele = val[enabled ? "on" : "off"] || val;
       return !utils.hasColor(ele) ? style(ele) : ele;
     }
 
-    return '';
+    return "";
   }
 
   body() {
@@ -339,20 +350,20 @@ class Prompt extends Events {
   }
 
   footer() {
-    if (this.state.status === 'pending') {
-      return this.element('footer');
+    if (this.state.status === "pending") {
+      return this.element("footer");
     }
   }
 
   header() {
-    if (this.state.status === 'pending') {
-      return this.element('header');
+    if (this.state.status === "pending") {
+      return this.element("header");
     }
   }
 
   async hint() {
-    if (this.state.status === 'pending' && !this.isValue(this.state.input)) {
-      let hint = await this.element('hint');
+    if (this.state.status === "pending" && !this.isValue(this.state.input)) {
+      let hint = await this.element("hint");
       if (!utils.hasColor(hint)) {
         return this.styles.muted(hint);
       }
@@ -361,7 +372,7 @@ class Prompt extends Events {
   }
 
   error(err) {
-    return !this.state.submitted ? (err || this.state.error) : '';
+    return !this.state.submitted ? err || this.state.error : "";
   }
 
   format(value) {
@@ -380,7 +391,7 @@ class Prompt extends Events {
   }
 
   isValue(value) {
-    return value != null && value !== '';
+    return value != null && value !== "";
   }
 
   resolve(value, ...args) {
@@ -429,68 +440,68 @@ class Prompt extends Events {
   }
 
   static get prompt() {
-    return options => new this(options).run();
+    return (options) => new this(options).run();
   }
 }
 
 function setOptions(prompt) {
-  let isValidKey = key => {
-    return prompt[key] === void 0 || typeof prompt[key] === 'function';
+  let isValidKey = (key) => {
+    return prompt[key] === void 0 || typeof prompt[key] === "function";
   };
 
   let ignore = [
-    'actions',
-    'choices',
-    'initial',
-    'margin',
-    'roles',
-    'styles',
-    'symbols',
-    'theme',
-    'timers',
-    'value'
+    "actions",
+    "choices",
+    "initial",
+    "margin",
+    "roles",
+    "styles",
+    "symbols",
+    "theme",
+    "timers",
+    "value",
   ];
 
   let ignoreFn = [
-    'body',
-    'footer',
-    'error',
-    'header',
-    'hint',
-    'indicator',
-    'message',
-    'prefix',
-    'separator',
-    'skip'
+    "body",
+    "footer",
+    "error",
+    "header",
+    "hint",
+    "indicator",
+    "message",
+    "prefix",
+    "separator",
+    "skip",
   ];
 
   for (let key of Object.keys(prompt.options)) {
     if (ignore.includes(key)) continue;
     if (/^on[A-Z]/.test(key)) continue;
     let option = prompt.options[key];
-    if (typeof option === 'function' && isValidKey(key)) {
+    if (typeof option === "function" && isValidKey(key)) {
       if (!ignoreFn.includes(key)) {
         prompt[key] = option.bind(prompt);
       }
-    } else if (typeof prompt[key] !== 'function') {
+    } else if (typeof prompt[key] !== "function") {
       prompt[key] = option;
     }
   }
 }
 
 function margin(value) {
-  if (typeof value === 'number') {
+  if (typeof value === "number") {
     value = [value, value, value, value];
   }
   let arr = [].concat(value || []);
-  let pad = i => i % 2 === 0 ? '\n' : ' ';
+  let pad = (i) => (i % 2 === 0 ? "\n" : " ");
   let res = [];
   for (let i = 0; i < 4; i++) {
     let char = pad(i);
     if (arr[i]) {
       res.push(char.repeat(arr[i]));
     } else {
-      res.push('');
+      res.push("");
     }
   }
   return res;

@@ -1,12 +1,12 @@
 // @ts-nocheck
 
-'use strict';
+"use strict";
 
-const StringPrompt = require('../types/string');
+const StringPrompt = require("../types/string");
 
 class InvisiblePrompt extends StringPrompt {
   format() {
-    return '';
+    return "";
   }
 }
 

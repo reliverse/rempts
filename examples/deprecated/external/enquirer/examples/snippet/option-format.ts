@@ -1,14 +1,14 @@
 // @ts-nocheck
 
-'use strict';
+"use strict";
 
-const colors = require('ansi-colors');
-const { Snippet } = require('enquirer');
+const colors = require("ansi-colors");
+const { Snippet } = require("enquirer");
 const prompt = new Snippet({
-  name: 'username',
-  message: 'Fill out the fields in package.json',
+  name: "username",
+  message: "Fill out the fields in package.json",
   values: {
-    name: 'awesome-lib'
+    name: "awesome-lib",
   },
   format(value) {
     return colors.blue(value);
@@ -32,9 +32,10 @@ const prompt = new Snippet({
   },
   "keywords": []
 }
-`
+`,
 });
 
-prompt.run()
-  .then(answer => console.log('Answer:', answer.result))
+prompt
+  .run()
+  .then((answer) => console.log("Answer:", answer.result))
   .catch(console.error);

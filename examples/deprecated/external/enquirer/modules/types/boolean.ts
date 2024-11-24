@@ -1,9 +1,9 @@
 // @ts-nocheck
 
-'use strict';
+"use strict";
 
-const Prompt = require('../prompt');
-const { isPrimitive, hasColor } = require('../utils');
+const Prompt = require("../prompt");
+const { isPrimitive, hasColor } = require("../utils");
 
 class BooleanPrompt extends Prompt {
   constructor(options) {
@@ -45,8 +45,8 @@ class BooleanPrompt extends Prompt {
   }
 
   async hint() {
-    if (this.state.status === 'pending') {
-      let hint = await this.element('hint');
+    if (this.state.status === "pending") {
+      let hint = await this.element("hint");
       if (!hasColor(hint)) {
         return this.styles.muted(hint);
       }
@@ -62,20 +62,20 @@ class BooleanPrompt extends Prompt {
     let msg = await this.message();
     let hint = this.styles.muted(this.default);
 
-    let promptLine = [prefix, msg, hint, sep].filter(Boolean).join(' ');
+    let promptLine = [prefix, msg, hint, sep].filter(Boolean).join(" ");
     this.state.prompt = promptLine;
 
     let header = await this.header();
-    let value = this.value = this.cast(input);
+    let value = (this.value = this.cast(input));
     let output = await this.format(value);
     let help = (await this.error()) || (await this.hint());
     let footer = await this.footer();
 
-    if (help && !promptLine.includes(help)) output += ' ' + help;
-    promptLine += ' ' + output;
+    if (help && !promptLine.includes(help)) output += " " + help;
+    promptLine += " " + output;
 
     this.clear(size);
-    this.write([header, promptLine, footer].filter(Boolean).join('\n'));
+    this.write([header, promptLine, footer].filter(Boolean).join("\n"));
     this.restore();
   }
 

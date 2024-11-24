@@ -1,10 +1,10 @@
 // @ts-nocheck
 
-'use strict';
+"use strict";
 
-const stripAnsi = require('strip-ansi');
-const clean = (str = '') => {
-  return typeof str === 'string' ? str.replace(/^['"]|['"]$/g, '') : '';
+const stripAnsi = require("strip-ansi");
+const clean = (str = "") => {
+  return typeof str === "string" ? str.replace(/^['"]|['"]$/g, "") : "";
 };
 
 /**
@@ -16,15 +16,15 @@ class Item {
   constructor(token) {
     this.name = token.key;
     this.field = token.field || {};
-    this.value = clean(token.initial || this.field.initial || '');
+    this.value = clean(token.initial || this.field.initial || "");
     this.message = token.message || this.name;
     this.cursor = 0;
-    this.input = '';
+    this.input = "";
     this.lines = [];
   }
 }
 
-const tokenize = async(options = {}, defaults = {}, fn = token => token) => {
+const tokenize = async (options = {}, defaults = {}, fn = (token) => token) => {
   let unique = new Set();
   let fields = options.fields || [];
   let input = options.template;
@@ -33,57 +33,63 @@ const tokenize = async(options = {}, defaults = {}, fn = token => token) => {
   let keys = [];
   let line = 1;
 
-  if (typeof input === 'function') {
+  if (typeof input === "function") {
     input = await input();
   }
 
   let i = -1;
   let next = () => input[++i];
   let peek = () => input[i + 1];
-  let push = token => {
+  let push = (token) => {
     token.line = line;
     tabstops.push(token);
   };
 
-  push({ type: 'bos', value: '' });
+  push({ type: "bos", value: "" });
 
   while (i < input.length - 1) {
     let value = next();
 
     if (/^[^\S\n ]$/.test(value)) {
-      push({ type: 'text', value });
+      push({ type: "text", value });
       continue;
     }
 
-    if (value === '\n') {
-      push({ type: 'newline', value });
+    if (value === "\n") {
+      push({ type: "newline", value });
       line++;
       continue;
     }
 
-    if (value === '\\') {
+    if (value === "\\") {
       value += next();
-      push({ type: 'text', value });
+      push({ type: "text", value });
       continue;
     }
 
-    if ((value === '$' || value === '#' || value === '{') && peek() === '{') {
+    if ((value === "$" || value === "#" || value === "{") && peek() === "{") {
       let n = next();
       value += n;
 
-      let token = { type: 'template', open: value, inner: '', close: '', value };
+      let token = {
+        type: "template",
+        open: value,
+        inner: "",
+        close: "",
+        value,
+      };
       let ch;
 
       while ((ch = next())) {
-        if (ch === '}') {
-          if (peek() === '}') ch += next();
+        if (ch === "}") {
+          if (peek() === "}") ch += next();
           token.value += ch;
           token.close = ch;
           break;
         }
 
-        if (ch === ':') {
-          token.initial = '';
+        if (ch === ":") {
+          token.initial = "";
           token.key = token.inner;
         } else if (token.initial !== void 0) {
           token.initial += ch;
@@ -93,7 +99,8 @@ const tokenize = async(options = {}, defaults = {}, fn = token => token) => {
         token.inner += ch;
       }
 
-      token.template = token.open + (token.initial || token.inner) + token.close;
+      token.template =
+        token.open + (token.initial || token.inner) + token.close;
       token.key = token.key || token.inner;
 
       if (hasOwnProperty.call(defaults, token.key)) {
@@ -106,8 +113,8 @@ const tokenize = async(options = {}, defaults = {}, fn = token => token) => {
       keys.push(token.key);
       unique.add(token.key);
 
-      let item = items.find(item => item.name === token.key);
-      token.field = fields.find(ch => ch.name === token.key);
+      let item = items.find((item) => item.name === token.key);
+      token.field = fields.find((ch) => ch.name === token.key);
 
       if (!item) {
         item = new Item(token);
@@ -119,40 +126,42 @@ const tokenize = async(options = {}, defaults = {}, fn = token => token) => {
     }
 
     let last = tabstops[tabstops.length - 1];
-    if (last.type === 'text' && last.line === line) {
+    if (last.type === "text" && last.line === line) {
       last.value += value;
     } else {
-      push({ type: 'text', value });
+      push({ type: "text", value });
     }
   }
 
-  push({ type: 'eos', value: '' });
+  push({ type: "eos", value: "" });
   return { input, tabstops, unique, keys, items };
 };
 
-module.exports = async prompt => {
+module.exports = async (prompt) => {
   let options = prompt.options;
-  let required = new Set(options.required === true ? [] : (options.required || []));
+  let required = new Set(
+    options.required === true ? [] : options.required || [],
+  );
   let defaults = { ...options.values, ...options.initial };
   let { tabstops, items, keys } = await tokenize(options, defaults);
 
-  let result = createFn('result', prompt, options);
-  let format = createFn('format', prompt, options);
-  let isValid = createFn('validate', prompt, options, true);
+  let result = createFn("result", prompt, options);
+  let format = createFn("format", prompt, options);
+  let isValid = createFn("validate", prompt, options, true);
   let isVal = prompt.isValue.bind(prompt);
 
-  return async(state = {}, submitted = false) => {
+  return async (state = {}, submitted = false) => {
     let index = 0;
 
     state.required = required;
     state.items = items;
     state.keys = keys;
-    state.output = '';
+    state.output = "";
 
-    let validate = async(value, state, item, index) => {
+    let validate = async (value, state, item, index) => {
       let error = await isValid(value, state, item, index);
       if (error === false) {
-        return 'Invalid field ' + item.name;
+        return "Invalid field " + item.name;
       }
       return error;
     };
@@ -161,25 +170,30 @@ module.exports = async prompt => {
       let value = token.value;
       let key = token.key;
 
-      if (token.type !== 'template') {
+      if (token.type !== "template") {
         if (value) state.output += value;
         continue;
       }
 
-      if (token.type === 'template') {
-        let item = items.find(ch => ch.name === key);
+      if (token.type === "template") {
+        let item = items.find((ch) => ch.name === key);
 
         if (options.required === true) {
           state.required.add(item.name);
         }
 
-        let val = [item.input, state.values[item.value], item.value, value].find(isVal);
+        let val = [
+          item.input,
+          state.values[item.value],
+          item.value,
+          value,
+        ].find(isVal);
         let field = item.field || {};
         let message = field.message || token.inner;
 
         if (submitted) {
           let error = await validate(state.values[key], state, item, index);
-          if ((error && typeof error === 'string') || error === false) {
+          if ((error && typeof error === "string") || error === false) {
             state.invalid.set(key, error);
             continue;
           }
@@ -199,7 +213,6 @@ module.exports = async prompt => {
           state.values[key] = val;
           value = prompt.styles.typing(val);
           state.missing.delete(message);
-
         } else {
           state.values[key] = void 0;
           val = `<${message}>`;
@@ -235,15 +248,16 @@ module.exports = async prompt => {
       }
     }
 
-    let lines = state.output.split('\n').map(l => ' ' + l);
+    let lines = state.output.split("\n").map((l) => " " + l);
     let len = items.length;
     let done = 0;
 
     for (let item of items) {
       if (state.invalid.has(item.name)) {
-        item.lines.forEach(i => {
-          if (lines[i][0] !== ' ') return;
-          lines[i] = state.styles.danger(state.symbols.bullet) + lines[i].slice(1);
+        item.lines.forEach((i) => {
+          if (lines[i][0] !== " ") return;
+          lines[i] =
+            state.styles.danger(state.symbols.bullet) + lines[i].slice(1);
         });
       }
 
@@ -253,16 +267,16 @@ module.exports = async prompt => {
     }
 
     state.completed = ((done / len) * 100).toFixed(0);
-    state.output = lines.join('\n');
+    state.output = lines.join("\n");
     return state.output;
   };
 };
 
 function createFn(prop, prompt, options, fallback) {
   return (value, state, item, index) => {
-    if (typeof item.field[prop] === 'function') {
+    if (typeof item.field[prop] === "function") {
       return item.field[prop].call(prompt, value, state, item, index);
     }
-    return [fallback, value].find(v => prompt.isValue(v));
+    return [fallback, value].find((v) => prompt.isValue(v));
   };
 }

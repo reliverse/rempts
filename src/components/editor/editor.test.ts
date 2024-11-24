@@ -11,7 +11,9 @@ afterEach(() => {
 
 async function editorAction(error: undefined | Error, value?: string) {
   const { lastCall } = vi.mocked(editAsync).mock;
-  if (!lastCall) throw new Error("editor wasn't open");
+  if (!lastCall) {
+    throw new Error("editor wasn't open");
+  }
 
   // Bugfix: The callback error value is nullable.
   const editCallback = lastCall[1] as (

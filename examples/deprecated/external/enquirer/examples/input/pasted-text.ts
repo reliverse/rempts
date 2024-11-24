@@ -1,16 +1,16 @@
 // @ts-nocheck
 
-'use strict';
+"use strict";
 
-const pause = (ms = 1000) => new Promise(res => setTimeout(res, ms));
+const pause = (ms = 1000) => new Promise((res) => setTimeout(res, ms));
 
-const { Input } = require('enquirer');
+const { Input } = require("enquirer");
 
 const timeout = 5;
 const prompt = new Input({
-  message: '静夜思',
+  message: "静夜思",
   keypressTimeout: timeout,
-  multiline: true
+  multiline: true,
 });
 
 const poem = `
@@ -21,7 +21,7 @@ const poem = `
 举头望明月，低头思故乡。
 `;
 
-prompt.once('run', async() => {
+prompt.once("run", async () => {
   for (const input of [...poem]) {
     await prompt.keypress(input);
     await pause(timeout + 10);
@@ -30,6 +30,7 @@ prompt.once('run', async() => {
   prompt.submit();
 });
 
-prompt.run()
-  .then(output => console.log({ output }))
+prompt
+  .run()
+  .then((output) => console.log({ output }))
   .catch(console.log);

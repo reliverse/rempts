@@ -1,16 +1,16 @@
 // @ts-nocheck
 
-'use strict';
+"use strict";
 
-const Prompt = require('../prompt');
-const keypress = require('../keypress');
-const placeholder = require('../placeholder');
-const { isPrimitive } = require('../utils');
+const Prompt = require("../prompt");
+const keypress = require("../keypress");
+const placeholder = require("../placeholder");
+const { isPrimitive } = require("../utils");
 
 class StringPrompt extends Prompt {
   constructor(options) {
     super(options);
-    this.initial = isPrimitive(this.initial) ? String(this.initial) : '';
+    this.initial = isPrimitive(this.initial) ? String(this.initial) : "";
     if (this.initial) this.cursorHide();
     this.state.prevCursor = 0;
     this.state.clipboard = [];
@@ -25,7 +25,7 @@ class StringPrompt extends Prompt {
     const elapsed = now - this.lastKeypress;
     this.lastKeypress = now;
 
-    const isEnterKey = key.name === 'return' || key.name === 'enter';
+    const isEnterKey = key.name === "return" || key.name === "enter";
     let prev = this.state.prevKeypress;
     let append;
     this.state.prevKeypress = key;
@@ -35,15 +35,15 @@ class StringPrompt extends Prompt {
         return this.submit();
       }
 
-      this.state.multilineBuffer = this.state.multilineBuffer || '';
+      this.state.multilineBuffer = this.state.multilineBuffer || "";
       this.state.multilineBuffer += input;
       append = true;
       prev = null;
     }
 
     if (append || (this.options.multiline && isEnterKey)) {
-      if (!prev || prev.name !== 'return') {
-        return this.append('\n', key);
+      if (!prev || prev.name !== "return") {
+        return this.append("\n", key);
       }
     }
 
@@ -55,7 +55,7 @@ class StringPrompt extends Prompt {
   }
 
   reset() {
-    this.input = this.value = '';
+    this.input = this.value = "";
     this.cursor = 0;
     return this.render();
   }
@@ -104,9 +104,9 @@ class StringPrompt extends Prompt {
     if (pos === 0) return this.alert();
     let before = this.input.slice(0, pos);
     let after = this.input.slice(pos);
-    let words = before.split(' ');
+    let words = before.split(" ");
     this.state.clipboard.push(words.pop());
-    this.input = words.join(' ');
+    this.input = words.join(" ");
     this.cursor = this.input.length;
     this.input += after;
     this.render();
@@ -140,7 +140,7 @@ class StringPrompt extends Prompt {
   }
 
   next() {
-    let init = this.initial != null ? String(this.initial) : '';
+    let init = this.initial != null ? String(this.initial) : "";
     if (!init || !init.startsWith(this.input)) return this.alert();
     this.input = this.initial;
     this.cursor = this.initial.length;
@@ -191,7 +191,7 @@ class StringPrompt extends Prompt {
     let separator = await this.separator();
     let message = await this.message();
 
-    let prompt = [prefix, message, separator].filter(Boolean).join(' ');
+    let prompt = [prefix, message, separator].filter(Boolean).join(" ");
     this.state.prompt = prompt;
 
     let header = await this.header();
@@ -199,11 +199,11 @@ class StringPrompt extends Prompt {
     let help = (await this.error()) || (await this.hint());
     let footer = await this.footer();
 
-    if (help && !output.includes(help)) output += ' ' + help;
-    prompt += ' ' + output;
+    if (help && !output.includes(help)) output += " " + help;
+    prompt += " " + output;
 
     this.clear(size);
-    this.write([header, prompt, footer].filter(Boolean).join('\n'));
+    this.write([header, prompt, footer].filter(Boolean).join("\n"));
     this.restore();
   }
 }

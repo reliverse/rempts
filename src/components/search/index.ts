@@ -83,7 +83,9 @@ function normalizeChoices<Value>(
   choices: readonly (string | Separator)[],
 ): (NormalizedChoice<Value> | Separator)[] {
   return choices.map((choice) => {
-    if (Separator.isSeparator(choice)) return choice;
+    if (Separator.isSeparator(choice)) {
+      return choice;
+    }
 
     if (typeof choice === "string") {
       return {
@@ -212,7 +214,7 @@ const search = createPrompt(
           do {
             next =
               (next + offset + searchResults.length) % searchResults.length;
-          } while (!isSelectable(searchResults[next]!));
+          } while (!isSelectable(searchResults[next]));
           setActive(next);
         }
       } else {

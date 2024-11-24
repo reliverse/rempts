@@ -1,15 +1,15 @@
 // @ts-nocheck
 
-'use strict';
+"use strict";
 
-const assert = require('assert');
-const Toggle = require('../lib/prompts/toggle');
+const assert = require("assert");
+const Toggle = require("../lib/prompts/toggle");
 let prompt;
 
-const up = { sequence: '\u001b[A', name: 'up', code: '[A' };
-const down = { sequence: '\u001b[B', name: 'down', code: '[B' };
-const right = { sequence: '\u001b[C', name: 'right', code: '[C' };
-const left = { sequence: '\u001b[D', name: 'left', code: '[D' };
+const up = { sequence: "\u001b[A", name: "up", code: "[A" };
+const down = { sequence: "\u001b[B", name: "down", code: "[B" };
+const right = { sequence: "\u001b[C", name: "right", code: "[C" };
+const left = { sequence: "\u001b[D", name: "left", code: "[D" };
 
 class Prompt extends Toggle {
   constructor(options) {
@@ -17,72 +17,68 @@ class Prompt extends Toggle {
   }
 }
 
-describe('toggle', function() {
-  describe('options.initial', () => {
-    it('should use options.initial when submitted', () => {
+describe("toggle", function () {
+  describe("options.initial", () => {
+    it("should use options.initial when submitted", () => {
       prompt = new Prompt({
-        message: 'prompt-toggle',
-        initial: true
+        message: "prompt-toggle",
+        initial: true,
       });
 
-      prompt.once('run', async() => await prompt.submit());
+      prompt.once("run", async () => await prompt.submit());
 
-      return prompt.run()
-        .then(answer => {
-          assert.equal(answer, true);
-        });
+      return prompt.run().then((answer) => {
+        assert.equal(answer, true);
+      });
     });
 
-    it('toggle should call options.initial when a function is defined (false)', () => {
+    it("toggle should call options.initial when a function is defined (false)", () => {
       prompt = new Prompt({
-        message: 'prompt-toggle',
-        initial: () => false
+        message: "prompt-toggle",
+        initial: () => false,
       });
 
-      prompt.once('run', () => prompt.submit());
+      prompt.once("run", () => prompt.submit());
 
-      return prompt.run()
-        .then(answer => {
-          assert.equal(answer, false);
-        });
+      return prompt.run().then((answer) => {
+        assert.equal(answer, false);
+      });
     });
 
-    it('toggle should call options.initial when a function is defined (true)', () => {
+    it("toggle should call options.initial when a function is defined (true)", () => {
       prompt = new Prompt({
-        message: 'prompt-toggle',
-        initial: () => true
+        message: "prompt-toggle",
+        initial: () => true,
       });
 
-      prompt.once('run', () => prompt.submit());
+      prompt.once("run", () => prompt.submit());
 
-      return prompt.run()
-        .then(answer => {
-          assert.equal(answer, true);
-        });
+      return prompt.run().then((answer) => {
+        assert.equal(answer, true);
+      });
     });
   });
 
-  describe('key handling', () => {
-    it('should handle toggling with the `space` key', () => {
+  describe("key handling", () => {
+    it("should handle toggling with the `space` key", () => {
       prompt = new Prompt({
-        message: 'prompt-toggle'
+        message: "prompt-toggle",
       });
 
-      prompt.once('run', async() => {
-        await prompt.keypress(' ');
+      prompt.once("run", async () => {
+        await prompt.keypress(" ");
         await prompt.submit();
       });
 
-      return prompt.run()
-        .then(answer => {
-          assert.equal(answer, true);
-        });
+      return prompt.run().then((answer) => {
+        assert.equal(answer, true);
+      });
     });
 
-    it('should handle enabling and disabling with arrow keys', () => {
-      prompt = new Prompt({ message: 'prompt-toggle' });
+    it("should handle enabling and disabling with arrow keys", () => {
+      prompt = new Prompt({ message: "prompt-toggle" });
       return new Promise((resolve, reject) => {
-        prompt.once('run', async() => {
+        prompt.once("run", async () => {
           try {
             assert.equal(prompt.value, false);
 
@@ -104,8 +100,9 @@ describe('toggle', function() {
           }
         });
 
-        prompt.run()
-          .then(answer => {
+        prompt
+          .run()
+          .then((answer) => {
             assert.equal(answer, false);
             resolve();
           })
@@ -113,24 +110,24 @@ describe('toggle', function() {
       });
     });
 
-    it('should handle toggling with special keys (0, 1, y, n)', () => {
-      prompt = new Prompt({message: 'prompt-toggle'});
+    it("should handle toggling with special keys (0, 1, y, n)", () => {
+      prompt = new Prompt({ message: "prompt-toggle" });
 
       return new Promise((resolve, reject) => {
-        prompt.once('run', async() => {
+        prompt.once("run", async () => {
           try {
             assert.equal(prompt.value, false);
 
-            await prompt.keypress('1');
+            await prompt.keypress("1");
             assert.equal(prompt.value, true);
 
-            await prompt.keypress('0');
+            await prompt.keypress("0");
             assert.equal(prompt.value, false);
 
-            await prompt.keypress('y');
+            await prompt.keypress("y");
             assert.equal(prompt.value, true);
 
-            await prompt.keypress('n');
+            await prompt.keypress("n");
             assert.equal(prompt.value, false);
 
             await prompt.submit();
@@ -139,8 +136,9 @@ describe('toggle', function() {
           }
         });
 
-        prompt.run()
-          .then(answer => {
+        prompt
+          .run()
+          .then((answer) => {
             assert.equal(answer, false);
             resolve();
           })

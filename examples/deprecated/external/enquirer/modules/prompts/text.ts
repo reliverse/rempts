@@ -1,3 +1,3 @@
 // @ts-nocheck
 
-module.exports = require('./input');
+module.exports = require("./input");

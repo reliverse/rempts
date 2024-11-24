@@ -81,7 +81,9 @@ function normalizeChoices<Value>(
   choices: readonly (string | Choice<Value> | Separator)[],
 ): (NormalizedChoice<Value> | Separator)[] {
   return choices.map((choice) => {
-    if (Separator.isSeparator(choice)) return choice;
+    if (Separator.isSeparator(choice)) {
+      return choice;
+    }
 
     if (typeof choice === "string") {
       return {
@@ -131,7 +133,9 @@ const select = createPrompt(
     }, [items]);
 
     const defaultItemIndex = useMemo(() => {
-      if (!("default" in config)) return -1;
+      if (!("default" in config)) {
+        return -1;
+      }
       return items.findIndex(
         (item) => isSelectable(item) && item.value === config.default,
       );
@@ -161,7 +165,7 @@ const select = createPrompt(
           let next = active;
           do {
             next = (next + offset + items.length) % items.length;
-          } while (!isSelectable(items[next]!));
+          } while (!isSelectable(items[next]));
           setActive(next);
         }
       } else if (isNumberKey(key)) {
@@ -177,7 +181,9 @@ const select = createPrompt(
         // Default to search
         const searchTerm = rl.line.toLowerCase();
         const matchIndex = items.findIndex((item) => {
-          if (Separator.isSeparator(item) || !isSelectable(item)) return false;
+          if (Separator.isSeparator(item) || !isSelectable(item)) {
+            return false;
+          }
 
           return item.name.toLowerCase().startsWith(searchTerm);
         });

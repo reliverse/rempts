@@ -12,8 +12,12 @@ export function finite({
   total: number;
 }): number {
   const middle = Math.floor(pageSize / 2);
-  if (total <= pageSize || active < middle) return active;
-  if (active >= total - middle) return active + pageSize - total;
+  if (total <= pageSize || active < middle) {
+    return active;
+  }
+  if (active >= total - middle) {
+    return active + pageSize - total;
+  }
   return middle;
 }
 
@@ -34,7 +38,9 @@ export function infinite({
   pageSize: number;
   pointer: number;
 }): number {
-  if (total <= pageSize) return active;
+  if (total <= pageSize) {
+    return active;
+  }
 
   // Move the position only when the user moves down, and when the
   // navigation fits within a single page

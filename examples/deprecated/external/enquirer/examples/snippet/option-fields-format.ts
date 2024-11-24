@@ -1,35 +1,43 @@
 // @ts-nocheck
 
-'use strict';
+"use strict";
 
-const colors = require('ansi-colors');
-const { Snippet } = require('enquirer');
+const colors = require("ansi-colors");
+const { Snippet } = require("enquirer");
 const prompt = new Snippet({
-  name: 'username',
-  message: 'Fill out the fields in package.json',
+  name: "username",
+  message: "Fill out the fields in package.json",
   fields: [
     {
-      name: 'keywords',
-      message: 'Keywords (comma separated)',
+      name: "keywords",
+      message: "Keywords (comma separated)",
       format(value, state, item, index) {
         if (item.placeholder === true) {
           if (index === state.index) {
             value = state.styles.complement.underline(colors.unstyle(value));
           }
-          return value + ' ' + colors.dim('// enter comma-separated values');
+          return value + " " + colors.dim("// enter comma-separated values");
         }
-        return '[' + colors.unstyle(value).split(',').map(v => {
-          let res = state.styles.complement(v);
-          if (index === state.index) {
-            res = colors.underline(res);
-          }
-          return res;
-        }).join(', ') + ']';
+        return (
+          "[" +
+          colors
+            .unstyle(value)
+            .split(",")
+            .map((v) => {
+              let res = state.styles.complement(v);
+              if (index === state.index) {
+                res = colors.underline(res);
+              }
+              return res;
+            })
+            .join(", ") +
+          "]"
+        );
       },
       result(value) {
-        return JSON.stringify(value.split(','));
-      }
-    }
+        return JSON.stringify(value.split(","));
+      },
+    },
   ],
   template: `{
   "name": "\${name}",
@@ -50,9 +58,10 @@ const prompt = new Snippet({
   },
   "keywords": \${keywords}
 }
-`
+`,
 });
 
-prompt.run()
-  .then(answer => console.log('Answer:', answer.result))
+prompt
+  .run()
+  .then((answer) => console.log("Answer:", answer.result))
   .catch(console.error);
