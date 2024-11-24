@@ -3,7 +3,7 @@ import { describe, test, expect } from "vitest";
 import type { RelinkaReporter, LogObject } from "~/types/general.js";
 
 import { LogLevels } from "~/utils/constants.js";
-import { createRelinka } from "~/utils/create.js";
+import { createRelinka } from "~/components/prompts/create.js";
 
 describe("relinka", () => {
   test("can set level", () => {

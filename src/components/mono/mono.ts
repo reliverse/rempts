@@ -2,14 +2,14 @@ import type { TSchema, Static } from "@sinclair/typebox";
 
 import type { PromptOptions, PromptType } from "~/types/general.js";
 
-import { confirmPrompt } from "~/components/confirm/confirm-two.js";
+import { confirmPrompt } from "~/components/confirm/confirm-main.js";
 import { datePrompt } from "~/components/date/date.js";
-import { textPrompt } from "~/components/input/text-two.js";
+import { textPrompt } from "~/components/input/text-main.js";
 import { multiselectPrompt } from "~/components/multiselect/multi-select-two.js";
 import { numMultiSelectPrompt } from "~/components/multiselect/num-multi-select.js";
 import { nextStepsPrompt } from "~/components/next-steps/next-steps.js";
-import { numberPrompt } from "~/components/number/number-two.js";
-import { passwordPrompt } from "~/components/password/password-two.js";
+import { numberPrompt } from "~/components/number/number-main.js";
+import { passwordPrompt } from "~/components/password/password-main.js";
 import { numSelectPrompt } from "~/components/select/num-select.js";
 import { selectPrompt } from "~/components/select/select-two.js";
 import { endPrompt } from "~/components/st-end/end.js";

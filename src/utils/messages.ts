@@ -70,7 +70,7 @@ export const bar = ({
   colorMap[borderColor](symbols.middle);
 
 export function fmt(opts: FmtMsgOptions): string {
-  if (opts.title?.includes("│  ")) {
+  if (opts.title?.includes("│  ") && !opts.dontRemoveBar) {
     opts.title = opts.title.replace("│  ", "");
   }
 
@@ -104,19 +104,26 @@ export function fmt(opts: FmtMsgOptions): string {
       newLineBefore: opts.addNewLineBefore ?? false,
       newLineAfter: opts.addNewLineAfter ?? false,
     },
+    M_INFO_NULL: {
+      symbol: "",
+      prefix: formattedBar,
+      suffix: "",
+      newLineBefore: opts.addNewLineBefore ?? false,
+      newLineAfter: opts.addNewLineAfter ?? false,
+    },
     M_START: {
       symbol: "",
       prefix: prefixStartLine,
       suffix: ` ${suffixStartLine}\n${formattedBar}`,
-      newLineBefore: false,
-      newLineAfter: false,
+      newLineBefore: opts.addNewLineBefore ?? false,
+      newLineAfter: opts.addNewLineAfter ?? false,
     },
     M_MIDDLE: {
       symbol: formattedBar,
       prefix: "",
       suffix: "",
-      newLineBefore: false,
-      newLineAfter: false,
+      newLineBefore: opts.addNewLineBefore ?? false,
+      newLineAfter: opts.addNewLineAfter ?? false,
     },
     M_GENERAL: {
       symbol: "",
@@ -129,37 +136,29 @@ export function fmt(opts: FmtMsgOptions): string {
       symbol: "",
       prefix: greenBright(symbols.info),
       suffix: "",
-      newLineBefore: false,
-      newLineAfter: true,
+      newLineBefore: opts.addNewLineBefore ?? false,
+      newLineAfter: opts.addNewLineAfter ?? true,
     },
     M_ERROR: {
       symbol: "",
-      // prefix: `${formattedBar}\n${s.step_error}`,
       prefix: redBright(symbols.step_error),
-      newLineBefore: false,
-      newLineAfter: true,
+      newLineBefore: opts.addNewLineBefore ?? false,
+      newLineAfter: opts.addNewLineAfter ?? true,
     },
     M_END: {
-      symbol: "",
-      prefix: "",
-      suffix: opts.border ? ` ${suffixEndLine}\n${formattedBar}` : "",
-      newLineBefore: false,
-      newLineAfter: true,
-    },
-    M_END_ANIMATED: {
       symbol: "",
       prefix: greenBright(symbols.info),
       suffix: opts.border
         ? `\n${formattedBar}\n${prefixEndLine}${suffixEndLine}\n`
         : "",
-      newLineBefore: false,
-      newLineAfter: false,
+      newLineBefore: opts.addNewLineBefore ?? false,
+      newLineAfter: opts.addNewLineAfter ?? false,
     },
     M_NEWLINE: {
       symbol: "",
       prefix: formattedBar,
-      newLineBefore: false,
-      newLineAfter: false,
+      newLineBefore: opts.addNewLineBefore ?? false,
+      newLineAfter: opts.addNewLineAfter ?? false,
     },
   };
 
@@ -243,5 +242,5 @@ export function fmt(opts: FmtMsgOptions): string {
 }
 
 export function msg(opts: FmtMsgOptions): void {
-  console[opts.type === "M_ERROR" ? "error" : "log"](emojify(fmt(opts)));
+  console[opts.type === "M_ERROR" ? "error" : "log"](fmt(opts));
 }

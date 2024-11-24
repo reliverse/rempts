@@ -1,5 +1,4 @@
-// lib/single-bar.ts
-
+// @ts-nocheck
 import type { Options } from "./options.js";
 
 import GenericBar from "./generic-bar.js";

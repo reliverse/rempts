@@ -1,7 +1,7 @@
 import type { TreeItem } from "~/utils/tree.js";
 
 import { rangePrompt } from "~/components/range/range.js";
-import { relinka, createRelinka } from "~/utils/create.js";
+import { relinka, createRelinka } from "~/components/prompts/create.js";
 import { errorHandler } from "~/utils/errors.js";
 import { formatTree } from "~/utils/tree.js";
 

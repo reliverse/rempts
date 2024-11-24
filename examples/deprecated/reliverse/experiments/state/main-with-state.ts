@@ -4,13 +4,13 @@ import { symbol } from "../utils/symbols.js";
 
 import type { PromptStateDeprecated } from "~/types/internal.js";
 
-import { confirmPrompt } from "~/components/confirm/confirm-two.js";
+import { confirmPrompt } from "~/components/confirm/confirm-main.js";
 import { datePrompt } from "~/components/date/date.js";
 import { endPrompt } from "~/components/st-end/end.js";
 import { nextStepsPrompt } from "~/components/next-steps/next-steps.js";
 // import { multiSelectPrompt } from "~/unsorted/components/num-multi-select";
-import { numberPrompt } from "~/components/number/number-two.js";
-import { passwordPrompt } from "~/components/password/password-two.js";
+import { numberPrompt } from "~/components/number/number-main.js";
+import { passwordPrompt } from "~/components/password/password-main.js";
 
 import type { PromptOptionsWithState } from "./types-wth-state.js";
 

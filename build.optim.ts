@@ -2,19 +2,34 @@ import glob from "fast-glob";
 import fs from "fs-extra";
 import path from "pathe";
 
-import { spinner } from "~/components/spinner/index.js";
+import { spinner } from "~/mod.js";
 
-const outputDir = path.resolve(__dirname, "output");
+// Parse command-line arguments to check for '--jsr' flag
+const args = process.argv.slice(2);
+const isJSR = args.includes("--jsr");
 
-const filesToDelete = [
+// Define directories based on the presence of '--jsr' flag
+const sourceDir = path.resolve(__dirname, "src");
+const outputDir = path.resolve(__dirname, isJSR ? "dist-jsr" : "dist-npm");
+
+// Separate patterns for files to delete in different modes
+const npmFilesToDelete = [
   "**/*.test.js",
   "**/*.test.d.ts",
-  "unsorted/types/internal.js",
-  "unsorted/types/internal.d.ts",
+  "types/internal.js",
+  "types/internal.d.ts",
 ];
 
+const jsrFilesToDelete = ["**/*.test.ts", "types/internal.ts"];
+
+// Toggle debug mode
 const debug = false;
 
+/**
+ * Deletes files matching the provided patterns within the base directory.
+ * @param patterns Array of glob patterns to match files for deletion.
+ * @param baseDir The base directory to search for files.
+ */
 async function deleteFiles(patterns: string[], baseDir: string) {
   try {
     const files = await glob(patterns, { cwd: baseDir, absolute: true });
@@ -37,6 +52,13 @@ async function deleteFiles(patterns: string[], baseDir: string) {
   }
 }
 
+/**
+ * Replaces import paths that use '~/' with relative paths.
+ * @param content The file content.
+ * @param fileDir The directory of the current file.
+ * @param rootDir The root directory to resolve relative paths.
+ * @returns The updated file content with modified import paths.
+ */
 function replaceImportPaths(
   content: string,
   fileDir: string,
@@ -61,6 +83,10 @@ function replaceImportPaths(
   );
 }
 
+/**
+ * Processes all relevant files in the given directory by replacing import paths.
+ * @param dir The directory to process.
+ */
 async function processFiles(dir: string) {
   const files = await fs.readdir(dir);
 
@@ -101,15 +127,64 @@ async function processFiles(dir: string) {
   }
 }
 
+/**
+ * Removes the 'dist' directory if it exists.
+ */
+async function removeDistDirectory() {
+  try {
+    const exists = await fs.pathExists(outputDir);
+    if (exists) {
+      await fs.remove(outputDir);
+      debug && console.log(`Removed existing '${outputDir}' directory.`);
+    }
+  } catch (error) {
+    console.error(`Error removing '${outputDir}' directory:`, error);
+    throw error;
+  }
+}
+
+/**
+ * Copies the 'src' directory to 'dist' when '--jsr' flag is provided.
+ */
+async function copySrcToDist() {
+  try {
+    await fs.copy(sourceDir, outputDir, {
+      overwrite: true,
+      errorOnExist: false,
+    });
+    debug && console.log(`Copied 'src' to '${outputDir}'`);
+  } catch (error) {
+    console.error(`Error copying 'src' to 'dist':`, error);
+    throw error;
+  }
+}
+
+/**
+ * Optimizes the build for production by processing files and deleting unnecessary ones.
+ * @param dir The directory to optimize.
+ */
 async function optimizeBuildForProduction(dir: string) {
   await spinner({
-    initialMessage: "Creating an optimized production build...",
-    successMessage: "Optimized production build created successfully.",
+    initialMessage: isJSR
+      ? "Preparing JSR build by removing existing 'dist' directory..."
+      : "Creating an optimized production build...",
+    successMessage: isJSR
+      ? "JSR build prepared successfully."
+      : "Optimized production build created successfully.",
     spinnerSolution: "ora",
     spinnerType: "arc",
     action: async (updateMessage: (arg0: string) => void) => {
+      if (isJSR) {
+        updateMessage("Removing existing 'dist' directory...");
+        await removeDistDirectory(); // Remove 'dist' before copying
+        updateMessage("Copying 'src' to 'dist'...");
+        await copySrcToDist();
+      }
+      updateMessage("Processing files...");
       await processFiles(dir);
       updateMessage("Cleaning up unnecessary files...");
+      // Choose the appropriate files to delete based on the mode
+      const filesToDelete = isJSR ? jsrFilesToDelete : npmFilesToDelete;
       await deleteFiles(filesToDelete, dir);
     },
   });

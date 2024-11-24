@@ -1,3 +1,4 @@
+// @ts-nocheck
 const _progress = require('../cli-progress');
 
 // run the example sequentially! otherwise both will write to stdout/stderr simultaneous !

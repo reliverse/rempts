@@ -19,7 +19,7 @@ export async function endPrompt({
       title,
       anim: titleAnimation,
       delay: titleAnimationDelay,
-      type: "M_END_ANIMATED",
+      type: "M_END",
       titleColor,
       titleTypography,
       border,

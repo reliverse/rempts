@@ -2,30 +2,30 @@ import { detect } from "detect-package-manager";
 import { emojify } from "node-emoji";
 import { bold } from "picocolors";
 
-import { version } from "~/../package.json";
-import { pressAnyKeyPrompt } from "~/components/anykey/index.js";
-import { progressbar } from "~/components/progressbar/index.js";
+import pkg from "~/../package.json" assert { type: "json" };
+import { anykeyPrompt } from "~/mod.js";
+import { multiselectPrompt } from "~/mod.js";
+import { progressbar } from "~/mod.js";
 import {
   animateText,
-  confirmPromptTwo,
+  confirmPrompt,
   datePrompt,
   endPrompt,
   msg,
   numMultiSelectPrompt,
   nextStepsPrompt,
-  numberPromptTwo,
-  passwordPromptTwo,
-  // selectPrompt,
+  numberPrompt,
+  passwordPrompt,
   startPrompt,
-  textPromptTwo,
-} from "~/components/prompts/index.js";
-import { promptsDisplayResults } from "~/components/results/results.js";
-import { numSelectPrompt } from "~/components/select/num-select.js";
-import spinner from "~/components/spinner/index.js";
-import { colorize } from "~/utils/color.js";
-import { relinka } from "~/utils/create.js";
+  textPrompt,
+  togglePrompt,
+} from "~/mod.js";
+import { promptsDisplayResults } from "~/mod.js";
+import { numSelectPrompt } from "~/mod.js";
+import { selectPrompt } from "~/mod.js";
+import { spinner } from "~/mod.js";
 
-import { basicConfig, extendedConfig } from "./configs.js";
+import { basicConfig, experimentalConfig, extendedConfig } from "./configs.js";
 import { schema, type UserInput } from "./schema.js";
 import {
   calculateAge,
@@ -39,7 +39,7 @@ const IDs = {
   start: "start",
   username: "username",
   dir: "dir",
-  deps: "deps",
+  spinner: "spinner",
   password: "password",
   age: "age",
   lang: "lang",
@@ -51,15 +51,30 @@ const IDs = {
 export async function showStartPrompt() {
   await startPrompt({
     id: IDs.start,
-    title: `@reliverse/relinka v${version}`,
+    title: `@reliverse/relinka v${pkg.version}`,
     ...basicConfig,
     titleColor: "inverse",
     clearConsole: true,
   });
 }
 
+export async function showAnykeyPrompt(
+  kind: "pm" | "privacy",
+  username?: string,
+) {
+  const pm = await detect();
+  let notification = bold("[anykeyPrompt] Press any key to continue...");
+  if (kind === "privacy") {
+    notification = `Before you continue, please note that you are only testing an example CLI app.\n│  None of your responses will be sent anywhere. No actions, such as installing dependencies, will actually take place;\n│  this is simply a simulation with a sleep timer and spinner. You can always review the source code to learn more.\n│  ============================\n│  ${notification}`;
+  }
+  if (kind === "pm" && pm === "bun" && username) {
+    notification += `\n│  ============================\n│  ${username}, did you know? Bun currently may crash if you press Enter while setTimeout\n│  is running. So please avoid doing that in the prompts after this one! 😅`;
+  }
+  await anykeyPrompt(notification);
+}
+
 export async function showTextPrompt(): Promise<UserInput["username"]> {
-  const username = await textPromptTwo({
+  const username = await textPrompt({
     // 'id' is the key in the userInput result object.
     // Choose any name for it, but ensure it’s unique.
     // Intellisense will show you all available IDs.
@@ -75,9 +90,9 @@ export async function showTextPrompt(): Promise<UserInput["username"]> {
 }
 
 export async function askDir(username: string): Promise<UserInput["dir"]> {
-  const dir = await textPromptTwo({
+  const dir = await textPrompt({
     id: IDs.dir,
-    title: `Great! Nice to meet you, ${username}!`,
+    title: `[textPrompt] Great! Nice to meet you, ${username}!`,
     content: "Where should we create your project?",
     // Schema is required, because it provides a runtime typesafety validation.
     schema: schema.properties.dir,
@@ -90,13 +105,13 @@ export async function askDir(username: string): Promise<UserInput["dir"]> {
 }
 
 export async function showNumberPrompt(): Promise<UserInput["age"]> {
-  const age = await numberPromptTwo({
+  const age = await numberPrompt({
     id: IDs.age,
     ...extendedConfig,
+    title: "[numberPrompt] Enter your age",
     // Adding a hint helps users understand the expected input format.
-    hint: "Default: 36",
+    hint: "Try: 42 | Default: 36",
     defaultValue: "36",
-    title: "Enter your age",
     // Define a schema to validate the input.
     // Errors are automatically handled and displayed based on the type.
     schema: schema.properties.age,
@@ -112,51 +127,15 @@ export async function showNumberPrompt(): Promise<UserInput["age"]> {
   return age ?? 34;
 }
 
-export async function showSelectPrompt(): Promise<string> {
-  const lang = await relinka.prompt("Choose your language", {
-    type: "select",
-    options: [
-      { label: "English", value: "English" },
-      { label: "Ukrainian", value: "Ukrainian" },
-      { label: "Other", value: "Other" },
-    ],
-    initial: "English",
-  });
-
-  if (typeof lang !== "string") {
-    process.exit(0);
-  }
-
-  return lang.toString();
-}
-
-export async function showNumSelectPrompt(): Promise<UserInput["color"]> {
-  const choices = createColorChoices();
-
-  const color = await numSelectPrompt({
-    id: IDs.color,
-    title: "Choose your favorite color",
-    content:
-      "You are free to customize everything in your prompts using the following color palette.",
-    ...extendedConfig,
-    choices,
-    defaultValue: "17",
-    hint: "Default: 17",
-    schema: schema.properties.color,
-  });
-
-  return color.toString() ?? "red";
-}
-
 export async function showPasswordPrompt(): Promise<UserInput["password"]> {
   // Initialize `passwordResult` to avoid uninitialized variable errors.
   let password = "silverHand2077";
   // Wrap password prompts with a try-catch block to handle cancellations,
   // which otherwise would terminate the process with an error.
   try {
-    password = await passwordPromptTwo({
+    password = await passwordPrompt({
       id: IDs.password,
-      title: "Imagine a password",
+      title: "[passwordPrompt] Imagine a password",
       schema: schema.properties.password,
       defaultValue: "silverHand2077",
       hint: "Default: silverHand2077",
@@ -183,7 +162,7 @@ export async function showDatePrompt(): Promise<UserInput["birthday"]> {
     id: IDs.birthday,
     dateKind: "birthday",
     dateFormat: "DD.MM.YYYY",
-    title: "Enter your birthday",
+    title: "[datePrompt] Enter your birthday",
     hint: "Default: 16.11.1988",
     // You can set a default value for the prompt if desired.
     defaultValue: "16.11.1988",
@@ -192,55 +171,151 @@ export async function showDatePrompt(): Promise<UserInput["birthday"]> {
   return birthdayDate ?? "16.11.1988";
 }
 
-export async function showMultiSelectPrompt(): Promise<string[]> {
-  const features = await relinka.prompt(
-    "Select your programming language(s) | Use <space> to select/deselect",
-    {
-      type: "multiselect",
-      options: [
-        {
-          label: "TypeScript",
-          value: "typescript",
-          hint: emojify(":blue_heart:"),
-        },
-        {
-          label: "JavaScript",
-          value: "javascript",
-          hint: emojify(":yellow_heart:"),
-        },
-        {
-          label: "CoffeeScript",
-          value: "coffeescript",
-          hint: emojify(":coffee:"),
-        },
-        {
-          label: "Python",
-          value: "python",
-          hint: emojify(":snake:"),
-        },
-        { label: "Java", value: "java", hint: emojify(":coffee:") },
-        { label: "C#", value: "csharp", hint: emojify(":hash:") },
-        { label: "Go", value: "go", hint: emojify(":dolphin:") },
-        { label: "Rust", value: "rust", hint: emojify(":crab:") },
-        { label: "Swift", value: "swift", hint: emojify(":apple:") },
-      ],
-      initial: ["javascript", "typescript"],
-    },
-  );
+export async function showSelectPrompt(): Promise<UserInput["lang"]> {
+  const lang = await selectPrompt({
+    title: "[selectPrompt] Choose your language",
+    options: [
+      { label: "English", value: "en" },
+      { label: "Ukrainian", value: "uk" },
+      { label: "Polish", value: "pl" },
+      { label: "French", value: "fr" },
+      { label: "German", value: "de" },
+      { label: "Other", value: "else" },
+    ],
+    hints: ["English", "Українська", "Polski", "Français", "Deutsch", "Other"],
+    initial: "en",
+    ...experimentalConfig,
+  });
 
-  if (!Array.isArray(features)) {
+  switch (lang) {
+    case "en":
+      msg({ type: "M_INFO", title: "You selected English" });
+      break;
+    case "uk":
+      msg({ type: "M_INFO", title: "Ви обрали українську" });
+      break;
+    case "pl":
+      msg({ type: "M_INFO", title: "Wybrałeś język polski" });
+      break;
+    case "fr":
+      msg({ type: "M_INFO", title: "Vous avez choisi le français" });
+      break;
+    case "de":
+      msg({
+        type: "M_INFO",
+        title: "Sie haben die deutsche Sprache ausgewählt",
+      });
+      break;
+    case "else":
+      msg({ type: "M_INFO", title: "You selected Other" });
+      break;
+  }
+
+  return lang;
+}
+
+export async function showMultiselectPrompt(): Promise<UserInput["langs"]> {
+  const jokes: Record<string, string> = {
+    TypeScript:
+      "- Why did TypeScript bring a type-checker to the party? Because it couldn't handle any loose ends!",
+    JavaScript:
+      "- Why was the JavaScript developer sad? Because he didn't Node how to Express himself.",
+    CoffeeScript:
+      "- Why do CoffeeScript developers always seem calm? Because they never have to deal with too much Java!",
+    Python:
+      "- Why do Python programmers prefer dark mode? Because light attracts bugs!",
+    Java: "- Why do Java developers wear glasses? Because they don't C#.",
+    CSharp:
+      "- Why did the C# developer go broke? Because he used up all his cache.",
+    Go: "- Why do Go programmers prefer the beach? Because they love to handle their goroutines!",
+    Rust: "- Why did the Rust programmer never get lost? Because he always borrowed the right path.",
+    Swift:
+      "- Why did the Swift developer quit his job? Because he didn't like being optional!",
+  };
+
+  const selectedOptions = await multiselectPrompt({
+    title: "[multiselectPrompt] Select your favorite programming languages",
+    options: [
+      "TypeScript",
+      "JavaScript",
+      "CoffeeScript",
+      "Python",
+      "Java",
+      "CSharp",
+      "Go",
+      "Rust",
+      "Swift",
+    ],
+    hints: [
+      emojify(":blue_heart: Type-safe and scalable"),
+      emojify(":yellow_heart: Versatile and widely-used"),
+      emojify(":coffee: Elegant and concise"),
+      emojify(":snake: Powerful and easy to learn"),
+      emojify(":coffee: Robust and portable"),
+      emojify(":hash: Modern and object-oriented"),
+      emojify(":dolphin: Simple and efficient"),
+      emojify(":crab: Fast and memory-safe"),
+      emojify(":apple: Safe and performant"),
+    ],
+    required: true,
+    initial: ["TypeScript", "JavaScript"],
+    ...experimentalConfig,
+  });
+
+  if (!Array.isArray(selectedOptions)) {
     process.exit(0);
   }
 
-  return features.toString().split(",");
+  msg({
+    type: "M_INFO",
+    title: "Here are some dumb jokes for you:",
+    titleTypography: "bold",
+    titleColor: "viceGradient",
+    addNewLineBefore: false,
+    addNewLineAfter: false,
+  });
+
+  selectedOptions.forEach((option) => {
+    const joke = jokes[option];
+    msg({
+      type: "M_INFO_NULL",
+      title: joke ? joke : `${option} selected.`,
+      addNewLineBefore: false,
+      addNewLineAfter: false,
+    });
+  });
+
+  msg({
+    type: "M_NEWLINE",
+  });
+
+  return selectedOptions;
 }
 
-export async function showNumMultiSelectPrompt(): Promise<
+export async function showNumSelectPrompt(): Promise<UserInput["color"]> {
+  const choices = createColorChoices();
+
+  const color = await numSelectPrompt({
+    id: IDs.color,
+    title: "[numSelectPrompt] Choose your favorite color",
+    content:
+      "You are free to customize everything in your prompts using the following color palette.",
+    ...extendedConfig,
+    choices,
+    defaultValue: "17",
+    hint: "Default: 17",
+    schema: schema.properties.color,
+  });
+
+  return color.toString() ?? "red";
+}
+
+export async function showNumMultiselectPrompt(): Promise<
   UserInput["features"]
 > {
   const features = await numMultiSelectPrompt({
     id: IDs.features,
-    title: "What features do you want to use?",
+    title: "[numMultiSelectPrompt] What web technologies do you like?",
     defaultValue: ["react", "typescript"],
     choices: [
       {
@@ -266,19 +341,35 @@ export async function showNumMultiSelectPrompt(): Promise<
   return features ?? ["react", "typescript"];
 }
 
-// TODO: fix bun crash
+export async function showTogglePrompt(): Promise<UserInput["toggle"]> {
+  const result = await togglePrompt({
+    title: "[togglePrompt] Do you like @reliverse/relinka library?",
+    options: ["Yes", "No"],
+    initial: "Yes",
+  });
+
+  const agree = result === "Yes";
+  msg({
+    type: "M_INFO",
+    title: "Your response:",
+    content: agree ? "You like it! 🥰" : "You don't like it... 😔",
+  });
+
+  return agree;
+}
+
 export async function showConfirmPrompt(
   username: string,
-): Promise<UserInput["deps"]> {
-  await showAnyKeyPrompt("pm", username);
+): Promise<UserInput["spinner"]> {
+  await showAnykeyPrompt("pm", username);
 
-  const deps = await confirmPromptTwo({
-    id: IDs.deps,
-    title: "Do you want to see spinner in action?",
+  const spinner = await confirmPrompt({
+    id: IDs.spinner,
+    title: "[confirmPrompt] Do you want to see spinner in action?",
     // Intellisense will show you all available colors thanks to the enum.
     titleColor: "red",
     titleVariant: "doubleBox",
-    schema: schema.properties.deps,
+    schema: schema.properties.spinner,
     // @reliverse/relinka includes styled prompts, with the `title` color defaulting
     // to "cyanBright". Setting the color to "none" removes the default styling.
     content: "Spinners are helpful for long-running tasks.",
@@ -286,10 +377,14 @@ export async function showConfirmPrompt(
     // Default value can be set both by the `defaultValue` property,
     // or by returning the value in your own function like this one.
     defaultValue: true,
-    action: async () => await showSpinner(),
   });
+
+  if (spinner) {
+    await showSpinner();
+  }
+
   // A return value is unnecessary for prompts when the result is not needed later.
-  return deps ?? false;
+  return spinner ?? false;
 }
 
 // Prompt ID is not required for the following
@@ -310,64 +405,12 @@ export async function showSpinner() {
   });
 }
 
-export async function showAnyKeyPrompt(
-  kind: "pm" | "privacy",
-  username?: string,
-) {
-  const pm = await detect();
-  let notification = bold("Press any key to continue...");
-  if (kind === "privacy") {
-    notification = `Before you continue, please note that you are only testing an example CLI app.\n│  None of your responses will be sent anywhere. No actions, such as installing dependencies, will actually take place;\n│  this is simply a simulation with a sleep timer and spinner. You can always review the source code to learn more.\n│  ============================\n│  ${notification}`;
-  }
-  if (kind === "pm" && pm === "bun" && username) {
-    notification += `\n│  ============================\n│  ${username}, did you know? Bun currently may crash if you press Enter while setTimeout\n│  is running. So please avoid doing that in the prompts after this one! 😅`;
-  }
-  await pressAnyKeyPrompt(notification);
-}
-
-export async function showNextStepsPrompt() {
-  await nextStepsPrompt({
-    id: "nextSteps",
-    title: "Next Steps",
-    content: "- Set up your profile\n- Review your dashboard\n- Add tasks",
-    ...extendedConfig,
-  });
-}
-
-export async function showAnimatedText() {
-  await animateText({
-    title: emojify(
-      "ℹ  :exploding_head: Our library even supports animated messages and emojis!",
-    ),
-    anim: "neon",
-    delay: 2000,
-    ...basicConfig,
-    titleColor: "passionGradient",
-    titleTypography: "bold",
-  });
-}
-
-export async function showEndPrompt() {
-  await endPrompt({
-    id: "end",
-    title: emojify(
-      "ℹ  :books: Learn the docs here: https://docs.reliverse.org/relinka",
-    ),
-    titleAnimation: "glitch",
-    ...basicConfig,
-    titleColor: "retroGradient",
-    titleTypography: "bold",
-    titleAnimationDelay: 2000,
-  });
-}
-
 export async function showProgressBar() {
-  const symbol = colorize("greenBright", "◆");
-
   await progressbar({
     total: 100,
     width: 10,
-    format: `${symbol}  Wait [:bar] :percent% | Elapsed: :elapsed s | ETA: :eta s`,
+    format:
+      "[progressbar] [:bar] :percent% | Elapsed: :elapsed s | ETA: :eta s",
     completeChar: "#",
     incompleteChar: "-",
     colorize: true, // Enable colorization
@@ -408,4 +451,40 @@ export async function doSomeFunStuff(userInput: UserInput) {
 
   // Display user registration information
   displayUserInputs(userInput);
+}
+
+export async function showNextStepsPrompt() {
+  await nextStepsPrompt({
+    id: "nextSteps",
+    title: "[nextStepsPrompt] Next Steps",
+    content: "- Set up your profile\n- Review your dashboard\n- Add tasks",
+    ...extendedConfig,
+  });
+}
+
+export async function showAnimatedText() {
+  await animateText({
+    title: emojify(
+      "ℹ  :exploding_head: Our library even supports animated messages and emojis!",
+    ),
+    anim: "neon",
+    delay: 2000,
+    ...basicConfig,
+    titleColor: "passionGradient",
+    titleTypography: "bold",
+  });
+}
+
+export async function showEndPrompt() {
+  await endPrompt({
+    id: "end",
+    title: emojify(
+      "ℹ  :books: Learn the docs here: https://docs.reliverse.org/relinka",
+    ),
+    titleAnimation: "glitch",
+    ...basicConfig,
+    titleColor: "retroGradient",
+    titleTypography: "bold",
+    titleAnimationDelay: 2000,
+  });
 }

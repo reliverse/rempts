@@ -2,8 +2,6 @@
 
 **The current [@reliverse/relinka](https://github.com/reliverse/relinka) DOCS.md is an adaptation of README.md from [@terkelg/prompts](https://github.com/terkelg/prompts). Thanks to the original author for the detailed documentation!**
 
-[![Separator](./public/split.png)](https://docs.reliverse.org/relinka)
-
 **New Features by** [lu-jiejie/prompts-plus](https://github.com/lu-jiejie/prompts-plus):
 
 - [x] add `heading` configuration option to `choices` in `select` prompts, which will be displayed as a heading or a separator in the choices list. It will not be selectable and hoverable.
@@ -24,16 +22,12 @@ typeof name // string
   <sub>>_ Easy to use CLI prompts to enquire users for information▌</sub>
 </p>
 
-[![Separator](./public/split.png)](https://docs.reliverse.org/relinka)
-
 - **Simple**: prompts has [no big dependencies](http://npm.anvaka.com/#/view/2d/prompts) nor is it broken into a [dozen](http://npm.anvaka.com/#/view/2d/inquirer) tiny modules that only work well together.
 - **User friendly**: prompt uses layout and colors to create beautiful cli interfaces.
 - **Promised**: uses promises and `async`/`await`. No callback hell.
 - **Flexible**: all prompts are independent and can be used on their own.
 - **Testable**: provides a way to submit answers programmatically.
 - **Unified**: consistent experience across all [prompts](#-types).
-
-![split](https://github.com/reliverse/relinka/raw/master/public/split.png)
 
 ## ❯ Install
 
@@ -42,8 +36,6 @@ npm install --save prompts
 ```
 
 > This package supports Node 14 and above
-
-![split](https://github.com/reliverse/relinka/raw/master/public/split.png)
 
 ## ❯ Usage
 
@@ -65,8 +57,6 @@ const prompts = require('prompts');
 ```
 
 > See [`example.js`](https://github.com/reliverse/relinka/blob/master/example.js) for more options.
-
-![split](https://github.com/reliverse/relinka/raw/master/public/split.png)
 
 ## ❯ Examples
 
@@ -147,8 +137,6 @@ const questions = [
   const response = await prompts(questions);
 })();
 ```
-
-![split](https://github.com/reliverse/relinka/raw/master/public/split.png)
 
 ## ❯ API
 
@@ -294,8 +282,6 @@ prompts.inject([ '@reliverse', ['#ff0000', '#0000ff'] ]);
 })();
 ```
 
-![split](https://github.com/reliverse/relinka/raw/master/public/split.png)
-
 ## ❯ Prompt Objects
 
 Prompts Objects are JavaScript objects that define the "questions" and the [type of prompt](#-types).
@@ -423,8 +409,6 @@ Type: `Stream`
 
 By default, prompts uses `process.stdin` for receiving input and `process.stdout` for writing output.
 If you need to use different streams, for instance `process.stderr`, you can set these with the `stdin` and `stdout` properties.
-
-![split](https://github.com/reliverse/relinka/raw/master/public/split.png)
 
 ## ❯ Types
 
@@ -894,8 +878,6 @@ Default locales:
 ```
 
 >**Formatting**: See full list of formatting options in the [wiki](https://github.com/reliverse/relinka/wiki/Date-Time-Formatting)
-
-![split](https://github.com/reliverse/relinka/raw/master/public/split.png)
 
 **↑ back to:** [Prompt types](#-types)
 

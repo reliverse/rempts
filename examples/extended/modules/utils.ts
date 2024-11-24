@@ -1,7 +1,7 @@
-import type { ChoiceOptions, ColorName } from "~/types/general.js";
+import type { ChoiceOptions, ColorName } from "~/mod.js";
 
-import { colorMap } from "~/utils/mapping.js";
-import { msg } from "~/utils/messages.js";
+import { msg } from "~/mod.js";
+import { colorMap } from "~/mod.js";
 
 import type { UserInput } from "./schema.js";
 
@@ -36,23 +36,18 @@ export function validateAge(
   userAge: number,
   birthday: string,
 ) {
-  const ageMessage =
-    "Based on your birthday date (" +
-    birthday +
-    "), you're " +
-    calculatedAge +
-    " years old.";
+  const ageMessage = `Based on your birthday date (${birthday}), you're ${calculatedAge} years old.`;
 
   if (calculatedAge === userAge) {
     msg({
       type: "M_INFO",
-      title: "Your age and birthday correspond! " + ageMessage,
+      title: `Your age and birthday correspond! ${ageMessage}`,
       titleColor: "green",
     });
   } else {
     msg({
       type: "M_ERROR",
-      title: "Your age and birthday don't correspond! " + ageMessage,
+      title: `Your age and birthday don't correspond! ${ageMessage}`,
       titleColor: "red",
     });
   }

@@ -1,6 +1,7 @@
 import logUpdate from "log-update";
 
 import { colorize } from "~/utils/colorize.js";
+import { fmt } from "~/utils/messages.js";
 import { restoreCursor } from "~/utils/terminal.js";
 
 const DEFAULT_MESSAGE = "Press any key to continue...";
@@ -13,14 +14,19 @@ type Options = {
 
 const CTRL_C_CODE = 3;
 
-export async function pressAnyKeyPrompt(
+export async function anykeyPrompt(
   message: string = DEFAULT_MESSAGE,
   options: Options = {},
 ): Promise<void> {
   const { ctrlC = 1, preserveLog = false, hideMessage = false } = options;
 
   if (message) {
-    message = `${colorize("│", "viceGradient")}  ${colorize(message, "dim")}`;
+    message = fmt({
+      type: "M_GENERAL",
+      title: message,
+      titleColor: "dim",
+      dontRemoveBar: true,
+    });
   }
 
   if (message && !hideMessage) {

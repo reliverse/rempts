@@ -4,7 +4,7 @@ import { showSpinner } from "@/extended/modules/prompts.js";
 
 import type { OptionalPromptOptions } from "~/types/general.js";
 
-import { numberPromptTwo, textPromptTwo } from "~/components/prompts/index.js";
+import { numberPrompt, textPrompt } from "~/components/prompts/index.js";
 import { errorHandler } from "~/utils/errors.js";
 
 export const basicConfig = {
@@ -20,7 +20,7 @@ export const extendedConfig = {
 } satisfies OptionalPromptOptions;
 
 async function main() {
-  await textPromptTwo({
+  await textPrompt({
     id: "start",
     title: "Hello, Reliverse Community! 👋",
     content: "You are testing the basic example of @reliverse/relinka",
@@ -30,7 +30,7 @@ async function main() {
     variantOptions: { box: { limit: 50 } },
   });
 
-  await numberPromptTwo({
+  await numberPrompt({
     id: "number",
     title: "Enter a number",
     content: "Type a number between 1 and 100",

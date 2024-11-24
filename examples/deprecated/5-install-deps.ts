@@ -10,7 +10,7 @@ import {
   spinner,
   text,
 } from "~/utils/component.js";
-import { confirmPrompt } from "~/components/confirm/confirm-two.js";
+import { confirmPrompt } from "~/components/confirm/confirm-main.js";
 import { errorHandler } from "~/utils/errors.js";
 
 async function main() {

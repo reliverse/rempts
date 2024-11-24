@@ -29,7 +29,6 @@ export type RawOptions = {
   autopadding?: boolean;
   autopaddingChar?: string;
   gracefulExit?: boolean;
-  // Add other options as needed
 };
 
 export type Options = {
@@ -107,6 +106,7 @@ export function parse(
     barGlue: mergeOption(opt.barGlue, ""),
     barCompleteChar: mergeOption(opt.barCompleteChar, "="),
     barIncompleteChar: mergeOption(opt.barIncompleteChar, "-"),
+    // @ts-expect-error TODO: fix ts
     format: mergeOption(
       opt.format,
       "progress [{bar}] {percentage}% | ETA: {eta}s | {value}/{total}",

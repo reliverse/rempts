@@ -10,7 +10,7 @@
     <img src="https://github.com/reliverse/relinka/actions/workflows/test.yml/badge.svg" alt="test" />
   </a> -->
   <a href="https://npmjs.org/package/@reliverse/relinka">
-    <img src="https://img.shields.io/npm/dm/@reliverse/prompts.svg" alt="downloads" />
+    <img src="https://img.shields.io/npm/dm/@reliverse/relinka.svg" alt="downloads" />
   </a>
   <!-- <a href="https://licenses.dev/npm/@reliverse/relinka">
     <img src="https://licenses.dev/b/npm/@reliverse/relinka" alt="licenses" />
@@ -24,7 +24,7 @@
 
 @reliverse/relinka is a powerful library that enables seamless, type-safe, and resilient prompts for command-line applications. Crafted with simplicity and elegance, it provides developers with an intuitive and robust way to build interactive CLIs.
 
-[![CLI Example](./public/example.png)](https://docs.reliverse.org/relinka)
+@reliverse/relinka is a full-featured alternative to @inquirer/prompts (Inquirer.js), enquirer, @clack/prompts, terkelg prompts, cronvel terminal-kit, unjs consola, and similar libraries.
 
 ## Installation
 
@@ -34,14 +34,16 @@ Install with your preferred package manager:
 bun add @reliverse/relinka # Replace 'bun' with npm, pnpm, or yarn if desired (deno and jsr support coming soon)
 ```
 
+## Screenshot
+
+[![CLI Example](./example.png)](./example.png)
+
 ## Key Features
 
 - **Type Safety**: Built with TypeScript, ensuring strong typing to prevent runtime errors.
 - **Schema Validation**: Validates user inputs using schemas for enhanced reliability.
 - **Flexible Prompt Types**: Supports a range of prompt types, including text, password, number, select, and multiselect.
 - **Crash Resilience**: Designed to handle cancellations and errors gracefully, ensuring stability.
-
-[![Confirm Prompt](./public/confirm.gif)](https://docs.reliverse.org/relinka)
 
 ## Prompt Types
 
@@ -54,13 +56,9 @@ Each type has its own validation and display logic. More types are planned for f
 - **Select**: Dropdown selection for multiple choices.
 - **Multiselect**: Allows users to select multiple items from a list.
 
-[![Multiselect Prompt](./public/list.gif)](https://docs.reliverse.org/relinka)
-
 ## Input Validation
 
 All prompts support custom validation logic, providing immediate feedback to users.
-
-[![Number Prompt with Validation](./public/validate.gif)](https://docs.reliverse.org/relinka)
 
 ## Contributing
 
@@ -93,34 +91,34 @@ Run `bun dev` to launch the [examples/run-example.ts](./examples/run-example.ts)
 - 🔵: Partially supported
 - 🔴: Not supported
 
-| **Feature**                                                | **@reliverse/relinka**                             | **@inquirer/prompts**  | **@clack/prompts**  | **@terkelg/prompts**         | **@cronvel/terminal-kit**   | **@unjs/consola** |
-|------------------------------------------------------------|----------------------------------------------------|------------------------|---------------------|------------------------------|-----------------------------|-------------------|
-| **Full Node.js Modules Support**                           | 🟢 Native ES module package                        | 🟡                    | 🟡                  | 🔴 CJS-only                 | 🔴 CJS-only                 | 🟡               |
-| **Both terminal and browser support**                      | 🟢                                                 | 🟡                    | 🟡                  | 🟡                          | 🟡                          | 🟢               |
-| **Codebase typesafety with intellisense**                  | 🔵                                                 | 🟡                    | 🟡                  | 🟡                          | 🟡                          | 🟡               |
-| **Runtime typesafety with schema validation**              | 🟢 TypeBox & Custom                                | 🟡                    | 🟡                  | 🟡                          | 🟡                          | 🟡               |
-| **Usage Examples**                                         | 🟢                                                 | 🟡                    | 🟡                  | 🟡                          | 🟡                          | 🟡               |
-| **Mono Component**                                         | 🟢 Mono (All-In-One) & Separate                    | 🟡                    | 🟡                  | 🔵 Mono-only                | 🟡                          | 🟡               |
-| **Start Component**                                        | 🟢                                                 | 🟡                    | 🟡                  | 🟡                          | 🟡                          | 🟡               |
-| **Text Component**                                         | 🟢                                                 | 🟡                    | 🟡                  | 🟡                          | 🟡                          | 🟡               |
-| **Customization**                                          | 🟢 Colors, typography, variants, borders, and more | 🟡                    | 🟡                  | 🟡                          | 🟡                          | 🟡               |
-| **Visual Components: Separator, Animated Text, ASCII Art** | 🟢 Includes 6 animations and 290 ASCII fonts       | 🔵 Separator only     | 🟡                  | 🟡                          | 🟡                          | 🟡               |
-| **Password Component**                                     | 🟡                                                 | 🟡                    | 🟡                  | 🟡                          | 🟡                          | 🟡               |
-| **Number Component**                                       | 🟡                                                 | 🟡                    | 🟡                  | 🟡                          | 🟡                          | 🟡               |
-| **Confirm Component**                                      | 🟡                                                 | 🟡                    | 🟡                  | 🟡                          | 🟡                          | 🟡               |
-| **Select Component**                                       | 🟡                                                 | 🟡                    | 🟡                  | 🟡                          | 🟡                          | 🟡               |
-| **Multiselect Component**                                  | 🟡                                                 | 🟡                    | 🟡                  | 🟡                          | 🟡                          | 🟡               |
-| **Search/Autocomplete Component**                          | 🔵                                                 | 🟡                    | 🟡                  | 🟡                          | 🟡                          | 🟡               |
-| **Spinner & Progressbar Components**                       | 🟡                                                 | 🟡                    | 🟡                  | 🟡                          | 🟢                          | 🟡               |
-| **Image Component**                                        | 🟡                                                 | 🟡                    | 🟡                  | 🟡                          | 🟢                          | 🟡               |
-| **Custom Validation**                                      | 🟡                                                 | 🟡                    | 🟡                  | 🟡                          | 🟡                          | 🟡               |
-| **Error Handling**                                         | 🟡                                                 | 🟡                    | 🟡                  | 🟡                          | 🟡                          | 🟡               |
-| **Ease of Setup**                                          | 🟡                                                 | 🟡                    | 🟡                  | 🟡                          | 🟡                          | 🟡               |
-| **Crash Resilience**                                       | 🟡                                                 | 🟡                    | 🟡                  | 🟡                          | 🟡                          | 🟡               |
-| **General DX**                                             | 🔵 Clean and understandable TypeScript code        | 🟡                    | 🟡                  | 🔴 JS-only                  | 🔴 JS-only                  | 🟡               |
-| **DX: Classes**                                            | 🟢 Minimal number of classes as possible           | 🟡                    | 🟡                  | 🟡                          | 🟡                          | 🟡               |
-| **Documentation**                                          | 🔵                                                 | 🟡                    | 🟡                  | 🔵                          | 🟢                          | 🟡               |
-| **Designed With UX in Mind**                               | 🔵                                                 | 🟡                    | 🟡                  | 🟡                          | 🟡                          | 🟡               |
+| **Feature**                                                | **@reliverse/relinka**                             | **@inquirer/prompts** | **@enquirer/enquirer** | **@clack/prompts**  | **@terkelg/prompts**         | **@cronvel/terminal-kit**   | **@unjs/consola** |
+|------------------------------------------------------------|----------------------------------------------------|-----------------------|------------------------|---------------------|------------------------------|-----------------------------|-------------------|
+| **Full Node.js Modules Support**                           | 🟢 Native ES module package                        | 🟡                    | 🟡                    |  🟡                  | 🔴 CJS-only                 | 🔴 CJS-only                 | 🟡               |
+| **Both terminal and browser support**                      | 🟢                                                 | 🟡                    | 🟡                    |  🟡                  | 🟡                          | 🟡                          | 🟢               |
+| **Codebase typesafety with intellisense**                  | 🔵                                                 | 🟡                    | 🟡                    |  🟡                  | 🟡                          | 🟡                          | 🟡               |
+| **Runtime typesafety with schema validation**              | 🟢 TypeBox & Custom                                | 🟡                    | 🟡                    |  🟡                  | 🟡                          | 🟡                          | 🟡               |
+| **Usage Examples**                                         | 🟢                                                 | 🟡                    | 🟡                    |  🟡                  | 🟡                          | 🟡                          | 🟡               |
+| **Mono Component**                                         | 🟢 Mono (All-In-One) & Separate                    | 🟡                    | 🟡                    |  🟡                  | 🔵 Mono-only                | 🟡                          | 🟡               |
+| **Start Component**                                        | 🟢                                                 | 🟡                    | 🟡                    |  🟡                  | 🟡                          | 🟡                          | 🟡               |
+| **Text Component**                                         | 🟢                                                 | 🟡                    | 🟡                    |  🟡                  | 🟡                          | 🟡                          | 🟡               |
+| **Customization**                                          | 🟢 Colors, typography, variants, borders, and more | 🟡                    | 🟡                    |  🟡                  | 🟡                          | 🟡                          | 🟡               |
+| **Visual Components: Separator, Animated Text, ASCII Art** | 🟢 Includes 6 animations and 290 ASCII fonts       | 🔵 Separator only     | 🟡                    |  🟡                  | 🟡                          | 🟡                          | 🟡               |
+| **Password Component**                                     | 🟡                                                 | 🟡                    | 🟡                    |  🟡                  | 🟡                          | 🟡                          | 🟡               |
+| **Number Component**                                       | 🟡                                                 | 🟡                    | 🟡                    |  🟡                  | 🟡                          | 🟡                          | 🟡               |
+| **Confirm Component**                                      | 🟡                                                 | 🟡                    | 🟡                    |  🟡                  | 🟡                          | 🟡                          | 🟡               |
+| **Select Component**                                       | 🟡                                                 | 🟡                    | 🟡                    |  🟡                  | 🟡                          | 🟡                          | 🟡               |
+| **Multiselect Component**                                  | 🟡                                                 | 🟡                    | 🟡                    |  🟡                  | 🟡                          | 🟡                          | 🟡               |
+| **Search/Autocomplete Component**                          | 🔵                                                 | 🟡                    | 🟡                    |  🟡                  | 🟡                          | 🟡                          | 🟡               |
+| **Spinner & Progressbar Components**                       | 🟡                                                 | 🟡                    | 🟡                    |  🟡                  | 🟡                          | 🟢                          | 🟡               |
+| **Image Component**                                        | 🟡                                                 | 🟡                    | 🟡                    |  🟡                  | 🟡                          | 🟢                          | 🟡               |
+| **Custom Validation**                                      | 🟡                                                 | 🟡                    | 🟡                    |  🟡                  | 🟡                          | 🟡                          | 🟡               |
+| **Error Handling**                                         | 🟡                                                 | 🟡                    | 🟡                    |  🟡                  | 🟡                          | 🟡                          | 🟡               |
+| **Ease of Setup**                                          | 🟡                                                 | 🟡                    | 🟡                    |  🟡                  | 🟡                          | 🟡                          | 🟡               |
+| **Crash Resilience**                                       | 🟡                                                 | 🟡                    | 🟡                    |  🟡                  | 🟡                          | 🟡                          | 🟡               |
+| **General DX**                                             | 🔵 Clean and understandable TypeScript code        | 🟡                    | 🟡                    |  🟡                  | 🔴 JS-only                  | 🔴 JS-only                  | 🟡               |
+| **DX: Classes**                                            | 🟢 Minimal number of classes as possible           | 🟡                    | 🟡                    |  🟡                  | 🟡                          | 🟡                          | 🟡               |
+| **Documentation**                                          | 🔵                                                 | 🟡                    | 🟡                    |  🟡                  | 🔵                          | 🟢                          | 🟡               |
+| **Designed With UX in Mind**                               | 🔵                                                 | 🟡                    | 🟡                    |  🟡                  | 🟡                          | 🟡                          | 🟡               |
 
 **Related Links**: [ESM/CJS](https://dev.to/iggredible/what-the-heck-are-cjs-amd-umd-and-esm-ikm), ["Pure ESM package"](https://gist.github.com/sindresorhus/a39789f98801d908bbc7ff3ecc99d99c), [Clean code](https://github.com/ryanmcdermott/clean-code-javascript#readme), ["UX patterns for CLI tools"](https://lucasfcosta.com/2022/06/01/ux-patterns-cli-tools.html), [DX (Developer Experience)](https://github.blog/enterprise-software/collaboration/developer-experience-what-is-it-and-why-should-you-care), [TypeBox](https://github.com/sinclairzx81/typebox#readme), ["ANSI Escape Sequences"](https://gist.github.com/ConnerWill/d4b6c776b509add763e17f9f113fd25b)
 
@@ -151,8 +149,6 @@ const username = await textPrompt({
   ...extendedConfig,
 });
 ```
-
-[![Separator](./public/split.png)](https://docs.reliverse.org/relinka)
 
 ## Learn More
 

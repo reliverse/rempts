@@ -6,7 +6,7 @@
       "#/*": ["./addons/*"],
       "@/*": ["./examples/*"]
     },
-    "outDir": "output",
+    "outDir": "dist-npm",
     "module": "NodeNext",
     "moduleResolution": "nodenext",
     "moduleDetection": "force",
@@ -49,5 +49,5 @@
     "addons/**/*.ts",
     "examples/**/*.ts"
   ],
-  "exclude": ["output", "node_modules"]
+  "exclude": ["dist-npm", "dist-jsr", "node_modules"]
 }

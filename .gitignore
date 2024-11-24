@@ -1,5 +1,6 @@
 .venv/
-output/
+dist-jsr/
+dist-npm/
 .DS_Store
 merged.txt
 .eslintcache

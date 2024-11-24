@@ -1,5 +1,6 @@
 import { defu } from "defu";
 
+import type { PromptOptions } from "~/components/mono/monoTwo.js";
 import type {
   RelinkaReporter,
   InputLogObject,
@@ -7,7 +8,6 @@ import type {
   RelinkaOptions,
 } from "~/types/general.js";
 import type { LogType, LogLevel } from "~/utils/constants.js";
-import type { PromptOptions } from "~/utils/options.js";
 
 import { LogTypes } from "~/utils/constants.js";
 import { isLogObj } from "~/utils/log.js";

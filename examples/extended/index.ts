@@ -5,11 +5,11 @@ import {
   askDir,
   doSomeFunStuff,
   showAnimatedText,
-  showAnyKeyPrompt,
+  showAnykeyPrompt,
   showConfirmPrompt,
   showDatePrompt,
   showEndPrompt,
-  showNumMultiSelectPrompt,
+  showNumMultiselectPrompt,
   showNextStepsPrompt,
   showNumberPrompt,
   showNumSelectPrompt,
@@ -18,8 +18,9 @@ import {
   showStartPrompt,
   showTextPrompt,
   showSelectPrompt,
-  showMultiSelectPrompt,
+  showMultiselectPrompt,
   showProgressBar,
+  showTogglePrompt,
 } from "@/extended/modules/prompts.js";
 import { type UserInput } from "@/extended/modules/schema.js";
 
@@ -27,17 +28,18 @@ import { errorHandler } from "~/utils/errors.js";
 
 export async function detailedExample() {
   await showStartPrompt();
-  await showAnyKeyPrompt("privacy");
+  await showAnykeyPrompt("privacy");
   const username = await showTextPrompt();
   const dir = await askDir(username);
   const age = await showNumberPrompt();
-  const lang = await showSelectPrompt();
-  const color = await showNumSelectPrompt();
   const password = await showPasswordPrompt();
   const birthday = await showDatePrompt();
-  const langs = await showMultiSelectPrompt();
-  const features = await showNumMultiSelectPrompt();
-  const deps = await showConfirmPrompt(username);
+  const lang = await showSelectPrompt();
+  const langs = await showMultiselectPrompt();
+  const color = await showNumSelectPrompt();
+  const features = await showNumMultiselectPrompt();
+  const toggle = await showTogglePrompt();
+  const spinner = await showConfirmPrompt(username);
   const userInput = {
     username,
     dir,
@@ -48,7 +50,8 @@ export async function detailedExample() {
     birthday,
     langs,
     features,
-    deps,
+    spinner,
+    toggle,
   } satisfies UserInput;
   await showProgressBar();
   await showResults(userInput);

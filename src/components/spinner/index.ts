@@ -20,7 +20,7 @@ type CreateSpinnerOptions<T extends "simple" | "ora"> = {
   action: (updateMessage: (message: string) => void) => Promise<void>;
 };
 
-export default async function spinner<T extends "simple" | "ora">(
+export async function spinner<T extends "simple" | "ora">(
   options: CreateSpinnerOptions<T>,
 ): Promise<void> {
   const {

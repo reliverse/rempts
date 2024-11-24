@@ -1,6 +1,6 @@
 import type { RelinkaOptions } from "~/types/general.js";
 
-import { createRelinka } from "~/utils/create.js";
+import { createRelinka } from "~/components/prompts/create.js";
 
 import { randomSentence } from "./sentence.js";
 

@@ -10,4 +10,4 @@ export type {
   MultiSelectOptions,
   SelectPromptOptions,
   TextPromptOptions,
-} from "~/utils/options.js";
+} from "~/components/mono/monoTwo.js";

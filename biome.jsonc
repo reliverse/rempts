@@ -11,7 +11,7 @@
   },
   "formatter": {
     "enabled": true,
-    "ignore": [".git/", "node_modules/", "dist/", "output/"],
+    "ignore": [".git/", "node_modules/", "dist-jsr/", "dist-npm/"],
     "indentStyle": "space",
     "attributePosition": "auto",
     "formatWithErrors": false,
@@ -27,8 +27,8 @@
     "ignore": [
       ".git/",
       "node_modules/",
-      "dist/",
-      "output/",
+      "dist-jsr/",
+      "dist-npm/",
       "examples/deprecated/**/*.ts"
     ],
     "rules": {

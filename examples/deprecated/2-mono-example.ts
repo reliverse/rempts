@@ -2,7 +2,7 @@
 
 import { createAsciiArt } from "~/components/visual/ascii-art/ascii-art.js";
 import { prompt } from "~/components/mono/mono.js";
-import spinner from "~/components/spinner/index.js";
+import { spinner } from "~/components/spinner/index.js";
 import { colorize } from "~/utils/colorize.js";
 import { errorHandler } from "~/utils/errors.js";
 

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { promisify } from "util";
 
 import * as cliProgress from "../cli-progress.js";

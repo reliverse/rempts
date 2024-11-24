@@ -1,4 +1,4 @@
-import { relinka } from "~/utils/create.js";
+import { relinka } from "~/components/prompts/create.js";
 import { errorHandler } from "~/utils/errors.js";
 
 async function examplesRunner() {

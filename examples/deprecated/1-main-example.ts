@@ -5,11 +5,11 @@ import {
   askDir,
   doSomeFunStuff,
   showAnimatedText,
-  showAnyKeyPrompt,
+  showAnykeyPrompt,
   // showConfirmPrompt,
   showDatePrompt,
   showEndPrompt,
-  showNumMultiSelectPrompt,
+  showNumMultiselectPrompt,
   showNextStepsPrompt,
   showNumberPrompt,
   showNumSelectPrompt,
@@ -18,7 +18,7 @@ import {
   showStartPrompt,
   showTextPrompt,
   showSelectPrompt,
-  showMultiSelectPrompt,
+  showMultiselectPrompt,
 } from "@/extended/modules/prompts.js";
 import { type UserInput } from "@/extended/modules/schema.js";
 
@@ -31,7 +31,7 @@ const isHex = (value: string) =>
 
 export async function detailedExample() {
   await showStartPrompt();
-  await showAnyKeyPrompt("privacy");
+  await showAnykeyPrompt("privacy");
   const username = await showTextPrompt();
   const dir = await askDir(username);
   const age = await showNumberPrompt();
@@ -39,23 +39,23 @@ export async function detailedExample() {
   const color = await showNumSelectPrompt();
   const password = await showPasswordPrompt();
   const birthday = await showDatePrompt();
-  const langs = await showMultiSelectPrompt();
-  const features = await showNumMultiSelectPrompt();
+  const langs = await showMultiselectPrompt();
+  const features = await showNumMultiselectPrompt();
   // const deps = await showConfirmPrompt(username);
-  const userInput = {
-    username,
-    dir,
-    age,
-    lang,
-    color,
-    password,
-    birthday,
-    langs,
-    features,
-    // deps,
-  } satisfies UserInput;
-  await showResults(userInput);
-  await doSomeFunStuff(userInput);
+  // const userInput = {
+  //   username,
+  //   dir,
+  //   age,
+  //   lang,
+  //   color,
+  //   password,
+  //   birthday,
+  //   langs,
+  //   features,
+  //   // deps,
+  // } satisfies UserInput;
+  // await showResults(userInput);
+  // await doSomeFunStuff(userInput);
   await showNextStepsPrompt();
   await showAnimatedText();
   await showEndPrompt();

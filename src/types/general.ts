@@ -11,9 +11,9 @@ export type MsgType =
   | "M_MIDDLE"
   | "M_GENERAL"
   | "M_INFO"
+  | "M_INFO_NULL"
   | "M_NEWLINE"
   | "M_END"
-  | "M_END_ANIMATED"
   | "M_ERROR";
 
 export type TypographyName = "bold" | "strikethrough" | "underline" | "italic";
@@ -81,6 +81,7 @@ export type FmtMsgOptions = {
   hint?: string;
   border?: boolean;
   borderColor?: ColorName;
+  dontRemoveBar?: boolean;
   variantOptions?: {
     box?: {
       limit?: number;
@@ -125,6 +126,11 @@ export type OptionalPromptOptions<T extends TSchema = any> = {
   additionalLinesToDelete?: number;
   answerColor?: ColorName;
   hintColor?: ColorName;
+  hints?: string[];
+  required?: boolean;
+  initial?: any[];
+  endTitle?: string;
+  endTitleColor?: ColorName;
 };
 
 export type PromptOptions<T extends TSchema = any> = RequiredPromptOptions &
@@ -211,7 +217,7 @@ export type RelinkaOptions = {
    * @optional
    */
   // eslint-disable-next-line @typescript-eslint/consistent-type-imports
-  prompt?: typeof import("~/utils/options.js").prompt | undefined;
+  prompt?: typeof import("~/components/mono/monoTwo.js").prompt | undefined;
 
   /**
    * Configuration options for formatting log messages. See {@link FormatOptions}.

@@ -1,10 +1,10 @@
-import { colors } from "picocolors";
-
-import _progress from "../cli-progress.js";
+// @ts-nocheck
+import { magenta } from "picocolors";
+import ProgressBar from "../index.js";
 
 // helper function to display preset
 function showPreset(name, pos) {
-  console.log(colors.magenta("Preset: " + name));
+  console.log(magenta("Preset: " + name));
 
   // create a new progress bar with preset
   const bar = new _progress.Bar(

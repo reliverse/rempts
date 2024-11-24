@@ -5,7 +5,7 @@ export default defineBuildConfig({
   entries: [
     {
       builder: "mkdist",
-      outDir: "output",
+      outDir: "dist-npm",
       format: "esm",
       input: "src",
       ext: "js",

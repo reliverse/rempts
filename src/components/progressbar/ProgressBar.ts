@@ -1,4 +1,4 @@
-import { green, red } from "picocolors";
+import { green, greenBright, red } from "picocolors";
 
 export type ProgressBarOptions = {
   total: number; // Total units of work to complete
@@ -88,7 +88,7 @@ export class ProgressBar {
 
     process.stdout.clearLine(0);
     process.stdout.cursorTo(0);
-    process.stdout.write(output);
+    process.stdout.write(greenBright("◆") + "  " + output);
 
     if (this.current >= this.total) {
       process.stdout.write("\n");

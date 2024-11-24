@@ -9,7 +9,7 @@ export default tseslint.config(
   {
     ignores: [
       "**/.{git,next,astro,wxt}/",
-      "**/{node_modules,dist,output,public,drizzle}/",
+      "**/{node_modules,dist-jsr,dist-npm,public,drizzle}/",
       "examples/deprecated/**/*.{js,ts}",
     ],
   },

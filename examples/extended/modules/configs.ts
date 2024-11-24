@@ -1,4 +1,6 @@
-import type { OptionalPromptOptions } from "~/types/general.js";
+import { emojify } from "node-emoji";
+
+import type { OptionalPromptOptions } from "~/mod.js";
 
 export const basicConfig = {
   titleColor: "cyanBright",
@@ -11,4 +13,13 @@ export const extendedConfig = {
   contentTypography: "italic",
   contentColor: "dim",
   answerColor: "none", // white in dark mode, black in light mode
+} satisfies OptionalPromptOptions;
+
+export const experimentalConfig = {
+  titleColor: "cyanBright",
+  titleTypography: "bold",
+  endTitle: emojify(
+    ":books: Learn the docs here: https://docs.reliverse.org/relinka",
+  ),
+  endTitleColor: "retroGradient",
 } satisfies OptionalPromptOptions;
