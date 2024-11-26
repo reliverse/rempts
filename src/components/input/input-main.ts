@@ -4,7 +4,11 @@ import { Value } from "@sinclair/typebox/value";
 import { stdin as input, stdout as output } from "node:process";
 import readline from "node:readline/promises";
 
-import type { PromptOptions } from "~/types/general.js";
+import type {
+  ColorName,
+  TypographyName,
+  VariantName,
+} from "~/types/general.js";
 
 import { fmt, msg } from "~/utils/messages.js";
 import {
@@ -13,9 +17,35 @@ import {
   deleteLastLines,
 } from "~/utils/terminal.js";
 
-export async function textPrompt<T extends TSchema>(
-  options: PromptOptions<T>,
-): Promise<Static<T>> {
+/**
+ * PromptOptions for inputPrompt focusing on string input.
+ */
+type InputPromptOptions = {
+  title: string;
+  hint?: string;
+  validate?: (value: string) => string | void | Promise<string | void>;
+  defaultValue?: string;
+  schema?: TSchema;
+  titleColor?: ColorName;
+  titleTypography?: TypographyName;
+  titleVariant?: VariantName;
+  content?: string;
+  contentColor?: ColorName;
+  contentTypography?: TypographyName;
+  contentVariant?: VariantName;
+  borderColor?: ColorName;
+  variantOptions?: any;
+  placeholder?: string;
+};
+
+/**
+ * Prompts the user to enter input, with optional validation and default value.
+ * @param options Configuration options for the prompt.
+ * @returns The input entered by the user or the default value.
+ */
+export async function inputPrompt(
+  options: InputPromptOptions,
+): Promise<string> {
   const {
     title,
     hint,
@@ -44,6 +74,7 @@ export async function textPrompt<T extends TSchema>(
   while (true) {
     if (linesToDelete > 0) {
       deleteLastLines(linesToDelete);
+      linesToDelete = 0;
     }
 
     const question = fmt({
@@ -74,7 +105,7 @@ export async function textPrompt<T extends TSchema>(
       msg({ type: "M_MIDDLE", title: `  ${currentInput}` });
     }
 
-    linesToDelete = questionLines + 1;
+    linesToDelete += questionLines + 1;
 
     const answer = currentInput || defaultValue;
 
@@ -103,20 +134,21 @@ export async function textPrompt<T extends TSchema>(
         }
       }
     }
+
     if (validate && isValid) {
-      const validation = await validate(answer);
-      if (validation !== true) {
+      const validationResult = await validate(answer);
+      if (typeof validationResult === "string") {
         isValid = false;
-        errorMessage =
-          typeof validation === "string" ? validation : "Invalid input.";
+        errorMessage = validationResult;
       }
     }
 
     if (isValid) {
       msg({ type: "M_NEWLINE" });
       rl.close();
-      return answer as Static<T>;
+      return answer;
     } else {
+      // Prepare to re-render with error message
       linesToDelete += 0;
     }
   }

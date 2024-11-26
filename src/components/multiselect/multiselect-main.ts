@@ -2,7 +2,11 @@ import { stdin as input, stdout as output } from "node:process";
 import readline from "node:readline";
 import { cyanBright, dim, greenBright, redBright } from "picocolors";
 
-import type { ColorName, Variant, TypographyName } from "~/types/general.js";
+import type {
+  ColorName,
+  TypographyName,
+  VariantName,
+} from "~/types/general.js";
 
 import { colorize } from "~/main.js";
 import { bar, symbols, msg } from "~/utils/messages.js";
@@ -16,7 +20,7 @@ export async function multiselectPrompt<T extends string>(params: {
   borderColor?: ColorName;
   titleColor?: ColorName;
   titleTypography?: TypographyName;
-  titleVariant?: Variant;
+  titleVariant?: VariantName;
   border?: boolean;
   endTitle?: string;
   endTitleColor?: ColorName;

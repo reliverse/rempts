@@ -16,7 +16,7 @@ export { animateText } from "~/components/visual/animate/animate.js";
 export { createAsciiArt } from "~/components/visual/ascii-art/ascii-art.js";
 export { startPrompt } from "~/components/st-end/start.js";
 export { anykeyPrompt } from "~/components/anykey/index.js";
-export { textPrompt } from "~/components/input/text-main.js";
+export { inputPrompt } from "~/components/input/input-main.js";
 export { confirmPrompt } from "~/components/confirm/confirm-main.js";
 export { togglePrompt } from "~/components/toggle/index.js";
 export { datePrompt } from "~/components/date/date.js";
@@ -50,5 +50,5 @@ export { default as PasswordPrompt } from "~/components/password/password-three.
 export { default as Prompt, isCancel } from "~/components/prompts/prompt.js";
 export { default as SelectPrompt } from "~/components/select/select-three.js";
 export { default as SelectKeyPrompt } from "~/components/select/select-key.js";
-export { default as TextPrompt } from "~/components/input/text.js";
+export { default as InputPrompt } from "~/components/input/input.js";
 export { multiselect } from "~/components/prompts/promptTwo.js";

@@ -5,7 +5,7 @@ import Prompt from "./prompt.js";
 import { erase, cursor } from "sisteransi";
 import { style, clear, lines, figures } from "../util/index";
 /**
- * TextPrompt Base Element
+ * InputPrompt Base Element
  * @param {Object} opts Options
  * @param {String} opts.message Message
  * @param {String} [opts.style='default'] Render style
@@ -15,7 +15,7 @@ import { style, clear, lines, figures } from "../util/index";
  * @param {Stream} [opts.stdout] The Writable stream to write readline data to
  * @param {String} [opts.error] The invalid error label
  */
-class TextPrompt extends Prompt {
+class InputPrompt extends Prompt {
   constructor(opts = {}) {
     super(opts);
     this.transform = style.render(opts.style);
@@ -204,4 +204,4 @@ class TextPrompt extends Prompt {
     );
   }
 }
-export default TextPrompt;
+export default InputPrompt;

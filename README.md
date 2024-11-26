@@ -148,7 +148,7 @@ const extendedConfig = {
   contentColor: "dim",
 } satisfies OptionalPromptOptions;
 
-const username = await textPrompt({
+const username = await inputPrompt({
   id: "username",
   title: "We're glad you're testing our library!",
   content: "Let's get to know each other!\nWhat's your username?",

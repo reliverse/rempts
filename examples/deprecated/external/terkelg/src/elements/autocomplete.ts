@@ -20,7 +20,7 @@ const getIndex = (arr, valOrTitle) => {
   return index > -1 ? index : undefined;
 };
 /**
- * TextPrompt Base Element
+ * InputPrompt Base Element
  * @param {Object} opts Options
  * @param {String} opts.message Message
  * @param {Array} opts.choices Array of auto-complete choices objects

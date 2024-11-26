@@ -23,11 +23,11 @@ export type PromptOptionsWithState<T extends TSchema = any> = {
   stateCompletedTitle?: string;
   titleColor?: ColorName;
   titleTypography?: TypographyName;
-  titleVariant?: Variant;
+  titleVariant?: VariantName;
   message?: string;
   msgColor?: ColorName;
   msgTypography?: TypographyName;
-  msgVariant?: Variant;
+  msgVariant?: VariantName;
   hint?: string;
   validate?: (value: any) => boolean | string | Promise<boolean | string>;
   default?: any;

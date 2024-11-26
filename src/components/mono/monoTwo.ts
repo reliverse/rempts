@@ -7,7 +7,7 @@ type SelectOption = {
   hint?: string;
 };
 
-export type TextPromptOptions = {
+export type InputPromptOptions = {
   /**
    * Specifies the prompt type as text.
    * @optional
@@ -91,13 +91,13 @@ export type MultiSelectOptions = {
  * Defines a combined type for all prompt options.
  */
 export type PromptOptions =
-  | TextPromptOptions
+  | InputPromptOptions
   | ConfirmPromptOptions
   | SelectPromptOptions
   | MultiSelectOptions;
 
 type inferPromptReturnType<T extends PromptOptions> =
-  T extends TextPromptOptions
+  T extends InputPromptOptions
     ? string
     : T extends ConfirmPromptOptions
       ? boolean
@@ -120,7 +120,7 @@ type inferPromptReturnType<T extends PromptOptions> =
 export async function prompt<
   _ = any,
   __ = any,
-  T extends PromptOptions = TextPromptOptions,
+  T extends PromptOptions = InputPromptOptions,
 >(
   message: string,
   opts: PromptOptions = {},
@@ -128,9 +128,9 @@ export async function prompt<
   if (!opts.type || opts.type === "text") {
     return (await text({
       message,
-      defaultValue: (opts as TextPromptOptions).default,
-      placeholder: (opts as TextPromptOptions).placeholder,
-      initialValue: (opts as TextPromptOptions).initial,
+      defaultValue: (opts as InputPromptOptions).default,
+      placeholder: (opts as InputPromptOptions).placeholder,
+      initialValue: (opts as InputPromptOptions).initial,
     })) as any;
   }
 

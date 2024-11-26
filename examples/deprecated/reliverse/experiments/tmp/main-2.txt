@@ -39,7 +39,7 @@ export async function prompts<T extends TSchema>(
   let value: any;
   switch (type) {
     case "text":
-      value = await textPrompt(options);
+      value = await inputPrompt(options);
       break;
     case "number":
       value = await numberPrompt(options);
@@ -65,7 +65,7 @@ export async function prompts<T extends TSchema>(
   return { [id]: value } as any;
 }
 
-async function textPrompt<T extends TSchema>(
+async function inputPrompt<T extends TSchema>(
   options: PromptOptions<T>,
   // TODO: Testing functions that interact directly with process.stdin and process.stdout
   // TODO: can be challenging. So we should refactor the code to make it more testable.

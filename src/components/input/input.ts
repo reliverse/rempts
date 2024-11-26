@@ -7,9 +7,9 @@ import Prompt from "../prompts/prompt.js";
 export type TextOptions = {
   placeholder?: string;
   defaultValue?: string;
-} & PromptOptions<TextPrompt>;
+} & PromptOptions<InputPrompt>;
 
-export default class TextPrompt extends Prompt {
+export default class InputPrompt extends Prompt {
   valueWithCursor = "";
   get cursor() {
     return this._cursor;

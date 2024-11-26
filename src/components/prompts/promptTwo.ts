@@ -5,7 +5,7 @@ import type { State } from "~/types/general.js";
 
 import block from "~/components/block/block.js";
 import ConfirmPrompt from "~/components/confirm/confirm-three.js";
-import TextPrompt from "~/components/input/text.js";
+import InputPrompt from "~/components/input/input.js";
 import GroupMultiSelectPrompt from "~/components/multiselect/group-multiselect.js";
 import MultiSelectPrompt from "~/components/multiselect/multi-select.js";
 import PasswordPrompt from "~/components/password/password-three.js";
@@ -109,7 +109,7 @@ export type TextOptions = {
  * @returns {Promise<string | symbol>} A promise that resolves to the user input or a symbol for special cases.
  */
 export const text = (opts: TextOptions) => {
-  return new TextPrompt({
+  return new InputPrompt({
     validate: opts.validate,
     placeholder: opts.placeholder,
     defaultValue: opts.defaultValue,

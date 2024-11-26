@@ -16,7 +16,7 @@ import {
   showPasswordPrompt,
   showResults,
   showStartPrompt,
-  showTextPrompt,
+  showInputPrompt,
   showSelectPrompt,
   showMultiselectPrompt,
 } from "@/src/prompts.js";
@@ -32,7 +32,7 @@ const isHex = (value: string) =>
 export async function detailedExample() {
   await showStartPrompt();
   await showAnykeyPrompt("privacy");
-  const username = await showTextPrompt();
+  const username = await showInputPrompt();
   const dir = await askDir(username);
   const age = await showNumberPrompt();
   const lang = await showSelectPrompt();

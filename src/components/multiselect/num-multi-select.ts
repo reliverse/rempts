@@ -23,7 +23,6 @@ export async function numMultiSelectPrompt<T extends TSchema>(
     schema,
     defaultValue,
     titleColor = "cyanBright",
-    
     titleTypography = "bold",
     titleVariant,
     hint,

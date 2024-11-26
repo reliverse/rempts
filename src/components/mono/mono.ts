@@ -4,7 +4,7 @@ import type { PromptOptions, PromptType } from "~/types/general.js";
 
 import { confirmPrompt } from "~/components/confirm/confirm-main.js";
 import { datePrompt } from "~/components/date/date.js";
-import { textPrompt } from "~/components/input/text-main.js";
+import { inputPrompt } from "~/components/input/input-main.js";
 import { multiselectPrompt } from "~/components/multiselect/multi-select-two.js";
 import { numMultiSelectPrompt } from "~/components/multiselect/num-multi-select.js";
 import { nextStepsPrompt } from "~/components/next-steps/next-steps.js";
@@ -18,6 +18,7 @@ import { startPrompt } from "~/components/st-end/start.js";
 export async function prompt<T extends TSchema>(
   options: PromptOptions<T> & {
     type: PromptType;
+    id: string;
   },
 ): Promise<Record<(typeof options)["id"], Static<T>>> {
   const { type, id, action } = options;
@@ -28,15 +29,15 @@ export async function prompt<T extends TSchema>(
       await startPrompt(options);
       value = null;
       break;
-    case "text":
-      value = await textPrompt(options);
-      break;
+    // case "text":
+    //   value = await inputPrompt(options);
+    //   break;
     case "number":
       value = await numberPrompt(options);
       break;
-    case "confirm":
-      value = await confirmPrompt(options);
-      break;
+    // case "confirm":
+    //   value = await confirmPrompt(options);
+    //   break;
     case "numSelect":
       value = await numSelectPrompt(options);
       break;

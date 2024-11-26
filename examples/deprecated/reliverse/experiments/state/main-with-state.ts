@@ -15,7 +15,7 @@ import { passwordPrompt } from "~/components/password/password-main.js";
 import type { PromptOptionsWithState } from "./types-wth-state.js";
 
 import { startPrompt } from "./ui/start-with-state.js";
-import { textPrompt } from "./ui/text-with-state.js";
+import { inputPrompt } from "./ui/text-with-state.js";
 
 // export { createSpinner } from "~/unsorted/components/spinner";
 
@@ -37,7 +37,7 @@ export async function prompts<T extends TSchema>(
       value = null;
       break;
     case "text":
-      value = await textPrompt(options, currentState);
+      value = await inputPrompt(options, currentState);
       break;
     case "number":
       value = await numberPrompt(options);

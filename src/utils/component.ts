@@ -12,7 +12,7 @@ import {
   PasswordPrompt,
   SelectKeyPrompt,
   SelectPrompt,
-  TextPrompt,
+  InputPrompt,
 } from "~/components/prompts/index.js";
 import { isUnicodeSupported } from "~/utils/platforms.js";
 
@@ -112,7 +112,7 @@ export type TextOptions = {
   validate?: (value: string) => string | void;
 };
 export const text = (opts: TextOptions) => {
-  return new TextPrompt({
+  return new InputPrompt({
     validate: opts.validate,
     placeholder: opts.placeholder,
     defaultValue: opts.defaultValue,

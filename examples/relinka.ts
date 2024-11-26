@@ -5,7 +5,7 @@ import { relinka, createRelinka } from "@reliverse/relinka";
 import type { TreeItem } from "~/utils/tree.js";
 
 import { confirmPrompt } from "~/components/confirm/confirm-main.js";
-import { textPrompt } from "~/components/input/text-main.js";
+import { inputPrompt } from "~/components/input/input-main.js";
 import { multiselectPrompt } from "~/components/multiselect/multiselect-main.js";
 import { rangePrompt } from "~/components/range/range.js";
 import { selectPrompt } from "~/components/select/select-main.js";
@@ -86,15 +86,13 @@ async function detailedExample() {
   // prompt
   relinka.box("=== prompt ===");
 
-  const name = await textPrompt({
-    id: "name",
+  const name = await inputPrompt({
     title: "What is your name?",
     placeholder: "Not sure",
     defaultValue: "java",
   });
 
   const confirmed = await confirmPrompt({
-    id: "confirmed",
     title: "Do you want to continue?",
   });
 
@@ -225,7 +223,6 @@ async function detailedExample() {
   relinka.start("Building project...");
   relinka.success("Project built!");
   await confirmPrompt({
-    id: "deploy",
     title: "Deploy to the production?",
   });
 

@@ -1,4 +1,4 @@
-import type { ColorName, Variant } from "~/types/general.js";
+import type { ColorName, VariantName } from "~/types/general.js";
 
 import { colorMap } from "./mapping.js";
 
@@ -11,7 +11,7 @@ export const variantMap = {
 
 export async function applyVariant(
   lines: string[] | string,
-  variant?: Variant,
+  variant?: VariantName,
   options?: { limit?: number },
   borderColor?: ColorName,
 ): Promise<string> {

@@ -1,6 +1,6 @@
 // @ts-nocheck
 
-export { default as TextPrompt } from "./text";
+export { default as InputPrompt } from "./text";
 export { default as SelectPrompt } from "./select";
 export { default as TogglePrompt } from "./toggle";
 export { default as DatePrompt } from "./date";

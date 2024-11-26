@@ -23,7 +23,7 @@ export async function multiselectPrompt<T extends TSchema>(
     schema,
     defaultValue,
     titleColor = "cyanBright",
-    
+
     titleTypography = "bold",
     titleVariant,
     hint,

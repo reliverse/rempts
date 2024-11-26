@@ -1,24 +1,45 @@
-import type { TSchema, Static } from "@sinclair/typebox";
-
-import { Value } from "@sinclair/typebox/value";
 import { stdin as input, stdout as output } from "node:process";
 import readline from "node:readline/promises";
 
-import type { PromptOptions } from "~/types/general.js";
+import type {
+  ColorName,
+  TypographyName,
+  VariantName,
+} from "~/types/general.js";
 
 import { colorize } from "~/utils/colorize.js";
 import { bar, fmt, msg } from "~/utils/messages.js";
 import { countLines, deleteLastLines } from "~/utils/terminal.js";
 
-export async function confirmPrompt<T extends TSchema>(
-  options: PromptOptions<T>,
-): Promise<Static<T>> {
+export type ConfirmPromptOptions = {
+  title: string;
+  defaultValue?: boolean;
+  content?: string;
+  titleColor?: ColorName;
+  titleTypography?: TypographyName;
+  titleVariant?: VariantName;
+  contentColor?: ColorName;
+  contentTypography?: TypographyName;
+  contentVariant?: VariantName;
+  borderColor?: ColorName;
+  hintColor?: ColorName;
+  variantOptions?: any;
+  action?: () => Promise<void>;
+};
+
+/**
+ * Prompts the user for a yes/no confirmation.
+ *
+ * @param options - Configuration options for the confirmation prompt.
+ * @returns A promise that resolves to a boolean based on user input.
+ */
+export async function confirmPrompt(
+  options: ConfirmPromptOptions,
+): Promise<boolean> {
   const {
     title,
     defaultValue,
-    schema,
     titleColor = "cyanBright",
-    
     titleTypography = "bold",
     titleVariant,
     content,
@@ -58,9 +79,9 @@ export async function confirmPrompt<T extends TSchema>(
       });
 
       let defaultHint = "";
-      if (defaultValue === true) {
+      if (defaultValue) {
         defaultHint = "[Y/n]";
-      } else if (defaultValue === false) {
+      } else if (!defaultValue) {
         defaultHint = "[y/N]";
       } else {
         defaultHint = "[y/n]";
@@ -84,9 +105,9 @@ export async function confirmPrompt<T extends TSchema>(
 
       if (!answer && defaultValue !== undefined) {
         // Inject the used answer into the console
-        const injectedAnswer = defaultValue === true ? "y" : "n";
+        const injectedAnswer = defaultValue ? "y" : "n";
         process.stdout.write(`${formattedBar}  ${injectedAnswer}\n`);
-        value = defaultValue as boolean;
+        value = defaultValue;
       } else if (answer === "y" || answer === "yes") {
         value = true;
       } else if (answer === "n" || answer === "no") {
@@ -96,29 +117,12 @@ export async function confirmPrompt<T extends TSchema>(
         continue;
       }
 
-      // Schema validation if provided
-      let isValid = true;
-      errorMessage = ""; // Reset errorMessage
-
-      if (schema) {
-        isValid = Value.Check(schema, value);
-        if (!isValid) {
-          const errors = [...Value.Errors(schema, value)];
-          errorMessage =
-            errors.length > 0
-              ? (errors[0]?.message ?? "Invalid input.")
-              : "Invalid input.";
-        }
+      msg({ type: "M_NEWLINE" });
+      rl.close();
+      if (action && value) {
+        await action();
       }
-
-      if (isValid) {
-        msg({ type: "M_NEWLINE" });
-        rl.close();
-        if (action && value) {
-          await action();
-        }
-        return value as Static<T>;
-      }
+      return value;
     }
   } finally {
     rl.close();

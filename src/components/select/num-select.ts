@@ -26,7 +26,6 @@ export async function numSelectPrompt<T extends TSchema>(
     defaultValue,
     schema,
     titleColor = "cyanBright",
-    
     titleTypography = "bold",
     titleVariant,
     content,

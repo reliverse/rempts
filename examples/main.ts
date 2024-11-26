@@ -16,7 +16,7 @@ import {
   showPasswordPrompt,
   showResults,
   showStartPrompt,
-  showTextPrompt,
+  showInputPrompt,
   showSelectPrompt,
   showMultiselectPrompt,
   showProgressBar,
@@ -29,7 +29,7 @@ import { errorHandler } from "~/utils/errors.js";
 export async function detailedExample() {
   await showStartPrompt();
   await showAnykeyPrompt("privacy");
-  const username = await showTextPrompt();
+  const username = await showInputPrompt();
   const dir = await askDir(username);
   const age = await showNumberPrompt();
   const password = await showPasswordPrompt();

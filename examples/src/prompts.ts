@@ -17,7 +17,7 @@ import {
   numberPrompt,
   passwordPrompt,
   startPrompt,
-  textPrompt,
+  inputPrompt,
   togglePrompt,
 } from "~/main.js";
 import { promptsDisplayResults } from "~/main.js";
@@ -51,7 +51,6 @@ const IDs = {
 
 export async function showStartPrompt() {
   await startPrompt({
-    id: IDs.start,
     title: `@reliverse/prompts v${pkg.version}`,
     ...basicConfig,
     titleColor: "inverse",
@@ -74,12 +73,8 @@ export async function showAnykeyPrompt(
   await anykeyPrompt(notification);
 }
 
-export async function showTextPrompt(): Promise<UserInput["username"]> {
-  const username = await textPrompt({
-    // 'id' is the key in the userInput result object.
-    // Choose any name for it, but ensure it’s unique.
-    // Intellisense will show you all available IDs.
-    id: IDs.username,
+export async function showInputPrompt(): Promise<UserInput["username"]> {
+  const username = await inputPrompt({
     title: "We're glad you're testing our interactive prompts library!",
     content: "Let's get to know each other!\nWhat's your username?",
     hint: "Press <Enter> to use the default value.",
@@ -92,9 +87,8 @@ export async function showTextPrompt(): Promise<UserInput["username"]> {
 }
 
 export async function askDir(username: string): Promise<UserInput["dir"]> {
-  const dir = await textPrompt({
-    id: IDs.dir,
-    title: `[textPrompt] Great! Nice to meet you, ${username}!`,
+  const dir = await inputPrompt({
+    title: `[inputPrompt] Great! Nice to meet you, ${username}!`,
     content: "Where should we create your project?",
     // Schema is required, because it provides a runtime typesafety validation.
     schema: schema.properties.dir,
@@ -108,7 +102,6 @@ export async function askDir(username: string): Promise<UserInput["dir"]> {
 
 export async function showNumberPrompt(): Promise<UserInput["age"]> {
   const age = await numberPrompt({
-    id: IDs.age,
     ...extendedConfig,
     title: "[numberPrompt] Enter your age",
     // Adding a hint helps users understand the expected input format.
@@ -136,7 +129,6 @@ export async function showPasswordPrompt(): Promise<UserInput["password"]> {
   // which otherwise would terminate the process with an error.
   try {
     password = await passwordPrompt({
-      id: IDs.password,
       title: "[passwordPrompt] Imagine a password",
       schema: schema.properties.password,
       defaultValue: "silverHand2077",
@@ -161,7 +153,6 @@ export async function showPasswordPrompt(): Promise<UserInput["password"]> {
 
 export async function showDatePrompt(): Promise<UserInput["birthday"]> {
   const birthdayDate = await datePrompt({
-    id: IDs.birthday,
     dateKind: "birthday",
     dateFormat: "DD.MM.YYYY",
     title: "[datePrompt] Enter your birthday",
@@ -176,7 +167,6 @@ export async function showDatePrompt(): Promise<UserInput["birthday"]> {
 // Experimental alternative to showDatePrompt
 export async function showDatePromptTwo() {
   const userDate = await datePrompt({
-    id: IDs.birthday,
     title: "Enter your birthday",
     dateFormat: "DD.MM.YYYY | MM/DD/YYYY | YYYY.MM.DD",
     dateKind: "birthday",
@@ -367,7 +357,6 @@ export async function showNumSelectPrompt(): Promise<UserInput["color"]> {
   const choices = createColorChoices();
 
   const color = await numSelectPrompt({
-    id: IDs.color,
     title: "[numSelectPrompt] Choose your favorite color",
     content:
       "You are free to customize everything in your prompts using the following color palette.",
@@ -385,25 +374,24 @@ export async function showNumMultiselectPrompt(): Promise<
   UserInput["features"]
 > {
   const features = await numMultiSelectPrompt({
-    id: IDs.features,
     title: "[numMultiSelectPrompt] What web technologies do you like?",
     defaultValue: ["react", "typescript"],
     choices: [
       {
-        title: "React",
         id: "react",
+        title: "React",
         // Some properties, like 'choices.description', are optional.
         description: "A library for building user interfaces.",
       },
       {
-        title: "TypeScript",
         id: "typescript",
+        title: "TypeScript",
         description:
           "A programming language that adds static typing to JavaScript.",
       },
       {
-        title: "ESLint",
         id: "eslint",
+        title: "ESLint",
         description: "A tool for identifying patterns in JavaScript code.",
       },
     ] as const,
@@ -435,12 +423,13 @@ export async function showConfirmPrompt(
   await showAnykeyPrompt("pm", username);
 
   const spinner = await confirmPrompt({
-    id: IDs.spinner,
     title: "[confirmPrompt] Do you want to see spinner in action?",
     // Intellisense will show you all available colors thanks to the enum.
     titleColor: "red",
     titleVariant: "doubleBox",
-    schema: schema.properties.spinner,
+    // Schema is not required for confirm prompts,
+    // because of boolean nature of the value.
+    // schema: schema.properties.spinner,
     // @reliverse/prompts includes styled prompts, with the `title` color defaulting
     // to "cyanBright". Setting the color to "none" removes the default styling.
     content: "Spinners are helpful for long-running tasks.",
@@ -526,7 +515,6 @@ export async function doSomeFunStuff(userInput: UserInput) {
 
 export async function showNextStepsPrompt() {
   await nextStepsPrompt({
-    id: "nextSteps",
     title: "[nextStepsPrompt] Next Steps",
     content: "- Set up your profile\n- Review your dashboard\n- Add tasks",
     ...extendedConfig,
@@ -548,7 +536,6 @@ export async function showAnimatedText() {
 
 export async function showEndPrompt() {
   await endPrompt({
-    id: "end",
     title: emojify(
       "ℹ  :books: Learn the docs here: https://docs.reliverse.org/relinka",
     ),

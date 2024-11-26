@@ -2,7 +2,7 @@ import { stdin as input, stdout as output } from "node:process";
 import readline from "node:readline";
 import { cyanBright, dim, greenBright, redBright } from "picocolors";
 
-import type { ColorName, Variant, TypographyName } from "~/types/general.js";
+import type { ColorName, VariantName, TypographyName } from "~/types/general.js";
 
 import { deleteLastLine } from "~/main.js";
 import { bar, fmt, msg, symbols } from "~/utils/messages.js";
@@ -15,7 +15,7 @@ export async function selectPrompt<T extends string>(params: {
   borderColor?: ColorName;
   titleColor?: ColorName;
   titleTypography?: TypographyName;
-  titleVariant?: Variant;
+  titleVariant?: VariantName;
   border?: boolean;
   endTitle?: string;
   endTitleColor?: ColorName;

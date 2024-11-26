@@ -32,7 +32,7 @@ function toPrompt(type: string, args: any, opts: PromptOptions = {}) {
  * @param {Stream} [args.stdout] The Writable stream to write readline data to
  * @returns {Promise} Promise with user input
  */
-$.text = (args) => toPrompt("TextPrompt", args);
+$.text = (args) => toPrompt("InputPrompt", args);
 /**
  * Password prompt with masked input
  * @param {string} args.message Prompt message to display
@@ -118,7 +118,7 @@ $.confirm = (args) => toPrompt("ConfirmPrompt", args);
  */
 $.list = (args) => {
   const sep = args.separator || ",";
-  return toPrompt("TextPrompt", args, {
+  return toPrompt("InputPrompt", args, {
     onSubmit: (str) => str.split(sep).map((s) => s.trim()),
   });
 };

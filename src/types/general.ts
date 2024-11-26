@@ -20,7 +20,7 @@ export type MsgType =
 
 export type TypographyName = "bold" | "strikethrough" | "underline" | "italic";
 
-export type Variant =
+export type VariantName =
   | "box"
   | "doubleBox"
   | "banner"
@@ -76,10 +76,10 @@ export type FmtMsgOptions = {
   content?: string;
   titleColor?: ColorName;
   titleTypography?: TypographyName;
-  titleVariant?: Variant;
+  titleVariant?: VariantName;
   contentColor?: ColorName;
   contentTypography?: TypographyName;
-  contentVariant?: Variant;
+  contentVariant?: VariantName;
   hint?: string;
   border?: boolean;
   borderColor?: ColorName;
@@ -96,7 +96,6 @@ export type FmtMsgOptions = {
 };
 
 export type RequiredPromptOptions = {
-  id: string;
   title: string;
 };
 
@@ -104,13 +103,13 @@ export type OptionalPromptOptions<T extends TSchema = any> = {
   schema?: T;
   titleColor?: ColorName;
   titleTypography?: TypographyName;
-  titleVariant?: Variant;
+  titleVariant?: VariantName;
   titleAnimation?: AnimationName;
   titleAnimationDelay?: number;
   content?: string;
   contentColor?: ColorName;
   contentTypography?: TypographyName;
-  contentVariant?: Variant;
+  contentVariant?: VariantName;
   hint?: string;
   placeholder?: string;
   validate?: (value: any) => boolean | string | Promise<boolean | string>;

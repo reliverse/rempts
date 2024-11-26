@@ -20,7 +20,7 @@ import {
 import { colorize } from "~/utils/colorize.js";
 import { applyVariant } from "~/utils/variants.js";
 
-export async function textPrompt<T extends TSchema>(
+export async function inputPrompt<T extends TSchema>(
   options: PromptOptionsDeprecated<T>,
 ): Promise<Static<T>> {
   const {

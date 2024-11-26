@@ -2,7 +2,11 @@ import { cyanBright, dim, greenBright, redBright, reset } from "picocolors";
 import { stdin as input, stdout as output } from "process";
 import readline from "readline";
 
-import type { ColorName, Variant, TypographyName } from "~/types/general.js";
+import type {
+  ColorName,
+  TypographyName,
+  VariantName,
+} from "~/types/general.js";
 
 import { bar, fmt, msg, symbols } from "~/utils/messages.js";
 import { deleteLastLine } from "~/utils/terminal.js";
@@ -14,7 +18,7 @@ export async function togglePrompt<T extends string>(params: {
   borderColor?: ColorName;
   titleColor?: ColorName;
   titleTypography?: TypographyName;
-  titleVariant?: Variant;
+  titleVariant?: VariantName;
   border?: boolean;
   endTitle?: string;
   endTitleColor?: ColorName;
