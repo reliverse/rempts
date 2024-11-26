@@ -5,7 +5,7 @@ import type {
   ColorName,
   PromptType,
   TypographyName,
-  Variant,
+  VariantName,
 } from "~/types/general.js";
 
 export type StateDeprecated =

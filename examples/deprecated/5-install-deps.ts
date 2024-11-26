@@ -29,7 +29,6 @@ async function main() {
 
   const shouldContinue = await confirmPrompt({
     title: "Do you want to continue?",
-    id: "shouldContinue",
   });
 
   if (isCancel(shouldContinue)) {

@@ -21,7 +21,6 @@ export const extendedConfig = {
 
 async function main() {
   await inputPrompt({
-    id: "start",
     title: "Hello, Reliverse Community! 👋",
     content: "You are testing the basic example of @reliverse/prompts",
     ...extendedConfig,
@@ -31,7 +30,6 @@ async function main() {
   });
 
   await numberPrompt({
-    id: "number",
     title: "Enter a number",
     content: "Type a number between 1 and 100",
     ...extendedConfig,
