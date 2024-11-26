@@ -1,6 +1,6 @@
 {
   "name": "@reliverse/prompts",
-  "version": "1.1.10",
+  "version": "1.2.1",
   "author": "blefnk",
   "type": "module",
   "description": "@reliverse/prompts is a powerful library that enables seamless, typesafe, and resilient prompts for command-line applications. Crafted with simplicity and elegance, it provides developers with an intuitive and robust way to build interactive CLIs.",
@@ -49,6 +49,7 @@
   "license": "MIT",
   "dependencies": {
     "@figliolia/chalk-animation": "^1.0.4",
+    "@reliverse/relinka": "^1.2.1",
     "@sinclair/typebox": "^0.34.9",
     "ansi-diff-stream": "^1.2.1",
     "ansi-escapes": "^7.0.0",

@@ -1,7 +1,13 @@
 export type { ColorName } from "~/types/general.js";
 export type { ChoiceOptions } from "~/types/general.js";
 export type { OptionalPromptOptions } from "~/types/general.js";
-export { deleteLastLine, deleteLastLines, countLines, removeCursor, restoreCursor } from "~/utils/terminal.js";
+export {
+  deleteLastLine,
+  deleteLastLines,
+  countLines,
+  removeCursor,
+  restoreCursor,
+} from "~/utils/terminal.js";
 export { colorize } from "~/utils/colorize.js";
 export { fmt, msg } from "~/utils/messages.js";
 export { errorHandler } from "~/utils/errors.js";
@@ -46,4 +52,3 @@ export { default as SelectPrompt } from "~/components/select/select-three.js";
 export { default as SelectKeyPrompt } from "~/components/select/select-key.js";
 export { default as TextPrompt } from "~/components/input/text.js";
 export { multiselect } from "~/components/prompts/promptTwo.js";
-export { relinka } from "~/components/prompts/create.js";

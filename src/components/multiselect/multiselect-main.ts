@@ -10,7 +10,7 @@ import { deleteLastLine } from "~/utils/terminal.js";
 
 export async function multiselectPrompt<T extends string>(params: {
   title: string;
-  options: { value: T; hint?: string }[];
+  options: { label: string; value: T; hint?: string }[];
   required?: boolean;
   initial?: T[];
   borderColor?: ColorName;
@@ -34,12 +34,14 @@ export async function multiselectPrompt<T extends string>(params: {
     border = true,
     endTitle = "👋",
     endTitleColor = "passionGradient",
-    maxItems, 
+    maxItems,
   } = params;
 
   let pointer = 0;
   const selectedOptions = new Set<number>(
-    initial.map((opt) => options.findIndex((o) => o.value === opt)).filter((i) => i >= 0),
+    initial
+      .map((opt) => options.findIndex((o) => o.value === opt))
+      .filter((i) => i >= 0),
   );
 
   const rl = readline.createInterface({ input, output });
@@ -60,7 +62,11 @@ export async function multiselectPrompt<T extends string>(params: {
       process.stdout.write(`\x1B[${linesRendered}A`);
     }
 
-    let outputStr = `${greenBright(symbols.step_active)}  ${colorize(title, titleColor, titleTypography)}\n`;
+    let outputStr = `${greenBright(symbols.step_active)}  ${colorize(
+      title,
+      titleColor,
+      titleTypography,
+    )}\n`;
 
     // Display error message if present; otherwise, show instructions
     if (errorMessage) {
@@ -75,7 +81,7 @@ export async function multiselectPrompt<T extends string>(params: {
     const computedMaxItems = Math.min(
       maxItems ?? Infinity,
       availableHeight > 0 ? availableHeight : Infinity,
-      options.length
+      options.length,
     );
     const minItems = 3; // Minimum number of items to display for better UX
     const displayItems = Math.max(computedMaxItems, minItems);
@@ -86,7 +92,7 @@ export async function multiselectPrompt<T extends string>(params: {
     if (options.length > displayItems) {
       const half = Math.floor(displayItems / 2);
 
-      // We're adjusting startIdx and endIdx here to center the pointer
+      // Adjust startIdx and endIdx to center the pointer
       startIdx = pointer - half;
       endIdx = pointer + (displayItems - half - 1);
 
@@ -113,7 +119,9 @@ export async function multiselectPrompt<T extends string>(params: {
       const isHighlighted = index === pointer;
       const checkbox = isSelected ? "[x]" : "[ ]";
       const prefix = isHighlighted ? "> " : "  ";
-      const optionLabel = isHighlighted ? cyanBright(option.value) : option.value;
+      const optionLabel = isHighlighted
+        ? cyanBright(option.label)
+        : option.label;
       const hint = option.hint ? ` (${option.hint})` : "";
       outputStr += `${formattedBar} ${prefix}${checkbox} ${optionLabel}${dim(hint)}\n`;
     }

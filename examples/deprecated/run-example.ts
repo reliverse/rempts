@@ -1,9 +1,9 @@
-import { relinka } from "~/components/prompts/create.js";
+import { selectPrompt } from "~/components/select/select-main.js";
 import { errorHandler } from "~/utils/errors.js";
 
 async function examplesRunner() {
-  const exampleToRun = await relinka.prompt("Choose an example to run", {
-    type: "select",
+  const exampleToRun = await selectPrompt({
+    title: "Choose an example to run",
     options: [
       { label: "1-main-example", value: "1-main-example", hint: "recommended" },
       {
@@ -23,7 +23,7 @@ async function examplesRunner() {
       },
       { label: "exit", value: "exit" },
     ] as const,
-    initial: "1-main-example",
+    defaultValue: "1-main-example",
   });
 
   switch (exampleToRun) {
@@ -37,7 +37,7 @@ async function examplesRunner() {
       await import("./3-basic-example.js");
       break;
     case "4-experimental":
-      await import("./4-experimental.js");
+      await import("../relinka.js");
       break;
     default:
       break;

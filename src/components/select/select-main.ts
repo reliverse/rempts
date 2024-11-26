@@ -10,7 +10,7 @@ import { bar, fmt, msg, symbols } from "~/utils/messages.js";
 export async function selectPrompt<T extends string>(params: {
   title: string;
   options: { label: string; value: T; hint?: string }[];
-  initial?: T;
+  defaultValue?: T;
   required?: boolean;
   borderColor?: ColorName;
   titleColor?: ColorName;
@@ -24,7 +24,7 @@ export async function selectPrompt<T extends string>(params: {
   const {
     title,
     options,
-    initial,
+    defaultValue,
     required = false,
     borderColor = "viceGradient",
     titleColor = "cyanBright",
@@ -36,8 +36,8 @@ export async function selectPrompt<T extends string>(params: {
     maxItems,
   } = params;
 
-  let selectedIndex = initial
-    ? options.findIndex((option) => option.value === initial)
+  let selectedIndex = defaultValue
+    ? options.findIndex((option) => option.value === defaultValue)
     : 0;
   if (selectedIndex === -1) {
     selectedIndex = 0;
@@ -80,7 +80,7 @@ export async function selectPrompt<T extends string>(params: {
     const computedMaxItems = Math.min(
       maxItems ?? Infinity,
       availableHeight > 0 ? availableHeight : Infinity,
-      options.length
+      options.length,
     );
     const minItems = 3; // Minimum number of items to display for better UX
     const displayItems = Math.max(computedMaxItems, minItems);
@@ -143,12 +143,12 @@ export async function selectPrompt<T extends string>(params: {
       if (key.name === "up" || key.name === "k") {
         // Move up
         selectedIndex = (selectedIndex - 1 + options.length) % options.length;
-        errorMessage = "";// Clear error message on navigation
+        errorMessage = ""; // Clear error message on navigation
         renderOptions();
       } else if (key.name === "down" || key.name === "j") {
         // Move down
         selectedIndex = (selectedIndex + 1) % options.length;
-        errorMessage = "";// Clear error message on navigation
+        errorMessage = ""; // Clear error message on navigation
         renderOptions();
       } else if (key.name === "return") {
         // Confirm selection

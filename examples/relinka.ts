@@ -1,11 +1,18 @@
+// @see https://github.com/reliverse/relinka#readme
+
+import { relinka, createRelinka } from "@reliverse/relinka";
+
 import type { TreeItem } from "~/utils/tree.js";
 
+import { confirmPrompt } from "~/components/confirm/confirm-main.js";
+import { textPrompt } from "~/components/input/text-main.js";
+import { multiselectPrompt } from "~/components/multiselect/multiselect-main.js";
 import { rangePrompt } from "~/components/range/range.js";
-import { relinka, createRelinka } from "~/components/prompts/create.js";
+import { selectPrompt } from "~/components/select/select-main.js";
 import { errorHandler } from "~/utils/errors.js";
 import { formatTree } from "~/utils/tree.js";
 
-import { reporterDemo } from "./reliverse/experiments/utils/index.js";
+import { reporterDemo } from "./deprecated/reliverse/experiments/utils/index.js";
 
 async function detailedExample() {
   // box
@@ -28,14 +35,14 @@ async function detailedExample() {
   // reporter
   relinka.box("=== reporter ===");
 
-  const reporterType = await relinka.prompt("Pick a reporter type.", {
-    type: "select",
+  const reporterType = await selectPrompt({
+    title: "Pick a reporter type.",
     options: [
       { label: "basic", value: "basic" },
       { label: "fancy", value: "fancy" },
       { label: "nothing", value: "nothing" },
     ] as const,
-    initial: "nothing",
+    defaultValue: "nothing",
   });
 
   if (reporterType === "basic") {
@@ -79,32 +86,35 @@ async function detailedExample() {
   // prompt
   relinka.box("=== prompt ===");
 
-  const name = await relinka.prompt("What is your name?", {
+  const name = await textPrompt({
+    id: "name",
+    title: "What is your name?",
     placeholder: "Not sure",
-    initial: "java",
+    defaultValue: "java",
   });
 
-  const confirmed = await relinka.prompt("Do you want to continue?", {
-    type: "confirm",
+  const confirmed = await confirmPrompt({
+    id: "confirmed",
+    title: "Do you want to continue?",
   });
 
-  const projectType = await relinka.prompt("Pick a project type.", {
-    type: "select",
+  const projectType = await selectPrompt({
+    title: "Pick a project type.",
     options: [
-      "JavaScript",
-      "TypeScript",
-      { label: "CoffeeScript", value: "CoffeeScript", hint: "oh no" },
+      { value: "js", label: "JavaScript" },
+      { value: "ts", label: "TypeScript" },
+      { value: "cs", label: "CoffeeScript", hint: "oh no" },
     ],
-    initial: "TypeScript",
+    defaultValue: "ts",
   });
 
-  const tools = await relinka.prompt("Select additional tools.", {
-    type: "multiselect",
+  const tools = await multiselectPrompt({
+    title: "Select additional tools.",
     required: false,
     options: [
       { value: "eslint", label: "ESLint", hint: "recommended" },
       { value: "prettier", label: "Prettier" },
-      { value: "gh-action", label: "GitHub Action" },
+      { value: "gh-action", label: "GitHub Actions" },
     ],
     initial: ["eslint", "prettier"],
   });
@@ -214,8 +224,9 @@ async function detailedExample() {
   relinka.info("Using relinka 3.0.0");
   relinka.start("Building project...");
   relinka.success("Project built!");
-  await relinka.prompt("Deploy to the production?", {
-    type: "confirm",
+  await confirmPrompt({
+    id: "deploy",
+    title: "Deploy to the production?",
   });
 
   // spam
@@ -232,7 +243,7 @@ async function detailedExample() {
     }
   }
 
-  (async () => {
+  await (async () => {
     await spam({ count: 2, delay: 10 });
     await spam({ count: 20, delay: 10 });
     await spam({ count: 20, delay: 0 });

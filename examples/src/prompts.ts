@@ -223,7 +223,7 @@ export async function showSelectPrompt(): Promise<UserInput["lang"]> {
       { label: "Italian", value: "it", hint: "Italiano" },
       { label: "Other", value: "else", hint: "Other" },
     ],
-    initial: "en",
+    defaultValue: "en",
     ...experimentalConfig,
   });
 
@@ -282,15 +282,35 @@ export async function showMultiselectPrompt(): Promise<UserInput["langs"]> {
   const selectedOptions = await multiselectPrompt({
     title: "Select your favorite programming languages",
     options: [
-      { value: "TypeScript", hint: "💙 Type-safe and scalable" },
-      { value: "JavaScript", hint: "💛 Versatile and widely-used" },
-      { value: "CoffeeScript", hint: "☕ Elegant and concise" },
-      { value: "Python", hint: "🐍 Powerful and easy to learn" },
-      { value: "Java", hint: "🍵 Robust and portable" },
-      { value: "CSharp", hint: "🔢 Modern and object-oriented" },
-      { value: "Go", hint: "🐋 Simple and efficient" },
-      { value: "Rust", hint: "🦀 Fast and memory-safe" },
-      { value: "Swift", hint: "🐦 Safe and performant" },
+      {
+        label: "TypeScript",
+        value: "TypeScript",
+        hint: "💙 Type-safe and scalable",
+      },
+      {
+        label: "JavaScript",
+        value: "JavaScript",
+        hint: "💛 Versatile and widely-used",
+      },
+      {
+        label: "CoffeeScript",
+        value: "CoffeeScript",
+        hint: "☕ Elegant and concise",
+      },
+      {
+        label: "Python",
+        value: "Python",
+        hint: "🐍 Powerful and easy to learn",
+      },
+      { label: "Java", value: "Java", hint: "🍵 Robust and portable" },
+      {
+        label: "CSharp",
+        value: "CSharp",
+        hint: "🔢 Modern and object-oriented",
+      },
+      { label: "Go", value: "Go", hint: "🐋 Simple and efficient" },
+      { label: "Rust", value: "Rust", hint: "🦀 Fast and memory-safe" },
+      { label: "Swift", value: "Swift", hint: "🐦 Safe and performant" },
     ],
     required: true,
     initial: ["TypeScript", "JavaScript"],
