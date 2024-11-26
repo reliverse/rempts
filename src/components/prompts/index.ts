@@ -1,6 +1,7 @@
 export type { ColorName } from "~/types/general.js";
 export type { ChoiceOptions } from "~/types/general.js";
 export type { OptionalPromptOptions } from "~/types/general.js";
+export { deleteLastLine, deleteLastLines, countLines, removeCursor, restoreCursor } from "~/utils/terminal.js";
 export { colorize } from "~/utils/colorize.js";
 export { fmt, msg } from "~/utils/messages.js";
 export { errorHandler } from "~/utils/errors.js";

@@ -1,10 +1,10 @@
 import { stdin as input, stdout as output } from "node:process";
 import readline from "node:readline";
-import { cyanBright, dim, greenBright, redBright, reset } from "picocolors";
+import { cyanBright, dim, greenBright, redBright } from "picocolors";
 
 import type { ColorName, Variant, TypographyName } from "~/types/general.js";
 
-import { colorize } from "~/mod.js";
+import { colorize } from "~/main.js";
 import { bar, symbols, msg } from "~/utils/messages.js";
 import { deleteLastLine } from "~/utils/terminal.js";
 
@@ -20,6 +20,7 @@ export async function multiselectPrompt<T extends string>(params: {
   border?: boolean;
   endTitle?: string;
   endTitleColor?: ColorName;
+  maxItems?: number;
 }): Promise<T[]> {
   const {
     title,
@@ -33,6 +34,7 @@ export async function multiselectPrompt<T extends string>(params: {
     border = true,
     endTitle = "👋",
     endTitleColor = "passionGradient",
+    maxItems, 
   } = params;
 
   let pointer = 0;
@@ -67,7 +69,46 @@ export async function multiselectPrompt<T extends string>(params: {
       outputStr += `${formattedBar}  ${dim(instructions)}\n`;
     }
 
-    options.forEach((option, index) => {
+    // Determine max items based on terminal size and provided maxItems
+    const terminalHeight = process.stdout.rows || 24; // Default to 24 if undefined
+    const availableHeight = terminalHeight - 4; // Header and footer adjustment
+    const computedMaxItems = Math.min(
+      maxItems ?? Infinity,
+      availableHeight > 0 ? availableHeight : Infinity,
+      options.length
+    );
+    const minItems = 3; // Minimum number of items to display for better UX
+    const displayItems = Math.max(computedMaxItems, minItems);
+
+    let startIdx = 0;
+    let endIdx = options.length - 1;
+
+    if (options.length > displayItems) {
+      const half = Math.floor(displayItems / 2);
+
+      // We're adjusting startIdx and endIdx here to center the pointer
+      startIdx = pointer - half;
+      endIdx = pointer + (displayItems - half - 1);
+
+      if (startIdx < 0) {
+        startIdx = 0;
+        endIdx = displayItems - 1;
+      } else if (endIdx >= options.length) {
+        endIdx = options.length - 1;
+        startIdx = options.length - displayItems;
+      }
+    }
+
+    // Determine if ellipses should be displayed
+    const shouldRenderTopEllipsis = startIdx > 0;
+    const shouldRenderBottomEllipsis = endIdx < options.length - 1;
+
+    if (shouldRenderTopEllipsis) {
+      outputStr += `${formattedBar}  ${dim("...")}\n`;
+    }
+
+    for (let index = startIdx; index <= endIdx; index++) {
+      const option = options[index];
       const isSelected = selectedOptions.has(index);
       const isHighlighted = index === pointer;
       const checkbox = isSelected ? "[x]" : "[ ]";
@@ -75,12 +116,21 @@ export async function multiselectPrompt<T extends string>(params: {
       const optionLabel = isHighlighted ? cyanBright(option.value) : option.value;
       const hint = option.hint ? ` (${option.hint})` : "";
       outputStr += `${formattedBar} ${prefix}${checkbox} ${optionLabel}${dim(hint)}\n`;
-    });
+    }
+
+    if (shouldRenderBottomEllipsis) {
+      outputStr += `${formattedBar}  ${dim("...")}\n`;
+    }
 
     process.stdout.write(outputStr);
 
     // Calculate lines rendered:
-    linesRendered = 1 + 1 + options.length; // Symbol + Title + (Error Message or Instructions) + options
+    linesRendered =
+      1 + // Symbol + Title
+      1 + // Instructions or error message
+      (shouldRenderTopEllipsis ? 1 : 0) + // Top ellipsis
+      (endIdx - startIdx + 1) + // Displayed options
+      (shouldRenderBottomEllipsis ? 1 : 0); // Bottom ellipsis
   }
 
   renderOptions();

@@ -10,11 +10,13 @@ export type MsgType =
   | "M_START"
   | "M_MIDDLE"
   | "M_GENERAL"
+  | "M_GENERAL_NULL"
   | "M_INFO"
   | "M_INFO_NULL"
   | "M_NEWLINE"
   | "M_END"
-  | "M_ERROR";
+  | "M_ERROR"
+  | "M_ERROR_NULL";
 
 export type TypographyName = "bold" | "strikethrough" | "underline" | "italic";
 

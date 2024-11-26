@@ -7,7 +7,7 @@ export const errorHandler = (error: Error, customMessage?: string) => {
     console.error("│  " + customMessage);
   } else {
     console.error(
-      "│  If this issue is related to @reliverse/relinka itself, please\n│  report the details at https://github.com/reliverse/prompts/issues",
+      "│  If this issue is related to @reliverse/prompts itself, please\n│  report the details at https://github.com/reliverse/prompts/issues",
     );
   }
   console.error("╰" + separator);

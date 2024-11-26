@@ -133,6 +133,15 @@ export function fmt(opts: FmtMsgOptions): string {
       newLineBefore: opts.addNewLineBefore ?? false,
       newLineAfter: opts.addNewLineAfter ?? true,
     },
+    M_GENERAL_NULL: {
+      symbol: "",
+      prefix: "",
+      suffix: opts.placeholder
+        ? dim(opts.placeholder) + "\n" + formattedBar + "  "
+        : "",
+      newLineBefore: opts.addNewLineBefore ?? false,
+      newLineAfter: opts.addNewLineAfter ?? true,
+    },
     M_INFO: {
       symbol: "",
       prefix: greenBright(symbols.info),
@@ -143,6 +152,12 @@ export function fmt(opts: FmtMsgOptions): string {
     M_ERROR: {
       symbol: "",
       prefix: redBright(symbols.step_error),
+      newLineBefore: opts.addNewLineBefore ?? false,
+      newLineAfter: opts.addNewLineAfter ?? true,
+    },
+    M_ERROR_NULL: {
+      symbol: "",
+      prefix: "",
       newLineBefore: opts.addNewLineBefore ?? false,
       newLineAfter: opts.addNewLineAfter ?? true,
     },
@@ -243,5 +258,5 @@ export function fmt(opts: FmtMsgOptions): string {
 }
 
 export function msg(opts: FmtMsgOptions): void {
-  console[opts.type === "M_ERROR" ? "error" : "log"](fmt(opts));
+  console[opts.type === "M_ERROR" || opts.type === "M_ERROR_NULL" ? "error" : "log"](fmt(opts));
 }

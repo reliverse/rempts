@@ -1,6 +1,6 @@
-# @reliverse/relinka documentation
+# @reliverse/prompts documentation
 
-**The current [@reliverse/relinka](https://github.com/reliverse/relinka) DOCS.md is an adaptation of README.md from [@terkelg/prompts](https://github.com/terkelg/prompts). Thanks to the original author for the detailed documentation!**
+**The current [@reliverse/prompts](https://github.com/reliverse/prompts) DOCS.md is an adaptation of README.md from [@terkelg/prompts](https://github.com/terkelg/prompts). Thanks to the original author for the detailed documentation!**
 
 **New Features by** [lu-jiejie/prompts-plus](https://github.com/lu-jiejie/prompts-plus):
 
@@ -9,12 +9,12 @@
 
 ```ts
 const { name } = await prompts<string>({
-  type: 'text',
-  name: 'name',
-  message: 'What is your name?'
-})
+  type: "text",
+  name: "name",
+  message: "What is your name?",
+});
 
-typeof name // string
+typeof name; // string
 ```
 
 <p align="center">
@@ -39,24 +39,24 @@ npm install --save prompts
 
 ## ❯ Usage
 
-<img src="https://github.com/reliverse/relinka/raw/master/public/example.gif" alt="example prompt" width="499" height="103" />
+<img src="https://github.com/reliverse/prompts/raw/master/public/example.gif" alt="example prompt" width="499" height="103" />
 
 ```js
-const prompts = require('prompts');
+const prompts = require("prompts");
 
 (async () => {
   const response = await prompts({
-    type: 'number',
-    name: 'value',
-    message: 'How old are you?',
-    validate: value => value < 18 ? `Nightclub is 18+ only` : true
+    type: "number",
+    name: "value",
+    message: "How old are you?",
+    validate: (value) => (value < 18 ? `Nightclub is 18+ only` : true),
   });
 
   console.log(response); // => { value: 24 }
 })();
 ```
 
-> See [`example.js`](https://github.com/reliverse/relinka/blob/master/example.js) for more options.
+> See [`example.js`](https://github.com/reliverse/prompts/blob/master/example.js) for more options.
 
 ## ❯ Examples
 
@@ -65,13 +65,13 @@ const prompts = require('prompts');
 Prompt with a single prompt object. Returns an object with the response.
 
 ```js
-const prompts = require('prompts');
+const prompts = require("prompts");
 
 (async () => {
   const response = await prompts({
-    type: 'text',
-    name: 'meaning',
-    message: 'What is the meaning of life?'
+    type: "text",
+    name: "meaning",
+    message: "What is the meaning of life?",
   });
 
   console.log(response.meaning);
@@ -84,25 +84,25 @@ Prompt with a list of prompt objects. Returns an object with the responses.
 Make sure to give each prompt a unique `name` property to prevent overwriting values.
 
 ```js
-const prompts = require('prompts');
+const prompts = require("prompts");
 
 const questions = [
   {
-    type: 'text',
-    name: 'username',
-    message: 'What is your GitHub username?'
+    type: "text",
+    name: "username",
+    message: "What is your GitHub username?",
   },
   {
-    type: 'number',
-    name: 'age',
-    message: 'How old are you?'
+    type: "number",
+    name: "age",
+    message: "How old are you?",
   },
   {
-    type: 'text',
-    name: 'about',
-    message: 'Tell something about yourself',
-    initial: 'Why should I?'
-  }
+    type: "text",
+    name: "about",
+    message: "Tell something about yourself",
+    initial: "Why should I?",
+  },
 ];
 
 (async () => {
@@ -118,19 +118,19 @@ Prompt properties can be functions too.
 Prompt Objects with `type` set to `falsy` values are skipped.
 
 ```js
-const prompts = require('prompts');
+const prompts = require("prompts");
 
 const questions = [
   {
-    type: 'text',
-    name: 'dish',
-    message: 'Do you like pizza?'
+    type: "text",
+    name: "dish",
+    message: "Do you like pizza?",
   },
   {
-    type: prev => prev == 'pizza' ? 'text' : null,
-    name: 'topping',
-    message: 'Name a topping'
-  }
+    type: (prev) => (prev == "pizza" ? "text" : null),
+    name: "topping",
+    message: "Name a topping",
+  },
 ];
 
 (async () => {
@@ -152,7 +152,7 @@ Prompter function which takes your [prompt objects](#-prompt-objects) and return
 Type: `Array|Object`<br>
 
 Array of [prompt objects](#-prompt-objects).
- These are the questions the user will be prompted. You can see the list of supported [prompt types here](#-types).
+These are the questions the user will be prompted. You can see the list of supported [prompt types here](#-types).
 
 Prompts can be submitted (<kbd>return</kbd>, <kbd>enter</kbd>) or canceled (<kbd>esc</kbd>, <kbd>abort</kbd>, <kbd>ctrl</kbd>+<kbd>c</kbd>, <kbd>ctrl</kbd>+<kbd>d</kbd>). No property is being defined on the returned response object when a prompt is canceled.
 
@@ -210,26 +210,26 @@ Powerful when combined with arguments of process.
 **Example**:
 
 ```js
-const prompts = require('prompts');
-prompts.override(require('yargs').argv);
+const prompts = require("prompts");
+prompts.override(require("yargs").argv);
 
 (async () => {
   const response = await prompts([
     {
-      type: 'text',
-      name: 'twitter',
-      message: `What's your twitter handle?`
+      type: "text",
+      name: "twitter",
+      message: `What's your twitter handle?`,
     },
     {
-      type: 'multiselect',
-      name: 'color',
-      message: 'Pick colors',
+      type: "multiselect",
+      name: "color",
+      message: "Pick colors",
       choices: [
-        { title: 'Red', value: '#ff0000' },
-        { title: 'Green', value: '#00ff00' },
-        { title: 'Blue', value: '#0000ff' }
+        { title: "Red", value: "#ff0000" },
+        { title: "Green", value: "#00ff00" },
+        { title: "Blue", value: "#0000ff" },
       ],
-    }
+    },
   ]);
 
   console.log(response);
@@ -255,27 +255,27 @@ If a value is an instance of `Error` it will simulate the user cancelling/exitin
 **Example:**
 
 ```js
-const prompts = require('prompts');
+const prompts = require("prompts");
 
-prompts.inject([ '@reliverse', ['#ff0000', '#0000ff'] ]);
+prompts.inject(["@reliverse", ["#ff0000", "#0000ff"]]);
 
 (async () => {
   const response = await prompts([
     {
-      type: 'text',
-      name: 'twitter',
-      message: `What's your twitter handle?`
+      type: "text",
+      name: "twitter",
+      message: `What's your twitter handle?`,
     },
     {
-      type: 'multiselect',
-      name: 'color',
-      message: 'Pick colors',
+      type: "multiselect",
+      name: "color",
+      message: "Pick colors",
       choices: [
-        { title: 'Red', value: '#ff0000' },
-        { title: 'Green', value: '#00ff00' },
-        { title: 'Blue', value: '#0000ff' }
+        { title: "Red", value: "#ff0000" },
+        { title: "Green", value: "#00ff00" },
+        { title: "Blue", value: "#0000ff" },
       ],
-    }
+    },
   ]);
 
   // => { twitter: 'reliverse', color: [ '#ff0000', '#0000ff' ] }
@@ -428,14 +428,14 @@ If you need to use different streams, for instance `process.stderr`, you can set
 ---
 
 ### text(message, [initial], [style])
->
+
 > Text prompt for free text input.
 
 Hit <kbd>tab</kbd> to autocomplete to `initial` value when provided.
 
 #### Example 1
 
-<img src="https://github.com/reliverse/relinka/raw/master/public/text.gif" alt="text prompt" width="499" height="103" />
+<img src="https://github.com/reliverse/prompts/raw/master/public/text.gif" alt="text prompt" width="499" height="103" />
 
 ```js
 {
@@ -447,29 +447,29 @@ Hit <kbd>tab</kbd> to autocomplete to `initial` value when provided.
 
 #### Options 1
 
-| Param | Type | Description |
-| ----- | :--: | ----------- |
-| message | `string` | Prompt message to display |
-| initial | `string` | Default string value |
-| style | `string` | Render style (`default`, `password`, `invisible`, `emoji`). Defaults to `default` |
-| format | `function` | Receive user input. The returned value will be added to the response object |
+| Param    |    Type    | Description                                                                                                                                                       |
+| -------- | :--------: | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| message  |  `string`  | Prompt message to display                                                                                                                                         |
+| initial  |  `string`  | Default string value                                                                                                                                              |
+| style    |  `string`  | Render style (`default`, `password`, `invisible`, `emoji`). Defaults to `default`                                                                                 |
+| format   | `function` | Receive user input. The returned value will be added to the response object                                                                                       |
 | validate | `function` | Receive user input. Should return `true` if the value is valid, and an error message `String` otherwise. If `false` is returned, a default error message is shown |
-| onRender | `function` | On render callback. Keyword `this` refers to the current prompt |
-| onState | `function` | On state change callback. Function signature is an `object` with two properties: `value` and `aborted` |
+| onRender | `function` | On render callback. Keyword `this` refers to the current prompt                                                                                                   |
+| onState  | `function` | On state change callback. Function signature is an `object` with two properties: `value` and `aborted`                                                            |
 
 **↑ back to:** [Prompt types](#-types)
 
 ---
 
 ### password(message, [initial])
->
+
 > Password prompt with masked input.
 
 This prompt is a similar to a prompt of type `'text'` with `style` set to `'password'`.
 
 #### Example 2
 
-<img src="https://github.com/reliverse/relinka/raw/master/public/password.gif" alt="password prompt" width="499" height="103" />
+<img src="https://github.com/reliverse/prompts/raw/master/public/password.gif" alt="password prompt" width="499" height="103" />
 
 ```js
 {
@@ -481,21 +481,21 @@ This prompt is a similar to a prompt of type `'text'` with `style` set to `'pass
 
 #### Options 2
 
-| Param | Type | Description |
-| ----- | :--: | ----------- |
-| message | `string` | Prompt message to display |
-| initial | `string` | Default string value |
-| format | `function` | Receive user input. The returned value will be added to the response object |
+| Param    |    Type    | Description                                                                                                                                                       |
+| -------- | :--------: | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| message  |  `string`  | Prompt message to display                                                                                                                                         |
+| initial  |  `string`  | Default string value                                                                                                                                              |
+| format   | `function` | Receive user input. The returned value will be added to the response object                                                                                       |
 | validate | `function` | Receive user input. Should return `true` if the value is valid, and an error message `String` otherwise. If `false` is returned, a default error message is shown |
-| onRender | `function` | On render callback. Keyword `this` refers to the current prompt |
-| onState | `function` | On state change callback. Function signature is an `object` with two properties: `value` and `aborted` |
+| onRender | `function` | On render callback. Keyword `this` refers to the current prompt                                                                                                   |
+| onState  | `function` | On state change callback. Function signature is an `object` with two properties: `value` and `aborted`                                                            |
 
 **↑ back to:** [Prompt types](#-types)
 
 ---
 
 ### invisible(message, [initial])
->
+
 > Prompts user for invisible text input.
 
 This prompt is working like `sudo` where the input is invisible.
@@ -503,7 +503,7 @@ This prompt is a similar to a prompt of type `'text'` with style set to `'invisi
 
 #### Example 3
 
-<img src="https://github.com/reliverse/relinka/raw/master/public/invisible.gif" alt="invisible prompt" width="499" height="103" />
+<img src="https://github.com/reliverse/prompts/raw/master/public/invisible.gif" alt="invisible prompt" width="499" height="103" />
 
 ```js
 {
@@ -515,28 +515,28 @@ This prompt is a similar to a prompt of type `'text'` with style set to `'invisi
 
 #### Options 3
 
-| Param | Type | Description |
-| ----- | :--: | ----------- |
-| message | `string` | Prompt message to display |
-| initial | `string` | Default string value |
-| format | `function` | Receive user input. The returned value will be added to the response object |
+| Param    |    Type    | Description                                                                                                                                                       |
+| -------- | :--------: | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| message  |  `string`  | Prompt message to display                                                                                                                                         |
+| initial  |  `string`  | Default string value                                                                                                                                              |
+| format   | `function` | Receive user input. The returned value will be added to the response object                                                                                       |
 | validate | `function` | Receive user input. Should return `true` if the value is valid, and an error message `String` otherwise. If `false` is returned, a default error message is shown |
-| onRender | `function` | On render callback. Keyword `this` refers to the current prompt |
-| onState | `function` | On state change callback. Function signature is an `object` with two properties: `value` and `aborted` |
+| onRender | `function` | On render callback. Keyword `this` refers to the current prompt                                                                                                   |
+| onState  | `function` | On state change callback. Function signature is an `object` with two properties: `value` and `aborted`                                                            |
 
 **↑ back to:** [Prompt types](#-types)
 
 ---
 
 ### number(message, initial, [max], [min], [style])
->
+
 > Prompts user for number input.
 
 You can type in numbers and use <kbd>up</kbd>/<kbd>down</kbd> to increase/decrease the value. Only numbers are allowed as input. Hit <kbd>tab</kbd> to autocomplete to `initial` value when provided.
 
 #### Example 4
 
-<img src="https://github.com/reliverse/relinka/raw/master/public/number.gif" alt="number prompt" width="499" height="103" />
+<img src="https://github.com/reliverse/prompts/raw/master/public/number.gif" alt="number prompt" width="499" height="103" />
 
 ```js
 {
@@ -552,34 +552,34 @@ You can type in numbers and use <kbd>up</kbd>/<kbd>down</kbd> to increase/decrea
 
 #### Options 4
 
-| Param | Type | Description |
-| ----- | :--: | ----------- |
-| message | `string` | Prompt message to display |
-| initial | `number` | Default number value |
-| format | `function` | Receive user input. The returned value will be added to the response object |
-| validate | `function` | Receive user input. Should return `true` if the value is valid, and an error message `String` otherwise. If `false` is returned, a default error message is shown |
-| max | `number` | Max value. Defaults to `Infinity` |
-| min | `number` | Min value. Defaults to `-infinity` |
-| float | `boolean` | Allow floating point inputs. Defaults to `false` |
-| round | `number` | Round `float` values to x decimals. Defaults to `2` |
-| increment | `number` | Increment step when using <kbd>arrow</kbd> keys. Defaults to `1` |
-| style | `string` | Render style (`default`, `password`, `invisible`, `emoji`). Defaults to `default` |
-| onRender | `function` | On render callback. Keyword `this` refers to the current prompt |
-| onState | `function` | On state change callback. Function signature is an `object` with two properties: `value` and `aborted` |
+| Param     |    Type    | Description                                                                                                                                                       |
+| --------- | :--------: | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| message   |  `string`  | Prompt message to display                                                                                                                                         |
+| initial   |  `number`  | Default number value                                                                                                                                              |
+| format    | `function` | Receive user input. The returned value will be added to the response object                                                                                       |
+| validate  | `function` | Receive user input. Should return `true` if the value is valid, and an error message `String` otherwise. If `false` is returned, a default error message is shown |
+| max       |  `number`  | Max value. Defaults to `Infinity`                                                                                                                                 |
+| min       |  `number`  | Min value. Defaults to `-infinity`                                                                                                                                |
+| float     | `boolean`  | Allow floating point inputs. Defaults to `false`                                                                                                                  |
+| round     |  `number`  | Round `float` values to x decimals. Defaults to `2`                                                                                                               |
+| increment |  `number`  | Increment step when using <kbd>arrow</kbd> keys. Defaults to `1`                                                                                                  |
+| style     |  `string`  | Render style (`default`, `password`, `invisible`, `emoji`). Defaults to `default`                                                                                 |
+| onRender  | `function` | On render callback. Keyword `this` refers to the current prompt                                                                                                   |
+| onState   | `function` | On state change callback. Function signature is an `object` with two properties: `value` and `aborted`                                                            |
 
 **↑ back to:** [Prompt types](#-types)
 
 ---
 
 ### confirm(message, [initial])
->
+
 > Classic yes/no prompt.
 
 Hit <kbd>y</kbd> or <kbd>n</kbd> to confirm/reject.
 
 #### Example 5
 
-<img src="https://github.com/reliverse/relinka/raw/master/public/confirm.gif" alt="confirm prompt" width="499" height="103" />
+<img src="https://github.com/reliverse/prompts/raw/master/public/confirm.gif" alt="confirm prompt" width="499" height="103" />
 
 ```js
 {
@@ -592,20 +592,20 @@ Hit <kbd>y</kbd> or <kbd>n</kbd> to confirm/reject.
 
 #### Options 5
 
-| Param | Type | Description |
-| ----- | :--: | ----------- |
-| message | `string` | Prompt message to display |
-| initial | `boolean` | Default value. Default is `false` |
-| format | `function` | Receive user input. The returned value will be added to the response object |
-| onRender | `function` | On render callback. Keyword `this` refers to the current prompt |
-| onState | `function` | On state change callback. Function signature is an `object` with two properties: `value` and `aborted` |
+| Param    |    Type    | Description                                                                                            |
+| -------- | :--------: | ------------------------------------------------------------------------------------------------------ |
+| message  |  `string`  | Prompt message to display                                                                              |
+| initial  | `boolean`  | Default value. Default is `false`                                                                      |
+| format   | `function` | Receive user input. The returned value will be added to the response object                            |
+| onRender | `function` | On render callback. Keyword `this` refers to the current prompt                                        |
+| onState  | `function` | On state change callback. Function signature is an `object` with two properties: `value` and `aborted` |
 
 **↑ back to:** [Prompt types](#-types)
 
 ---
 
 ### list(message, [initial])
->
+
 > List prompt that return an array.
 
 Similar to the `text` prompt, but the output is an `Array` containing the
@@ -621,30 +621,30 @@ string separated by `separator`.
 }
 ```
 
-<img src="https://github.com/reliverse/relinka/raw/master/public/list.gif" alt="list prompt" width="499" height="103" />
+<img src="https://github.com/reliverse/prompts/raw/master/public/list.gif" alt="list prompt" width="499" height="103" />
 
-| Param | Type | Description |
-| ----- | :--: | ----------- |
-| message | `string` | Prompt message to display |
-| initial | `boolean` | Default value |
-| format | `function` | Receive user input. The returned value will be added to the response object |
-| separator | `string` | String separator. Will trim all white-spaces from start and end of string. Defaults to `','`  |
-| onRender | `function` | On render callback. Keyword `this` refers to the current prompt |
-| onState | `function` | On state change callback. Function signature is an `object` with two properties: `value` and `aborted` |
+| Param     |    Type    | Description                                                                                            |
+| --------- | :--------: | ------------------------------------------------------------------------------------------------------ |
+| message   |  `string`  | Prompt message to display                                                                              |
+| initial   | `boolean`  | Default value                                                                                          |
+| format    | `function` | Receive user input. The returned value will be added to the response object                            |
+| separator |  `string`  | String separator. Will trim all white-spaces from start and end of string. Defaults to `','`           |
+| onRender  | `function` | On render callback. Keyword `this` refers to the current prompt                                        |
+| onState   | `function` | On state change callback. Function signature is an `object` with two properties: `value` and `aborted` |
 
 **↑ back to:** [Prompt types](#-types)
 
 ---
 
 ### toggle(message, [initial], [active], [inactive])
->
+
 > Interactive toggle/switch prompt.
 
 Use tab or <kbd>arrow keys</kbd>/<kbd>tab</kbd>/<kbd>space</kbd> to switch between options.
 
 #### Example 6
 
-<img src="https://github.com/reliverse/relinka/raw/master/public/toggle.gif" alt="toggle prompt" width="499" height="103" />
+<img src="https://github.com/reliverse/prompts/raw/master/public/toggle.gif" alt="toggle prompt" width="499" height="103" />
 
 ```js
 {
@@ -659,29 +659,29 @@ Use tab or <kbd>arrow keys</kbd>/<kbd>tab</kbd>/<kbd>space</kbd> to switch betwe
 
 #### Options 6
 
-| Param | Type | Description |
-| ----- | :--: | ----------- |
-| message | `string` | Prompt message to display |
-| initial | `boolean` | Default value. Defaults to `false` |
-| format | `function` | Receive user input. The returned value will be added to the response object |
-| active | `string` | Text for `active` state. Defaults to `'on'` |
-| inactive | `string` | Text for `inactive` state. Defaults to `'off'` |
-| onRender | `function` | On render callback. Keyword `this` refers to the current prompt |
-| onState | `function` | On state change callback. Function signature is an `object` with two properties: `value` and `aborted` |
+| Param    |    Type    | Description                                                                                            |
+| -------- | :--------: | ------------------------------------------------------------------------------------------------------ |
+| message  |  `string`  | Prompt message to display                                                                              |
+| initial  | `boolean`  | Default value. Defaults to `false`                                                                     |
+| format   | `function` | Receive user input. The returned value will be added to the response object                            |
+| active   |  `string`  | Text for `active` state. Defaults to `'on'`                                                            |
+| inactive |  `string`  | Text for `inactive` state. Defaults to `'off'`                                                         |
+| onRender | `function` | On render callback. Keyword `this` refers to the current prompt                                        |
+| onState  | `function` | On state change callback. Function signature is an `object` with two properties: `value` and `aborted` |
 
 **↑ back to:** [Prompt types](#-types)
 
 ---
 
 ### select(message, choices, [initial], [hint], [warn])
->
+
 > Interactive select prompt.
 
 Use <kbd>up</kbd>/<kbd>down</kbd> to navigate. Use <kbd>tab</kbd> to cycle the list.
 
 #### Example 7
 
-<img src="https://github.com/reliverse/relinka/raw/master/public/select.gif" alt="select prompt" width="499" height="130" />
+<img src="https://github.com/reliverse/prompts/raw/master/public/select.gif" alt="select prompt" width="499" height="130" />
 
 ```js
 {
@@ -699,16 +699,16 @@ Use <kbd>up</kbd>/<kbd>down</kbd> to navigate. Use <kbd>tab</kbd> to cycle the l
 
 #### Options 7
 
-| Param | Type | Description |
-| ----- | :--: | ----------- |
-| message | `string` | Prompt message to display |
-| initial | `number` | Index of default value |
-| format | `function` | Receive user input. The returned value will be added to the response object |
-| hint | `string` | Hint to display to the user |
-| warn | `string` | Message to display when selecting a disabled option |
-| choices | `Array` | Array of strings or choices objects `[{ title, description, value, disabled }, ...]`. The choice's index in the array will be used as its value if it is not specified. |
-| onRender | `function` | On render callback. Keyword `this` refers to the current prompt |
-| onState | `function` | On state change callback. Function signature is an `object` with two properties: `value` and `aborted` |
+| Param    |    Type    | Description                                                                                                                                                             |
+| -------- | :--------: | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| message  |  `string`  | Prompt message to display                                                                                                                                               |
+| initial  |  `number`  | Index of default value                                                                                                                                                  |
+| format   | `function` | Receive user input. The returned value will be added to the response object                                                                                             |
+| hint     |  `string`  | Hint to display to the user                                                                                                                                             |
+| warn     |  `string`  | Message to display when selecting a disabled option                                                                                                                     |
+| choices  |  `Array`   | Array of strings or choices objects `[{ title, description, value, disabled }, ...]`. The choice's index in the array will be used as its value if it is not specified. |
+| onRender | `function` | On render callback. Keyword `this` refers to the current prompt                                                                                                         |
+| onState  | `function` | On state change callback. Function signature is an `object` with two properties: `value` and `aborted`                                                                  |
 
 **↑ back to:** [Prompt types](#-types)
 
@@ -717,7 +717,7 @@ Use <kbd>up</kbd>/<kbd>down</kbd> to navigate. Use <kbd>tab</kbd> to cycle the l
 ### multiselect(message, choices, [initial], [max], [hint], [warn])
 
 ### autocompleteMultiselect(same)
->
+
 > Interactive multi-select prompt.
 > Autocomplete is a searchable multiselect prompt with the same options. Useful for long lists.
 
@@ -726,7 +726,7 @@ By default this prompt returns an `array` containing the **values** of the selec
 
 #### Example 8
 
-<img src="https://github.com/reliverse/relinka/raw/master/public/multiselect.gif" alt="multiselect prompt" width="499" height="130" />
+<img src="https://github.com/reliverse/prompts/raw/master/public/multiselect.gif" alt="multiselect prompt" width="499" height="130" />
 
 ```js
 {
@@ -745,19 +745,19 @@ By default this prompt returns an `array` containing the **values** of the selec
 
 #### Options 8
 
-| Param | Type | Description |
-| ----- | :--: | ----------- |
-| message | `string` | Prompt message to display |
-| format | `function` | Receive user input. The returned value will be added to the response object |
-| instructions | `string` or `boolean` | Prompt instructions to display |
-| choices | `Array` | Array of strings or choices objects `[{ title, value, disabled }, ...]`. The choice's index in the array will be used as its value if it is not specified. |
-| optionsPerPage | `number` | Number of options displayed per page (default: 10) |
-| min | `number` | Min select - will display error |
-| max | `number` | Max select |
-| hint | `string` | Hint to display to the user |
-| warn | `string` | Message to display when selecting a disabled option |
-| onRender | `function` | On render callback. Keyword `this` refers to the current prompt |
-| onState | `function` | On state change callback. Function signature is an `object` with two properties: `value` and `aborted` |
+| Param          |         Type          | Description                                                                                                                                                |
+| -------------- | :-------------------: | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| message        |       `string`        | Prompt message to display                                                                                                                                  |
+| format         |      `function`       | Receive user input. The returned value will be added to the response object                                                                                |
+| instructions   | `string` or `boolean` | Prompt instructions to display                                                                                                                             |
+| choices        |        `Array`        | Array of strings or choices objects `[{ title, value, disabled }, ...]`. The choice's index in the array will be used as its value if it is not specified. |
+| optionsPerPage |       `number`        | Number of options displayed per page (default: 10)                                                                                                         |
+| min            |       `number`        | Min select - will display error                                                                                                                            |
+| max            |       `number`        | Max select                                                                                                                                                 |
+| hint           |       `string`        | Hint to display to the user                                                                                                                                |
+| warn           |       `string`        | Message to display when selecting a disabled option                                                                                                        |
+| onRender       |      `function`       | On render callback. Keyword `this` refers to the current prompt                                                                                            |
+| onState        |      `function`       | On state change callback. Function signature is an `object` with two properties: `value` and `aborted`                                                     |
 
 This is one of the few prompts that don't take a initial value.
 If you want to predefine selected values, give the choice object an `selected` property of `true`.
@@ -767,7 +767,7 @@ If you want to predefine selected values, give the choice object an `selected` p
 ---
 
 ### autocomplete(message, choices, [initial], [suggest], [limit], [style])
->
+
 > Interactive auto complete prompt.
 
 The prompt will list options based on user input. Type to filter the list.
@@ -778,7 +778,7 @@ You can overwrite how choices are being filtered by passing your own suggest fun
 
 #### Example 9
 
-<img src="https://github.com/reliverse/relinka/raw/master/public/autocomplete.gif" alt="auto complete prompt" width="499" height="163" />
+<img src="https://github.com/reliverse/prompts/raw/master/public/autocomplete.gif" alt="auto complete prompt" width="499" height="163" />
 
 ```js
 {
@@ -797,25 +797,27 @@ You can overwrite how choices are being filtered by passing your own suggest fun
 
 #### Options 9
 
-| Param | Type | Description |
-| ----- | :--: | ----------- |
-| message | `string` | Prompt message to display |
-| format | `function` | Receive user input. The returned value will be added to the response object |
-| choices | `Array` | Array of auto-complete choices objects `[{ title, value }, ...]` |
-| suggest | `function` | Filter function. Defaults to sort by `title` property. `suggest` should always return a promise. Filters using `title` by default  |
-| limit | `number` | Max number of results to show. Defaults to `10` |
-| style | `string` | Render style (`default`, `password`, `invisible`, `emoji`). Defaults to `'default'` |
-| initial | `string \| number` | Default initial value |
-| clearFirst | `boolean` | The first ESCAPE keypress will clear the input |
-| fallback | `string` | Fallback message when no match is found. Defaults to `initial` value if provided |
-| onRender | `function` | On render callback. Keyword `this` refers to the current prompt |
-| onState | `function` | On state change callback. Function signature is an `object` with three properties: `value`, `aborted` and `exited` |
+| Param      |        Type        | Description                                                                                                                       |
+| ---------- | :----------------: | --------------------------------------------------------------------------------------------------------------------------------- |
+| message    |      `string`      | Prompt message to display                                                                                                         |
+| format     |     `function`     | Receive user input. The returned value will be added to the response object                                                       |
+| choices    |      `Array`       | Array of auto-complete choices objects `[{ title, value }, ...]`                                                                  |
+| suggest    |     `function`     | Filter function. Defaults to sort by `title` property. `suggest` should always return a promise. Filters using `title` by default |
+| limit      |      `number`      | Max number of results to show. Defaults to `10`                                                                                   |
+| style      |      `string`      | Render style (`default`, `password`, `invisible`, `emoji`). Defaults to `'default'`                                               |
+| initial    | `string \| number` | Default initial value                                                                                                             |
+| clearFirst |     `boolean`      | The first ESCAPE keypress will clear the input                                                                                    |
+| fallback   |      `string`      | Fallback message when no match is found. Defaults to `initial` value if provided                                                  |
+| onRender   |     `function`     | On render callback. Keyword `this` refers to the current prompt                                                                   |
+| onState    |     `function`     | On state change callback. Function signature is an `object` with three properties: `value`, `aborted` and `exited`                |
 
 Example on what a `suggest` function might look like:
 
 ```js
 const suggestByTitle = (input, choices) =>
-    Promise.resolve(choices.filter(i => i.title.slice(0, input.length) === input))
+  Promise.resolve(
+    choices.filter((i) => i.title.slice(0, input.length) === input)
+  );
 ```
 
 **↑ back to:** [Prompt types](#-types)
@@ -823,14 +825,14 @@ const suggestByTitle = (input, choices) =>
 ---
 
 ### date(message, [initial], [warn])
->
+
 > Interactive date prompt.
 
 Use <kbd>left</kbd>/<kbd>right</kbd>/<kbd>tab</kbd> to navigate. Use <kbd>up</kbd>/<kbd>down</kbd> to change date.
 
 #### Example 10
 
-<img src="https://github.com/reliverse/relinka/raw/master/public/date.gif" alt="date prompt" width="499" height="103" />
+<img src="https://github.com/reliverse/prompts/raw/master/public/date.gif" alt="date prompt" width="499" height="103" />
 
 ```js
 {
@@ -844,15 +846,15 @@ Use <kbd>left</kbd>/<kbd>right</kbd>/<kbd>tab</kbd> to navigate. Use <kbd>up</kb
 
 #### Options 10
 
-| Param | Type | Description |
-| ----- | :--: | ----------- |
-| message | `string` | Prompt message to display |
-| initial | `date` | Default date |
-| locales | `object` | Use to define custom locales. See below for an example. |
-| mask | `string` | The format mask of the date. See below for more information.<br />Default: `YYYY-MM-DD HH:mm:ss` |
+| Param    |    Type    | Description                                                                                                                                                       |
+| -------- | :--------: | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| message  |  `string`  | Prompt message to display                                                                                                                                         |
+| initial  |   `date`   | Default date                                                                                                                                                      |
+| locales  |  `object`  | Use to define custom locales. See below for an example.                                                                                                           |
+| mask     |  `string`  | The format mask of the date. See below for more information.<br />Default: `YYYY-MM-DD HH:mm:ss`                                                                  |
 | validate | `function` | Receive user input. Should return `true` if the value is valid, and an error message `String` otherwise. If `false` is returned, a default error message is shown |
-| onRender | `function` | On render callback. Keyword `this` refers to the current prompt |
-| onState | `function` | On state change callback. Function signature is an `object` with two properties: `value` and `aborted` |
+| onRender | `function` | On render callback. Keyword `this` refers to the current prompt                                                                                                   |
+| onState  | `function` | On state change callback. Function signature is an `object` with two properties: `value` and `aborted`                                                            |
 
 Default locales:
 
@@ -877,7 +879,7 @@ Default locales:
 }
 ```
 
->**Formatting**: See full list of formatting options in the [wiki](https://github.com/reliverse/relinka/wiki/Date-Time-Formatting)
+> **Formatting**: See full list of formatting options in the [wiki](https://github.com/reliverse/prompts/wiki/Date-Time-Formatting)
 
 **↑ back to:** [Prompt types](#-types)
 
@@ -902,12 +904,12 @@ single-bar and multi-bar elements
 Triggered after `start()` is called
 
 ```js
-const cliProgress = require('cli-progress');
+const cliProgress = require("cli-progress");
 
 const bar1 = new cliProgress.SingleBar();
 
-bar1.on('start', () => {
-    console.log('bar started');
+bar1.on("start", () => {
+  console.log("bar started");
 });
 ```
 
@@ -930,12 +932,12 @@ multi-bar
 Triggered after a bar element is created and `start()` is called
 
 ```js
-const cliProgress = require('cli-progress');
+const cliProgress = require("cli-progress");
 
 const bar1 = new cliProgress.MultiBar();
 
-bar1.on('start', () => {
-    console.log('sub-bar element started');
+bar1.on("start", () => {
+  console.log("sub-bar element started");
 });
 ```
 

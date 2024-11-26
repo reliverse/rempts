@@ -12,7 +12,7 @@ async function detailedExample() {
   relinka.box("=== box ===");
 
   relinka.box(
-    `Welcome to @reliverse/relinka! You're going to test an 'experimental' example.`,
+    `Welcome to @reliverse/prompts! You're going to test an 'experimental' example.`,
   );
 
   relinka.box({
@@ -51,7 +51,7 @@ async function detailedExample() {
   relinka.box({
     title: "By the way",
     // message: `\`v1.0.2\` → \`v2.0.0\`\n\nRun \`npm install -g relinka\` to update`,
-    message: `You can check \`@reliverse/relinka\` in the production usage\n\nJust run \`bunx -g reliverse@latest\``,
+    message: `You can check \`@reliverse/prompts\` in the production usage\n\nJust run \`bunx -g reliverse@latest\``,
     style: {
       padding: 2,
       borderColor: "yellow",

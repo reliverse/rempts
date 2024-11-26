@@ -4,6 +4,7 @@ import { Type } from "@sinclair/typebox";
 import { Value } from "@sinclair/typebox/value";
 import { stdin as input, stdout as output } from "node:process";
 import readline from "node:readline/promises";
+import { cyanBright } from "picocolors";
 import {
   buildRegExp,
   digit,
@@ -14,7 +15,7 @@ import {
 
 import type { PromptOptions } from "~/types/general.js";
 
-import { fmt, msg } from "~/utils/messages.js";
+import { bar, fmt, msg } from "~/utils/messages.js";
 import {
   countLines,
   deleteLastLine,
@@ -83,7 +84,6 @@ export async function datePrompt<T extends TSchema>(
     defaultValue,
     schema,
     titleColor = "cyanBright",
-    
     titleTypography = "bold",
     titleVariant,
     content,
@@ -95,6 +95,8 @@ export async function datePrompt<T extends TSchema>(
   } = options;
 
   const rl = readline.createInterface({ input, output });
+
+  const formattedBar = bar({ borderColor });
 
   let linesToDelete = 0;
   let errorMessage = "";
@@ -108,7 +110,7 @@ export async function datePrompt<T extends TSchema>(
 
       // Format the question prompt
       const questionText = fmt({
-        type: errorMessage !== "" ? "M_ERROR" : "M_GENERAL",
+        type: errorMessage !== "" ? "M_ERROR_NULL" : "M_GENERAL_NULL",
         title: `${title} [Format: ${dateFormat}]`,
         titleColor,
         titleTypography,
@@ -128,10 +130,17 @@ export async function datePrompt<T extends TSchema>(
       linesToDelete = questionLines + 1; // +1 for user's input
 
       // Display the formatted question
-      msg({ type: "M_GENERAL", title: questionText });
+      msg({
+        type: errorMessage !== "" ? "M_ERROR" : "M_GENERAL",
+        title: questionText,
+      });
+
+      deleteLastLine();
+      deleteLastLine();
 
       // Prompt the user for input
-      const answer = (await rl.question("> ")).trim() || defaultValue;
+      const answer =
+        (await rl.question(`${cyanBright(">")}  `)).trim() || defaultValue;
 
       // Display defaultValue if it is used
       if (answer === defaultValue && defaultValue) {
@@ -145,6 +154,8 @@ export async function datePrompt<T extends TSchema>(
 
       // Validate the answer against the dateFormatSchema
       if (!Value.Check(dateFormatSchema, answer)) {
+        deleteLastLine();
+        deleteLastLine();
         errorMessage = `Please enter a valid date in ${dateFormat} format.`;
         msg({ type: "M_ERROR", title: errorMessage });
         continue;
@@ -200,6 +211,10 @@ export async function datePrompt<T extends TSchema>(
       }
 
       let isValid = true;
+      let gotError = false;
+      if (errorMessage !== "") {
+        gotError = true;
+      }
       errorMessage = ""; // Reset errorMessage
 
       // Validate against additional schema if provided
@@ -209,6 +224,7 @@ export async function datePrompt<T extends TSchema>(
           const errors = [...Value.Errors(schema, answer)];
           errorMessage = errors[0]?.message ?? "Invalid input.";
           msg({ type: "M_ERROR", title: errorMessage });
+          gotError = true;
           continue;
         }
       }
@@ -221,12 +237,18 @@ export async function datePrompt<T extends TSchema>(
           errorMessage =
             typeof validation === "string" ? validation : "Invalid input.";
           msg({ type: "M_ERROR", title: errorMessage });
+          gotError = true;
           continue;
         }
       }
 
       // If all validations pass, return the answer
       if (isValid) {
+        if (gotError) {
+          deleteLastLine();
+          deleteLastLine();
+          msg({ type: "M_MIDDLE", title: `  ${answer}` });
+        }
         msg({ type: "M_NEWLINE", title: "" });
         rl.close();
         return answer;

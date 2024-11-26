@@ -3,9 +3,9 @@ import { emojify } from "node-emoji";
 import { bold } from "picocolors";
 
 import pkg from "~/../package.json" assert { type: "json" };
-import { anykeyPrompt } from "~/mod.js";
-import { multiselectPrompt } from "~/mod.js";
-import { progressbar } from "~/mod.js";
+import { anykeyPrompt } from "~/main.js";
+import { multiselectPrompt } from "~/main.js";
+import { progressbar } from "~/main.js";
 import {
   animateText,
   confirmPrompt,
@@ -19,11 +19,12 @@ import {
   startPrompt,
   textPrompt,
   togglePrompt,
-} from "~/mod.js";
-import { promptsDisplayResults } from "~/mod.js";
-import { numSelectPrompt } from "~/mod.js";
-import { selectPrompt } from "~/mod.js";
-import { spinner } from "~/mod.js";
+} from "~/main.js";
+import { promptsDisplayResults } from "~/main.js";
+import { numSelectPrompt } from "~/main.js";
+import { selectPrompt } from "~/main.js";
+import { spinner } from "~/main.js";
+import { deleteLastLine } from "~/utils/terminal.js";
 
 import { basicConfig, experimentalConfig, extendedConfig } from "./configs.js";
 import { schema, type UserInput } from "./schema.js";
@@ -51,7 +52,7 @@ const IDs = {
 export async function showStartPrompt() {
   await startPrompt({
     id: IDs.start,
-    title: `@reliverse/relinka v${pkg.version}`,
+    title: `@reliverse/prompts v${pkg.version}`,
     ...basicConfig,
     titleColor: "inverse",
     clearConsole: true,
@@ -203,7 +204,7 @@ export async function showDatePromptTwo() {
       return true;
     },
     defaultValue: "01.01.2000",
-    schema: undefined, // @reliverse/relinka allows you to pass an additional TypeBox schema if needed, but it's not required
+    schema: undefined, // @reliverse/prompts allows you to pass an additional TypeBox schema if needed, but it's not required
   });
 
   console.log(`You entered: ${userDate}`);
@@ -218,6 +219,8 @@ export async function showSelectPrompt(): Promise<UserInput["lang"]> {
       { label: "Polish", value: "pl", hint: "Polski" },
       { label: "French", value: "fr", hint: "Français" },
       { label: "German", value: "de", hint: "Deutsch" },
+      { label: "Spanish", value: "es", hint: "Español" },
+      { label: "Italian", value: "it", hint: "Italiano" },
       { label: "Other", value: "else", hint: "Other" },
     ],
     initial: "en",
@@ -242,6 +245,12 @@ export async function showSelectPrompt(): Promise<UserInput["lang"]> {
         type: "M_INFO",
         title: "Sie haben die deutsche Sprache ausgewählt",
       });
+      break;
+    case "es":
+      msg({ type: "M_INFO", title: "Has elegido el español" });
+      break;
+    case "it":
+      msg({ type: "M_INFO", title: "Hai scelto l'italiano" });
       break;
     case "else":
       msg({ type: "M_INFO", title: "You selected Other" });
@@ -273,15 +282,15 @@ export async function showMultiselectPrompt(): Promise<UserInput["langs"]> {
   const selectedOptions = await multiselectPrompt({
     title: "Select your favorite programming languages",
     options: [
-      { value: "TypeScript", hint: ":blue_heart: Type-safe and scalable" },
-      { value: "JavaScript", hint: ":yellow_heart: Versatile and widely-used" },
-      { value: "CoffeeScript", hint: ":coffee: Elegant and concise" },
-      { value: "Python", hint: ":snake: Powerful and easy to learn" },
-      { value: "Java", hint: ":coffee: Robust and portable" },
-      { value: "CSharp", hint: ":hash: Modern and object-oriented" },
-      { value: "Go", hint: ":dolphin: Simple and efficient" },
-      { value: "Rust", hint: ":crab: Fast and memory-safe" },
-      { value: "Swift", hint: ":apple: Safe and performant" },
+      { value: "TypeScript", hint: "💙 Type-safe and scalable" },
+      { value: "JavaScript", hint: "💛 Versatile and widely-used" },
+      { value: "CoffeeScript", hint: "☕ Elegant and concise" },
+      { value: "Python", hint: "🐍 Powerful and easy to learn" },
+      { value: "Java", hint: "🍵 Robust and portable" },
+      { value: "CSharp", hint: "🔢 Modern and object-oriented" },
+      { value: "Go", hint: "🐋 Simple and efficient" },
+      { value: "Rust", hint: "🦀 Fast and memory-safe" },
+      { value: "Swift", hint: "🐦 Safe and performant" },
     ],
     required: true,
     initial: ["TypeScript", "JavaScript"],
@@ -293,13 +302,14 @@ export async function showMultiselectPrompt(): Promise<UserInput["langs"]> {
   }
 
   selectedOptions.forEach((option) => {
-    // By using forEach, @reliverse/relinka
+    // By using forEach, @reliverse/prompts
     // has Intellisense to each selected option
     switch (option) {
       case "CoffeeScript":
         msg({
           type: "M_INFO",
           title: "CoffeeScript... 🤔",
+          titleColor: "dim",
         });
         break;
       default:
@@ -384,7 +394,7 @@ export async function showNumMultiselectPrompt(): Promise<
 
 export async function showTogglePrompt(): Promise<UserInput["toggle"]> {
   const result = await togglePrompt({
-    title: "[togglePrompt] Do you like @reliverse/relinka library?",
+    title: "[togglePrompt] Do you like @reliverse/prompts library?",
     options: ["Yes", "No"],
     initial: "Yes",
   });
@@ -411,7 +421,7 @@ export async function showConfirmPrompt(
     titleColor: "red",
     titleVariant: "doubleBox",
     schema: schema.properties.spinner,
-    // @reliverse/relinka includes styled prompts, with the `title` color defaulting
+    // @reliverse/prompts includes styled prompts, with the `title` color defaulting
     // to "cyanBright". Setting the color to "none" removes the default styling.
     content: "Spinners are helpful for long-running tasks.",
     ...extendedConfig,

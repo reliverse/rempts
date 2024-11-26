@@ -6,7 +6,7 @@ import {
   startOfString,
 } from "ts-regex-builder";
 
-import { colorMap } from "~/mod.js";
+import { colorMap } from "~/main.js";
 
 // You can define pieces of the schema separately and then use them in the main schema.
 const colorSchema = Type.Enum(
@@ -31,7 +31,7 @@ const usernameRegexPrecise = buildRegExp([
   endOfString,
 ]);
 
-// @reliverse/relinka allows you to define the schema once and reuse it for each prompt.
+// @reliverse/prompts allows you to define the schema once and reuse it for each prompt.
 // This is useful if you want to validate the input of multiple prompts using TypeBox.
 export const schema = Type.Object({
   username: Type.RegExp(usernameRegexPrecise, {

@@ -1,11 +1,11 @@
 import { stdin as input, stdout as output } from "node:process";
 import readline from "node:readline";
-import { cyanBright, dim, greenBright, redBright, reset } from "picocolors";
+import { cyanBright, dim, greenBright, redBright } from "picocolors";
 
 import type { ColorName, Variant, TypographyName } from "~/types/general.js";
 
+import { deleteLastLine } from "~/main.js";
 import { bar, fmt, msg, symbols } from "~/utils/messages.js";
-import { deleteLastLine } from "~/utils/terminal.js";
 
 export async function selectPrompt<T extends string>(params: {
   title: string;
@@ -19,6 +19,7 @@ export async function selectPrompt<T extends string>(params: {
   border?: boolean;
   endTitle?: string;
   endTitleColor?: ColorName;
+  maxItems?: number;
 }): Promise<T> {
   const {
     title,
@@ -32,6 +33,7 @@ export async function selectPrompt<T extends string>(params: {
     border = true,
     endTitle = "👋",
     endTitleColor = "passionGradient",
+    maxItems,
   } = params;
 
   let selectedIndex = initial
@@ -72,18 +74,66 @@ export async function selectPrompt<T extends string>(params: {
       outputStr += `${formattedBar}  ${dim(instructions)}\n`;
     }
 
-    options.forEach((option, index) => {
+    // Determine max items based on terminal size and provided maxItems
+    const terminalHeight = process.stdout.rows || 24; // Default to 24 if undefined
+    const availableHeight = terminalHeight - 4; // Header and footer adjustment
+    const computedMaxItems = Math.min(
+      maxItems ?? Infinity,
+      availableHeight > 0 ? availableHeight : Infinity,
+      options.length
+    );
+    const minItems = 3; // Minimum number of items to display for better UX
+    const displayItems = Math.max(computedMaxItems, minItems);
+
+    let startIdx = 0;
+    let endIdx = options.length - 1;
+
+    if (options.length > displayItems) {
+      const half = Math.floor(displayItems / 2);
+
+      // We're adjusting startIdx and endIdx here to center the selected item
+      startIdx = selectedIndex - half;
+      endIdx = selectedIndex + (displayItems - half - 1);
+
+      if (startIdx < 0) {
+        startIdx = 0;
+        endIdx = displayItems - 1;
+      } else if (endIdx >= options.length) {
+        endIdx = options.length - 1;
+        startIdx = options.length - displayItems;
+      }
+    }
+
+    // Determine if ellipses should be displayed
+    const shouldRenderTopEllipsis = startIdx > 0;
+    const shouldRenderBottomEllipsis = endIdx < options.length - 1;
+
+    if (shouldRenderTopEllipsis) {
+      outputStr += `${formattedBar}  ${dim("...")}\n`;
+    }
+
+    for (let index = startIdx; index <= endIdx; index++) {
+      const option = options[index];
       const isSelected = index === selectedIndex;
       const prefix = isSelected ? "> " : "  ";
       const optionLabel = isSelected ? cyanBright(option.label) : option.label;
       const hint = option.hint ? ` (${option.hint})` : "";
       outputStr += `${formattedBar} ${prefix}${optionLabel}${dim(hint)}\n`;
-    });
+    }
+
+    if (shouldRenderBottomEllipsis) {
+      outputStr += `${formattedBar}  ${dim("...")}\n`;
+    }
+
+    // Calculate lines rendered
+    linesRendered =
+      1 + // Title
+      1 + // Instructions or error message
+      (shouldRenderTopEllipsis ? 1 : 0) + // Top ellipsis
+      (endIdx - startIdx + 1) + // Displayed options
+      (shouldRenderBottomEllipsis ? 1 : 0); // Bottom ellipsis
 
     process.stdout.write(outputStr);
-
-    // Calculate lines rendered:
-    linesRendered = 1 + 1 + options.length; // Title + (Error Message or Instructions) + options
   }
 
   renderOptions();
@@ -93,12 +143,12 @@ export async function selectPrompt<T extends string>(params: {
       if (key.name === "up" || key.name === "k") {
         // Move up
         selectedIndex = (selectedIndex - 1 + options.length) % options.length;
-        errorMessage = ""; // Clear error message on navigation
+        errorMessage = "";// Clear error message on navigation
         renderOptions();
       } else if (key.name === "down" || key.name === "j") {
         // Move down
         selectedIndex = (selectedIndex + 1) % options.length;
-        errorMessage = ""; // Clear error message on navigation
+        errorMessage = "";// Clear error message on navigation
         renderOptions();
       } else if (key.name === "return") {
         // Confirm selection
@@ -111,15 +161,10 @@ export async function selectPrompt<T extends string>(params: {
           resolve(options[selectedIndex].value);
           deleteLastLine();
           deleteLastLine();
-          msg({
-            type: "M_MIDDLE",
-          });
         }
       } else if (key.name === "c" && key.ctrl) {
         // Show endTitle message and exit gracefully
-        msg({
-          type: "M_NEWLINE",
-        });
+        msg({ type: "M_NEWLINE" });
         msg({
           type: "M_END",
           title: endTitle,

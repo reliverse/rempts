@@ -1,4 +1,4 @@
-// 3-basic-example.ts: A basic example demonstrating core functionalities of @reliverse/relinka. Everything in a single file.
+// 3-basic-example.ts: A basic example demonstrating core functionalities of @reliverse/prompts. Everything in a single file.
 
 import { showSpinner } from "@/src/prompts.js";
 
@@ -23,7 +23,7 @@ async function main() {
   await textPrompt({
     id: "start",
     title: "Hello, Reliverse Community! 👋",
-    content: "You are testing the basic example of @reliverse/relinka",
+    content: "You are testing the basic example of @reliverse/prompts",
     ...extendedConfig,
     titleVariant: "box",
     contentVariant: "underline",

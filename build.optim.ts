@@ -3,7 +3,7 @@ import fs from "fs-extra";
 import path from "pathe";
 import strip from "strip-comments";
 
-import { errorHandler, msg, spinner } from "~/mod.js";
+import { errorHandler, msg, spinner } from "~/main.js";
 
 // Verbose logging
 const debug = false;

@@ -1,6 +1,6 @@
 import { emojify } from "node-emoji";
 
-import type { OptionalPromptOptions } from "~/mod.js";
+import type { OptionalPromptOptions } from "~/main.js";
 
 export const basicConfig = {
   titleColor: "cyanBright",

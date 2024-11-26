@@ -1,7 +1,7 @@
-import type { ChoiceOptions, ColorName } from "~/mod.js";
+import type { ChoiceOptions, ColorName } from "~/main.js";
 
-import { msg } from "~/mod.js";
-import { colorMap } from "~/mod.js";
+import { msg } from "~/main.js";
+import { colorMap } from "~/main.js";
 
 import type { UserInput } from "./schema.js";
 
