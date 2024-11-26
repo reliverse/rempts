@@ -1,4 +1,10 @@
 import { Type, type Static } from "@sinclair/typebox";
+import {
+  buildRegExp,
+  choiceOf,
+  endOfString,
+  startOfString,
+} from "ts-regex-builder";
 
 import { colorMap } from "~/mod.js";
 
@@ -14,14 +20,23 @@ const colorSchema = Type.Enum(
   ),
 );
 
+// You can use ts-regex-builder or magic-regexp
+// libraries to define a more stable regexes
+const usernameRegexPrecise = buildRegExp([
+  startOfString,
+  choiceOf(
+    // a-zA-Z0-9 and Cyrillic characters
+    /[a-zA-Z0-9\u0400-\u04FF]+/,
+  ),
+  endOfString,
+]);
+
 // @reliverse/relinka allows you to define the schema once and reuse it for each prompt.
 // This is useful if you want to validate the input of multiple prompts using TypeBox.
 export const schema = Type.Object({
-  username: Type.String({
-    minLength: 2,
-    maxLength: 20,
-    // Allow only latin letters, numbers, and cyrillic characters
-    pattern: "^[a-zA-Z0-9\u0400-\u04FF]+$",
+  username: Type.RegExp(usernameRegexPrecise, {
+    description:
+      "Username must be 2-20 characters long and contain only latin letters, numbers, or cyrillic characters.",
   }),
   dir: Type.String({ minLength: 1 }),
   spinner: Type.Boolean(),

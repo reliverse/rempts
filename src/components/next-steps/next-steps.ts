@@ -6,7 +6,7 @@ export async function nextStepsPrompt(options: PromptOptions): Promise<void> {
   const {
     title,
     titleColor = "cyanBright",
-    answerColor = "none",
+    
     titleVariant,
     titleTypography = "bold",
     content,

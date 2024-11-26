@@ -26,7 +26,7 @@ export async function numSelectPrompt<T extends TSchema>(
     defaultValue,
     schema,
     titleColor = "cyanBright",
-    answerColor = "none",
+    
     titleTypography = "bold",
     titleVariant,
     content,
@@ -117,7 +117,7 @@ export async function numSelectPrompt<T extends TSchema>(
       msg({
         type: "M_MIDDLE",
         title: `  ${defaultValue}`,
-        titleColor: answerColor,
+        titleColor: "none",
       });
     }
 

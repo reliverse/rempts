@@ -23,7 +23,7 @@ export async function numMultiSelectPrompt<T extends TSchema>(
     schema,
     defaultValue,
     titleColor = "cyanBright",
-    answerColor = "none",
+    
     titleTypography = "bold",
     titleVariant,
     hint,
@@ -98,7 +98,7 @@ export async function numMultiSelectPrompt<T extends TSchema>(
         msg({
           type: "M_MIDDLE",
           title: `  ${Array.isArray(defaultValue) ? defaultValue.join(", ") : defaultValue}`,
-          titleColor: answerColor,
+          titleColor: "none",
         });
         msg({ type: "M_NEWLINE" });
         return defaultValue as Static<T>;

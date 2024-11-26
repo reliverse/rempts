@@ -23,7 +23,6 @@ export async function numberPrompt<T extends TSchema>(
     defaultValue,
     schema,
     titleColor = "cyanBright",
-    answerColor = "none",
     titleTypography = "bold",
     titleVariant,
     content,

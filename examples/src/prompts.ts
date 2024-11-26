@@ -81,7 +81,8 @@ export async function showTextPrompt(): Promise<UserInput["username"]> {
     id: IDs.username,
     title: "We're glad you're testing our interactive prompts library!",
     content: "Let's get to know each other!\nWhat's your username?",
-    hint: "Press <Enter> to use the default value. [Default: johnny911]",
+    hint: "Press <Enter> to use the default value.",
+    placeholder: "[Default: johnny911]",
     defaultValue: "johnny911",
     schema: schema.properties.username,
     ...extendedConfig,
@@ -171,18 +172,54 @@ export async function showDatePrompt(): Promise<UserInput["birthday"]> {
   return birthdayDate ?? "16.11.1988";
 }
 
+// Experimental alternative to showDatePrompt
+export async function showDatePromptTwo() {
+  const userDate = await datePrompt({
+    id: IDs.birthday,
+    title: "Enter your birthday",
+    dateFormat: "DD.MM.YYYY | MM/DD/YYYY | YYYY.MM.DD",
+    dateKind: "birthday",
+    hint: "Please use one of the specified date formats.",
+    validate: async (input: string) => {
+      // Example custom validation: we ensure the year is not before 1900
+      const parts = input.split(/[./-]/);
+      let year: number;
+      if (input.includes(".")) {
+        if (input.split(".").length === 3 && input.includes("/")) {
+          // Handle multiple separators if necessary
+          year = Number(parts[2]);
+        } else {
+          year = Number(parts[2] || parts[3]);
+        }
+      } else if (input.includes("/")) {
+        year = Number(parts[2]);
+      } else {
+        year = Number(parts[0]);
+      }
+
+      if (year && year < 1900) {
+        return "Year must be 1900 or later.";
+      }
+      return true;
+    },
+    defaultValue: "01.01.2000",
+    schema: undefined, // @reliverse/relinka allows you to pass an additional TypeBox schema if needed, but it's not required
+  });
+
+  console.log(`You entered: ${userDate}`);
+}
+
 export async function showSelectPrompt(): Promise<UserInput["lang"]> {
   const lang = await selectPrompt({
     title: "[selectPrompt] Choose your language",
     options: [
-      { label: "English", value: "en" },
-      { label: "Ukrainian", value: "uk" },
-      { label: "Polish", value: "pl" },
-      { label: "French", value: "fr" },
-      { label: "German", value: "de" },
-      { label: "Other", value: "else" },
+      { label: "English", value: "en", hint: "Default" },
+      { label: "Ukrainian", value: "uk", hint: "Українська" },
+      { label: "Polish", value: "pl", hint: "Polski" },
+      { label: "French", value: "fr", hint: "Français" },
+      { label: "German", value: "de", hint: "Deutsch" },
+      { label: "Other", value: "else", hint: "Other" },
     ],
-    hints: ["English", "Українська", "Polski", "Français", "Deutsch", "Other"],
     initial: "en",
     ...experimentalConfig,
   });
@@ -234,28 +271,17 @@ export async function showMultiselectPrompt(): Promise<UserInput["langs"]> {
   };
 
   const selectedOptions = await multiselectPrompt({
-    title: "[multiselectPrompt] Select your favorite programming languages",
+    title: "Select your favorite programming languages",
     options: [
-      "TypeScript",
-      "JavaScript",
-      "CoffeeScript",
-      "Python",
-      "Java",
-      "CSharp",
-      "Go",
-      "Rust",
-      "Swift",
-    ],
-    hints: [
-      emojify(":blue_heart: Type-safe and scalable"),
-      emojify(":yellow_heart: Versatile and widely-used"),
-      emojify(":coffee: Elegant and concise"),
-      emojify(":snake: Powerful and easy to learn"),
-      emojify(":coffee: Robust and portable"),
-      emojify(":hash: Modern and object-oriented"),
-      emojify(":dolphin: Simple and efficient"),
-      emojify(":crab: Fast and memory-safe"),
-      emojify(":apple: Safe and performant"),
+      { value: "TypeScript", hint: ":blue_heart: Type-safe and scalable" },
+      { value: "JavaScript", hint: ":yellow_heart: Versatile and widely-used" },
+      { value: "CoffeeScript", hint: ":coffee: Elegant and concise" },
+      { value: "Python", hint: ":snake: Powerful and easy to learn" },
+      { value: "Java", hint: ":coffee: Robust and portable" },
+      { value: "CSharp", hint: ":hash: Modern and object-oriented" },
+      { value: "Go", hint: ":dolphin: Simple and efficient" },
+      { value: "Rust", hint: ":crab: Fast and memory-safe" },
+      { value: "Swift", hint: ":apple: Safe and performant" },
     ],
     required: true,
     initial: ["TypeScript", "JavaScript"],
@@ -265,6 +291,21 @@ export async function showMultiselectPrompt(): Promise<UserInput["langs"]> {
   if (!Array.isArray(selectedOptions)) {
     process.exit(0);
   }
+
+  selectedOptions.forEach((option) => {
+    // By using forEach, @reliverse/relinka
+    // has Intellisense to each selected option
+    switch (option) {
+      case "CoffeeScript":
+        msg({
+          type: "M_INFO",
+          title: "CoffeeScript... 🤔",
+        });
+        break;
+      default:
+        break;
+    }
+  });
 
   msg({
     type: "M_INFO",

@@ -90,6 +90,7 @@ export type FmtMsgOptions = {
   errorMessage?: string;
   addNewLineBefore?: boolean;
   addNewLineAfter?: boolean;
+  placeholder?: string;
 };
 
 export type RequiredPromptOptions = {
@@ -109,6 +110,7 @@ export type OptionalPromptOptions<T extends TSchema = any> = {
   contentTypography?: TypographyName;
   contentVariant?: Variant;
   hint?: string;
+  placeholder?: string;
   validate?: (value: any) => boolean | string | Promise<boolean | string>;
   defaultValue?: string | string[] | number | boolean;
   defaultColor?: ColorName;
@@ -124,7 +126,6 @@ export type OptionalPromptOptions<T extends TSchema = any> = {
   borderColor?: ColorName;
   clearConsole?: boolean;
   additionalLinesToDelete?: number;
-  answerColor?: ColorName;
   hintColor?: ColorName;
   hints?: string[];
   required?: boolean;

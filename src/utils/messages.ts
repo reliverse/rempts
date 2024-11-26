@@ -1,5 +1,4 @@
-import { emojify } from "node-emoji";
-import { greenBright, redBright } from "picocolors";
+import { greenBright, redBright ,dim} from "picocolors";
 
 import type {
   ColorName,
@@ -128,7 +127,9 @@ export function fmt(opts: FmtMsgOptions): string {
     M_GENERAL: {
       symbol: "",
       prefix: greenBright(symbols.step_active),
-      suffix: "",
+      suffix: opts.placeholder
+        ? dim(opts.placeholder) + "\n" + formattedBar + "  "
+        : "",
       newLineBefore: opts.addNewLineBefore ?? false,
       newLineAfter: opts.addNewLineAfter ?? true,
     },

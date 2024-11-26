@@ -21,7 +21,7 @@ export async function passwordPrompt<T extends TSchema>(
     schema,
     defaultValue,
     titleColor = "cyanBright",
-    answerColor = "none",
+    
     titleTypography = "bold",
     titleVariant,
     content,

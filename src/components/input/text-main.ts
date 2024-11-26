@@ -23,7 +23,6 @@ export async function textPrompt<T extends TSchema>(
     defaultValue = "",
     schema,
     titleColor = "cyanBright",
-    answerColor = "none",
     titleTypography = "bold",
     titleVariant,
     content,
@@ -32,12 +31,15 @@ export async function textPrompt<T extends TSchema>(
     contentVariant,
     borderColor = "viceGradient",
     variantOptions,
+    placeholder,
   } = options;
 
   const rl = readline.createInterface({ input, output });
 
   let linesToDelete = 0;
   let errorMessage = "";
+  let currentInput = "";
+  let showPlaceholder = true;
 
   while (true) {
     if (linesToDelete > 0) {
@@ -56,18 +58,28 @@ export async function textPrompt<T extends TSchema>(
       contentVariant,
       borderColor,
       hint,
+      placeholder: showPlaceholder ? placeholder : undefined,
       variantOptions,
       errorMessage,
     });
 
     const questionLines = countLines(question);
     const prompt = await rl.question(question);
+    currentInput = prompt.trim();
+
+    if (showPlaceholder && currentInput !== "") {
+      showPlaceholder = false;
+      deleteLastLine();
+      deleteLastLine();
+      msg({ type: "M_MIDDLE", title: `  ${currentInput}` });
+    }
 
     linesToDelete = questionLines + 1;
 
-    const answer = prompt.trim() || defaultValue;
+    const answer = currentInput || defaultValue;
 
-    if (prompt.trim() === "" && defaultValue !== "") {
+    if (currentInput === "" && defaultValue !== "") {
+      deleteLastLine();
       deleteLastLine();
       const defaultMsg = fmt({
         type: "M_MIDDLE",
@@ -79,7 +91,7 @@ export async function textPrompt<T extends TSchema>(
     }
 
     let isValid = true;
-    errorMessage = ""; // Reset errorMessage
+    errorMessage = "";
     if (schema) {
       isValid = Value.Check(schema, answer);
       if (!isValid) {

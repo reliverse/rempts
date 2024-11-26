@@ -183,7 +183,7 @@
     "**/build.config.ts",
     "**/build.optim.ts",
     "**/bun.lockb",
-    "**/eslint.config.ts",
+    "**/eslint.config.js",
     "**/knip.jsonc",
     "**/vitest.config.ts",
     "**/*.d.ts"
@@ -209,7 +209,9 @@
     "nodejs/remove-useless-strict-mode": "off",
     "browserlist": "off",
     "filesystem": "off",
-    "conditions/apply-consistent-blocks": "off"
+    "conditions/apply-consistent-blocks": "off",
+    "sort-imports-by-specifiers": "off",
+    "group-imports-by-source": "off"
   },
   "plugins": [
     "apply-at",

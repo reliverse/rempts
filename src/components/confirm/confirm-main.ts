@@ -18,7 +18,7 @@ export async function confirmPrompt<T extends TSchema>(
     defaultValue,
     schema,
     titleColor = "cyanBright",
-    answerColor = "none",
+    
     titleTypography = "bold",
     titleVariant,
     content,

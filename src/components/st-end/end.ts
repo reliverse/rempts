@@ -6,7 +6,7 @@ import { msg } from "~/utils/messages.js";
 export async function endPrompt({
   title,
   titleColor = "cyanBright",
-  answerColor = "none",
+  
   titleTypography = "bold",
   titleVariant,
   titleAnimation,

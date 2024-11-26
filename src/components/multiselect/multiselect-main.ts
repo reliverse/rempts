@@ -10,8 +10,7 @@ import { deleteLastLine } from "~/utils/terminal.js";
 
 export async function multiselectPrompt<T extends string>(params: {
   title: string;
-  options: T[];
-  hints?: string[];
+  options: { value: T; hint?: string }[];
   required?: boolean;
   initial?: T[];
   borderColor?: ColorName;
@@ -25,7 +24,6 @@ export async function multiselectPrompt<T extends string>(params: {
   const {
     title,
     options,
-    hints = [],
     required = false,
     initial = [],
     borderColor = "viceGradient",
@@ -39,7 +37,7 @@ export async function multiselectPrompt<T extends string>(params: {
 
   let pointer = 0;
   const selectedOptions = new Set<number>(
-    initial.map((opt) => options.indexOf(opt)).filter((i) => i >= 0),
+    initial.map((opt) => options.findIndex((o) => o.value === opt)).filter((i) => i >= 0),
   );
 
   const rl = readline.createInterface({ input, output });
@@ -74,8 +72,8 @@ export async function multiselectPrompt<T extends string>(params: {
       const isHighlighted = index === pointer;
       const checkbox = isSelected ? "[x]" : "[ ]";
       const prefix = isHighlighted ? "> " : "  ";
-      const optionLabel = isHighlighted ? cyanBright(option) : option;
-      const hint = hints[index] ? ` (${hints[index]})` : "";
+      const optionLabel = isHighlighted ? cyanBright(option.value) : option.value;
+      const hint = option.hint ? ` (${option.hint})` : "";
       outputStr += `${formattedBar} ${prefix}${checkbox} ${optionLabel}${dim(hint)}\n`;
     });
 
@@ -109,19 +107,22 @@ export async function multiselectPrompt<T extends string>(params: {
         errorMessage = ""; // Clear error message on selection
         renderOptions();
       } else if (key.name === "return") {
-        // Confirm selection
-        if (required && selectedOptions.size === 0) {
-          deleteLastLine();
-          errorMessage = "You must select at least one option.\x1B[K";
-          renderOptions();
-        } else {
+        // Return selected options
+        if (!required || selectedOptions.size > 0) {
+          const selectedValues = Array.from(selectedOptions).map(
+            (index) => options[index].value,
+          );
           cleanup();
-          resolve(Array.from(selectedOptions).map((i) => options[i]));
+          resolve(selectedValues);
           deleteLastLine();
           deleteLastLine();
           msg({
             type: "M_MIDDLE",
           });
+        } else {
+          deleteLastLine();
+          errorMessage = "You must select at least one option.\x1B[K";
+          renderOptions();
         }
       } else if (key.name === "c" && key.ctrl) {
         // Show endTitle message and exit gracefully

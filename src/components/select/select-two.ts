@@ -17,7 +17,7 @@ export async function selectPrompt(options: PromptOptions): Promise<string> {
     defaultValue,
     schema,
     titleColor = "cyanBright",
-    answerColor = "none",
+    
     titleTypography = "bold",
   } = options;
 

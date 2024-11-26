@@ -1,7 +1,16 @@
-import { Type, type TSchema } from "@sinclair/typebox";
+import type { TSchema } from "@sinclair/typebox";
+
+import { Type } from "@sinclair/typebox";
 import { Value } from "@sinclair/typebox/value";
 import { stdin as input, stdout as output } from "node:process";
 import readline from "node:readline/promises";
+import {
+  buildRegExp,
+  digit,
+  endOfString,
+  repeat,
+  startOfString,
+} from "ts-regex-builder";
 
 import type { PromptOptions } from "~/types/general.js";
 
@@ -12,17 +21,57 @@ import {
   deleteLastLines,
 } from "~/utils/terminal.js";
 
-// Define allowed date formats
-const dateFormatSchema = Type.Union([
-  Type.RegExp(/^(\d{2})\.(\d{2})\.(\d{4})$/, { description: "DD.MM.YYYY" }),
-  Type.RegExp(/^(\d{2})\/(\d{2})\/(\d{4})$/, { description: "MM/DD/YYYY" }),
-  Type.RegExp(/^(\d{4})\.(\d{2})\.(\d{2})$/, { description: "YYYY.MM.DD" }),
+// Helper constructs
+const twoDigits = repeat(digit, 2); // \d{2}
+const fourDigits = repeat(digit, 4); // \d{4}
+const separatorDot = "."; // Literal dot
+const separatorSlash = "/"; // Literal slash
+
+// DD.MM.YYYY
+const regexDDMMYYYY = buildRegExp([
+  startOfString,
+  twoDigits, // DD
+  separatorDot,
+  twoDigits, // MM
+  separatorDot,
+  fourDigits, // YYYY
+  endOfString,
 ]);
 
+// MM/DD/YYYY
+const regexMMDDYYYY = buildRegExp([
+  startOfString,
+  twoDigits, // MM
+  separatorSlash,
+  twoDigits, // DD
+  separatorSlash,
+  fourDigits, // YYYY
+  endOfString,
+]);
+
+// YYYY.MM.DD
+const regexYYYYMMDD = buildRegExp([
+  startOfString,
+  fourDigits, // YYYY
+  separatorDot,
+  twoDigits, // MM
+  separatorDot,
+  twoDigits, // DD
+  endOfString,
+]);
+
+// Combine all date formats into a union schema using TypeBox
+const dateFormatSchema = Type.Union([
+  Type.RegExp(regexDDMMYYYY, { description: "DD.MM.YYYY" }),
+  Type.RegExp(regexMMDDYYYY, { description: "MM/DD/YYYY" }),
+  Type.RegExp(regexYYYYMMDD, { description: "YYYY.MM.DD" }),
+]);
+
+// Implement the datePrompt function
 export async function datePrompt<T extends TSchema>(
   options: PromptOptions<T> & {
-    dateFormat: string;
-    dateKind: "birthday" | "other";
+    dateFormat: string; // Description of accepted date formats
+    dateKind: "birthday" | "other"; // Type of date for additional validation
   },
 ): Promise<string> {
   const {
@@ -34,7 +83,7 @@ export async function datePrompt<T extends TSchema>(
     defaultValue,
     schema,
     titleColor = "cyanBright",
-    answerColor = "none",
+    
     titleTypography = "bold",
     titleVariant,
     content,
@@ -52,11 +101,13 @@ export async function datePrompt<T extends TSchema>(
 
   try {
     while (true) {
+      // Delete previous lines if necessary
       if (linesToDelete > 0) {
         deleteLastLines(linesToDelete);
       }
 
-      const question = fmt({
+      // Format the question prompt
+      const questionText = fmt({
         type: errorMessage !== "" ? "M_ERROR" : "M_GENERAL",
         title: `${title} [Format: ${dateFormat}]`,
         titleColor,
@@ -73,10 +124,14 @@ export async function datePrompt<T extends TSchema>(
         addNewLineBefore: false,
       });
 
-      const questionLines = countLines(question);
+      const questionLines = countLines(questionText);
       linesToDelete = questionLines + 1; // +1 for user's input
 
-      const answer = (await rl.question(question)).trim() || defaultValue;
+      // Display the formatted question
+      msg({ type: "M_GENERAL", title: questionText });
+
+      // Prompt the user for input
+      const answer = (await rl.question("> ")).trim() || defaultValue;
 
       // Display defaultValue if it is used
       if (answer === defaultValue && defaultValue) {
@@ -84,32 +139,45 @@ export async function datePrompt<T extends TSchema>(
         msg({
           type: "M_MIDDLE",
           title: `  ${defaultValue}`,
-          titleColor: answerColor,
+          titleColor: "none",
         });
       }
 
+      // Validate the answer against the dateFormatSchema
       if (!Value.Check(dateFormatSchema, answer)) {
         errorMessage = `Please enter a valid date in ${dateFormat} format.`;
+        msg({ type: "M_ERROR", title: errorMessage });
         continue;
       }
 
-      if (dateKind === "birthday") {
+      // Determine which regex matched
+      let matchedFormat: string | null = null;
+      if (regexDDMMYYYY.test(answer)) {
+        matchedFormat = "DD.MM.YYYY";
+      } else if (regexMMDDYYYY.test(answer)) {
+        matchedFormat = "MM/DD/YYYY";
+      } else if (regexYYYYMMDD.test(answer)) {
+        matchedFormat = "YYYY.MM.DD";
+      }
+
+      // Additional validation for 'birthday' kind
+      if (dateKind === "birthday" && matchedFormat) {
         const parts = answer.split(/[./-]/);
         let date: Date;
 
-        if (dateFormat === "DD.MM.YYYY") {
+        if (matchedFormat === "DD.MM.YYYY") {
           date = new Date(
             Number(parts[2]),
             Number(parts[1]) - 1,
             Number(parts[0]),
           );
-        } else if (dateFormat === "MM/DD/YYYY") {
+        } else if (matchedFormat === "MM/DD/YYYY") {
           date = new Date(
             Number(parts[2]),
             Number(parts[0]) - 1,
             Number(parts[1]),
           );
-        } else if (dateFormat === "YYYY.MM.DD") {
+        } else if (matchedFormat === "YYYY.MM.DD") {
           date = new Date(
             Number(parts[0]),
             Number(parts[1]) - 1,
@@ -126,6 +194,7 @@ export async function datePrompt<T extends TSchema>(
         ) {
           errorMessage =
             "Please enter a valid birthday date (e.g., 14.09.1999).";
+          msg({ type: "M_ERROR", title: errorMessage });
           continue;
         }
       }
@@ -133,25 +202,32 @@ export async function datePrompt<T extends TSchema>(
       let isValid = true;
       errorMessage = ""; // Reset errorMessage
 
+      // Validate against additional schema if provided
       if (schema) {
         isValid = Value.Check(schema, answer);
         if (!isValid) {
           const errors = [...Value.Errors(schema, answer)];
           errorMessage = errors[0]?.message ?? "Invalid input.";
+          msg({ type: "M_ERROR", title: errorMessage });
+          continue;
         }
       }
 
+      // Custom validation function
       if (validate && isValid) {
         const validation = await validate(answer);
         if (validation !== true) {
           isValid = false;
           errorMessage =
             typeof validation === "string" ? validation : "Invalid input.";
+          msg({ type: "M_ERROR", title: errorMessage });
+          continue;
         }
       }
 
+      // If all validations pass, return the answer
       if (isValid) {
-        msg({ type: "M_NEWLINE" });
+        msg({ type: "M_NEWLINE", title: "" });
         rl.close();
         return answer;
       }

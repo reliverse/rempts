@@ -1,6 +1,6 @@
 {
   "name": "@reliverse/relinka",
-  "version": "1.1.2",
+  "version": "1.1.7",
   "exports": "./dist-jsr/mod.ts",
   "publish": {
     "exclude": [
@@ -15,6 +15,7 @@
       ".venv/**",
       ".github/**",
       ".gitignore",
+      ".eslintcache",
       "biome.jsonc",
       "build.optim.ts",
       "build.config.ts",
@@ -24,7 +25,8 @@
       "merged.txt",
       "typestat.json",
       "vitest.config.ts",
-      "eslint.config.ts",
+      "eslint.config.js",
+      "example.png",
       "cspell.json"
     ]
   }

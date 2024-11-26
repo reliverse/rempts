@@ -12,7 +12,6 @@ export const extendedConfig = {
   ...basicConfig,
   contentTypography: "italic",
   contentColor: "dim",
-  answerColor: "none", // white in dark mode, black in light mode
 } satisfies OptionalPromptOptions;
 
 export const experimentalConfig = {

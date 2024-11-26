@@ -26,13 +26,13 @@
     "noFallthroughCasesInSwitch": true,
     "noUncheckedIndexedAccess": true,
     "noPropertyAccessFromIndexSignature": false,
-    "noEmitOnError": true,
-    "useDefineForClassFields": true,
     "forceConsistentCasingInFileNames": true,
+    "useDefineForClassFields": true,
     "verbatimModuleSyntax": true,
     "strictNullChecks": false,
     "isolatedModules": true,
     "noImplicitAny": false,
+    "noEmitOnError": true,
     "skipLibCheck": true,
     "allowJs": true,
     "noEmit": true
@@ -49,5 +49,5 @@
     "addons/**/*.ts",
     "examples/**/*.ts"
   ],
-  "exclude": ["dist-npm", "dist-jsr", "node_modules"]
+  "exclude": ["node_modules", "dist-jsr", "dist-npm"]
 }

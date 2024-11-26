@@ -9,8 +9,7 @@ import { deleteLastLine } from "~/utils/terminal.js";
 
 export async function selectPrompt<T extends string>(params: {
   title: string;
-  options: { label: string; value: T }[];
-  hints?: string[];
+  options: { label: string; value: T; hint?: string }[];
   initial?: T;
   required?: boolean;
   borderColor?: ColorName;
@@ -24,7 +23,6 @@ export async function selectPrompt<T extends string>(params: {
   const {
     title,
     options,
-    hints = [],
     initial,
     required = false,
     borderColor = "viceGradient",
@@ -78,7 +76,7 @@ export async function selectPrompt<T extends string>(params: {
       const isSelected = index === selectedIndex;
       const prefix = isSelected ? "> " : "  ";
       const optionLabel = isSelected ? cyanBright(option.label) : option.label;
-      const hint = hints[index] ? ` (${hints[index]})` : "";
+      const hint = option.hint ? ` (${option.hint})` : "";
       outputStr += `${formattedBar} ${prefix}${optionLabel}${dim(hint)}\n`;
     });
 
