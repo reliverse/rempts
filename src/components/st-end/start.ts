@@ -1,15 +1,23 @@
 import type { PromptOptions } from "~/types/general.js";
 
+import { getCurrentTerminalName } from "~/main.js";
 import { msg } from "~/utils/messages.js";
+import { pkg, pm, pmv } from "~/utils/platforms.js";
 
 export async function startPrompt({
-  title,
-  titleColor = "cyanBright",
+  title = `@reliverse/prompts v${pkg.version} | ${pm} v${pmv} | ${getCurrentTerminalName()}`,
+  titleColor = "blueBright",
   titleTypography = "bold",
   titleVariant,
   borderColor = "viceGradient",
-  clearConsole = true,
-}: PromptOptions): Promise<void> {
+  clearConsole = false,
+  horizontalLine = true,
+  horizontalLineLength = 30,
+}: PromptOptions & {
+  clearConsole?: boolean;
+  horizontalLine?: boolean;
+  horizontalLineLength?: number;
+}): Promise<void> {
   if (clearConsole) {
     console.clear();
     console.log();
@@ -24,6 +32,8 @@ export async function startPrompt({
     titleTypography,
     titleVariant,
     borderColor,
+    horizontalLine,
+    horizontalLineLength,
   });
 
   if (!process.stdout.isTTY) {

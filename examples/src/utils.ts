@@ -1,9 +1,14 @@
+import { detect, getNpmVersion } from "detect-package-manager";
+
 import type { ChoiceOptions, ColorName } from "~/main.js";
 
+import packageJson from "~/../package.json" with { type: "json" };
 import { msg } from "~/main.js";
 import { colorMap } from "~/main.js";
 
 import type { UserInput } from "./schema.js";
+
+
 
 export function createColorChoices(): ChoiceOptions[] {
   return Object.keys(colorMap).map((key) => ({

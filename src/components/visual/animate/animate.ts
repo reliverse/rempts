@@ -26,11 +26,11 @@ function calculateDelay(text: string): number {
 }
 
 export async function animateText({
-  title,
+  title = "",
   anim,
   delay,
   type = "M_INFO",
-  titleColor = "cyanBright",
+  titleColor = "blueBright",
   titleTypography = "bold",
   border = true,
   borderColor = "viceGradient",

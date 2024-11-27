@@ -15,18 +15,18 @@ export async function passwordPrompt<T extends TSchema>(
   options: PromptOptions<T>,
 ): Promise<Static<T>> {
   const {
-    title,
+    title = "",
     hint,
+    hintColor = "gray",
     validate,
     schema,
     defaultValue,
-    titleColor = "cyanBright",
-    
+    titleColor = "blueBright",
     titleTypography = "bold",
     titleVariant,
     content,
-    contentColor,
-    contentTypography,
+    contentColor = "dim",
+    contentTypography = "italic",
     contentVariant,
     borderColor = "viceGradient",
     variantOptions,
@@ -37,6 +37,7 @@ export async function passwordPrompt<T extends TSchema>(
 
   while (true) {
     const question = fmt({
+      hintColor,
       type: errorMessage !== "" ? "M_ERROR" : "M_GENERAL",
       title: `${title}${defaultValue ? ` [Default: ****]` : ""}`,
       titleColor,

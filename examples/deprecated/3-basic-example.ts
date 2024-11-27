@@ -2,7 +2,7 @@
 
 import { showSpinner } from "@/src/prompts.js";
 
-import type { OptionalPromptOptions } from "~/types/general.js";
+import type { PromptOptions } from "~/types/general.js";
 
 import { numberPrompt, inputPrompt } from "~/components/prompts/index.js";
 import { errorHandler } from "~/utils/errors.js";
@@ -11,13 +11,13 @@ export const basicConfig = {
   titleColor: "cyanBright",
   titleTypography: "bold",
   borderColor: "viceGradient",
-} satisfies OptionalPromptOptions;
+} satisfies PromptOptions;
 
 export const extendedConfig = {
   ...basicConfig,
   contentTypography: "italic",
   contentColor: "dim",
-} satisfies OptionalPromptOptions;
+} satisfies PromptOptions;
 
 async function main() {
   await inputPrompt({

@@ -4,15 +4,14 @@ import { msg } from "~/utils/messages.js";
 
 export async function nextStepsPrompt(options: PromptOptions): Promise<void> {
   const {
-    title,
-    titleColor = "cyanBright",
-    
+    title = "",
+    titleColor = "blueBright",
     titleVariant,
     titleTypography = "bold",
     content,
-    contentColor,
+    contentColor = "dim",
     contentVariant,
-    contentTypography,
+    contentTypography = "italic",
   } = options;
 
   msg({

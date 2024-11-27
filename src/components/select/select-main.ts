@@ -1,6 +1,7 @@
 import { stdin as input, stdout as output } from "node:process";
 import readline from "node:readline";
 import { cyanBright, dim, greenBright, redBright } from "picocolors";
+import terminalSize from "terminal-size";
 
 import type {
   ColorName,
@@ -24,20 +25,40 @@ export async function selectPrompt<T extends string>(params: {
   endTitle?: string;
   endTitleColor?: ColorName;
   maxItems?: number;
+  debug?: boolean;
+  terminalHeight?: number;
+  availableHeight?: number;
+  computedMaxItems?: number;
+  displayItems?: number;
+  startIdx?: number;
+  endIdx?: number;
+  shouldRenderTopEllipsis?: boolean;
+  shouldRenderBottomEllipsis?: boolean;
+  linesRendered?: number;
 }): Promise<T> {
   const {
-    title,
+    title = "",
     options,
     defaultValue,
     required = false,
     borderColor = "viceGradient",
-    titleColor = "cyanBright",
+    titleColor = "blueBright",
     titleTypography = "bold",
     titleVariant,
     border = true,
-    endTitle = "👋",
-    endTitleColor = "passionGradient",
+    endTitle = "",
+    endTitleColor = "dim",
     maxItems,
+    debug = false,
+    terminalHeight,
+    availableHeight,
+    computedMaxItems,
+    displayItems,
+    startIdx,
+    endIdx,
+    shouldRenderTopEllipsis,
+    shouldRenderBottomEllipsis,
+    linesRendered,
   } = params;
 
   // Initialize selectedIndex to the defaultValue if it's not disabled
@@ -65,7 +86,7 @@ export async function selectPrompt<T extends string>(params: {
 
   const formattedBar = bar({ borderColor });
 
-  let linesRendered = 0;
+  let currentLinesRendered = 0;
   const instructions = `Use <↑/↓> or <k/j> to navigate, <Enter> to select, <Ctrl+C> to exit`;
   let errorMessage = ""; // Initialize error message
 
@@ -74,11 +95,12 @@ export async function selectPrompt<T extends string>(params: {
 
   function renderOptions() {
     // Move cursor up to the start of the options if not the first render
-    if (linesRendered > 0) {
-      process.stdout.write(`\x1B[${linesRendered}A`);
+    if (currentLinesRendered > 0) {
+      process.stdout.write(`\x1B[${currentLinesRendered}A`);
     }
 
     let outputStr = `${greenBright(symbols.step_active)}  ${fmt({
+      hintColor: "gray",
       type: "M_NULL",
       title,
       titleColor,
@@ -93,45 +115,61 @@ export async function selectPrompt<T extends string>(params: {
       outputStr += `${formattedBar}  ${dim(instructions)}\n`;
     }
 
-    // Determine max items based on terminal size and provided maxItems
-    const terminalHeight = process.stdout.rows || 24; // Default to 24 if undefined
-    const availableHeight = terminalHeight - 4; // Header and footer adjustment
-    const computedMaxItems = Math.min(
-      maxItems ?? Infinity,
-      availableHeight > 0 ? availableHeight : Infinity,
-      options.length,
-    );
+    // Determine effective properties based on provided params or defaults
+    const size = terminalSize(); // Get terminal size
+    const effectiveTerminalHeight = terminalHeight ?? size.rows ?? 24; // Fallback to 24 if rows is undefined
+    const effectiveAvailableHeight =
+      availableHeight ?? effectiveTerminalHeight - 4; // Header and footer adjustment
+    const effectiveComputedMaxItems =
+      computedMaxItems ??
+      Math.min(
+        maxItems ?? Infinity,
+        effectiveAvailableHeight > 0 ? effectiveAvailableHeight : Infinity,
+        options.length,
+      );
     const minItems = 3; // Minimum number of items to display for better UX
-    const displayItems = Math.max(computedMaxItems, minItems);
+    const effectiveDisplayItems =
+      displayItems ?? Math.max(effectiveComputedMaxItems, minItems);
 
-    let startIdx = 0;
-    let endIdx = options.length - 1;
+    let effectiveStartIdx: number;
+    let effectiveEndIdx: number;
 
-    if (options.length > displayItems) {
-      const half = Math.floor(displayItems / 2);
+    if (startIdx !== undefined && endIdx !== undefined) {
+      // Use provided indices if available
+      effectiveStartIdx = startIdx;
+      effectiveEndIdx = endIdx;
+    } else {
+      // Compute indices dynamically based on selectedIndex and displayItems
+      effectiveStartIdx = 0;
+      effectiveEndIdx = options.length - 1;
 
-      // Adjust startIdx and endIdx to center the selectedIndex
-      startIdx = selectedIndex - half;
-      endIdx = selectedIndex + (displayItems - half - 1);
+      if (options.length > effectiveDisplayItems) {
+        const half = Math.floor(effectiveDisplayItems / 2);
 
-      if (startIdx < 0) {
-        startIdx = 0;
-        endIdx = displayItems - 1;
-      } else if (endIdx >= options.length) {
-        endIdx = options.length - 1;
-        startIdx = options.length - displayItems;
+        // Adjust startIdx and endIdx to center the selectedIndex
+        effectiveStartIdx = selectedIndex - half;
+        effectiveEndIdx = selectedIndex + (effectiveDisplayItems - half - 1);
+
+        if (effectiveStartIdx < 0) {
+          effectiveStartIdx = 0;
+          effectiveEndIdx = effectiveDisplayItems - 1;
+        } else if (effectiveEndIdx >= options.length) {
+          effectiveEndIdx = options.length - 1;
+          effectiveStartIdx = options.length - effectiveDisplayItems;
+        }
       }
     }
 
-    // Determine if ellipses should be displayed
-    const shouldRenderTopEllipsis = startIdx > 0;
-    const shouldRenderBottomEllipsis = endIdx < options.length - 1;
+    const effectiveShouldRenderTopEllipsis =
+      shouldRenderTopEllipsis ?? effectiveStartIdx > 0;
+    const effectiveShouldRenderBottomEllipsis =
+      shouldRenderBottomEllipsis ?? effectiveEndIdx < options.length - 1;
 
-    if (shouldRenderTopEllipsis) {
+    if (effectiveShouldRenderTopEllipsis) {
       outputStr += `${formattedBar}  ${dim("...")}\n`;
     }
 
-    for (let index = startIdx; index <= endIdx; index++) {
+    for (let index = effectiveStartIdx; index <= effectiveEndIdx; index++) {
       const option = options[index];
       const isSelected = index === selectedIndex;
       const isDisabled = option.disabled;
@@ -147,17 +185,32 @@ export async function selectPrompt<T extends string>(params: {
       outputStr += `${formattedBar} ${prefix}${optionLabel}${hint}\n`;
     }
 
-    if (shouldRenderBottomEllipsis) {
+    if (effectiveShouldRenderBottomEllipsis) {
       outputStr += `${formattedBar}  ${dim("...")}\n`;
     }
 
     // Calculate lines rendered
-    linesRendered =
+    currentLinesRendered =
+      linesRendered ??
       1 + // Title
-      1 + // Instructions or error message
-      (shouldRenderTopEllipsis ? 1 : 0) + // Top ellipsis
-      (endIdx - startIdx + 1) + // Displayed options
-      (shouldRenderBottomEllipsis ? 1 : 0); // Bottom ellipsis
+        1 + // Instructions or error message
+        (effectiveShouldRenderTopEllipsis ? 1 : 0) + // Top ellipsis
+        (effectiveEndIdx - effectiveStartIdx + 1) + // Displayed options
+        (effectiveShouldRenderBottomEllipsis ? 1 : 0); // Bottom ellipsis
+
+    if (debug) {
+      console.log({
+        terminalHeight: effectiveTerminalHeight,
+        availableHeight: effectiveAvailableHeight,
+        computedMaxItems: effectiveComputedMaxItems,
+        displayItems: effectiveDisplayItems,
+        startIdx: effectiveStartIdx,
+        endIdx: effectiveEndIdx,
+        shouldRenderTopEllipsis: effectiveShouldRenderTopEllipsis,
+        shouldRenderBottomEllipsis: effectiveShouldRenderBottomEllipsis,
+        linesRendered: currentLinesRendered,
+      });
+    }
 
     process.stdout.write(outputStr);
   }
@@ -171,15 +224,17 @@ export async function selectPrompt<T extends string>(params: {
         if (key.name === "c" && key.ctrl) {
           // Show endTitle message and exit gracefully
           msg({ type: "M_NEWLINE" });
-          msg({
-            type: "M_END",
-            title: endTitle,
-            titleColor: endTitleColor,
-            titleTypography,
-            titleVariant,
-            border,
-            borderColor,
-          });
+          if (endTitle !== "") {
+            msg({
+              type: "M_END",
+              title: endTitle,
+              titleColor: endTitleColor,
+              titleTypography,
+              titleVariant,
+              border,
+              borderColor,
+            });
+          }
           cleanup(true);
         }
         return;
@@ -228,15 +283,17 @@ export async function selectPrompt<T extends string>(params: {
       } else if (key.name === "c" && key.ctrl) {
         // Show endTitle message and exit gracefully
         msg({ type: "M_NEWLINE" });
-        msg({
-          type: "M_END",
-          title: endTitle,
-          titleColor: endTitleColor,
-          titleTypography,
-          titleVariant,
-          border,
-          borderColor,
-        });
+        if (endTitle !== "") {
+          msg({
+            type: "M_END",
+            title: endTitle,
+            titleColor: endTitleColor,
+            titleTypography,
+            titleVariant,
+            border,
+            borderColor,
+          });
+        }
         cleanup(true);
       }
     }
@@ -248,7 +305,7 @@ export async function selectPrompt<T extends string>(params: {
       rl.close();
       input.removeListener("keypress", onKeyPress);
       // Move cursor down to the end of options
-      process.stdout.write(`\x1B[${linesRendered}B`);
+      process.stdout.write(`\x1B[${currentLinesRendered}B`);
       if (isCtrlC) {
         process.exit(); // Exit the process without throwing an error
       } else {

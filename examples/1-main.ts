@@ -25,6 +25,7 @@ import {
 import { type UserInput } from "@/src/schema.js";
 
 import { errorHandler } from "~/utils/errors.js";
+import { getCurrentTerminalName } from "~/utils/platforms.js";
 
 export async function detailedExample() {
   await showStartPrompt();

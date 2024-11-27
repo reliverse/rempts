@@ -12,11 +12,11 @@ import { resetCursorAndClear, moveCursorAndClear } from "~/utils/readline.js";
 
 export async function selectPrompt(options: PromptOptions): Promise<string> {
   const {
-    title,
+    title = "",
     choices,
     defaultValue,
     schema,
-    titleColor = "cyanBright",
+    titleColor = "blueBright",
     titleTypography = "bold",
   } = options;
 

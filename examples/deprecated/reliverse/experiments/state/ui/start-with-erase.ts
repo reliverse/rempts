@@ -24,8 +24,8 @@ export async function startPrompt(
     titleTypography,
     titleVariant,
     content,
-    contentColor,
-    contentTypography,
+    contentColor = "dim",
+    contentTypography = "italic",
     contentVariant,
     variantOptions,
   } = options;

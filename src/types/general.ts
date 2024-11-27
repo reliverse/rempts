@@ -81,6 +81,7 @@ export type FmtMsgOptions = {
   contentTypography?: TypographyName;
   contentVariant?: VariantName;
   hint?: string;
+  hintColor?: ColorName;
   border?: boolean;
   borderColor?: ColorName;
   dontRemoveBar?: boolean;
@@ -93,14 +94,13 @@ export type FmtMsgOptions = {
   addNewLineBefore?: boolean;
   addNewLineAfter?: boolean;
   placeholder?: string;
+  horizontalLine?: boolean;
+  horizontalLineLength?: number;
 };
 
-export type RequiredPromptOptions = {
-  title: string;
-};
-
-export type OptionalPromptOptions<T extends TSchema = any> = {
+export type PromptOptions<T extends TSchema = any> = {
   schema?: T;
+  title?: string;
   titleColor?: ColorName;
   titleTypography?: TypographyName;
   titleVariant?: VariantName;
@@ -125,7 +125,6 @@ export type OptionalPromptOptions<T extends TSchema = any> = {
   action?: () => Promise<void>;
   border?: boolean;
   borderColor?: ColorName;
-  clearConsole?: boolean;
   additionalLinesToDelete?: number;
   hintColor?: ColorName;
   hints?: string[];
@@ -134,9 +133,6 @@ export type OptionalPromptOptions<T extends TSchema = any> = {
   endTitle?: string;
   endTitleColor?: ColorName;
 };
-
-export type PromptOptions<T extends TSchema = any> = RequiredPromptOptions &
-  OptionalPromptOptions<T>;
 
 export type ChoiceRequiredOptions = {
   id: string;

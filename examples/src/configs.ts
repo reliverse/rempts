@@ -1,18 +1,18 @@
 import { emojify } from "node-emoji";
 
-import type { OptionalPromptOptions } from "~/main.js";
+import type { PromptOptions } from "~/main.js";
 
 export const basicConfig = {
   titleColor: "cyanBright",
   titleTypography: "bold",
   borderColor: "viceGradient",
-} satisfies OptionalPromptOptions;
+} satisfies PromptOptions;
 
 export const extendedConfig = {
   ...basicConfig,
   contentTypography: "italic",
   contentColor: "dim",
-} satisfies OptionalPromptOptions;
+} satisfies PromptOptions;
 
 export const experimentalConfig = {
   titleColor: "cyanBright",
@@ -21,4 +21,4 @@ export const experimentalConfig = {
     ":books: Learn the docs here: https://docs.reliverse.org/relinka",
   ),
   endTitleColor: "retroGradient",
-} satisfies OptionalPromptOptions;
+} satisfies PromptOptions;

@@ -74,11 +74,59 @@ bun i
 
 ## Playground
 
-Run `bun dev` to launch the [examples/run-example.ts](./examples/run-example.ts) CLI, where you can dive into and explore any of the examples listed below. Experiment with @reliverse/prompts by running examples locally or reviewing the linked code:
+Run `bun dev` to launch the [examples/launcher.ts](./examples/launcher.ts) CLI, which helps you to dive into and explore any of the examples listed below. Experiment with @reliverse/prompts by running examples locally or reviewing the linked code:
 
-1. **[1-main-example.ts](./examples/1-main-example.ts)**: A comprehensive example of a CLI application featuring a well styled UI config. This example showcases all available prompt components, with code organized into separate functions and files for better readability and clarity.
-2. **[2-mono-example.ts](./examples/2-mono-example.ts)**: A quiz game example inspired by Fireship's [video](https://youtube.com/watch?v=_oHByo8tiEY). It demonstrates the dynamic capabilities of @reliverse/prompts by using a prompt() that includes all prompt components, so you don't need to import each component separately.
-3. **[3-basic-example.ts](./examples/3-basic-example.ts)**: A simple example highlighting the core functionalities of @reliverse/prompts. The entire implementation is contained within a single file for easy understanding.
+1. **[1-main.ts](./examples/1-main.ts)**: A comprehensive example of a CLI application featuring a well styled UI config. This example showcases all available prompt components, with code organized into separate functions and files for better readability and clarity.
+2. **[2-mono.ts](./examples/2-mono.ts)**: A quiz game example inspired by Fireship's video about CLIs. It demonstrates the dynamic capabilities of @reliverse/prompts by using a prompt() that includes all prompt components, so you don't need to import each component separately.
+3. **[3-relinka.ts](./examples/3-relinka.ts)**: The example which demonstrates how [@reliverse/relinka](https://github.com/reliverse/relinka#readme) extends the possibilities of @reliverse/prompts.
+4. **[4-simple.ts](./examples/4-simple.ts)**: A simple example highlighting the core functionalities of @reliverse/prompts. The entire implementation is contained within a single file for easy understanding.
+
+## Extendable Configuration
+
+**Example Configuration:**
+
+```typescript
+const basicConfig = {
+  titleColor: "cyanBright",
+  titleTypography: "bold",
+  borderColor: "viceGradient",
+} satisfies PromptOptions;
+
+const extendedConfig = {
+  ...basicConfig,
+  contentTypography: "italic",
+  contentColor: "dim",
+} satisfies PromptOptions;
+
+const username = await inputPrompt({
+  id: "username",
+  title: "We're glad you're testing our library!",
+  content: "Let's get to know each other!\nWhat's your username?",
+  schema: schema.properties.username,
+  ...extendedConfig,
+});
+```
+
+## Mono Component
+
+The Mono Component is a special component that includes all other components. It's a great way to get started quickly or to see how all the components work together.
+
+This component requires providing prompt id. To have typesafety use something like the following:
+
+```ts
+export const IDs = {
+  start: "start",
+  username: "username",
+  dir: "dir",
+  spinner: "spinner",
+  password: "password",
+  age: "age",
+  lang: "lang",
+  color: "color",
+  birthday: "birthday",
+  features: "features",
+};
+```
 
 ## Prompts Library Comparison
 
@@ -132,30 +180,6 @@ Run `bun dev` to launch the [examples/run-example.ts](./examples/run-example.ts)
 ## Wrap-Up
 
 @reliverse/prompts is a versatile library designed to accelerate CLI development by providing customizable prompt components. Integrated into the [Reliverse CLI](https://github.com/blefnk/reliverse#readme), @reliverse/prompts enables you to create a unique design aligned with your CLI app’s aesthetics, similar to how @shadcn/ui supports customizable web UI components. Quickly get started by copying configurations from the [Reliverse Docs](https://docs.reliverse.org/relinka) and using components that fit your project, making it faster to bring your CLI app to life. You’re free to customize each component as desired, with default designs provided to ensure an attractive interface from the start.
-
-**Example Configuration:**
-
-```typescript
-const basicConfig = {
-  titleColor: "cyanBright",
-  titleTypography: "bold",
-  borderColor: "viceGradient",
-} satisfies OptionalPromptOptions;
-
-const extendedConfig = {
-  ...basicConfig,
-  contentTypography: "italic",
-  contentColor: "dim",
-} satisfies OptionalPromptOptions;
-
-const username = await inputPrompt({
-  id: "username",
-  title: "We're glad you're testing our library!",
-  content: "Let's get to know each other!\nWhat's your username?",
-  schema: schema.properties.username,
-  ...extendedConfig,
-});
-```
 
 ## Learn More
 

@@ -37,17 +37,17 @@ export async function confirmPrompt(
   options: ConfirmPromptOptions,
 ): Promise<boolean> {
   const {
-    title,
+    title = "",
     defaultValue,
-    titleColor = "cyanBright",
+    titleColor = "blueBright",
     titleTypography = "bold",
     titleVariant,
     content,
-    contentColor,
-    contentTypography,
+    contentColor = "dim",
+    contentTypography = "italic",
     contentVariant,
     borderColor = "viceGradient",
-    hintColor = "dim",
+    hintColor = "gray",
     variantOptions,
     action,
   } = options;
@@ -64,6 +64,7 @@ export async function confirmPrompt(
       }
 
       const question = fmt({
+        hintColor,
         type: errorMessage !== "" ? "M_ERROR" : "M_GENERAL",
         title,
         titleColor,
@@ -90,6 +91,7 @@ export async function confirmPrompt(
       const fullPrompt = `${question}${colorize(defaultHint, hintColor)}: `;
 
       const formattedPrompt = fmt({
+        hintColor,
         type: "M_NULL",
         title: fullPrompt,
       });

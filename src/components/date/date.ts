@@ -76,19 +76,20 @@ export async function datePrompt<T extends TSchema>(
   },
 ): Promise<string> {
   const {
-    title,
+    title = "",
     dateFormat,
     dateKind,
     hint,
+    hintColor = "gray",
     validate,
     defaultValue,
     schema,
-    titleColor = "cyanBright",
+    titleColor = "blueBright",
     titleTypography = "bold",
     titleVariant,
     content,
-    contentColor,
-    contentTypography,
+    contentColor = "dim",
+    contentTypography = "italic",
     contentVariant,
     borderColor = "viceGradient",
     variantOptions,
@@ -110,6 +111,7 @@ export async function datePrompt<T extends TSchema>(
 
       // Format the question prompt
       const questionText = fmt({
+        hintColor,
         type: errorMessage !== "" ? "M_ERROR_NULL" : "M_GENERAL_NULL",
         title: `${title} [Format: ${dateFormat}]`,
         titleColor,

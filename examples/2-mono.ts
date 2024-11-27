@@ -1,20 +1,28 @@
 // 2-mono-example.ts: A fun example of a quiz game. Inspired by CLI-game created by Fireship. The example demonstrates how to use a mono prompt() component.
 
-import { createAsciiArt } from "~/components/visual/ascii-art/ascii-art.js";
 import { prompt } from "~/components/mono/mono.js";
 import { spinner } from "~/components/spinner/index.js";
+import { createAsciiArt } from "~/components/visual/ascii-art/ascii-art.js";
+import { animateText, inputPrompt } from "~/main.js";
 import { colorize } from "~/utils/colorize.js";
 import { errorHandler } from "~/utils/errors.js";
 
 async function main() {
+  console.clear();
   await prompt({
     type: "start",
     id: "welcome",
-    title: "Who Wants to Be a JS Mil?",
-    titleColor: "gradientGradient",
+    title: "Mono Component Example",
+    titleColor: "passionGradient",
     titleTypography: "bold",
-    titleVariant: "animated",
   });
+
+  await animateText({
+    title: "Who Wants to Be a JS Mil?",
+    anim: "rainbow",
+    titleColor: "gradientGradient",
+  });
+
   console.log(`
     ${colorize("HOW TO PLAY", "white", "bold")} 
     I am a process on your computer.
@@ -22,9 +30,7 @@ async function main() {
     So get all the questions right...
   `);
 
-  const player_name = await prompt({
-    type: "text",
-    id: "player_name",
+  const player_name = await inputPrompt({
     title: "What is your name?",
     defaultValue: "Player",
   });

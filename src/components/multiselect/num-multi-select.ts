@@ -18,17 +18,18 @@ export async function numMultiSelectPrompt<T extends TSchema>(
   options: PromptOptions<T>,
 ): Promise<Static<T>> {
   const {
-    title,
+    title = "",
     choices,
     schema,
     defaultValue,
-    titleColor = "cyanBright",
+    titleColor = "blueBright",
     titleTypography = "bold",
     titleVariant,
     hint,
+    hintColor = "gray",
     content,
     contentColor = "dim",
-    contentTypography,
+    contentTypography = "italic",
     contentVariant,
     borderColor = "viceGradient",
     variantOptions,
@@ -52,6 +53,7 @@ export async function numMultiSelectPrompt<T extends TSchema>(
       }
 
       const question = fmt({
+        hintColor,
         type: errorMessage !== "" ? "M_ERROR" : "M_GENERAL",
         title: `${title}${defaultValue ? ` [Default: ${Array.isArray(defaultValue) ? defaultValue.join(", ") : defaultValue}]` : ""}`,
         titleColor,
@@ -82,6 +84,7 @@ export async function numMultiSelectPrompt<T extends TSchema>(
       const fullPrompt = `${question}\n${choicesText}\n${formattedBar}  ${colorize(`Enter your choices (comma-separated numbers between 1-${choices.length})`, contentColor)}:\n${formattedBar}  `;
 
       const formattedPrompt = fmt({
+        hintColor,
         type: "M_NULL",
         title: fullPrompt,
       });

@@ -1,6 +1,13 @@
 export type { ColorName } from "~/types/general.js";
 export type { ChoiceOptions } from "~/types/general.js";
-export type { OptionalPromptOptions } from "~/types/general.js";
+export type { PromptOptions } from "~/types/general.js";
+export {
+  isUnicodeSupported,
+  getCurrentTerminalName,
+  pm,
+  pmv,
+  pkg,
+} from "~/utils/platforms.js";
 export {
   deleteLastLine,
   deleteLastLines,

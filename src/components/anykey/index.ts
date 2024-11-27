@@ -22,6 +22,7 @@ export async function anykeyPrompt(
 
   if (message) {
     message = fmt({
+      hintColor: "gray",
       type: "M_GENERAL",
       title: message,
       titleColor: "dim",

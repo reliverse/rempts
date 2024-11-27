@@ -15,11 +15,13 @@ import { formatTree } from "~/utils/tree.js";
 import { reporterDemo } from "./deprecated/reliverse/experiments/utils/index.js";
 
 async function detailedExample() {
+  console.clear();
+
   // box
   relinka.box("=== box ===");
 
   relinka.box(
-    `Welcome to @reliverse/prompts! You're going to test an 'experimental' example.`,
+    `Welcome to @reliverse/prompts! You're going to test an 'Relinka' example.`,
   );
 
   relinka.box({
@@ -42,7 +44,7 @@ async function detailedExample() {
       { label: "fancy", value: "fancy" },
       { label: "nothing", value: "nothing" },
     ] as const,
-    defaultValue: "nothing",
+    defaultValue: "fancy",
   });
 
   if (reporterType === "basic") {
@@ -66,8 +68,8 @@ async function detailedExample() {
     },
   });
 
-  // range
-  relinka.box("=== range ===");
+  // range (experimental)
+  /* relinka.box("=== range ===");
 
   try {
     const value = await rangePrompt("How much ice cream would you like?", {
@@ -81,7 +83,7 @@ async function detailedExample() {
     console.log(`You chose: ${value} kg`);
   } catch (error) {
     console.log("You aborted, having chosen:", (error as Error).message);
-  }
+  } */
 
   // prompt
   relinka.box("=== prompt ===");
@@ -114,7 +116,7 @@ async function detailedExample() {
       { value: "prettier", label: "Prettier" },
       { value: "gh-action", label: "GitHub Actions" },
     ],
-    initial: ["eslint", "prettier"],
+    defaultValue: ["eslint", "prettier"],
   });
 
   relinka.start("Creating project...");

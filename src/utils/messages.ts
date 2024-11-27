@@ -1,4 +1,4 @@
-import { greenBright, redBright ,dim} from "picocolors";
+import { greenBright, redBright, dim } from "picocolors";
 
 import type {
   ColorName,
@@ -88,8 +88,10 @@ export function fmt(opts: FmtMsgOptions): string {
     : symbols.end + symbols.line;
 
   const suffixStartLine = opts.borderColor
-    ? colorMap[opts.borderColor](`${symbols.line.repeat(28)}⊱`)
-    : `${symbols.line.repeat(28)}⊱`;
+    ? colorMap[opts.borderColor](
+        `${symbols.line.repeat(opts.horizontalLineLength ?? 30)}⊱`,
+      )
+    : `${symbols.line.repeat(opts.horizontalLineLength ?? 30)}⊱`;
 
   const suffixEndLine = opts.borderColor
     ? colorMap[opts.borderColor](`${symbols.line.repeat(58)}⊱`)
@@ -207,8 +209,19 @@ export function fmt(opts: FmtMsgOptions): string {
       opts.titleVariant,
       opts.borderColor,
     );
+    function validateColorName(
+      colorName: string,
+    ): asserts colorName is ColorName {
+      if (!colorMap[colorName as ColorName]) {
+        throw new Error(`Invalid color name: ${colorName}`);
+      }
+    }
     if (opts.hint) {
-      formattedTitle += `\n${borderWithSpace}${colorMap.blueBright(opts.hint)}`;
+      validateColorName(opts.hintColor);
+      const hintColor =
+        opts.hintColor && colorMap[opts.hintColor] ? opts.hintColor : "dim";
+      const colorFunc = colorMap[hintColor] || ((text: string) => text);
+      formattedTitle += `\n${borderWithSpace}${colorFunc(opts.hint)}`;
     }
     if (opts.errorMessage) {
       const formattedError = applyStyles(
@@ -258,5 +271,7 @@ export function fmt(opts: FmtMsgOptions): string {
 }
 
 export function msg(opts: FmtMsgOptions): void {
-  console[opts.type === "M_ERROR" || opts.type === "M_ERROR_NULL" ? "error" : "log"](fmt(opts));
+  console[
+    opts.type === "M_ERROR" || opts.type === "M_ERROR_NULL" ? "error" : "log"
+  ](fmt(opts));
 }

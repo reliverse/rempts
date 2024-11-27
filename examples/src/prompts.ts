@@ -2,7 +2,6 @@ import { detect } from "detect-package-manager";
 import { emojify } from "node-emoji";
 import { bold } from "picocolors";
 
-import pkg from "~/../package.json" with { type: "json" };
 import { anykeyPrompt } from "~/main.js";
 import { multiselectPrompt } from "~/main.js";
 import { progressbar } from "~/main.js";
@@ -24,7 +23,6 @@ import { promptsDisplayResults } from "~/main.js";
 import { numSelectPrompt } from "~/main.js";
 import { selectPrompt } from "~/main.js";
 import { spinner } from "~/main.js";
-import { deleteLastLine } from "~/utils/terminal.js";
 
 import { basicConfig, experimentalConfig, extendedConfig } from "./configs.js";
 import { schema, type UserInput } from "./schema.js";
@@ -51,8 +49,9 @@ const IDs = {
 
 export async function showStartPrompt() {
   await startPrompt({
-    title: `@reliverse/prompts v${pkg.version}`,
     ...basicConfig,
+    // startPrompt is a special component: if you don't provide
+    // a title, it will display the useful technical information
     titleColor: "inverse",
     clearConsole: true,
   });
@@ -82,6 +81,12 @@ export async function showInputPrompt(): Promise<UserInput["username"]> {
     defaultValue: "johnny911",
     schema: schema.properties.username,
     ...extendedConfig,
+    // hardcoded: { // For testing purposes only
+    //   userInput: "JohnDoe", // Predefined user input
+    //   errorMessage: "", // No error message
+    //   linesRendered: 3, // Number of lines rendered
+    //   showPlaceholder: false, // Do not show placeholder since input is provided
+    // },
   });
   return username ?? "johnny911";
 }
@@ -221,6 +226,48 @@ export async function showSelectPrompt(): Promise<UserInput["lang"]> {
     ],
     defaultValue: "en",
     ...experimentalConfig,
+    // @reliverse/prompts is a very young library, so something might break.
+    // If you encounter any issues, please report them to the GitHub repository.
+    // By using the debug+hardcoded, you can try to manually fix some of your issues.
+    debug: false, // selectPrompt
+    /*
+    // [debug: true]
+    // without terminal-size library
+    {
+      terminalHeight: 16,
+      availableHeight: 12,
+      computedMaxItems: 9,
+      displayItems: 9,
+      startIdx: 0,
+      endIdx: 8,
+      shouldRenderTopEllipsis: false,
+      shouldRenderBottomEllipsis: false,
+      linesRendered: 11,
+    }
+    // with https://github.com/sindresorhus/terminal-size
+    {
+      terminalHeight: 19,
+      availableHeight: 15,
+      computedMaxItems: 9,
+      displayItems: 9,
+      startIdx: 0,
+      endIdx: 8,
+      shouldRenderTopEllipsis: false,
+      shouldRenderBottomEllipsis: false,
+      linesRendered: 11,
+    }
+    */
+    // hardcoded: {
+    //   terminalHeight: 16,
+    //   availableHeight: 12,
+    //   computedMaxItems: 9,
+    //   displayItems: 9,
+    //   startIdx: 0,
+    //   endIdx: 8,
+    //   shouldRenderTopEllipsis: false,
+    //   shouldRenderBottomEllipsis: false,
+    //   linesRendered: 11,
+    // },
   });
 
   switch (lang) {
@@ -281,7 +328,7 @@ export async function showMultiselectPrompt(): Promise<UserInput["langs"]> {
       "- Why did the Swift developer quit his job? Because he didn't like being optional!",
   };
 
-  const selectedOptions = await multiselectPrompt({
+  const multiselectOptions = await multiselectPrompt({
     title: "Select your favorite programming languages",
     options: [
       {
@@ -334,15 +381,54 @@ export async function showMultiselectPrompt(): Promise<UserInput["langs"]> {
       },
     ],
     required: true,
-    initial: ["TypeScript", "JavaScript"],
+    defaultValue: ["TypeScript", "JavaScript"],
     ...experimentalConfig,
+    debug: false, // multiselectPrompt
+    /*
+    // [debug: true]
+    // without terminal-size library
+    {
+      terminalHeight: 16,
+      availableHeight: 12,
+      computedMaxItems: 11,
+      displayItems: 11,
+      startIdx: 0,
+      endIdx: 10,
+      shouldRenderTopEllipsis: false,
+      shouldRenderBottomEllipsis: false,
+      linesRendered: 13,
+    }
+    // with https://github.com/sindresorhus/terminal-size
+    {
+      terminalHeight: 19,
+      availableHeight: 15,
+      computedMaxItems: 11,
+      displayItems: 11,
+      startIdx: 0,
+      endIdx: 10,
+      shouldRenderTopEllipsis: false,
+      shouldRenderBottomEllipsis: false,
+      linesRendered: 13,
+    }
+    */
+    // hardcoded: {
+    //   terminalHeight: 16,
+    //   availableHeight: 12,
+    //   computedMaxItems: 11,
+    //   displayItems: 11,
+    //   startIdx: 0,
+    //   endIdx: 10,
+    //   shouldRenderTopEllipsis: false,
+    //   shouldRenderBottomEllipsis: false,
+    //   linesRendered: 13,
+    // },
   });
 
-  if (!Array.isArray(selectedOptions)) {
+  if (!Array.isArray(multiselectOptions)) {
     process.exit(0);
   }
 
-  selectedOptions.forEach((option) => {
+  multiselectOptions.forEach((option) => {
     // By using forEach, @reliverse/prompts
     // has Intellisense to each selected option
     switch (option) {
@@ -367,7 +453,7 @@ export async function showMultiselectPrompt(): Promise<UserInput["langs"]> {
     addNewLineAfter: false,
   });
 
-  selectedOptions.forEach((option) => {
+  multiselectOptions.forEach((option) => {
     const joke = jokes[option];
     msg({
       type: "M_INFO_NULL",
@@ -381,7 +467,7 @@ export async function showMultiselectPrompt(): Promise<UserInput["langs"]> {
     type: "M_NEWLINE",
   });
 
-  return selectedOptions;
+  return multiselectOptions;
 }
 
 export async function showNumSelectPrompt(): Promise<UserInput["color"]> {

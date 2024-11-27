@@ -27,8 +27,8 @@ export async function numberPrompt<T extends TSchema>(
     titleTypography,
     titleVariant,
     content,
-    contentColor,
-    contentTypography,
+    contentColor = "dim",
+    contentTypography = "italic",
     contentVariant,
     state: initialState = "initial",
   } = options;

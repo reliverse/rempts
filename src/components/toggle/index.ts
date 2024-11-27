@@ -24,16 +24,16 @@ export async function togglePrompt<T extends string>(params: {
   endTitleColor?: ColorName;
 }): Promise<T> {
   const {
-    title,
+    title = "",
     options,
     initial,
     borderColor = "viceGradient",
-    titleColor = "cyanBright",
+    titleColor = "blueBright",
     titleTypography = "bold",
     titleVariant,
     border = true,
-    endTitle = "👋",
-    endTitleColor = "passionGradient",
+    endTitle = "",
+    endTitleColor = "dim",
   } = params;
 
   let selectedIndex = initial
@@ -62,6 +62,7 @@ export async function togglePrompt<T extends string>(params: {
     }
 
     let outputStr = `${greenBright(symbols.step_active)}  ${fmt({
+      hintColor: "gray",
       type: "M_NULL",
       title: title,
       titleColor,
@@ -128,16 +129,17 @@ export async function togglePrompt<T extends string>(params: {
         msg({
           type: "M_NEWLINE",
         });
-        msg({
-          type: "M_END",
-          title: endTitle,
-          titleColor: endTitleColor,
-          titleTypography,
-          titleVariant,
-          border,
-          borderColor,
-          addNewLineBefore: true,
-        });
+        if (endTitle !== "") {
+          msg({
+            type: "M_END",
+            title: endTitle,
+            titleColor: endTitleColor,
+            titleTypography,
+            titleVariant,
+            border,
+            borderColor,
+          });
+        }
         cleanup(true); // Passing a flag to indicate a graceful exit
       }
     }

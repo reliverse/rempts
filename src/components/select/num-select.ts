@@ -20,17 +20,18 @@ export async function numSelectPrompt<T extends TSchema>(
   },
 ): Promise<Static<T>> {
   const {
-    title,
+    title = "",
     hint,
+    hintColor = "gray",
     validate,
     defaultValue,
     schema,
-    titleColor = "cyanBright",
+    titleColor = "blueBright",
     titleTypography = "bold",
     titleVariant,
     content,
-    contentColor,
-    contentTypography,
+    contentColor = "dim",
+    contentTypography = "italic",
     contentVariant,
     borderColor = "viceGradient",
     variantOptions,
@@ -55,6 +56,7 @@ export async function numSelectPrompt<T extends TSchema>(
     }
 
     const question = fmt({
+      hintColor,
       type: errorMessage !== "" ? "M_ERROR" : "M_GENERAL",
       title,
       titleColor,
@@ -94,6 +96,7 @@ export async function numSelectPrompt<T extends TSchema>(
 
     // Combine question and choices
     const formattedPrompt = fmt({
+      hintColor,
       type: "M_NULL",
       title: `${question}${choicesText}\n${formattedBar}  ${colorize(
         `Enter your choice:`,

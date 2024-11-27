@@ -17,17 +17,18 @@ export async function numberPrompt<T extends TSchema>(
   options: PromptOptions<T>,
 ): Promise<Static<T>> {
   const {
-    title,
+    title = "",
     hint,
+    hintColor = "gray",
     validate,
     defaultValue,
     schema,
-    titleColor = "cyanBright",
+    titleColor = "blueBright",
     titleTypography = "bold",
     titleVariant,
     content,
-    contentColor,
-    contentTypography,
+    contentColor = "dim",
+    contentTypography = "italic",
     contentVariant,
     borderColor = "viceGradient",
     variantOptions,
@@ -44,6 +45,7 @@ export async function numberPrompt<T extends TSchema>(
     }
 
     const question = fmt({
+      hintColor,
       type: errorMessage !== "" ? "M_ERROR" : "M_GENERAL",
       title,
       titleColor,
@@ -69,6 +71,7 @@ export async function numberPrompt<T extends TSchema>(
     if (prompt.trim() === "" && defaultValue !== undefined) {
       deleteLastLine();
       const defaultMsg = fmt({
+        hintColor,
         type: "M_MIDDLE",
         title: `  ${defaultValue}`,
         borderColor,

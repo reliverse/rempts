@@ -1,6 +1,6 @@
 import type { TSchema } from "@sinclair/typebox";
 
-import type { OptionalPromptOptions, PromptType } from "./general.js";
+import type { PromptOptions, PromptType } from "./general.js";
 
 export type StateDeprecated =
   | "initial"
@@ -25,7 +25,7 @@ export type RequiredPromptOptionsDeprecated = {
 
 export type PromptOptionsDeprecated<T extends TSchema = any> =
   RequiredPromptOptionsDeprecated &
-    OptionalPromptOptions<T> & {
+    PromptOptions<T> & {
       state?: StateDeprecated;
       stateCompletedTitle?: string;
     };

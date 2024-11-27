@@ -4,8 +4,8 @@ import { animateText } from "~/components/visual/animate/animate.js";
 import { msg } from "~/utils/messages.js";
 
 export async function endPrompt({
-  title,
-  titleColor = "cyanBright",
+  title = "",
+  titleColor = "blueBright",
   titleTypography = "bold",
   titleVariant,
   titleAnimation,
