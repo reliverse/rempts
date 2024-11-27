@@ -14,7 +14,7 @@ import { deleteLastLine } from "~/utils/terminal.js";
 
 export async function multiselectPrompt<T extends string>(params: {
   title: string;
-  options: { label: string; value: T; hint?: string }[];
+  options: { label: string; value: T; hint?: string; disabled?: boolean }[];
   required?: boolean;
   initial?: T[];
   borderColor?: ColorName;
@@ -41,11 +41,23 @@ export async function multiselectPrompt<T extends string>(params: {
     maxItems,
   } = params;
 
-  let pointer = 0;
+  let pointer =
+    initial.length > 0
+      ? options.findIndex((opt) => initial.includes(opt.value) && !opt.disabled)
+      : 0;
+
+  // If no valid initial pointer, default to the first non-disabled option
+  if (pointer === -1) {
+    pointer = options.findIndex((opt) => !opt.disabled);
+    if (pointer === -1) {
+      pointer = 0;
+    } // Fallback if all options are disabled
+  }
+
   const selectedOptions = new Set<number>(
     initial
       .map((opt) => options.findIndex((o) => o.value === opt))
-      .filter((i) => i >= 0),
+      .filter((i) => i >= 0 && !options[i].disabled), // Ensure initial selections are not disabled
   );
 
   const rl = readline.createInterface({ input, output });
@@ -121,12 +133,21 @@ export async function multiselectPrompt<T extends string>(params: {
       const option = options[index];
       const isSelected = selectedOptions.has(index);
       const isHighlighted = index === pointer;
+      const isDisabled = option.disabled;
       const checkbox = isSelected ? "[x]" : "[ ]";
       const prefix = isHighlighted ? "> " : "  ";
-      const optionLabel = isHighlighted
-        ? cyanBright(option.label)
-        : option.label;
-      const hint = option.hint ? ` (${option.hint})` : "";
+
+      // Dim the label and hint if the option is disabled
+      const optionLabel = isDisabled
+        ? dim(option.label)
+        : isHighlighted
+          ? cyanBright(option.label)
+          : option.label;
+
+      const hint = option.hint
+        ? ` (${isDisabled ? dim(option.hint) : option.hint})`
+        : "";
+
       outputStr += `${formattedBar} ${prefix}${checkbox} ${optionLabel}${dim(hint)}\n`;
     }
 
@@ -150,30 +171,46 @@ export async function multiselectPrompt<T extends string>(params: {
   return new Promise<T[]>((resolve) => {
     function onKeyPress(str: string, key: readline.Key) {
       if (key.name === "up" || key.name === "k") {
-        // Move up
-        pointer = (pointer - 1 + options.length) % options.length;
+        // Move up and skip disabled options
+        const originalPointer = pointer;
+        do {
+          pointer = (pointer - 1 + options.length) % options.length;
+          if (!options[pointer].disabled) {
+            break;
+          }
+        } while (pointer !== originalPointer);
         errorMessage = ""; // Clear error message on navigation
         renderOptions();
       } else if (key.name === "down" || key.name === "j") {
-        // Move down
-        pointer = (pointer + 1) % options.length;
+        // Move down and skip disabled options
+        const originalPointer = pointer;
+        do {
+          pointer = (pointer + 1) % options.length;
+          if (!options[pointer].disabled) {
+            break;
+          }
+        } while (pointer !== originalPointer);
         errorMessage = ""; // Clear error message on navigation
         renderOptions();
       } else if (key.name === "space") {
-        // Toggle selection
-        if (selectedOptions.has(pointer)) {
-          selectedOptions.delete(pointer);
+        const currentOption = options[pointer];
+        if (currentOption.disabled) {
+          errorMessage = "This option is disabled";
         } else {
-          selectedOptions.add(pointer);
+          if (selectedOptions.has(pointer)) {
+            selectedOptions.delete(pointer);
+          } else {
+            selectedOptions.add(pointer);
+          }
+          errorMessage = ""; // Clear error message on successful toggle
         }
-        errorMessage = ""; // Clear error message on selection
         renderOptions();
       } else if (key.name === "return") {
         // Return selected options
         if (!required || selectedOptions.size > 0) {
-          const selectedValues = Array.from(selectedOptions).map(
-            (index) => options[index].value,
-          );
+          const selectedValues = Array.from(selectedOptions)
+            .filter((index) => !options[index].disabled) // Ensure no disabled options are selected
+            .map((index) => options[index].value);
           cleanup();
           resolve(selectedValues);
           deleteLastLine();

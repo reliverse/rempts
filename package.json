@@ -49,7 +49,7 @@
   "license": "MIT",
   "dependencies": {
     "@figliolia/chalk-animation": "^1.0.4",
-    "@reliverse/relinka": "^1.2.1",
+    "@reliverse/relinka": "^1.2.2",
     "@sinclair/typebox": "^0.34.9",
     "ansi-diff-stream": "^1.2.1",
     "ansi-escapes": "^7.0.0",
@@ -90,7 +90,7 @@
   "devDependencies": {
     "@arethetypeswrong/cli": "^0.17.0",
     "@biomejs/biome": "1.9.4",
-    "@cspell/dict-npm": "^5.1.13",
+    "@cspell/dict-npm": "^5.1.14",
     "@eslint/js": "^9.15.0",
     "@types/ansi-diff-stream": "^1.2.3",
     "@types/bun": "^1.1.14",

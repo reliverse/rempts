@@ -2,7 +2,7 @@ import { detect } from "detect-package-manager";
 import { emojify } from "node-emoji";
 import { bold } from "picocolors";
 
-import pkg from "~/../package.json" assert { type: "json" };
+import pkg from "~/../package.json" with { type: "json" };
 import { anykeyPrompt } from "~/main.js";
 import { multiselectPrompt } from "~/main.js";
 import { progressbar } from "~/main.js";
@@ -206,12 +206,18 @@ export async function showSelectPrompt(): Promise<UserInput["lang"]> {
     options: [
       { label: "English", value: "en", hint: "Default" },
       { label: "Ukrainian", value: "uk", hint: "Українська" },
+      {
+        label: "Dothraki",
+        value: "dothraki",
+        hint: "Dothraki",
+        disabled: true,
+      },
       { label: "Polish", value: "pl", hint: "Polski" },
       { label: "French", value: "fr", hint: "Français" },
       { label: "German", value: "de", hint: "Deutsch" },
       { label: "Spanish", value: "es", hint: "Español" },
       { label: "Italian", value: "it", hint: "Italiano" },
-      { label: "Other", value: "else", hint: "Other" },
+      { label: "Other", value: "other", hint: "Other" },
     ],
     defaultValue: "en",
     ...experimentalConfig,
@@ -223,6 +229,12 @@ export async function showSelectPrompt(): Promise<UserInput["lang"]> {
       break;
     case "uk":
       msg({ type: "M_INFO", title: "Ви обрали українську" });
+      break;
+    case "dothraki":
+      msg({
+        type: "M_INFO",
+        title: "You have unlocked the Dothraki language! Great job! 🎉",
+      });
       break;
     case "pl":
       msg({ type: "M_INFO", title: "Wybrałeś język polski" });
@@ -242,7 +254,7 @@ export async function showSelectPrompt(): Promise<UserInput["lang"]> {
     case "it":
       msg({ type: "M_INFO", title: "Hai scelto l'italiano" });
       break;
-    case "else":
+    case "other":
       msg({ type: "M_INFO", title: "You selected Other" });
       break;
   }
@@ -283,6 +295,12 @@ export async function showMultiselectPrompt(): Promise<UserInput["langs"]> {
         hint: "💛 Versatile and widely-used",
       },
       {
+        label: "Pawn",
+        value: "Pawn",
+        hint: "🎮 Simple and easy to learn",
+        disabled: true,
+      },
+      {
         label: "CoffeeScript",
         value: "CoffeeScript",
         hint: "☕ Elegant and concise",
@@ -292,7 +310,11 @@ export async function showMultiselectPrompt(): Promise<UserInput["langs"]> {
         value: "Python",
         hint: "🐍 Powerful and easy to learn",
       },
-      { label: "Java", value: "Java", hint: "🍵 Robust and portable" },
+      {
+        label: "Java",
+        value: "Java",
+        hint: "🍵 Robust and portable",
+      },
       {
         label: "CSharp",
         value: "CSharp",
@@ -300,7 +322,16 @@ export async function showMultiselectPrompt(): Promise<UserInput["langs"]> {
       },
       { label: "Go", value: "Go", hint: "🐋 Simple and efficient" },
       { label: "Rust", value: "Rust", hint: "🦀 Fast and memory-safe" },
-      { label: "Swift", value: "Swift", hint: "🐦 Safe and performant" },
+      {
+        label: "Swift",
+        value: "Swift",
+        hint: "🐦 Safe and performant",
+      },
+      {
+        label: "Other",
+        value: "Other",
+        hint: "Other",
+      },
     ],
     required: true,
     initial: ["TypeScript", "JavaScript"],

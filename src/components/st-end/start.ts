@@ -5,7 +5,6 @@ import { msg } from "~/utils/messages.js";
 export async function startPrompt({
   title,
   titleColor = "cyanBright",
-  
   titleTypography = "bold",
   titleVariant,
   borderColor = "viceGradient",

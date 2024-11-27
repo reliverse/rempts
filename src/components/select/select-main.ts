@@ -2,14 +2,18 @@ import { stdin as input, stdout as output } from "node:process";
 import readline from "node:readline";
 import { cyanBright, dim, greenBright, redBright } from "picocolors";
 
-import type { ColorName, VariantName, TypographyName } from "~/types/general.js";
+import type {
+  ColorName,
+  VariantName,
+  TypographyName,
+} from "~/types/general.js";
 
 import { deleteLastLine } from "~/main.js";
 import { bar, fmt, msg, symbols } from "~/utils/messages.js";
 
 export async function selectPrompt<T extends string>(params: {
   title: string;
-  options: { label: string; value: T; hint?: string }[];
+  options: { label: string; value: T; hint?: string; disabled?: boolean }[];
   defaultValue?: T;
   required?: boolean;
   borderColor?: ColorName;
@@ -36,9 +40,19 @@ export async function selectPrompt<T extends string>(params: {
     maxItems,
   } = params;
 
+  // Initialize selectedIndex to the defaultValue if it's not disabled
   let selectedIndex = defaultValue
-    ? options.findIndex((option) => option.value === defaultValue)
-    : 0;
+    ? options.findIndex(
+        (option) => option.value === defaultValue && !option.disabled,
+      )
+    : -1;
+
+  // If defaultValue is not provided or is disabled, find the first non-disabled option
+  if (selectedIndex === -1) {
+    selectedIndex = options.findIndex((option) => !option.disabled);
+  }
+
+  // If still not found, set to 0 (could be disabled)
   if (selectedIndex === -1) {
     selectedIndex = 0;
   }
@@ -55,6 +69,9 @@ export async function selectPrompt<T extends string>(params: {
   const instructions = `Use <↑/↓> or <k/j> to navigate, <Enter> to select, <Ctrl+C> to exit`;
   let errorMessage = ""; // Initialize error message
 
+  // Check if all options are disabled
+  const allDisabled = options.every((option) => option.disabled);
+
   function renderOptions() {
     // Move cursor up to the start of the options if not the first render
     if (linesRendered > 0) {
@@ -67,9 +84,11 @@ export async function selectPrompt<T extends string>(params: {
       titleColor,
     })}\n`;
 
-    // Display error message if present; otherwise, show instructions
+    // Display error message if present; otherwise, show instructions or all disabled message
     if (errorMessage) {
       outputStr += `${redBright(symbols.step_error)}  ${errorMessage}\n`;
+    } else if (allDisabled) {
+      outputStr += `${formattedBar}  ${dim("All options are disabled.")}\n`;
     } else {
       outputStr += `${formattedBar}  ${dim(instructions)}\n`;
     }
@@ -91,7 +110,7 @@ export async function selectPrompt<T extends string>(params: {
     if (options.length > displayItems) {
       const half = Math.floor(displayItems / 2);
 
-      // We're adjusting startIdx and endIdx here to center the selected item
+      // Adjust startIdx and endIdx to center the selectedIndex
       startIdx = selectedIndex - half;
       endIdx = selectedIndex + (displayItems - half - 1);
 
@@ -115,10 +134,17 @@ export async function selectPrompt<T extends string>(params: {
     for (let index = startIdx; index <= endIdx; index++) {
       const option = options[index];
       const isSelected = index === selectedIndex;
+      const isDisabled = option.disabled;
       const prefix = isSelected ? "> " : "  ";
-      const optionLabel = isSelected ? cyanBright(option.label) : option.label;
-      const hint = option.hint ? ` (${option.hint})` : "";
-      outputStr += `${formattedBar} ${prefix}${optionLabel}${dim(hint)}\n`;
+      const optionLabel = isDisabled
+        ? dim(option.label)
+        : isSelected
+          ? cyanBright(option.label)
+          : option.label;
+      const hint = option.hint
+        ? ` (${isDisabled ? dim(option.hint) : option.hint})`
+        : "";
+      outputStr += `${formattedBar} ${prefix}${optionLabel}${hint}\n`;
     }
 
     if (shouldRenderBottomEllipsis) {
@@ -140,17 +166,54 @@ export async function selectPrompt<T extends string>(params: {
 
   return new Promise<T>((resolve) => {
     function onKeyPress(str: string, key: readline.Key) {
+      if (allDisabled) {
+        // If all options are disabled, ignore any key presses except Ctrl+C
+        if (key.name === "c" && key.ctrl) {
+          // Show endTitle message and exit gracefully
+          msg({ type: "M_NEWLINE" });
+          msg({
+            type: "M_END",
+            title: endTitle,
+            titleColor: endTitleColor,
+            titleTypography,
+            titleVariant,
+            border,
+            borderColor,
+          });
+          cleanup(true);
+        }
+        return;
+      }
+
       if (key.name === "up" || key.name === "k") {
-        // Move up
-        selectedIndex = (selectedIndex - 1 + options.length) % options.length;
-        errorMessage = ""; // Clear error message on navigation
+        // Skip disabled options when moving up
+        const originalPointer = selectedIndex;
+        do {
+          selectedIndex = (selectedIndex - 1 + options.length) % options.length;
+          if (!options[selectedIndex].disabled) {
+            break;
+          }
+        } while (selectedIndex !== originalPointer);
+        errorMessage = "";
         renderOptions();
       } else if (key.name === "down" || key.name === "j") {
-        // Move down
-        selectedIndex = (selectedIndex + 1) % options.length;
-        errorMessage = ""; // Clear error message on navigation
+        // Skip disabled options when moving down
+        const originalPointer = selectedIndex;
+        do {
+          selectedIndex = (selectedIndex + 1) % options.length;
+          if (!options[selectedIndex].disabled) {
+            break;
+          }
+        } while (selectedIndex !== originalPointer);
+        errorMessage = "";
         renderOptions();
       } else if (key.name === "return") {
+        // Prevent selecting disabled options
+        if (options[selectedIndex].disabled) {
+          errorMessage = "This option is disabled";
+          renderOptions();
+          return;
+        }
         // Confirm selection
         if (required && !options[selectedIndex].value) {
           deleteLastLine();
