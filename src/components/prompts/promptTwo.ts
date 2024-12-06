@@ -871,7 +871,7 @@ export const note = (message = "", title = "") => {
 };
 
 /**
- * Prints an abort message to the console. This is typically used to indicate
+ * Prints an abort message to the relinka. This is typically used to indicate
  * that a process or operation has been cancelled. The message is colored for
  * for emphasis and visual differentiation.
  *
@@ -883,7 +883,7 @@ export const cancel = (message = "") => {
 };
 
 /**
- * Prints an introductory message to the console. This function is used to
+ * Prints an introductory message to the relinka. This function is used to
  * Display a title or short message at the beginning of a script or application.
  * framed by a specified bar character for visual distinction.
  *
@@ -894,7 +894,7 @@ export const intro = (title = "") => {
 };
 
 /**
- * Prints a closing message to the console. Similar to the `intro` function,
+ * Prints a closing message to the relinka. Similar to the `intro` function,
  * `outro' is designed to indicate the end of a script or application execution
  * with a framed message for clear visual separation from the rest of the console output.
  *

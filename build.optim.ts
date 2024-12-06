@@ -1,9 +1,9 @@
+import relinka from "@reliverse/relinka";
 import glob from "fast-glob";
 import fs from "fs-extra";
 import path from "pathe";
 import strip from "strip-comments";
-
-import { errorHandler, msg, spinner } from "~/main.js";
+import { fileURLToPath } from "url";
 
 // Verbose logging
 const debug = false;
@@ -12,10 +12,13 @@ const debug = false;
 const args: string[] = process.argv.slice(2);
 const isJSR: boolean = args.includes("--jsr");
 
+// Get current directory using import.meta.url
+const currentDir = path.dirname(fileURLToPath(import.meta.url));
+
 // Define directories based on the presence of '--jsr' flag
-const sourceDir: string = path.resolve(__dirname, "src");
+const sourceDir: string = path.resolve(currentDir, "src");
 const outputDir: string = path.resolve(
-  __dirname,
+  currentDir,
   isJSR ? "dist-jsr" : "dist-npm",
 );
 
@@ -25,9 +28,11 @@ const npmFilesToDelete: string[] = [
   "**/*.test.d.ts",
   "types/internal.js",
   "types/internal.d.ts",
+  "**/*.temp.js",
+  "**/*.temp.d.ts",
 ];
 
-const jsrFilesToDelete: string[] = ["**/*.test.ts"];
+const jsrFilesToDelete: string[] = ["**/*.test.ts", "**/*.temp.ts"];
 
 /**
  * Deletes files matching the provided patterns within the base directory.
@@ -232,32 +237,22 @@ async function copySrcToOutput(): Promise<void> {
  * @param dir - The directory to optimize.
  */
 async function optimizeBuildForProduction(dir: string): Promise<void> {
-  await spinner({
-    initialMessage: isJSR
-      ? "Preparing JSR build by removing existing output directory..."
-      : "Creating an optimized production build...",
-    successMessage: isJSR
-      ? "JSR build prepared successfully."
-      : "Optimized production build created successfully.",
-    spinnerSolution: "ora",
-    spinnerType: "arc",
-    action: async (updateMessage: (message: string) => void) => {
-      if (isJSR) {
-        updateMessage("Removing existing output directory...");
-        await removeOutputDirectory(); // Remove outputDir before copying
-        updateMessage("Copying 'src' to output directory...");
-        await copySrcToOutput();
-      }
-      updateMessage("Processing files...");
-      await processFiles(dir);
-      updateMessage("Cleaning up unnecessary files...");
-      // Choose the appropriate files to delete based on the mode
-      const filesToDelete: string[] = isJSR
-        ? jsrFilesToDelete
-        : npmFilesToDelete;
-      await deleteFiles(filesToDelete, dir);
-    },
-  });
+  if (isJSR) {
+    relinka.info(
+      "Preparing JSR build by removing existing output directory...",
+    );
+    await removeOutputDirectory(); // Remove outputDir before copying
+    relinka.info("Copying 'src' to output directory...");
+    await copySrcToOutput();
+    relinka.info("Processing copied files to replace import paths...");
+    await processFiles(outputDir); // Process files after copying
+  } else {
+    relinka.info("Creating an optimized production build...");
+    await processFiles(dir);
+    relinka.info("Cleaning up unnecessary files...");
+    const filesToDelete: string[] = isJSR ? jsrFilesToDelete : npmFilesToDelete;
+    await deleteFiles(filesToDelete, dir);
+  }
 }
 
 async function getDirectorySize(dirPath: string): Promise<number> {
@@ -282,16 +277,12 @@ await optimizeBuildForProduction(outputDir)
   .then(() => {
     getDirectorySize(outputDir)
       .then((size) => {
-        msg({
-          type: "M_INFO",
-          title: `Total size of ${outputDir}: ${size} bytes`,
-        });
+        relinka.info(`Total size of ${outputDir}: ${size} bytes`);
       })
       .catch((error) => {
-        msg({
-          type: "M_ERROR",
-          title: `Error calculating directory size for ${outputDir}: ${error instanceof Error ? error.message : "Unknown error"}`,
-        });
+        relinka.error(
+          `Error calculating directory size for ${outputDir}: ${error instanceof Error ? error.message : "Unknown error"}`,
+        );
       });
   })
-  .catch((error: Error) => errorHandler(error));
+  .catch((error: Error) => console.error(error.message));

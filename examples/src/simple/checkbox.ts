@@ -1,3 +1,4 @@
+import relinka from "@reliverse/relinka";
 import * as url from "node:url";
 
 import { checkbox, Separator } from "~/components/prompts/index.js";
@@ -23,7 +24,7 @@ const demo = async () => {
       },
     ],
   });
-  console.log("Answer:", answer);
+  relinka.log("Answer:", answer);
 
   answer = await checkbox({
     message: "Select your favorite letters",
@@ -83,7 +84,7 @@ const demo = async () => {
       { value: "Z" },
     ],
   });
-  console.log("Answer:", answer);
+  relinka.log("Answer:", answer);
 };
 
 if (import.meta.url.startsWith("file:")) {

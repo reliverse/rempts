@@ -1,4 +1,4 @@
-import colors from "picocolors";
+import pc from "picocolors";
 
 import type { PartialDeep } from "~/types/index.js";
 
@@ -139,7 +139,7 @@ const expand = createPrompt(
           } else if (value === "") {
             setError("Please input a value");
           } else {
-            setError(`"${colors.red(value)}" isn't an available option`);
+            setError(`"${pc.red(value)}" isn't an available option`);
           }
         }
       } else {
@@ -203,7 +203,7 @@ const expand = createPrompt(
         !Separator.isSeparator(choice) && choice.key === value.toLowerCase(),
     );
     if (currentOption) {
-      helpTip = `${colors.cyan(">>")} ${currentOption.name}`;
+      helpTip = `${pc.cyan(">>")} ${currentOption.name}`;
     }
 
     let error = "";

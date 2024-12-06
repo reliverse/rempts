@@ -1,5 +1,6 @@
-import type { Static, TSchema } from "@sinclair/typebox";
+// import type { Static, TSchema } from "@sinclair/typebox";
 
+import relinka from "@reliverse/relinka";
 import { Value } from "@sinclair/typebox/value";
 
 import type { ColorName, PromptOptions } from "~/types/general.js";
@@ -11,9 +12,15 @@ import {
   deleteLastLines,
 } from "~/utils/terminal.js";
 
-export async function passwordPrompt<T extends TSchema>(
-  options: PromptOptions<T>,
-): Promise<Static<T>> {
+// export async function passwordPrompt<T extends TSchema>(
+// options: PromptOptions<T>,
+// ): Promise<Static<T>> {\
+
+type PasswordPromptOptions = PromptOptions & {
+  defaultValue?: string;
+};
+
+export async function passwordPrompt(opts: PasswordPromptOptions) {
   const {
     title = "",
     hint,
@@ -30,7 +37,7 @@ export async function passwordPrompt<T extends TSchema>(
     contentVariant,
     borderColor = "viceGradient",
     variantOptions,
-  } = options;
+  } = opts;
 
   let linesToDelete = 0;
   let errorMessage = "";
@@ -72,8 +79,9 @@ export async function passwordPrompt<T extends TSchema>(
     if (!password.trim() && defaultValue !== undefined) {
       deleteLastLines(2);
       process.stdout.write(`${formattedBar}  ****`);
-      console.log(`\n${formattedBar}`);
-      return defaultValue as Static<T>;
+      relinka.log(`\n${formattedBar}`);
+      // return defaultValue as Static<T>;
+      return defaultValue;
     }
 
     let isValid = true;
@@ -100,7 +108,8 @@ export async function passwordPrompt<T extends TSchema>(
 
     if (isValid) {
       process.stdout.write("\n"); // Leave the input intact for valid entries
-      return password as Static<T>;
+      // return password as Static<T>;
+      return password;
     } else {
       // Lines will be cleared only during the next iteration
     }

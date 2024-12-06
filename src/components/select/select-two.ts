@@ -1,8 +1,9 @@
 import type { Key } from "node:readline";
 
+import relinka from "@reliverse/relinka";
 import { Value } from "@sinclair/typebox/value";
 import { stdout } from "node:process";
-import color from "picocolors";
+import pc from "picocolors";
 
 import type { PromptOptions } from "~/types/general.js";
 
@@ -10,7 +11,13 @@ import { useKeyPress } from "~/components/core/useKeyPress.js";
 import { colorize } from "~/utils/colorize.js";
 import { resetCursorAndClear, moveCursorAndClear } from "~/utils/readline.js";
 
-export async function selectPrompt(options: PromptOptions): Promise<string> {
+type SelectPromptOptions = PromptOptions & {
+  defaultValue?: string;
+};
+
+export async function selectPrompt(
+  options: SelectPromptOptions,
+): Promise<string> {
   const {
     title = "",
     choices,
@@ -48,14 +55,14 @@ export async function selectPrompt(options: PromptOptions): Promise<string> {
       throw new Error("Choices are required for select prompt.");
     }
     resetCursorAndClear(stdout, 0, 0);
-    console.log(color.cyanBright(color.bold(coloredTitle)));
+    relinka.log(pc.cyanBright(pc.bold(coloredTitle)));
     choices.forEach((choice, index) => {
       const isSelected = index === selectedIndex;
-      const prefix = isSelected ? color.greenBright(">") : " ";
+      const prefix = isSelected ? pc.greenBright(">") : " ";
       const choiceText = isSelected
-        ? color.bgGreen(color.black(choice.title))
+        ? pc.bgGreen(pc.black(choice.title))
         : choice.title;
-      console.log(`${prefix} ${choiceText}`);
+      relinka.log(`${prefix} ${choiceText}`);
     });
   }
 
@@ -78,7 +85,7 @@ export async function selectPrompt(options: PromptOptions): Promise<string> {
         } catch (error) {
           isValid = false;
           errorMessage = "Validation error.";
-          console.error(error);
+          relinka.error(error);
         }
         if (!isValid) {
           const errors = [...Value.Errors(schema, selectedValue)];
@@ -98,7 +105,7 @@ export async function selectPrompt(options: PromptOptions): Promise<string> {
           resolve(selectedValue ?? "");
         }
       } else {
-        console.log(errorMessage);
+        relinka.log(errorMessage);
         renderChoices();
       }
     };

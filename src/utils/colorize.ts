@@ -5,26 +5,7 @@ import gradient, {
   rainbow,
   vice,
 } from "gradient-string";
-import {
-  red,
-  inverse,
-  dim,
-  black,
-  green,
-  yellow,
-  blue,
-  magenta,
-  cyan,
-  cyanBright,
-  bgCyan,
-  bgCyanBright,
-  white,
-  gray,
-  underline,
-  bold,
-  strikethrough,
-  italic,
-} from "picocolors";
+import pc from "picocolors";
 
 import type { ColorName, TypographyName } from "~/types/general.js";
 
@@ -37,46 +18,46 @@ export function colorize(
 
   switch (colorName) {
     case "inverse":
-      result = inverse(` ${result} `);
+      result = pc.inverse(` ${result} `);
       break;
     case "dim":
-      result = dim(result);
+      result = pc.dim(result);
       break;
     case "black":
-      result = black(result);
+      result = pc.black(result);
       break;
     case "red":
-      result = red(result);
+      result = pc.red(result);
       break;
     case "green":
-      result = green(result);
+      result = pc.green(result);
       break;
     case "yellow":
-      result = yellow(result);
+      result = pc.yellow(result);
       break;
     case "blue":
-      result = blue(result);
+      result = pc.blue(result);
       break;
     case "magenta":
-      result = magenta(result);
+      result = pc.magenta(result);
       break;
     case "cyan":
-      result = cyan(result);
+      result = pc.cyan(result);
       break;
     case "cyanBright":
-      result = cyanBright(result);
+      result = pc.cyanBright(result);
       break;
     case "bgCyan":
-      result = bgCyan(` ${result} `);
+      result = pc.bgCyan(` ${result} `);
       break;
     case "bgCyanBright":
-      result = bgCyanBright(` ${result} `);
+      result = pc.bgCyanBright(` ${result} `);
       break;
     case "white":
-      result = white(result);
+      result = pc.white(result);
       break;
     case "gray":
-      result = gray(result);
+      result = pc.gray(result);
       break;
     case "gradientGradient":
       result = gradient(["red", "yellow", "green", "cyan", "blue", "magenta"])(
@@ -122,16 +103,16 @@ export function colorize(
   if (!gradientColors.includes(colorName ?? "") && typography) {
     switch (typography) {
       case "bold":
-        result = bold(result);
+        result = pc.bold(result);
         break;
       case "strikethrough":
-        result = strikethrough(result);
+        result = pc.strikethrough(result);
         break;
       case "underline":
-        result = underline(result);
+        result = pc.underline(result);
         break;
       case "italic":
-        result = italic(result);
+        result = pc.italic(result);
         break;
       default:
         break;

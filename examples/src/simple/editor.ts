@@ -1,9 +1,10 @@
+import relinka from "@reliverse/relinka";
 import * as url from "node:url";
 
 import { editor } from "~/components/prompts/index.js";
 
 const demo = async () => {
-  console.log(
+  relinka.log(
     "Answer:",
     await editor({
       message: "Please write a short bio of at least 3 lines.",
@@ -17,7 +18,7 @@ const demo = async () => {
     }),
   );
 
-  console.log(
+  relinka.log(
     "Answer:",
     await editor({
       message: "Automatically opened editor",

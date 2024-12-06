@@ -14,11 +14,12 @@ import {
   deleteLastLines,
 } from "~/utils/terminal.js";
 
-export async function numSelectPrompt<T extends TSchema>(
-  options: PromptOptions<T> & {
-    inline?: boolean;
-  },
-): Promise<Static<T>> {
+type NumSelectPromptOptions = PromptOptions & {
+  inline?: boolean;
+  defaultValue?: string;
+};
+
+export async function numSelectPrompt(opts: NumSelectPromptOptions) {
   const {
     title = "",
     hint,
@@ -37,7 +38,7 @@ export async function numSelectPrompt<T extends TSchema>(
     variantOptions,
     inline = true,
     choices,
-  } = options;
+  } = opts;
 
   if (!choices || choices.length === 0) {
     throw new Error("Choices are required for select prompt.");
@@ -161,7 +162,7 @@ export async function numSelectPrompt<T extends TSchema>(
       if (selectedChoice?.action) {
         await selectedChoice.action();
       }
-      return selectedValue as Static<T>;
+      return selectedValue;
     } else {
       // Will re-prompt in the next iteration
     }

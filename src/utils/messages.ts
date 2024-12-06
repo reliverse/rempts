@@ -1,4 +1,5 @@
-import { greenBright, redBright, dim } from "picocolors";
+import relinka from "@reliverse/relinka";
+import pc from "picocolors";
 
 import type {
   ColorName,
@@ -38,7 +39,7 @@ function applyStyles(
     if (colorName && colorMap[colorName]) {
       styledText = colorMap[colorName](styledText);
     } else if (colorName) {
-      console.warn(
+      relinka.warn(
         `Warning: Invalid color "${colorName}" provided to applyStyles.`,
       );
     }
@@ -46,7 +47,7 @@ function applyStyles(
     if (typographyName && typographyMap[typographyName]) {
       styledText = typographyMap[typographyName](styledText);
     } else if (typographyName) {
-      console.warn(
+      relinka.warn(
         `Warning: Invalid typography "${typographyName}" provided to applyStyles.`,
       );
     }
@@ -55,7 +56,7 @@ function applyStyles(
   if (variantName && variantMap[variantName]) {
     styledText = variantMap[variantName](styledText, borderColor);
   } else if (variantName) {
-    console.warn(
+    relinka.warn(
       `Warning: Invalid variant "${variantName}" provided to applyStyles.`,
     );
   }
@@ -128,9 +129,9 @@ export function fmt(opts: FmtMsgOptions): string {
     },
     M_GENERAL: {
       symbol: "",
-      prefix: greenBright(symbols.step_active),
+      prefix: pc.greenBright(symbols.step_active),
       suffix: opts.placeholder
-        ? dim(opts.placeholder) + "\n" + formattedBar + "  "
+        ? pc.dim(opts.placeholder) + "\n" + formattedBar + "  "
         : "",
       newLineBefore: opts.addNewLineBefore ?? false,
       newLineAfter: opts.addNewLineAfter ?? true,
@@ -139,21 +140,21 @@ export function fmt(opts: FmtMsgOptions): string {
       symbol: "",
       prefix: "",
       suffix: opts.placeholder
-        ? dim(opts.placeholder) + "\n" + formattedBar + "  "
+        ? pc.dim(opts.placeholder) + "\n" + formattedBar + "  "
         : "",
       newLineBefore: opts.addNewLineBefore ?? false,
       newLineAfter: opts.addNewLineAfter ?? true,
     },
     M_INFO: {
       symbol: "",
-      prefix: greenBright(symbols.info),
+      prefix: pc.greenBright(symbols.info),
       suffix: "",
       newLineBefore: opts.addNewLineBefore ?? false,
       newLineAfter: opts.addNewLineAfter ?? true,
     },
     M_ERROR: {
       symbol: "",
-      prefix: redBright(symbols.step_error),
+      prefix: pc.redBright(symbols.step_error),
       newLineBefore: opts.addNewLineBefore ?? false,
       newLineAfter: opts.addNewLineAfter ?? true,
     },
@@ -165,7 +166,7 @@ export function fmt(opts: FmtMsgOptions): string {
     },
     M_END: {
       symbol: "",
-      prefix: greenBright(symbols.info),
+      prefix: pc.greenBright(symbols.info),
       suffix: opts.border
         ? `\n${formattedBar}\n${prefixEndLine}${suffixEndLine}\n`
         : "",

@@ -1,5 +1,6 @@
 import type { TSchema } from "@sinclair/typebox";
 
+import relinka from "@reliverse/relinka";
 import { Value } from "@sinclair/typebox/value";
 import { stdin as input, stdout as output } from "node:process";
 import readline from "node:readline/promises";
@@ -141,7 +142,7 @@ export async function inputPrompt(
         title: `  ${defaultValue}`,
         borderColor,
       });
-      console.log(defaultMsg);
+      relinka.log(defaultMsg);
       linesToDelete += countLines(defaultMsg);
     }
 
@@ -232,7 +233,7 @@ export async function inputPrompt(
         title: `  ${defaultValue}`,
         borderColor,
       });
-      console.log(defaultMsg);
+      relinka.log(defaultMsg);
       linesToDelete += countLines(defaultMsg);
     }
 

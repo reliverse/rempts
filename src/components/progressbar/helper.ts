@@ -1,3 +1,5 @@
+import relinka from "@reliverse/relinka";
+
 import { msg } from "~/utils/messages.js";
 
 import type { ProgressBarOptions } from "./ProgressBar.js";
@@ -59,7 +61,7 @@ export async function progressbar(
       progressBar.update(total);
     }
   } catch (error) {
-    console.error("Progress bar encountered an error:", error);
+    relinka.error("Progress bar encountered an error:", error);
   }
 
   // New line

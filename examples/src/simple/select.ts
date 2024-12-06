@@ -1,3 +1,4 @@
+import relinka from "@reliverse/relinka";
 import * as url from "node:url";
 
 import { select, Separator } from "~/components/prompts/index.js";
@@ -60,7 +61,7 @@ const demo = async () => {
       },
     ],
   });
-  console.log("Answer:", answer);
+  relinka.log("Answer:", answer);
 
   answer = await select({
     message: "Select your favorite letter",
@@ -70,7 +71,7 @@ const demo = async () => {
       ...alphabet,
     ],
   });
-  console.log("Answer:", answer);
+  relinka.log("Answer:", answer);
 
   answer = await select({
     message: "Select your favorite letter (example without loop)",
@@ -81,7 +82,7 @@ const demo = async () => {
     ],
     loop: false,
   });
-  console.log("Answer:", answer);
+  relinka.log("Answer:", answer);
 };
 
 if (import.meta.url.startsWith("file:")) {

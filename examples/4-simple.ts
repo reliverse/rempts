@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import colors from "picocolors";
+import pc from "picocolors";
 
 import figures from "~/components/figures/index.js";
 import { select } from "~/components/prompts/index.js";
@@ -66,7 +66,7 @@ async function askNextDemo() {
     ],
     theme: {
       prefix: {
-        done: colors.magenta(figures.play),
+        done: pc.magenta(figures.play),
       },
     },
   });

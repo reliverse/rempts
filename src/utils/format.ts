@@ -11,7 +11,7 @@ const FORMAT_ARGS = [
 
 // Caches compiled format strings for reuse
 const _compileCache: any = {};
-// process.on('beforeExit', () => { console.log(_compileCache) })
+// process.on('beforeExit', () => { relinka.log(_compileCache) })
 
 /**
  * Compiles a format string by replacing placeholders with appropriate position indices.

@@ -1,3 +1,4 @@
+import relinka from "@reliverse/relinka";
 import * as url from "node:url";
 
 import { expand } from "~/components/prompts/index.js";
@@ -30,7 +31,7 @@ const demo = async () => {
       },
     ],
   });
-  console.log("Answer:", answer);
+  relinka.log("Answer:", answer);
 
   answer = await expand({
     message: "(With default) Conflict on `file.js`:",
@@ -58,7 +59,7 @@ const demo = async () => {
       },
     ],
   });
-  console.log("Answer:", answer);
+  relinka.log("Answer:", answer);
 
   answer = await expand({
     expanded: true,
@@ -86,7 +87,7 @@ const demo = async () => {
       },
     ],
   });
-  console.log("Answer:", answer);
+  relinka.log("Answer:", answer);
 };
 
 if (import.meta.url.startsWith("file:")) {

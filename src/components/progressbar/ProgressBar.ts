@@ -1,4 +1,4 @@
-import { green, greenBright, red } from "picocolors";
+import pc from "picocolors";
 
 export type ProgressBarOptions = {
   total: number; // Total units of work to complete
@@ -56,7 +56,7 @@ export class ProgressBar {
   }
 
   /**
-   * Render the progress bar in the console.
+   * Render the progress bar in the relinka.
    */
   private render() {
     const percent = this.current / this.total;
@@ -69,8 +69,8 @@ export class ProgressBar {
 
     if (this.colorize) {
       bar =
-        green(this.completeChar.repeat(filledLength)) +
-        red(this.incompleteChar.repeat(emptyLength));
+        pc.green(this.completeChar.repeat(filledLength)) +
+        pc.red(this.incompleteChar.repeat(emptyLength));
     }
 
     const percentage = (percent * 100).toFixed(2);
@@ -88,7 +88,7 @@ export class ProgressBar {
 
     process.stdout.clearLine(0);
     process.stdout.cursorTo(0);
-    process.stdout.write(greenBright("◆") + "  " + output);
+    process.stdout.write(pc.greenBright("◆") + "  " + output);
 
     if (this.current >= this.total) {
       process.stdout.write("\n");

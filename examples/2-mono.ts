@@ -1,5 +1,7 @@
 // 2-mono-example.ts: A fun example of a quiz game. Inspired by CLI-game created by Fireship. The example demonstrates how to use a mono prompt() component.
 
+import relinka from "@reliverse/relinka";
+
 import { prompt } from "~/components/mono/mono.js";
 import { spinner } from "~/components/spinner/index.js";
 import { createAsciiArt } from "~/components/visual/ascii-art/ascii-art.js";
@@ -23,7 +25,7 @@ async function main() {
     titleColor: "gradientGradient",
   });
 
-  console.log(`
+  relinka.log(`
     ${colorize("HOW TO PLAY", "white", "bold")} 
     I am a process on your computer.
     If you get any question wrong I will be ${colorize("killed", "red", "bold")}

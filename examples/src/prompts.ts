@@ -1,6 +1,7 @@
+import relinka from "@reliverse/relinka";
 import { detect } from "detect-package-manager";
 import { emojify } from "node-emoji";
-import { bold } from "picocolors";
+import pc from "picocolors";
 
 import { anykeyPrompt } from "~/main.js";
 import { multiselectPrompt } from "~/main.js";
@@ -24,6 +25,7 @@ import { numSelectPrompt } from "~/main.js";
 import { selectPrompt } from "~/main.js";
 import { spinner } from "~/main.js";
 
+import packageJson from "../../package.json" with { type: "json" };
 import { basicConfig, experimentalConfig, extendedConfig } from "./configs.js";
 import { schema, type UserInput } from "./schema.js";
 import {
@@ -33,6 +35,8 @@ import {
   hashPassword,
   validateAge,
 } from "./utils.js";
+
+const pkg = packageJson;
 
 const IDs = {
   start: "start",
@@ -54,6 +58,8 @@ export async function showStartPrompt() {
     // a title, it will display the useful technical information
     titleColor: "inverse",
     clearConsole: true,
+    packageName: pkg.name,
+    packageVersion: pkg.version,
   });
 }
 
@@ -62,7 +68,7 @@ export async function showAnykeyPrompt(
   username?: string,
 ) {
   const pm = await detect();
-  let notification = bold("[anykeyPrompt] Press any key to continue...");
+  let notification = pc.bold("[anykeyPrompt] Press any key to continue...");
   if (kind === "privacy") {
     notification = `Before you continue, please note that you are only testing an example CLI app.\n│  None of your responses will be sent anywhere. No actions, such as installing dependencies, will actually take place;\n│  this is simply a simulation with a sleep timer and spinner. You can always review the source code to learn more.\n│  ============================\n│  ${notification}`;
   }
@@ -202,14 +208,14 @@ export async function showDatePromptTwo() {
     schema: undefined, // @reliverse/prompts allows you to pass an additional TypeBox schema if needed, but it's not required
   });
 
-  console.log(`You entered: ${userDate}`);
+  relinka.log(`You entered: ${userDate}`);
 }
 
 export async function showSelectPrompt(): Promise<UserInput["lang"]> {
   const lang = await selectPrompt({
-    title: "[selectPrompt] Choose your language",
     options: [
       { label: "English", value: "en", hint: "Default" },
+      { separator: true, width: 20, symbol: "line" },
       { label: "Ukrainian", value: "uk", hint: "Українська" },
       {
         label: "Dothraki",
@@ -224,6 +230,7 @@ export async function showSelectPrompt(): Promise<UserInput["lang"]> {
       { label: "Italian", value: "it", hint: "Italiano" },
       { label: "Other", value: "other", hint: "Other" },
     ],
+    title: "[selectPrompt] Choose your language",
     defaultValue: "en",
     ...experimentalConfig,
     // @reliverse/prompts is a very young library, so something might break.
@@ -341,6 +348,7 @@ export async function showMultiselectPrompt(): Promise<UserInput["langs"]> {
         value: "JavaScript",
         hint: "💛 Versatile and widely-used",
       },
+      { separator: true, symbol: "pointer" },
       {
         label: "Pawn",
         value: "Pawn",

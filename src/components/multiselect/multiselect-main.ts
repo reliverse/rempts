@@ -1,6 +1,7 @@
+import relinka from "@reliverse/relinka";
 import { stdin as input, stdout as output } from "node:process";
 import readline from "node:readline";
-import { cyanBright, dim, greenBright, redBright } from "picocolors";
+import pc from "picocolors";
 import terminalSize from "terminal-size";
 
 import type {
@@ -13,9 +14,29 @@ import { colorize } from "~/main.js";
 import { bar, symbols, msg } from "~/utils/messages.js";
 import { deleteLastLine } from "~/utils/terminal.js";
 
+type SelectOption<T> = {
+  label: string;
+  value: T;
+  hint?: string;
+  disabled?: boolean;
+};
+
+type SeparatorOption = {
+  separator: true;
+  width?: number;
+  symbol?: keyof typeof symbols;
+};
+
+// Type guard to check if an option is a SelectOption
+function isSelectOption<T>(
+  option: SelectOption<T> | SeparatorOption,
+): option is SelectOption<T> {
+  return !("separator" in option);
+}
+
 export async function multiselectPrompt<T extends string>(params: {
   title: string;
-  options: { label: string; value: T; hint?: string; disabled?: boolean }[];
+  options: (SelectOption<T> | SeparatorOption)[];
   required?: boolean;
   defaultValue?: T[];
   borderColor?: ColorName;
@@ -66,23 +87,30 @@ export async function multiselectPrompt<T extends string>(params: {
   let pointer =
     defaultValue.length > 0
       ? options.findIndex(
-          (opt) => defaultValue.includes(opt.value) && !opt.disabled,
+          (opt) =>
+            isSelectOption(opt) &&
+            defaultValue.includes(opt.value) &&
+            !opt.disabled,
         )
       : 0;
 
   // If no valid defaultValue pointer, default to the first non-disabled option
   if (pointer === -1) {
-    pointer = options.findIndex((opt) => !opt.disabled);
+    pointer = options.findIndex((opt) => isSelectOption(opt) && !opt.disabled);
     if (pointer === -1) {
       pointer = 0;
-    } // Fallback if all options are disabled
+    } // Fallback if all options are disabled or are separators
   }
 
   // Initialize selected options based on defaultValue
   const selectedOptions = new Set<number>(
     defaultValue
-      .map((opt) => options.findIndex((o) => o.value === opt))
-      .filter((i) => i >= 0 && !options[i].disabled), // Ensure defaultValue selections are not disabled
+      .map((opt) =>
+        options.findIndex((o) => isSelectOption(o) && o.value === opt),
+      )
+      .filter(
+        (i) => i >= 0 && isSelectOption(options[i]) && !options[i].disabled,
+      ), // Ensure defaultValue selections are not disabled or separators
   );
 
   const rl = readline.createInterface({ input, output });
@@ -97,8 +125,10 @@ export async function multiselectPrompt<T extends string>(params: {
   const instructions = `Use <↑/↓> or <k/j> to navigate, <Space> to select/deselect, <Enter> to confirm, <Ctrl+C> to exit`;
   let errorMessage = ""; // Initialize error message
 
-  // Check if all options are disabled
-  const allDisabled = options.every((option) => option.disabled);
+  // Check if all selectable options are disabled
+  const allDisabled = options
+    .filter(isSelectOption)
+    .every((option) => option.disabled);
 
   function renderOptions() {
     // Move cursor up to the start of the options if not the first render
@@ -106,7 +136,7 @@ export async function multiselectPrompt<T extends string>(params: {
       process.stdout.write(`\x1B[${currentLinesRendered}A`);
     }
 
-    let outputStr = `${greenBright(symbols.step_active)}  ${colorize(
+    let outputStr = `${pc.greenBright(symbols.step_active)}  ${colorize(
       title,
       titleColor,
       titleTypography,
@@ -114,11 +144,11 @@ export async function multiselectPrompt<T extends string>(params: {
 
     // Display error message if present; otherwise, show instructions or all disabled message
     if (errorMessage) {
-      outputStr += redBright(`${symbols.step_error}  ${errorMessage}\n`);
+      outputStr += `${pc.redBright(symbols.step_error)}  ${errorMessage}\n`;
     } else if (allDisabled) {
-      outputStr += `${formattedBar}  ${dim("All options are disabled.")}\n`;
+      outputStr += `${formattedBar}  ${pc.dim("All options are disabled.")}\n`;
     } else {
-      outputStr += `${formattedBar}  ${dim(instructions)}\n`;
+      outputStr += `${formattedBar}  ${pc.dim(instructions)}\n`;
     }
 
     // Determine effective properties based on provided params or defaults
@@ -126,16 +156,22 @@ export async function multiselectPrompt<T extends string>(params: {
     const effectiveTerminalHeight = terminalHeight ?? size.rows ?? 24; // Fallback to 24 if rows is undefined
     const effectiveAvailableHeight =
       availableHeight ?? effectiveTerminalHeight - 4; // Header and footer adjustment
-    const effectiveComputedMaxItems =
-      computedMaxItems ??
-      Math.min(
-        maxItems ?? Infinity,
-        effectiveAvailableHeight > 0 ? effectiveAvailableHeight : Infinity,
-        options.length,
-      );
+
+    // If maxItems is not set, display all options
+    const effectiveComputedMaxItems = maxItems
+      ? Math.min(
+          maxItems,
+          effectiveAvailableHeight > 0 ? effectiveAvailableHeight : Infinity,
+          options.length,
+        )
+      : options.length;
+
     const minItems = 3; // Minimum number of items to display for better UX
-    const effectiveDisplayItems =
-      displayItems ?? Math.max(effectiveComputedMaxItems, minItems);
+    const effectiveDisplayItems = displayItems
+      ? displayItems
+      : maxItems
+        ? Math.max(effectiveComputedMaxItems, minItems)
+        : options.length;
 
     let effectiveStartIdx: number;
     let effectiveEndIdx: number;
@@ -146,38 +182,67 @@ export async function multiselectPrompt<T extends string>(params: {
       effectiveEndIdx = endIdx;
     } else {
       // Compute indices dynamically based on pointer and displayItems
-      effectiveStartIdx = 0;
-      effectiveEndIdx = options.length - 1;
+      if (maxItems) {
+        // If maxItems is set, apply the reduction logic
+        if (options.length > effectiveDisplayItems) {
+          const half = Math.floor(effectiveDisplayItems / 2);
 
-      if (options.length > effectiveDisplayItems) {
-        const half = Math.floor(effectiveDisplayItems / 2);
+          // Adjust startIdx and endIdx to center the pointer
+          effectiveStartIdx = pointer - half;
+          effectiveEndIdx = pointer + (effectiveDisplayItems - half - 1);
 
-        // Adjust startIdx and endIdx to center the pointer
-        effectiveStartIdx = pointer - half;
-        effectiveEndIdx = pointer + (effectiveDisplayItems - half - 1);
-
-        if (effectiveStartIdx < 0) {
+          if (effectiveStartIdx < 0) {
+            effectiveStartIdx = 0;
+            effectiveEndIdx = effectiveDisplayItems - 1;
+          } else if (effectiveEndIdx >= options.length) {
+            effectiveEndIdx = options.length - 1;
+            effectiveStartIdx = options.length - effectiveDisplayItems;
+          }
+        } else {
           effectiveStartIdx = 0;
-          effectiveEndIdx = effectiveDisplayItems - 1;
-        } else if (effectiveEndIdx >= options.length) {
           effectiveEndIdx = options.length - 1;
-          effectiveStartIdx = options.length - effectiveDisplayItems;
         }
+      } else {
+        // If maxItems is not set, display all options
+        effectiveStartIdx = 0;
+        effectiveEndIdx = options.length - 1;
       }
     }
 
-    // Determine if ellipses should be displayed
-    const effectiveShouldRenderTopEllipsis =
-      shouldRenderTopEllipsis ?? effectiveStartIdx > 0;
-    const effectiveShouldRenderBottomEllipsis =
-      shouldRenderBottomEllipsis ?? effectiveEndIdx < options.length - 1;
+    // Determine whether to render ellipses
+    let effectiveShouldRenderTopEllipsis: boolean;
+    let effectiveShouldRenderBottomEllipsis: boolean;
+
+    if (maxItems) {
+      effectiveShouldRenderTopEllipsis =
+        shouldRenderTopEllipsis ?? effectiveStartIdx > 0;
+      effectiveShouldRenderBottomEllipsis =
+        shouldRenderBottomEllipsis ?? effectiveEndIdx < options.length - 1;
+    } else {
+      // Do not render ellipses if maxItems is not set
+      effectiveShouldRenderTopEllipsis = false;
+      effectiveShouldRenderBottomEllipsis = false;
+    }
 
     if (effectiveShouldRenderTopEllipsis) {
-      outputStr += `${formattedBar}  ${dim("...")}\n`;
+      outputStr += `${formattedBar}  ${pc.dim("...")}\n`;
     }
 
     for (let index = effectiveStartIdx; index <= effectiveEndIdx; index++) {
       const option = options[index];
+
+      // Handle separator
+      if (!isSelectOption(option)) {
+        const width = option.width ?? 20;
+        const symbol = option.symbol ?? "line";
+        if (symbol in symbols) {
+          outputStr += `${formattedBar}  ${pc.dim(symbols[symbol].repeat(width))}\n`;
+        } else {
+          outputStr += `${formattedBar}  ${pc.dim("─".repeat(width))}\n`;
+        }
+        continue;
+      }
+
       const isSelected = selectedOptions.has(index);
       const isHighlighted = index === pointer;
       const isDisabled = option.disabled;
@@ -186,20 +251,20 @@ export async function multiselectPrompt<T extends string>(params: {
 
       // Dim the label and hint if the option is disabled
       const optionLabel = isDisabled
-        ? dim(option.label)
+        ? pc.dim(option.label)
         : isHighlighted
-          ? cyanBright(option.label)
+          ? pc.cyanBright(option.label)
           : option.label;
 
       const hint = option.hint
-        ? ` (${isDisabled ? dim(option.hint) : option.hint})`
+        ? ` (${isDisabled ? pc.dim(option.hint) : option.hint})`
         : "";
 
-      outputStr += `${formattedBar} ${prefix}${checkbox} ${optionLabel}${dim(hint)}\n`;
+      outputStr += `${formattedBar} ${prefix}${checkbox} ${optionLabel}${pc.dim(hint)}\n`;
     }
 
     if (effectiveShouldRenderBottomEllipsis) {
-      outputStr += `${formattedBar}  ${dim("...")}\n`;
+      outputStr += `${formattedBar}  ${pc.dim("...")}\n`;
     }
 
     // Calculate lines rendered:
@@ -212,7 +277,7 @@ export async function multiselectPrompt<T extends string>(params: {
         (effectiveShouldRenderBottomEllipsis ? 1 : 0); // Bottom ellipsis
 
     if (debug) {
-      console.log({
+      relinka.log({
         terminalHeight: effectiveTerminalHeight,
         availableHeight: effectiveAvailableHeight,
         computedMaxItems: effectiveComputedMaxItems,
@@ -256,22 +321,24 @@ export async function multiselectPrompt<T extends string>(params: {
       }
 
       if (key.name === "up" || key.name === "k") {
-        // Move up and skip disabled options
+        // Move up and skip disabled options and separators
         const originalPointer = pointer;
         do {
           pointer = (pointer - 1 + options.length) % options.length;
-          if (!options[pointer].disabled) {
+          const currentOption = options[pointer];
+          if (isSelectOption(currentOption) && !currentOption.disabled) {
             break;
           }
         } while (pointer !== originalPointer);
         errorMessage = ""; // Clear error message on navigation
         renderOptions();
       } else if (key.name === "down" || key.name === "j") {
-        // Move down and skip disabled options
+        // Move down and skip disabled options and separators
         const originalPointer = pointer;
         do {
           pointer = (pointer + 1) % options.length;
-          if (!options[pointer].disabled) {
+          const currentOption = options[pointer];
+          if (isSelectOption(currentOption) && !currentOption.disabled) {
             break;
           }
         } while (pointer !== originalPointer);
@@ -279,7 +346,7 @@ export async function multiselectPrompt<T extends string>(params: {
         renderOptions();
       } else if (key.name === "space") {
         const currentOption = options[pointer];
-        if (currentOption.disabled) {
+        if (!isSelectOption(currentOption) || currentOption.disabled) {
           errorMessage = "This option is disabled";
         } else {
           if (selectedOptions.has(pointer)) {
@@ -294,8 +361,13 @@ export async function multiselectPrompt<T extends string>(params: {
         // Return selected options
         if (!required || selectedOptions.size > 0) {
           const selectedValues = Array.from(selectedOptions)
-            .filter((index) => !options[index].disabled) // Ensure no disabled options are selected
-            .map((index) => options[index].value);
+            .filter(
+              (index) =>
+                isSelectOption(options[index]) && !options[index].disabled,
+            ) // Ensure no disabled options are selected
+            .map((index) =>
+              "value" in options[index] ? options[index].value : null,
+            );
           cleanup();
           resolve(selectedValues);
           deleteLastLine();
@@ -339,7 +411,7 @@ export async function multiselectPrompt<T extends string>(params: {
       if (isCtrlC) {
         process.exit(); // Exit the process without throwing an error
       } else {
-        console.log(); // Move to a new line
+        relinka.log(""); // Move to a new line
       }
     }
 

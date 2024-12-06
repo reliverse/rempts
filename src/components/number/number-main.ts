@@ -1,5 +1,6 @@
 import type { TSchema, Static } from "@sinclair/typebox";
 
+import relinka from "@reliverse/relinka";
 import { Value } from "@sinclair/typebox/value";
 import { stdin as input, stdout as output } from "node:process";
 import readline from "node:readline/promises";
@@ -13,9 +14,11 @@ import {
   deleteLastLines,
 } from "~/utils/terminal.js";
 
-export async function numberPrompt<T extends TSchema>(
-  options: PromptOptions<T>,
-): Promise<Static<T>> {
+type NumberPromptOptions = PromptOptions & {
+  defaultValue?: string | string[] | number;
+};
+
+export async function numberPrompt(opts: NumberPromptOptions) {
   const {
     title = "",
     hint,
@@ -32,7 +35,7 @@ export async function numberPrompt<T extends TSchema>(
     contentVariant,
     borderColor = "viceGradient",
     variantOptions,
-  } = options;
+  } = opts;
 
   const rl = readline.createInterface({ input, output });
 
@@ -76,7 +79,7 @@ export async function numberPrompt<T extends TSchema>(
         title: `  ${defaultValue}`,
         borderColor,
       });
-      console.log(defaultMsg);
+      relinka.log(defaultMsg);
       linesToDelete += countLines(defaultMsg);
     }
 
@@ -112,7 +115,7 @@ export async function numberPrompt<T extends TSchema>(
     if (isValid) {
       msg({ type: "M_NEWLINE" });
       rl.close();
-      return num as Static<T>;
+      return num;
     } else {
       // Will re-prompt in the next iteration
     }

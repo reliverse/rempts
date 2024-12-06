@@ -1,21 +1,17 @@
 {
   "version": "0.2",
   "language": "en",
-  "import": [
-    "@cspell/dict-npm/cspell-ext.json"
-  ],
-  "ignorePaths": [
-    "examples/deprecated",
-    "dist-jsr",
-    "dist-npm"
-  ],
+  "import": ["@cspell/dict-npm/cspell-ext.json"],
+  "ignorePaths": ["examples/deprecated", "dist-jsr", "dist-npm"],
   "words": [
     "alacritty",
     "alternar",
+    "anims",
     "anykey",
     "Approximative",
     "appts",
     "arethetypeswrong",
+    "Arrayable",
     "Arryn",
     "astro",
     "attw",
@@ -50,6 +46,7 @@
     "Dont",
     "Dothraki",
     "Downey",
+    "EARG",
     "elegido",
     "emojify",
     "eslintcache",
@@ -102,13 +99,13 @@
     "polski",
     "printj",
     "rawlist",
-    "redrun",
     "relinka",
     "reliverse",
     "Rivia",
     "rxvt",
     "sbuf",
     "scelto",
+    "scule",
     "selección",
     "seleccionar",
     "sentencer",

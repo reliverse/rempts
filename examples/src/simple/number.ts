@@ -1,16 +1,17 @@
+import relinka from "@reliverse/relinka";
 import * as url from "node:url";
 
 import { number } from "~/components/prompts/index.js";
 
 const demo = async () => {
-  console.log(
+  relinka.log(
     "Answer:",
     await number({
       message: "Enter your age?",
     }),
   );
 
-  console.log(
+  relinka.log(
     "Answer:",
     await number({
       message: "Enter an integer or a decimal number?",
@@ -18,7 +19,7 @@ const demo = async () => {
     }),
   );
 
-  console.log(
+  relinka.log(
     "Answer:",
     await number({
       message: "Enter a number between 5 and 8?",

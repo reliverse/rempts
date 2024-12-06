@@ -1,4 +1,5 @@
-import { cyanBright, dim, greenBright, redBright, reset } from "picocolors";
+import relinka from "@reliverse/relinka";
+import pc from "picocolors";
 import { stdin as input, stdout as output } from "process";
 import readline from "readline";
 
@@ -61,7 +62,7 @@ export async function togglePrompt<T extends string>(params: {
       process.stdout.write(`\x1B[${linesRendered}A`);
     }
 
-    let outputStr = `${greenBright(symbols.step_active)}  ${fmt({
+    let outputStr = `${pc.greenBright(symbols.step_active)}  ${fmt({
       hintColor: "gray",
       type: "M_NULL",
       title: title,
@@ -72,15 +73,15 @@ export async function togglePrompt<T extends string>(params: {
 
     // Display error message if present; otherwise, show instructions
     if (errorMessage) {
-      outputStr += `${redBright(symbols.step_error)}  ${errorMessage}\n`;
+      outputStr += `${pc.redBright(symbols.step_error)}  ${errorMessage}\n`;
     } else {
-      outputStr += `${formattedBar}  ${dim(instructions)}\n`;
+      outputStr += `${formattedBar}  ${pc.dim(instructions)}\n`;
     }
 
     const [leftOption, rightOption] = options;
     const displayOptions = options.map((option, index) => {
       if (index === selectedIndex) {
-        return cyanBright(option);
+        return pc.cyanBright(option);
       }
       return option;
     });
@@ -155,7 +156,7 @@ export async function togglePrompt<T extends string>(params: {
       if (isCtrlC) {
         process.exit(); // Exit the process without throwing an error
       } else {
-        console.log(); // Move to a new line
+        relinka.log(""); // Move to a new line
       }
     }
 

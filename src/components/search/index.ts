@@ -1,4 +1,4 @@
-import colors from "picocolors";
+import pc from "picocolors";
 
 import type { PartialDeep } from "~/types/index.js";
 
@@ -32,9 +32,9 @@ type SearchTheme = {
 const searchTheme: SearchTheme = {
   icon: { cursor: figures.pointer },
   style: {
-    disabled: (text: string) => colors.dim(`- ${text}`),
-    searchTerm: (text: string) => colors.cyan(text),
-    description: (text: string) => colors.cyan(text),
+    disabled: (text: string) => pc.dim(`- ${text}`),
+    searchTerm: (text: string) => pc.cyan(text),
+    description: (text: string) => pc.cyan(text),
   },
   helpMode: "auto",
 };

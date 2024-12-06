@@ -1,3 +1,4 @@
+import relinka from "@reliverse/relinka";
 import * as url from "node:url";
 
 import { input } from "~/components/prompts/index.js";
@@ -13,7 +14,7 @@ async function demo() {
 
     throw error;
   });
-  console.log("Answer:", answer);
+  relinka.log("Answer:", answer);
 }
 
 if (import.meta.url.startsWith("file:")) {

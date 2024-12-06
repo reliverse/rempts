@@ -1,5 +1,3 @@
-import type { Static, TSchema } from "@sinclair/typebox";
-
 import { Value } from "@sinclair/typebox/value";
 import { stdin as input, stdout as output } from "node:process";
 import readline from "node:readline/promises";
@@ -14,9 +12,11 @@ import {
   deleteLastLines,
 } from "~/utils/terminal.js";
 
-export async function multiselectPrompt<T extends TSchema>(
-  options: PromptOptions<T>,
-): Promise<Static<T>> {
+type MultiSelectPromptOptions = PromptOptions & {
+  defaultValue?: string[];
+};
+
+export async function multiselectPrompt(opts: MultiSelectPromptOptions) {
   const {
     title = "",
     choices,
@@ -33,7 +33,7 @@ export async function multiselectPrompt<T extends TSchema>(
     contentVariant,
     borderColor = "viceGradient",
     variantOptions,
-  } = options;
+  } = opts;
 
   if (!choices || choices.length === 0) {
     throw new Error("Choices are required for multiselect prompt.");
@@ -103,7 +103,7 @@ export async function multiselectPrompt<T extends TSchema>(
           titleColor: "none",
         });
         msg({ type: "M_NEWLINE" });
-        return defaultValue as Static<T>;
+        return defaultValue;
       }
 
       // Parse and validate selections
@@ -140,7 +140,7 @@ export async function multiselectPrompt<T extends TSchema>(
       if (isValid) {
         msg({ type: "M_NEWLINE" });
         rl.close();
-        return selectedValues as Static<T>;
+        return selectedValues;
       }
     }
   } finally {

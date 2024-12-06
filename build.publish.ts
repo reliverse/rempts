@@ -1,10 +1,10 @@
 import relinka from "@reliverse/relinka";
-import { execa } from "execa";
+import { execaCommand } from "execa";
 import fs from "fs-extra";
 import mri from "mri";
 
 function showHelp() {
-  relinka.info(`Usage: bun build.publish.ts [options]
+  relinka.info(`Usage: bun tsx build.publish.ts [options]
 
 Options:
   no options      Publish to npm registry
@@ -47,10 +47,10 @@ if (unknownFlags.length > 0) {
 async function publishNpm(dryRun: boolean) {
   try {
     if (dryRun) {
-      await execa("bun publish --dry-run", { stdio: "inherit" });
+      await execaCommand("npm publish --dry-run", { stdio: "inherit" });
     } else {
-      await execa("bun build:npm", { stdio: "inherit" });
-      await execa("bun publish", { stdio: "inherit" });
+      await execaCommand("bun build:npm", { stdio: "inherit" });
+      await execaCommand("npm publish", { stdio: "inherit" });
     }
     relinka.success("Published to npm successfully.");
   } catch (error) {
@@ -62,13 +62,13 @@ async function publishNpm(dryRun: boolean) {
 async function publishJsr(dryRun: boolean) {
   try {
     if (dryRun) {
-      await execa(
+      await execaCommand(
         "bunx jsr publish --allow-slow-types --allow-dirty --dry-run",
         { stdio: "inherit" },
       );
     } else {
-      await execa("bun build:jsr", { stdio: "inherit" });
-      await execa("bunx jsr publish --allow-slow-types --allow-dirty", {
+      await execaCommand("bun build:jsr", { stdio: "inherit" });
+      await execaCommand("bunx jsr publish --allow-slow-types --allow-dirty", {
         stdio: "inherit",
       });
     }
@@ -90,7 +90,7 @@ async function bumpJsrVersion(disable?: boolean) {
 }
 
 async function bumpNpmVersion() {
-  await execa("bun bumpp", { stdio: "inherit" });
+  await execaCommand("bun bumpp", { stdio: "inherit" });
 }
 
 async function main() {

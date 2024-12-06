@@ -1,3 +1,4 @@
+import relinka from "@reliverse/relinka";
 import { stdin as input, stdout as output } from "process";
 import readline from "readline/promises";
 
@@ -15,11 +16,11 @@ export async function selectPrompt<T extends string>(params: {
   const rl = readline.createInterface({ input, output });
 
   while (true) {
-    console.log(`\n${message}`);
+    relinka.log(`\n${message}`);
     options.forEach((option, index) => {
       const prefix = index === selectedIndex ? "->" : "  ";
       const isDefault = option.value === initial ? "(default)" : "";
-      console.log(`${prefix} [${index + 1}] ${option.label} ${isDefault}`);
+      relinka.log(`${prefix} [${index + 1}] ${option.label} ${isDefault}`);
     });
 
     const promptMessage =
@@ -41,7 +42,7 @@ export async function selectPrompt<T extends string>(params: {
       rl.close();
       return options[index].value;
     } else {
-      console.log("Invalid selection. Please try again.");
+      relinka.log("Invalid selection. Please try again.");
     }
   }
 }

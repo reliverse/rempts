@@ -3,6 +3,7 @@ import {
   type Animation,
   type AnimationName,
 } from "@figliolia/chalk-animation";
+import relinka from "@reliverse/relinka";
 
 import type { ColorName, MsgType, TypographyName } from "~/types/general.js";
 
@@ -71,6 +72,6 @@ export async function animateText({
       }, finalDelay);
     });
   } catch (error) {
-    console.error("Animation failed to complete.", error);
+    relinka.error("Animation failed to complete.", error);
   }
 }

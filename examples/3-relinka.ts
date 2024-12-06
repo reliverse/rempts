@@ -12,7 +12,7 @@ import { selectPrompt } from "~/components/select/select-main.js";
 import { errorHandler } from "~/utils/errors.js";
 import { formatTree } from "~/utils/tree.js";
 
-import { reporterDemo } from "./deprecated/reliverse/experiments/utils/index.js";
+import { reporterDemo } from "./src/relinka/index.js";
 
 async function detailedExample() {
   console.clear();
@@ -80,9 +80,9 @@ async function detailedExample() {
       unit: "kg",
     });
 
-    console.log(`You chose: ${value} kg`);
+    relinka.log(`You chose: ${value} kg`);
   } catch (error) {
-    console.log("You aborted, having chosen:", (error as Error).message);
+    relinka.log("You aborted, having chosen:", (error as Error).message);
   } */
 
   // prompt
@@ -130,7 +130,7 @@ async function detailedExample() {
     reporters: [
       {
         log: (logObj) => {
-          console.log(JSON.stringify(logObj));
+          relinka.log(JSON.stringify(logObj));
         },
       },
     ],
@@ -389,7 +389,7 @@ async function detailedExample() {
   relinka.box("=== wrap-all ===");
 
   function fooWrapAll() {
-    console.info("console foo");
+    relinka.info("console foo");
     process.stderr.write("called from stderr\n");
   }
 
@@ -401,12 +401,12 @@ async function detailedExample() {
   // wrap-console
 
   function fooWrapConsole() {
-    console.info("foo");
-    console.warn("foo warn");
+    relinka.info("foo");
+    relinka.warn("foo warn");
   }
 
   function _trace() {
-    console.trace("foobar");
+    relinka.trace("foobar");
   }
   function trace() {
     _trace();
@@ -424,7 +424,7 @@ async function detailedExample() {
   relinka.box("=== wrap-std ===");
 
   function fooWrapStd() {
-    console.info("console foo");
+    relinka.info("console foo");
     process.stdout.write("called from stdout foo\n");
     process.stderr.write("called from stderr foo\n");
   }

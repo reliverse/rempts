@@ -1,4 +1,4 @@
-import colors from "picocolors";
+import pc from "picocolors";
 
 import type { Prettify } from "~/types/index.js";
 
@@ -28,7 +28,7 @@ type DefaultTheme = {
    * @defaultValue
    * ```ts
    * // import colors from 'yoctocolors-cjs';
-   * (status) => status === 'done' ? colors.green('✔') : colors.blue('?')
+   * (status) => status === 'done' ? pc.green('✔') : pc.blue('?')
    * ```
    */
   prefix: string | Prettify<Omit<Record<Status, string>, "loading">>;
@@ -73,7 +73,7 @@ type DefaultTheme = {
      * @defaultValue
      * ```ts
      * // import colors from 'yoctocolors-cjs';
-     * (text) => colors.cyan(text)
+     * (text) => pc.cyan(text)
      * ```
      */
     answer: (text: string) => string;
@@ -88,7 +88,7 @@ type DefaultTheme = {
      * @defaultValue
      * ```ts
      * // import colors from 'yoctocolors-cjs';
-     * (text, status) => colors.bold(text)
+     * (text, status) => pc.bold(text)
      * ```
      */
     message: (text: string, status: Status) => string;
@@ -102,7 +102,7 @@ type DefaultTheme = {
      * @defaultValue
      * ```ts
      * // import colors from 'yoctocolors-cjs';
-     * (text) => colors.red(`> ${text}`)
+     * (text) => pc.red(`> ${text}`)
      * ```
      */
     error: (text: string) => string;
@@ -116,7 +116,7 @@ type DefaultTheme = {
      * @defaultValue
      * ```ts
      * // import colors from 'yoctocolors-cjs';
-     * (text) => colors.dim(`(${text})`)
+     * (text) => pc.dim(`(${text})`)
      * ```
      */
     defaultAnswer: (text: string) => string;
@@ -130,7 +130,7 @@ type DefaultTheme = {
      * @defaultValue
      * ```ts
      * // import colors from 'yoctocolors-cjs';
-     * (text) => colors.dim(text)
+     * (text) => pc.dim(text)
      * ```
      */
     help: (text: string) => string;
@@ -144,7 +144,7 @@ type DefaultTheme = {
      * @defaultValue
      * ```ts
      * // import colors from 'yoctocolors-cjs';
-     * (text) => colors.cyan(text)
+     * (text) => pc.cyan(text)
      * ```
      */
     highlight: (text: string) => string;
@@ -158,7 +158,7 @@ type DefaultTheme = {
      * @defaultValue
      * ```ts
      * // import colors from 'yoctocolors-cjs';
-     * (text) => colors.cyan(colors.bold(`<${text}>`))
+     * (text) => pc.cyan(pc.bold(`<${text}>`))
      * ```
      */
     key: (text: string) => string;
@@ -171,23 +171,23 @@ export type Theme<Extension extends object = object> = Prettify<
 
 export const defaultTheme: DefaultTheme = {
   prefix: {
-    idle: colors.blue("?"),
+    idle: pc.blue("?"),
     // TODO: use figure
-    done: colors.green(figures.tick),
+    done: pc.green(figures.tick),
   },
   spinner: {
     interval: 80,
     frames: ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"].map((frame) =>
-      colors.yellow(frame),
+      pc.yellow(frame),
     ),
   },
   style: {
-    answer: colors.cyan,
-    message: colors.bold,
-    error: (text) => colors.red(`> ${text}`),
-    defaultAnswer: (text) => colors.dim(`(${text})`),
-    help: colors.dim,
-    highlight: colors.cyan,
-    key: (text: string) => colors.cyan(colors.bold(`<${text}>`)),
+    answer: pc.cyan,
+    message: pc.bold,
+    error: (text) => pc.red(`> ${text}`),
+    defaultAnswer: (text) => pc.dim(`(${text})`),
+    help: pc.dim,
+    highlight: pc.cyan,
+    key: (text: string) => pc.cyan(pc.bold(`<${text}>`)),
   },
 };

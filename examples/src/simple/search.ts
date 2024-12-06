@@ -1,3 +1,4 @@
+import relinka from "@reliverse/relinka";
 import { promises as fs } from "node:fs";
 import path from "node:path";
 import * as url from "node:url";
@@ -49,7 +50,7 @@ const demo = async () => {
       }));
     },
   });
-  console.log("Answer:", answer);
+  relinka.log("Answer:", answer);
 
   // Demo: Using the search prompt as an autocomplete tool.
   answer = await search({
@@ -87,7 +88,7 @@ const demo = async () => {
       return true;
     },
   });
-  console.log("Answer:", answer);
+  relinka.log("Answer:", answer);
 };
 
 if (import.meta.url.startsWith("file:")) {

@@ -1,3 +1,4 @@
+import relinka from "@reliverse/relinka";
 import { stdin as input, stdout as output } from "process";
 import readline from "readline/promises";
 
@@ -12,10 +13,10 @@ export async function multiselectPrompt<T extends string>(params: {
   const rl = readline.createInterface({ input, output });
 
   while (true) {
-    console.log(`\n${message}`);
+    relinka.log(`\n${message}`);
     options.forEach((option, index) => {
       const isSelected = initial.includes(option) ? "[x]" : "[ ]";
-      console.log(`${index + 1}. ${isSelected} ${option}`);
+      relinka.log(`${index + 1}. ${isSelected} ${option}`);
     });
 
     const promptMessage =
@@ -42,7 +43,7 @@ export async function multiselectPrompt<T extends string>(params: {
       rl.close();
       return indices.map((index) => options[index]);
     } else {
-      console.log("Invalid selection. Please try again.");
+      relinka.log("Invalid selection. Please try again.");
     }
   }
 }

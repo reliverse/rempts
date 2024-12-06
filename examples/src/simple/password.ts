@@ -1,16 +1,17 @@
+import relinka from "@reliverse/relinka";
 import * as url from "node:url";
 
 import { password } from "~/components/prompts/index.js";
 
 const demo = async () => {
-  console.log(
+  relinka.log(
     "Answer:",
     await password({
       message: "Enter a silent password?",
     }),
   );
 
-  console.log(
+  relinka.log(
     "Answer:",
     await password({
       message: "Enter a masked password?",

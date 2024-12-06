@@ -4,7 +4,7 @@ import { Type } from "@sinclair/typebox";
 import { Value } from "@sinclair/typebox/value";
 import { stdin as input, stdout as output } from "node:process";
 import readline from "node:readline/promises";
-import { cyanBright } from "picocolors";
+import pc from "picocolors";
 import {
   buildRegExp,
   digit,
@@ -70,9 +70,10 @@ const dateFormatSchema = Type.Union([
 
 // Implement the datePrompt function
 export async function datePrompt<T extends TSchema>(
-  options: PromptOptions<T> & {
+  opts: PromptOptions<T> & {
     dateFormat: string; // Description of accepted date formats
     dateKind: "birthday" | "other"; // Type of date for additional validation
+    defaultValue?: string;
   },
 ): Promise<string> {
   const {
@@ -93,7 +94,7 @@ export async function datePrompt<T extends TSchema>(
     contentVariant,
     borderColor = "viceGradient",
     variantOptions,
-  } = options;
+  } = opts;
 
   const rl = readline.createInterface({ input, output });
 
@@ -142,7 +143,7 @@ export async function datePrompt<T extends TSchema>(
 
       // Prompt the user for input
       const answer =
-        (await rl.question(`${cyanBright(">")}  `)).trim() || defaultValue;
+        (await rl.question(`${pc.cyanBright(">")}  `)).trim() || defaultValue;
 
       // Display defaultValue if it is used
       if (answer === defaultValue && defaultValue) {

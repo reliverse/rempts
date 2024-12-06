@@ -1,5 +1,6 @@
+import relinka from "@reliverse/relinka";
 import * as url from "node:url";
-import colors from "picocolors";
+import pc from "picocolors";
 
 import { input } from "~/components/prompts/index.js";
 
@@ -15,17 +16,17 @@ const demo = async () => {
     message: "What's your favorite food?",
     default: "Croissant",
   });
-  console.log("Answer:", answer);
+  relinka.log("Answer:", answer);
 
   answer = await input({
     message: "Enter an hex color?",
     // biome-ignore lint/style/useDefaultParameterLast: <explanation>
     transformer(value = "", { isFinal }) {
-      return isFinal ? colors.underline(value) : value;
+      return isFinal ? pc.underline(value) : value;
     },
     validate: (value = "") => isHex(value) || "Pass a valid hex value",
   });
-  console.log("Answer:", answer);
+  relinka.log("Answer:", answer);
 
   answer = await input({
     message: "(Slow validation) provide a number:",
@@ -40,7 +41,7 @@ const demo = async () => {
         );
       }),
   });
-  console.log("Answer:", answer);
+  relinka.log("Answer:", answer);
 };
 
 if (import.meta.url.startsWith("file:")) {

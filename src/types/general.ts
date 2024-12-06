@@ -98,6 +98,10 @@ export type FmtMsgOptions = {
   horizontalLineLength?: number;
 };
 
+export type OldPromptOptions<T extends TSchema = any> = {
+  PromptOptions: PromptOptions<T>;
+};
+
 export type PromptOptions<T extends TSchema = any> = {
   schema?: T;
   title?: string;
@@ -113,7 +117,7 @@ export type PromptOptions<T extends TSchema = any> = {
   hint?: string;
   placeholder?: string;
   validate?: (value: any) => boolean | string | Promise<boolean | string>;
-  defaultValue?: string | string[] | number | boolean;
+  // defaultValue?: string | string[] | number | boolean;
   defaultColor?: ColorName;
   defaultTypography?: TypographyName;
   choices?: ChoiceOptions[];

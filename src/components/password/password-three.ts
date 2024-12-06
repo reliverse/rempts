@@ -1,4 +1,4 @@
-import color from "picocolors";
+import pc from "picocolors";
 
 import type { PromptOptions } from "~/components/prompts/prompt.js";
 
@@ -25,11 +25,11 @@ export default class PasswordPrompt extends Prompt {
     });
     this.on("value", () => {
       if (this.cursor >= this.value.length) {
-        this.valueWithCursor = `${this.masked}${color.inverse(color.hidden("_"))}`;
+        this.valueWithCursor = `${this.masked}${pc.inverse(pc.hidden("_"))}`;
       } else {
         const s1 = this.masked.slice(0, this.cursor);
         const s2 = this.masked.slice(this.cursor);
-        this.valueWithCursor = `${s1}${color.inverse(s2[0])}${s2.slice(1)}`;
+        this.valueWithCursor = `${s1}${pc.inverse(s2[0])}${s2.slice(1)}`;
       }
     });
   }

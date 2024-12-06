@@ -1,4 +1,5 @@
-import { textSync, type Fonts } from "figlet";
+import relinka from "@reliverse/relinka";
+import figlet, { type Fonts } from "figlet";
 
 export async function createAsciiArt({
   message,
@@ -13,6 +14,6 @@ export async function createAsciiArt({
     console.clear();
   }
 
-  const asciiArt = textSync(message, { font });
-  console.log(asciiArt);
+  const asciiArt = figlet.textSync(message, { font });
+  relinka.log(asciiArt);
 }

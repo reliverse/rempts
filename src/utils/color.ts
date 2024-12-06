@@ -127,7 +127,7 @@ export type ColorFunction = (text: string | number) => string;
  * Creates an object that maps color names to their respective color functions,
  * based on whether or not color support is enabled.
  * @param {boolean} [useColor=isColorSupported] - Specifies whether to use color functions or fallback to plain strings.
- * @returns {Record<ColorName, ColorFunction>} An object where keys are color names and values are functions to apply those colors. See {@link ColorFunction}.
+ * @returns {Record<ColorName, ColorFunction>} An object where keys are color names and values are functions to apply those pc. See {@link ColorFunction}.
  */
 function createColors(useColor = isColorSupported) {
   return useColor
@@ -136,7 +136,7 @@ function createColors(useColor = isColorSupported) {
 }
 
 /**
- * An object containing functions for coloring text. Each function corresponds to a terminal color. See {@link ColorName} for available colors.
+ * An object containing functions for coloring text. Each function corresponds to a terminal color. See {@link ColorName} for available pc.
  */
 export const colors = createColors() as Record<ColorName, ColorFunction>;
 

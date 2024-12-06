@@ -1,16 +1,17 @@
+import relinka from "@reliverse/relinka";
 import * as url from "node:url";
 
 import { confirm } from "~/components/prompts/index.js";
 
 const demo = async () => {
-  console.log(
+  relinka.log(
     "Answer:",
     await confirm({
       message: "Confirm?",
     }),
   );
 
-  console.log(
+  relinka.log(
     "Answer:",
     await confirm({
       message: "Confirm with default to no?",
@@ -18,7 +19,7 @@ const demo = async () => {
     }),
   );
 
-  console.log(
+  relinka.log(
     "Answer:",
     await confirm({
       message: "Confirm with your custom transformer function?",
@@ -26,8 +27,8 @@ const demo = async () => {
     }),
   );
 
-  console.log("This next prompt will be cleared on exit");
-  console.log(
+  relinka.log("This next prompt will be cleared on exit");
+  relinka.log(
     "Cleared prompt answer:",
     await confirm({ message: "Confirm?" }, { clearPromptOnDone: true }),
   );

@@ -1,7 +1,7 @@
 import { type SpinnerName } from "cli-spinners";
 import process from "node:process";
 import ora from "ora";
-import color from "picocolors";
+import pc from "picocolors";
 import { cursor, erase } from "sisteransi";
 
 import { msg } from "~/utils/messages.js";
@@ -60,7 +60,7 @@ export async function spinner<T extends "simple" | "ora">(
       });
     } catch (error) {
       oraSpinner.stopAndPersist({
-        symbol: color.red("✖"),
+        symbol: pc.red("✖"),
         text: errorMessage,
       });
 
@@ -103,9 +103,9 @@ export async function spinner<T extends "simple" | "ora">(
       }
 
       interval = setInterval(() => {
-        const frame = color.magenta(frames[frameIndex]);
+        const frame = pc.magenta(frames[frameIndex]);
         process.stdout.write(
-          `${cursor.move(-999, 0)}${erase.line}${frame} ${color.cyan(message)}`,
+          `${cursor.move(-999, 0)}${erase.line}${frame} ${pc.cyan(message)}`,
         );
         frameIndex = (frameIndex + 1) % frames.length;
       }, delay);
@@ -118,7 +118,7 @@ export async function spinner<T extends "simple" | "ora">(
       interval = null;
 
       process.stdout.write(
-        `\r${erase.line}${color.green("✔")} ${successMessage}\n`,
+        `\r${erase.line}${pc.green("✔")} ${successMessage}\n`,
       );
 
       msg({
@@ -132,7 +132,7 @@ export async function spinner<T extends "simple" | "ora">(
       }
 
       process.stdout.write(
-        `\r${erase.line}${color.red("✖")} ${
+        `\r${erase.line}${pc.red("✖")} ${
           error instanceof Error ? errorMessage : "An unknown error occurred."
         }\n`,
       );

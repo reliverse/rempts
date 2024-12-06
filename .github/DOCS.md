@@ -52,7 +52,7 @@ const prompts = require("prompts");
     validate: (value) => (value < 18 ? `Nightclub is 18+ only` : true),
   });
 
-  console.log(response); // => { value: 24 }
+  relinka.log(response); // => { value: 24 }
 })();
 ```
 
@@ -74,7 +74,7 @@ const prompts = require("prompts");
     message: "What is the meaning of life?",
   });
 
-  console.log(response.meaning);
+  relinka.log(response.meaning);
 })();
 ```
 
@@ -171,7 +171,7 @@ Return `true` to quit the prompt chain and return all collected responses so far
 ```js
 (async () => {
   const questions = [{ ... }];
-  const onSubmit = (prompt, answer) => console.log(`Thanks I got ${answer} from ${prompt.name}`);
+  const onSubmit = (prompt, answer) => relinka.log(`Thanks I got ${answer} from ${prompt.name}`);
   const response = await prompts(questions, { onSubmit });
 })();
 ```
@@ -193,7 +193,7 @@ On cancel responses collected so far are returned.
 (async () => {
   const questions = [{ ... }];
   const onCancel = prompt => {
-    console.log('Never stop prompting!');
+    relinka.log('Never stop prompting!');
     return true;
   }
   const response = await prompts(questions, { onCancel });
@@ -232,7 +232,7 @@ prompts.override(require("yargs").argv);
     },
   ]);
 
-  console.log(response);
+  relinka.log(response);
 })();
 ```
 
@@ -909,7 +909,7 @@ const cliProgress = require("cli-progress");
 const bar1 = new cliProgress.SingleBar();
 
 bar1.on("start", () => {
-  console.log("bar started");
+  relinka.log("bar started");
 });
 ```
 
@@ -937,7 +937,7 @@ const cliProgress = require("cli-progress");
 const bar1 = new cliProgress.MultiBar();
 
 bar1.on("start", () => {
-  console.log("sub-bar element started");
+  relinka.log("sub-bar element started");
 });
 ```
 
