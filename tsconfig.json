@@ -50,7 +50,8 @@
     "addons/**/*.ts",
     "examples/**/*.ts",
     "build.publish.ts",
-    "bump.config.ts"
+    "bump.config.ts",
+    "publish.ts"
   ],
   "exclude": ["node_modules", "dist-jsr", "dist-npm"]
 }

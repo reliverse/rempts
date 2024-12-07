@@ -1,6 +1,6 @@
 {
   "name": "@reliverse/prompts",
-  "version": "1.3.7",
+  "version": "1.3.9",
   "author": "blefnk",
   "type": "module",
   "description": "@reliverse/prompts is a powerful library that enables seamless, typesafe, and resilient prompts for command-line applications. Crafted with simplicity and elegance, it provides developers with an intuitive and robust way to build interactive CLIs.",
@@ -8,13 +8,13 @@
     "dev": "bun examples/launcher.ts",
     "check": "bun typecheck && bun lint && bun format",
     "release": "bumpp && bun check && bun pub",
-    "build:jsr": "tsx build.optim.ts --jsr",
-    "build:npm": "unbuild && tsx build.optim.ts",
-    "build": "bun build:jsr && bun build:npm",
-    "pub:jsr": "tsx build.publish.ts --jsr",
-    "pub:npm": "tsx build.publish.ts",
-    "pub:dry": "tsx build.publish.ts --dry-run",
-    "pub": "bun pub:jsr && bun pub:npm",
+    "build:npm": "unbuild && bun build.optim.ts",
+    "build:jsr": "bun build.optim.ts --jsr",
+    "build": "bun build:npm && bun build:jsr",
+    "pub:npm": "bun build.publish.ts",
+    "pub:jsr": "bun build.publish.ts --jsr",
+    "pub:dry": "bun build.publish.ts --dry-run",
+    "pub": "bun publish.ts",
     "typecheck": "tsc --noEmit",
     "lint": "eslint --cache --fix .",
     "lint:i": "eslint --inspect-config",
@@ -43,9 +43,17 @@
     "url": "https://github.com/reliverse/prompts/issues",
     "email": "blefnk@gmail.com"
   },
-  "files": ["package.json", "README.md", "LICENSE.md", "dist-npm"],
+  "files": [
+    "package.json",
+    "README.md",
+    "LICENSE.md",
+    "dist-npm"
+  ],
   "homepage": "https://github.com/reliverse/prompts",
-  "keywords": ["cli", "reliverse"],
+  "keywords": [
+    "cli",
+    "reliverse"
+  ],
   "license": "MIT",
   "dependencies": {
     "@figliolia/chalk-animation": "^1.0.4",

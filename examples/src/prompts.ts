@@ -25,7 +25,6 @@ import { numSelectPrompt } from "~/main.js";
 import { selectPrompt } from "~/main.js";
 import { spinner } from "~/main.js";
 
-import packageJson from "../../package.json" with { type: "json" };
 import { basicConfig, experimentalConfig, extendedConfig } from "./configs.js";
 import { schema, type UserInput } from "./schema.js";
 import {
@@ -36,7 +35,14 @@ import {
   validateAge,
 } from "./utils.js";
 
-const pkg = packageJson;
+// import packageJson from "../../package.json" with { type: "json" };
+// const pkg = packageJson;
+const pkg = {
+  name: "@reliverse/prompts",
+  version: "1.3.8",
+  description:
+    "@reliverse/prompts is a powerful library that enables seamless, typesafe, and resilient prompts for command-line applications. Crafted with simplicity and elegance, it provides developers with an intuitive and robust way to build interactive CLIs.",
+};
 
 const IDs = {
   start: "start",

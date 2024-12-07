@@ -1,7 +1,7 @@
 import { detect, getNpmVersion } from "detect-package-manager";
 import { env, isWindows, isLinux, isMacOS } from "std-env";
 
-import packageJson from "../../package.json" with { type: "json" };
+// import packageJson from "../../package.json" with { type: "json" };
 
 /**
  * Determines if Unicode is supported in the current terminal.
@@ -96,4 +96,10 @@ export function getCurrentTerminalName(): string {
 
 export const pm = await detect();
 export const pmv = await getNpmVersion(pm);
-export const pkg = packageJson;
+// export const pkg = packageJson;
+export const pkg = {
+  name: "@reliverse/prompts",
+  version: "1.3.9",
+  description:
+    "@reliverse/prompts is a powerful library that enables seamless, typesafe, and resilient prompts for command-line applications. Crafted with simplicity and elegance, it provides developers with an intuitive and robust way to build interactive CLIs.",
+};
