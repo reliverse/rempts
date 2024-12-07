@@ -1,10 +1,9 @@
-import relinka from "@reliverse/relinka";
-
 import { msg } from "~/utils/messages.js";
 
 import type { ProgressBarOptions } from "./ProgressBar.js";
 
 import { ProgressBar } from "./ProgressBar.js";
+import relinka from "@reliverse/relinka";
 
 /**
  * Options for the progressbar helper function.

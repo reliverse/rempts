@@ -1,5 +1,3 @@
-import relinka from "@reliverse/relinka";
-
 import { defineCommand, createMain } from "~/main.js";
 
 const command = defineCommand({

@@ -1,4 +1,3 @@
-import relinka from "@reliverse/relinka";
 import * as url from "node:url";
 
 import { number } from "~/components/prompts/index.js";

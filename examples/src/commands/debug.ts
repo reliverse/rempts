@@ -1,5 +1,3 @@
-import relinka from "@reliverse/relinka";
-
 import { defineCommand } from "~/main.js";
 
 export default defineCommand({

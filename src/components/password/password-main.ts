@@ -1,6 +1,5 @@
 // import type { Static, TSchema } from "@sinclair/typebox";
 
-import relinka from "@reliverse/relinka";
 import { Value } from "@sinclair/typebox/value";
 
 import type { ColorName, PromptOptions } from "~/types/general.js";

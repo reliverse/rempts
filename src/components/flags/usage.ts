@@ -1,10 +1,10 @@
-import relinka from "@reliverse/relinka";
 import pc from "picocolors";
 
 import type { ArgsDef, CommandDef } from "./types.js";
 
 import { formatLineColumns, resolveValue } from "./_utils.js";
 import { resolveArgs } from "./args.js";
+import relinka from "@reliverse/relinka";
 
 export async function showUsage<T extends ArgsDef = ArgsDef>(
   cmd: CommandDef<T>,

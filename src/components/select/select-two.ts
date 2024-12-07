@@ -1,6 +1,5 @@
 import type { Key } from "node:readline";
 
-import relinka from "@reliverse/relinka";
 import { Value } from "@sinclair/typebox/value";
 import { stdout } from "node:process";
 import pc from "picocolors";
@@ -10,6 +9,7 @@ import type { PromptOptions } from "~/types/general.js";
 import { useKeyPress } from "~/components/core/useKeyPress.js";
 import { colorize } from "~/utils/colorize.js";
 import { resetCursorAndClear, moveCursorAndClear } from "~/utils/readline.js";
+import relinka from "@reliverse/relinka";
 
 type SelectPromptOptions = PromptOptions & {
   defaultValue?: string;

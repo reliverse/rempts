@@ -1,10 +1,9 @@
-import relinka from "@reliverse/relinka";
-
 import type { ArgsDef, CommandDef } from "./types.js";
 
 import { CLIError } from "./_utils.js";
 import { resolveSubCommand, runCommand } from "./command.js";
 import { showUsage as _showUsage } from "./usage.js";
+import relinka from "@reliverse/relinka";
 
 export type RunMainOptions = {
   rawArgs?: string[];

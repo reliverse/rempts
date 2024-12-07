@@ -1,4 +1,3 @@
-import relinka from "@reliverse/relinka";
 import { detect } from "detect-package-manager";
 import { emojify } from "node-emoji";
 import pc from "picocolors";
@@ -542,17 +541,15 @@ export async function showTogglePrompt() {
   const result = await togglePrompt({
     title: "[togglePrompt] Do you like @reliverse/prompts library?",
     options: ["Yes", "No"],
-    initial: "Yes",
   });
 
-  const agree = result === "Yes";
   msg({
     type: "M_INFO",
     title: "Your response:",
-    content: agree ? "You like it! 🥰" : "You don't like it... 😔",
+    content: result ? "You like it! 🥰" : "You don't like it... 😔",
   });
 
-  return agree;
+  return result;
 }
 
 export async function showConfirmPrompt(

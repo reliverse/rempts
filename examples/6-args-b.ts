@@ -1,8 +1,7 @@
-import relinka from "@reliverse/relinka";
-
 import { defineCommand, runMain } from "~/main.js";
 
 import packageJson from "../package.json" with { type: "json" };
+import relinka from "@reliverse/relinka";
 
 const main = defineCommand({
   meta: {

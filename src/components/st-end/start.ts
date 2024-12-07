@@ -1,10 +1,9 @@
-import relinka from "@reliverse/relinka";
-
 import type { PromptOptions } from "~/types/general.js";
 
 import { getCurrentTerminalName } from "~/main.js";
 import { msg } from "~/utils/messages.js";
 import { pkg, pm, pmv } from "~/utils/platforms.js";
+import relinka from "@reliverse/relinka";
 
 export async function startPrompt({
   title = "",

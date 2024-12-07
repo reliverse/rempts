@@ -1,4 +1,3 @@
-import relinka from "@reliverse/relinka";
 import { stdin as input, stdout as output } from "node:process";
 import readline from "node:readline";
 import pc from "picocolors";

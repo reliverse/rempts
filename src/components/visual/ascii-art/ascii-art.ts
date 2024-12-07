@@ -1,4 +1,3 @@
-import relinka from "@reliverse/relinka";
 import figlet, { type Fonts } from "figlet";
 
 export async function createAsciiArt({

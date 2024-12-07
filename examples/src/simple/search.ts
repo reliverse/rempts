@@ -1,4 +1,3 @@
-import relinka from "@reliverse/relinka";
 import { promises as fs } from "node:fs";
 import path from "node:path";
 import * as url from "node:url";

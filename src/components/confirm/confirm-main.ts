@@ -13,7 +13,7 @@ import { countLines, deleteLastLines } from "~/utils/terminal.js";
 
 export type ConfirmPromptOptions = {
   title: string;
-  defaultValue?: boolean;
+  defaultValue?: boolean; // true = Y, false = N
   content?: string;
   titleColor?: ColorName;
   titleTypography?: TypographyName;
@@ -27,12 +27,6 @@ export type ConfirmPromptOptions = {
   action?: () => Promise<void>;
 };
 
-/**
- * Prompts the user for a yes/no confirmation.
- *
- * @param options - Configuration options for the confirmation prompt.
- * @returns A promise that resolves to a boolean based on user input.
- */
 export async function confirmPrompt(
   options: ConfirmPromptOptions,
 ): Promise<boolean> {
@@ -51,6 +45,9 @@ export async function confirmPrompt(
     variantOptions,
     action,
   } = options;
+
+  // If no defaultValue is passed, default to true (Y)
+  const effectiveDefault = defaultValue !== undefined ? defaultValue : true;
 
   const rl = readline.createInterface({ input, output });
 
@@ -79,14 +76,8 @@ export async function confirmPrompt(
         errorMessage,
       });
 
-      let defaultHint = "";
-      if (defaultValue) {
-        defaultHint = "[Y/n]";
-      } else if (!defaultValue) {
-        defaultHint = "[y/N]";
-      } else {
-        defaultHint = "[y/n]";
-      }
+      // Adjust the default hint based on defaultValue
+      const defaultHint = effectiveDefault ? "[Y/n]" : "[y/N]";
 
       const fullPrompt = `${question}${colorize(defaultHint, hintColor)}: `;
 
@@ -102,14 +93,13 @@ export async function confirmPrompt(
       const answer = (await rl.question(formattedPrompt)).toLowerCase().trim();
 
       let value: boolean;
-
       const formattedBar = bar({ borderColor });
 
-      if (!answer && defaultValue !== undefined) {
-        // Inject the used answer into the console
-        const injectedAnswer = defaultValue ? "y" : "n";
+      if (!answer) {
+        // User pressed Enter, use the default value
+        const injectedAnswer = effectiveDefault ? "y" : "n";
         process.stdout.write(`${formattedBar}  ${injectedAnswer}\n`);
-        value = defaultValue;
+        value = effectiveDefault;
       } else if (answer === "y" || answer === "yes") {
         value = true;
       } else if (answer === "n" || answer === "no") {

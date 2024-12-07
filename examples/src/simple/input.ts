@@ -1,4 +1,3 @@
-import relinka from "@reliverse/relinka";
 import * as url from "node:url";
 import pc from "picocolors";
 
