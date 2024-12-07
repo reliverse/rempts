@@ -79,7 +79,7 @@ export async function numberPrompt(opts: NumberPromptOptions) {
         title: `  ${defaultValue}`,
         borderColor,
       });
-      relinka.log(defaultMsg);
+      console.log(defaultMsg);
       linesToDelete += countLines(defaultMsg);
     }
 

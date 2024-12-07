@@ -16,7 +16,7 @@ const demo = async () => {
     message: "What's your favorite food?",
     default: "Croissant",
   });
-  relinka.log("Answer:", answer);
+  console.log("Answer:", answer);
 
   answer = await input({
     message: "Enter an hex color?",
@@ -26,7 +26,7 @@ const demo = async () => {
     },
     validate: (value = "") => isHex(value) || "Pass a valid hex value",
   });
-  relinka.log("Answer:", answer);
+  console.log("Answer:", answer);
 
   answer = await input({
     message: "(Slow validation) provide a number:",
@@ -41,7 +41,7 @@ const demo = async () => {
         );
       }),
   });
-  relinka.log("Answer:", answer);
+  console.log("Answer:", answer);
 };
 
 if (import.meta.url.startsWith("file:")) {

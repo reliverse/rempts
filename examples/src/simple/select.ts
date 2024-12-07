@@ -61,7 +61,7 @@ const demo = async () => {
       },
     ],
   });
-  relinka.log("Answer:", answer);
+  console.log("Answer:", answer);
 
   answer = await select({
     message: "Select your favorite letter",
@@ -71,7 +71,7 @@ const demo = async () => {
       ...alphabet,
     ],
   });
-  relinka.log("Answer:", answer);
+  console.log("Answer:", answer);
 
   answer = await select({
     message: "Select your favorite letter (example without loop)",
@@ -82,7 +82,7 @@ const demo = async () => {
     ],
     loop: false,
   });
-  relinka.log("Answer:", answer);
+  console.log("Answer:", answer);
 };
 
 if (import.meta.url.startsWith("file:")) {

@@ -14,7 +14,7 @@ async function demo() {
 
     throw error;
   });
-  relinka.log("Answer:", answer);
+  console.log("Answer:", answer);
 }
 
 if (import.meta.url.startsWith("file:")) {

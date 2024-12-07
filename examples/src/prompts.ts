@@ -214,7 +214,7 @@ export async function showDatePromptTwo() {
     schema: undefined, // @reliverse/prompts allows you to pass an additional TypeBox schema if needed, but it's not required
   });
 
-  relinka.log(`You entered: ${userDate}`);
+  console.log(`You entered: ${userDate}`);
 }
 
 export async function showSelectPrompt(): Promise<UserInput["lang"]> {

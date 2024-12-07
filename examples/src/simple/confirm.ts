@@ -4,14 +4,14 @@ import * as url from "node:url";
 import { confirm } from "~/components/prompts/index.js";
 
 const demo = async () => {
-  relinka.log(
+  console.log(
     "Answer:",
     await confirm({
       message: "Confirm?",
     }),
   );
 
-  relinka.log(
+  console.log(
     "Answer:",
     await confirm({
       message: "Confirm with default to no?",
@@ -19,7 +19,7 @@ const demo = async () => {
     }),
   );
 
-  relinka.log(
+  console.log(
     "Answer:",
     await confirm({
       message: "Confirm with your custom transformer function?",
@@ -27,8 +27,8 @@ const demo = async () => {
     }),
   );
 
-  relinka.log("This next prompt will be cleared on exit");
-  relinka.log(
+  console.log("This next prompt will be cleared on exit");
+  console.log(
     "Cleared prompt answer:",
     await confirm({ message: "Confirm?" }, { clearPromptOnDone: true }),
   );

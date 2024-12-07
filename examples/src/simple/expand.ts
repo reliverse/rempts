@@ -31,7 +31,7 @@ const demo = async () => {
       },
     ],
   });
-  relinka.log("Answer:", answer);
+  console.log("Answer:", answer);
 
   answer = await expand({
     message: "(With default) Conflict on `file.js`:",
@@ -59,7 +59,7 @@ const demo = async () => {
       },
     ],
   });
-  relinka.log("Answer:", answer);
+  console.log("Answer:", answer);
 
   answer = await expand({
     expanded: true,
@@ -87,7 +87,7 @@ const demo = async () => {
       },
     ],
   });
-  relinka.log("Answer:", answer);
+  console.log("Answer:", answer);
 };
 
 if (import.meta.url.startsWith("file:")) {

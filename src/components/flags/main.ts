@@ -27,7 +27,7 @@ export async function runMain<T extends ArgsDef = ArgsDef>(
       if (!meta?.version) {
         throw new CLIError("No version specified", "E_NO_VERSION");
       }
-      relinka.log(meta.version);
+      console.log(meta.version);
     } else {
       await runCommand(cmd, { rawArgs });
     }

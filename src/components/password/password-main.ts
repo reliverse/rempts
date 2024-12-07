@@ -79,7 +79,7 @@ export async function passwordPrompt(opts: PasswordPromptOptions) {
     if (!password.trim() && defaultValue !== undefined) {
       deleteLastLines(2);
       process.stdout.write(`${formattedBar}  ****`);
-      relinka.log(`\n${formattedBar}`);
+      console.log(`\n${formattedBar}`);
       // return defaultValue as Static<T>;
       return defaultValue;
     }

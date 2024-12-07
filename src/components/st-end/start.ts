@@ -26,9 +26,9 @@ export async function startPrompt({
 }): Promise<void> {
   if (clearConsole) {
     console.clear();
-    relinka.log("");
+    console.log("");
   } else {
-    relinka.log("");
+    console.log("");
   }
 
   const formattedTitle =

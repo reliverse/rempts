@@ -20,7 +20,7 @@ export default defineCommand({
     },
   },
   run({ args }) {
-    relinka.log("Debug");
-    relinka.log("Parsed args:", args);
+    console.log("Debug");
+    console.log("Parsed args:", args);
   },
 });

@@ -156,7 +156,7 @@ export async function togglePrompt<T extends string>(params: {
       if (isCtrlC) {
         process.exit(); // Exit the process without throwing an error
       } else {
-        relinka.log(""); // Move to a new line
+        console.log(""); // Move to a new line
       }
     }
 

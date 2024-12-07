@@ -13,10 +13,10 @@ export async function multiselectPrompt<T extends string>(params: {
   const rl = readline.createInterface({ input, output });
 
   while (true) {
-    relinka.log(`\n${message}`);
+    console.log(`\n${message}`);
     options.forEach((option, index) => {
       const isSelected = initial.includes(option) ? "[x]" : "[ ]";
-      relinka.log(`${index + 1}. ${isSelected} ${option}`);
+      console.log(`${index + 1}. ${isSelected} ${option}`);
     });
 
     const promptMessage =
@@ -43,7 +43,7 @@ export async function multiselectPrompt<T extends string>(params: {
       rl.close();
       return indices.map((index) => options[index]);
     } else {
-      relinka.log("Invalid selection. Please try again.");
+      console.log("Invalid selection. Please try again.");
     }
   }
 }

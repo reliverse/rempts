@@ -32,7 +32,7 @@ const command = defineCommand({
     },
   },
   run({ args }) {
-    relinka.log(args);
+    console.log(args);
     const msg = [
       args.friendly ? "Hi" : "Greetings",
       args.adj || "",
@@ -42,7 +42,7 @@ const command = defineCommand({
       .filter(Boolean)
       .join(" ");
 
-    relinka.log(msg);
+    console.log(msg);
   },
 });
 

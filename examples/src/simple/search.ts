@@ -50,7 +50,7 @@ const demo = async () => {
       }));
     },
   });
-  relinka.log("Answer:", answer);
+  console.log("Answer:", answer);
 
   // Demo: Using the search prompt as an autocomplete tool.
   answer = await search({
@@ -88,7 +88,7 @@ const demo = async () => {
       return true;
     },
   });
-  relinka.log("Answer:", answer);
+  console.log("Answer:", answer);
 };
 
 if (import.meta.url.startsWith("file:")) {

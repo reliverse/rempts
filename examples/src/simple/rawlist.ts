@@ -32,7 +32,7 @@ const demo = async () => {
       },
     ],
   });
-  relinka.log("Answer:", answer);
+  console.log("Answer:", answer);
 
   answer = await rawlist({
     message: "(with keys) Conflict on `file.js`:",
@@ -64,7 +64,7 @@ const demo = async () => {
       },
     ],
   });
-  relinka.log("Answer:", answer);
+  console.log("Answer:", answer);
 };
 
 if (import.meta.url.startsWith("file:")) {

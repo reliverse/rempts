@@ -55,14 +55,14 @@ export async function selectPrompt(
       throw new Error("Choices are required for select prompt.");
     }
     resetCursorAndClear(stdout, 0, 0);
-    relinka.log(pc.cyanBright(pc.bold(coloredTitle)));
+    console.log(pc.cyanBright(pc.bold(coloredTitle)));
     choices.forEach((choice, index) => {
       const isSelected = index === selectedIndex;
       const prefix = isSelected ? pc.greenBright(">") : " ";
       const choiceText = isSelected
         ? pc.bgGreen(pc.black(choice.title))
         : choice.title;
-      relinka.log(`${prefix} ${choiceText}`);
+      console.log(`${prefix} ${choiceText}`);
     });
   }
 
@@ -105,7 +105,7 @@ export async function selectPrompt(
           resolve(selectedValue ?? "");
         }
       } else {
-        relinka.log(errorMessage);
+        console.log(errorMessage);
         renderChoices();
       }
     };

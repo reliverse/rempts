@@ -25,7 +25,7 @@ async function main() {
     titleColor: "gradientGradient",
   });
 
-  relinka.log(`
+  console.log(`
     ${colorize("HOW TO PLAY", "white", "bold")} 
     I am a process on your computer.
     If you get any question wrong I will be ${colorize("killed", "red", "bold")}

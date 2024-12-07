@@ -4,14 +4,14 @@ import * as url from "node:url";
 import { password } from "~/components/prompts/index.js";
 
 const demo = async () => {
-  relinka.log(
+  console.log(
     "Answer:",
     await password({
       message: "Enter a silent password?",
     }),
   );
 
-  relinka.log(
+  console.log(
     "Answer:",
     await password({
       message: "Enter a masked password?",

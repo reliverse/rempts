@@ -11,7 +11,7 @@ export async function showUsage<T extends ArgsDef = ArgsDef>(
   parent?: CommandDef<T>,
 ) {
   try {
-    relinka.log((await renderUsage(cmd, parent)) + "\n");
+    console.log((await renderUsage(cmd, parent)) + "\n");
   } catch (error) {
     relinka.error(error);
   }

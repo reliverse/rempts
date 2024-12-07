@@ -45,15 +45,6 @@ export async function selectPrompt<T extends string>(params: {
   endTitleColor?: ColorName;
   maxItems?: number;
   debug?: boolean;
-  terminalHeight?: number;
-  availableHeight?: number;
-  computedMaxItems?: number;
-  displayItems?: number;
-  startIdx?: number;
-  endIdx?: number;
-  shouldRenderTopEllipsis?: boolean;
-  shouldRenderBottomEllipsis?: boolean;
-  linesRendered?: number;
 }): Promise<T> {
   const {
     title = "",
@@ -69,15 +60,6 @@ export async function selectPrompt<T extends string>(params: {
     endTitleColor = "dim",
     maxItems,
     debug = false,
-    terminalHeight,
-    availableHeight,
-    computedMaxItems,
-    displayItems,
-    startIdx,
-    endIdx,
-    shouldRenderTopEllipsis,
-    shouldRenderBottomEllipsis,
-    linesRendered,
   } = params;
 
   // Initialize selectedIndex to the defaultValue if it's not disabled
@@ -120,7 +102,7 @@ export async function selectPrompt<T extends string>(params: {
   );
 
   function renderOptions() {
-    // Move cursor up to the start of the options if not the first render
+    // Move cursor up to the start of the previous render block
     if (currentLinesRendered > 0) {
       process.stdout.write(`\x1B[${currentLinesRendered}A`);
     }
@@ -141,95 +123,56 @@ export async function selectPrompt<T extends string>(params: {
       outputStr += `${formattedBar}  ${pc.dim(instructions)}\n`;
     }
 
-    // Determine effective properties based on provided params or defaults
+    // Compute terminal height and display parameters
     const size = terminalSize(); // Get terminal size
-    const effectiveTerminalHeight = terminalHeight ?? size.rows ?? 24; // Fallback to 24 if rows is undefined
-    const effectiveAvailableHeight =
-      availableHeight ?? effectiveTerminalHeight - 4; // Header and footer adjustment
+    const effectiveTerminalHeight = size.rows ?? 24; // fallback to 24 if rows is undefined
+    // We'll reserve a few lines for the title and instructions, so:
+    const availableHeight = effectiveTerminalHeight - 4; // Title, instructions, and some margin
 
-    // If maxItems is not set, display all options
-    const effectiveComputedMaxItems = maxItems
-      ? Math.min(
-          maxItems,
-          effectiveAvailableHeight > 0 ? effectiveAvailableHeight : Infinity,
-          options.length,
-        )
+    // Determine how many items to display
+    const effectiveMaxItems = maxItems
+      ? Math.min(maxItems, options.length)
+      : options.length;
+    const minItems = 3; // Minimum number of items to show for better UX
+    const displayItems = maxItems
+      ? Math.max(effectiveMaxItems, minItems)
       : options.length;
 
-    const minItems = 3; // Minimum number of items to display for better UX
-    const effectiveDisplayItems = displayItems
-      ? displayItems
-      : maxItems
-        ? Math.max(effectiveComputedMaxItems, minItems)
-        : options.length;
+    // Calculate start and end indices for visible portion
+    let startIdx = 0;
+    let endIdx = options.length - 1;
+    if (maxItems && options.length > displayItems) {
+      const half = Math.floor(displayItems / 2);
+      startIdx = selectedIndex - half;
+      endIdx = selectedIndex + (displayItems - half - 1);
 
-    let effectiveStartIdx: number;
-    let effectiveEndIdx: number;
-
-    if (startIdx !== undefined && endIdx !== undefined) {
-      // Use provided indices if available
-      effectiveStartIdx = startIdx;
-      effectiveEndIdx = endIdx;
-    } else {
-      // Compute indices dynamically based on selectedIndex and displayItems
-      if (maxItems) {
-        // If maxItems is set, apply the original logic
-        if (options.length > effectiveDisplayItems) {
-          const half = Math.floor(effectiveDisplayItems / 2);
-
-          // Adjust startIdx and endIdx to center the selectedIndex
-          effectiveStartIdx = selectedIndex - half;
-          effectiveEndIdx = selectedIndex + (effectiveDisplayItems - half - 1);
-
-          if (effectiveStartIdx < 0) {
-            effectiveStartIdx = 0;
-            effectiveEndIdx = effectiveDisplayItems - 1;
-          } else if (effectiveEndIdx >= options.length) {
-            effectiveEndIdx = options.length - 1;
-            effectiveStartIdx = options.length - effectiveDisplayItems;
-          }
-        } else {
-          effectiveStartIdx = 0;
-          effectiveEndIdx = options.length - 1;
-        }
-      } else {
-        // If maxItems is not set, display all options
-        effectiveStartIdx = 0;
-        effectiveEndIdx = options.length - 1;
+      if (startIdx < 0) {
+        startIdx = 0;
+        endIdx = displayItems - 1;
+      } else if (endIdx >= options.length) {
+        endIdx = options.length - 1;
+        startIdx = options.length - displayItems;
       }
     }
 
-    // Determine whether to render ellipses
-    let effectiveShouldRenderTopEllipsis: boolean;
-    let effectiveShouldRenderBottomEllipsis: boolean;
+    const shouldRenderTopEllipsis = maxItems ? startIdx > 0 : false;
+    const shouldRenderBottomEllipsis = maxItems
+      ? endIdx < options.length - 1
+      : false;
 
-    if (maxItems) {
-      effectiveShouldRenderTopEllipsis =
-        shouldRenderTopEllipsis ?? effectiveStartIdx > 0;
-      effectiveShouldRenderBottomEllipsis =
-        shouldRenderBottomEllipsis ?? effectiveEndIdx < options.length - 1;
-    } else {
-      // Do not render ellipses if maxItems is not set
-      effectiveShouldRenderTopEllipsis = false;
-      effectiveShouldRenderBottomEllipsis = false;
-    }
-
-    if (effectiveShouldRenderTopEllipsis) {
+    if (shouldRenderTopEllipsis) {
       outputStr += `${formattedBar}  ${pc.dim("...")}\n`;
     }
 
-    for (let index = effectiveStartIdx; index <= effectiveEndIdx; index++) {
+    for (let index = startIdx; index <= endIdx; index++) {
       const option = options[index];
 
       // Handle separator
       if ("separator" in option) {
         const width = option.width ?? 20;
         const symbol = option.symbol ?? "line";
-        if (symbol in symbols) {
-          outputStr += `${formattedBar}  ${pc.dim(symbols[symbol].repeat(width))}\n`;
-        } else {
-          outputStr += `${formattedBar}  ${pc.dim("─".repeat(width))}\n`;
-        }
+        const lineSymbol = symbol in symbols ? symbols[symbol] : "─";
+        outputStr += `${formattedBar}  ${pc.dim(lineSymbol.repeat(width))}\n`;
         continue;
       }
 
@@ -247,29 +190,28 @@ export async function selectPrompt<T extends string>(params: {
       outputStr += `${formattedBar} ${prefix}${optionLabel}${hint}\n`;
     }
 
-    if (effectiveShouldRenderBottomEllipsis) {
+    if (shouldRenderBottomEllipsis) {
       outputStr += `${formattedBar}  ${pc.dim("...")}\n`;
     }
 
-    // Calculate lines rendered
+    // Calculate lines rendered for this frame
     currentLinesRendered =
-      linesRendered ??
-      1 + // Title
-        1 + // Instructions or error message
-        (effectiveShouldRenderTopEllipsis ? 1 : 0) + // Top ellipsis
-        (effectiveEndIdx - effectiveStartIdx + 1) + // Displayed options
-        (effectiveShouldRenderBottomEllipsis ? 1 : 0); // Bottom ellipsis
+      1 + // Title line
+      1 + // Instructions/error line
+      (shouldRenderTopEllipsis ? 1 : 0) +
+      (endIdx - startIdx + 1) +
+      (shouldRenderBottomEllipsis ? 1 : 0);
 
     if (debug) {
-      relinka.log({
+      console.log({
         terminalHeight: effectiveTerminalHeight,
-        availableHeight: effectiveAvailableHeight,
-        computedMaxItems: effectiveComputedMaxItems,
-        displayItems: effectiveDisplayItems,
-        startIdx: effectiveStartIdx,
-        endIdx: effectiveEndIdx,
-        shouldRenderTopEllipsis: effectiveShouldRenderTopEllipsis,
-        shouldRenderBottomEllipsis: effectiveShouldRenderBottomEllipsis,
+        availableHeight: availableHeight,
+        computedMaxItems: effectiveMaxItems,
+        displayItems,
+        startIdx,
+        endIdx,
+        shouldRenderTopEllipsis,
+        shouldRenderBottomEllipsis,
         linesRendered: currentLinesRendered,
       });
     }
@@ -282,10 +224,11 @@ export async function selectPrompt<T extends string>(params: {
   return new Promise<T>((resolve) => {
     function onKeyPress(str: string, key: readline.Key) {
       if (allDisabled) {
-        // If all options are disabled, ignore any key presses except Ctrl+C
+        // If all options are disabled, only allow Ctrl+C to exit
         if (key.name === "c" && key.ctrl) {
-          // Show endTitle message and exit gracefully
-          msg({ type: "M_NEWLINE" });
+          msg({
+            type: "M_MIDDLE",
+          });
           if (endTitle !== "") {
             msg({
               type: "M_END",
@@ -303,7 +246,7 @@ export async function selectPrompt<T extends string>(params: {
       }
 
       if (key.name === "up" || key.name === "k") {
-        // Skip disabled options and separators when moving up
+        // Move selection up, skipping disabled or separators
         const originalPointer = selectedIndex;
         do {
           selectedIndex = (selectedIndex - 1 + options.length) % options.length;
@@ -314,7 +257,7 @@ export async function selectPrompt<T extends string>(params: {
         } while (selectedIndex !== originalPointer);
         renderOptions();
       } else if (key.name === "down" || key.name === "j") {
-        // Skip disabled options and separators when moving down
+        // Move selection down, skipping disabled or separators
         const originalPointer = selectedIndex;
         do {
           selectedIndex = (selectedIndex + 1) % options.length;
@@ -325,7 +268,6 @@ export async function selectPrompt<T extends string>(params: {
         } while (selectedIndex !== originalPointer);
         renderOptions();
       } else if (key.name === "return") {
-        // Prevent selecting disabled options
         const option = options[selectedIndex];
         if (!("separator" in option) && option.disabled) {
           errorMessage = "This option is disabled";
@@ -334,18 +276,21 @@ export async function selectPrompt<T extends string>(params: {
         }
         // Confirm selection
         if (required && (!("value" in option) || !option.value)) {
-          deleteLastLine();
           errorMessage = "You must select an option.";
           renderOptions();
         } else {
           cleanup();
-          resolve("value" in option ? option.value : null);
+          resolve("value" in option ? option.value : (null as T));
           deleteLastLine();
-          deleteLastLine();
+          msg({
+            type: "M_MIDDLE",
+          });
         }
       } else if (key.name === "c" && key.ctrl) {
-        // Show endTitle message and exit gracefully
-        msg({ type: "M_NEWLINE" });
+        // Ctrl+C
+        msg({
+          type: "M_MIDDLE",
+        });
         if (endTitle !== "") {
           msg({
             type: "M_END",
@@ -367,12 +312,9 @@ export async function selectPrompt<T extends string>(params: {
       }
       rl.close();
       input.removeListener("keypress", onKeyPress);
-      // Move cursor down to the end of options
-      process.stdout.write(`\x1B[${currentLinesRendered}B`);
+
       if (isCtrlC) {
-        process.exit(); // Exit the process without throwing an error
-      } else {
-        relinka.log(""); // Move to a new line
+        process.exit(0);
       }
     }
 

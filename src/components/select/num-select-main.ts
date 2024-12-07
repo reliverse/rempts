@@ -16,11 +16,11 @@ export async function selectPrompt<T extends string>(params: {
   const rl = readline.createInterface({ input, output });
 
   while (true) {
-    relinka.log(`\n${message}`);
+    console.log(`\n${message}`);
     options.forEach((option, index) => {
       const prefix = index === selectedIndex ? "->" : "  ";
       const isDefault = option.value === initial ? "(default)" : "";
-      relinka.log(`${prefix} [${index + 1}] ${option.label} ${isDefault}`);
+      console.log(`${prefix} [${index + 1}] ${option.label} ${isDefault}`);
     });
 
     const promptMessage =
@@ -42,7 +42,7 @@ export async function selectPrompt<T extends string>(params: {
       rl.close();
       return options[index].value;
     } else {
-      relinka.log("Invalid selection. Please try again.");
+      console.log("Invalid selection. Please try again.");
     }
   }
 }

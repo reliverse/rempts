@@ -24,7 +24,7 @@ const demo = async () => {
       },
     ],
   });
-  relinka.log("Answer:", answer);
+  console.log("Answer:", answer);
 
   answer = await checkbox({
     message: "Select your favorite letters",
@@ -84,7 +84,7 @@ const demo = async () => {
       { value: "Z" },
     ],
   });
-  relinka.log("Answer:", answer);
+  console.log("Answer:", answer);
 };
 
 if (import.meta.url.startsWith("file:")) {

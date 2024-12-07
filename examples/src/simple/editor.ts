@@ -4,7 +4,7 @@ import * as url from "node:url";
 import { editor } from "~/components/prompts/index.js";
 
 const demo = async () => {
-  relinka.log(
+  console.log(
     "Answer:",
     await editor({
       message: "Please write a short bio of at least 3 lines.",
@@ -18,7 +18,7 @@ const demo = async () => {
     }),
   );
 
-  relinka.log(
+  console.log(
     "Answer:",
     await editor({
       message: "Automatically opened editor",

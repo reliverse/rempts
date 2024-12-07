@@ -142,7 +142,7 @@ export async function inputPrompt(
         title: `  ${defaultValue}`,
         borderColor,
       });
-      relinka.log(defaultMsg);
+      console.log(defaultMsg);
       linesToDelete += countLines(defaultMsg);
     }
 
@@ -233,7 +233,7 @@ export async function inputPrompt(
         title: `  ${defaultValue}`,
         borderColor,
       });
-      relinka.log(defaultMsg);
+      console.log(defaultMsg);
       linesToDelete += countLines(defaultMsg);
     }
 
