@@ -25,7 +25,6 @@ import { selectPrompt } from "~/main.js";
 import { spinner } from "~/main.js";
 
 import { basicConfig, experimentalConfig, extendedConfig } from "./configs.js";
-import { schema, type UserInput } from "./schema.js";
 import {
   calculateAge,
   createColorChoices,
@@ -38,7 +37,7 @@ import {
 // const pkg = packageJson;
 const pkg = {
   name: "@reliverse/prompts",
-  version: "1.3.8",
+  version: "1.3.13",
   description:
     "@reliverse/prompts is a powerful library that enables seamless, typesafe, and resilient prompts for command-line applications. Crafted with simplicity and elegance, it provides developers with an intuitive and robust way to build interactive CLIs.",
 };
@@ -83,14 +82,13 @@ export async function showAnykeyPrompt(
   await anykeyPrompt(notification);
 }
 
-export async function showInputPrompt(): Promise<UserInput["username"]> {
+export async function showInputPrompt() {
   const username = await inputPrompt({
     title: "We're glad you're testing our interactive prompts library!",
     content: "Let's get to know each other!\nWhat's your username?",
     hint: "Press <Enter> to use the default value.",
     placeholder: "[Default: johnny911]",
     defaultValue: "johnny911",
-    schema: schema.properties.username,
     ...extendedConfig,
     // hardcoded: { // For testing purposes only
     //   userInput: "JohnDoe", // Predefined user input
@@ -102,12 +100,11 @@ export async function showInputPrompt(): Promise<UserInput["username"]> {
   return username ?? "johnny911";
 }
 
-export async function askDir(username: string): Promise<UserInput["dir"]> {
+export async function askDir(username: string) {
   const dir = await inputPrompt({
     title: `[inputPrompt] Great! Nice to meet you, ${username}!`,
     content: "Where should we create your project?",
     // Schema is required, because it provides a runtime typesafety validation.
-    schema: schema.properties.dir,
     ...extendedConfig,
     titleVariant: "doubleBox",
     hint: "Default: ./prefilled-default-value",
@@ -116,7 +113,7 @@ export async function askDir(username: string): Promise<UserInput["dir"]> {
   return dir ?? "./prefilled-default-value";
 }
 
-export async function showNumberPrompt(): Promise<UserInput["age"]> {
+export async function showNumberPrompt() {
   const age = await numberPrompt({
     ...extendedConfig,
     title: "[numberPrompt] Enter your age",
@@ -125,7 +122,6 @@ export async function showNumberPrompt(): Promise<UserInput["age"]> {
     defaultValue: "36",
     // Define a schema to validate the input.
     // Errors are automatically handled and displayed based on the type.
-    schema: schema.properties.age,
     // Additional validation can be configured using the 'validate' option.
     validate: (value) => {
       const num = Number(value);
@@ -138,7 +134,7 @@ export async function showNumberPrompt(): Promise<UserInput["age"]> {
   return age ?? 34;
 }
 
-export async function showPasswordPrompt(): Promise<UserInput["password"]> {
+export async function showPasswordPrompt() {
   // Initialize `passwordResult` to avoid uninitialized variable errors.
   let password = "silverHand2077";
   // Wrap password prompts with a try-catch block to handle cancellations,
@@ -146,7 +142,6 @@ export async function showPasswordPrompt(): Promise<UserInput["password"]> {
   try {
     password = await passwordPrompt({
       title: "[passwordPrompt] Imagine a password",
-      schema: schema.properties.password,
       defaultValue: "silverHand2077",
       hint: "Default: silverHand2077",
       validate: (input) => {
@@ -167,7 +162,7 @@ export async function showPasswordPrompt(): Promise<UserInput["password"]> {
   return password ?? "silverHand2077";
 }
 
-export async function showDatePrompt(): Promise<UserInput["birthday"]> {
+export async function showDatePrompt() {
   const birthdayDate = await datePrompt({
     dateKind: "birthday",
     dateFormat: "DD.MM.YYYY",
@@ -175,7 +170,6 @@ export async function showDatePrompt(): Promise<UserInput["birthday"]> {
     hint: "Default: 16.11.1988",
     // You can set a default value for the prompt if desired.
     defaultValue: "16.11.1988",
-    schema: schema.properties.birthday,
   });
   return birthdayDate ?? "16.11.1988";
 }
@@ -210,14 +204,16 @@ export async function showDatePromptTwo() {
       return true;
     },
     defaultValue: "01.01.2000",
-    schema: undefined, // @reliverse/prompts allows you to pass an additional TypeBox schema if needed, but it's not required
   });
 
   console.log(`You entered: ${userDate}`);
 }
 
-export async function showSelectPrompt(): Promise<UserInput["lang"]> {
+export async function showSelectPrompt() {
   const lang = await selectPrompt({
+    title: "[selectPrompt] Choose your language",
+    content:
+      "“You can have brilliant ideas, but if you can’t get them across, your ideas won’t get you anywhere.” – Lee Iacocca",
     options: [
       { label: "English", value: "en", hint: "Default" },
       { separator: true, width: 20, symbol: "line" },
@@ -235,51 +231,12 @@ export async function showSelectPrompt(): Promise<UserInput["lang"]> {
       { label: "Italian", value: "it", hint: "Italiano" },
       { label: "Other", value: "other", hint: "Other" },
     ],
-    title: "[selectPrompt] Choose your language",
     defaultValue: "en",
     ...experimentalConfig,
     // @reliverse/prompts is a very young library, so something might break.
     // If you encounter any issues, please report them to the GitHub repository.
-    // By using the debug+hardcoded, you can try to manually fix some of your issues.
+    // By using the debug, you can try to manually handle some of your issues.
     debug: false, // selectPrompt
-    /*
-    // [debug: true]
-    // without terminal-size library
-    {
-      terminalHeight: 16,
-      availableHeight: 12,
-      computedMaxItems: 9,
-      displayItems: 9,
-      startIdx: 0,
-      endIdx: 8,
-      shouldRenderTopEllipsis: false,
-      shouldRenderBottomEllipsis: false,
-      linesRendered: 11,
-    }
-    // with https://github.com/sindresorhus/terminal-size
-    {
-      terminalHeight: 19,
-      availableHeight: 15,
-      computedMaxItems: 9,
-      displayItems: 9,
-      startIdx: 0,
-      endIdx: 8,
-      shouldRenderTopEllipsis: false,
-      shouldRenderBottomEllipsis: false,
-      linesRendered: 11,
-    }
-    */
-    // hardcoded: {
-    //   terminalHeight: 16,
-    //   availableHeight: 12,
-    //   computedMaxItems: 9,
-    //   displayItems: 9,
-    //   startIdx: 0,
-    //   endIdx: 8,
-    //   shouldRenderTopEllipsis: false,
-    //   shouldRenderBottomEllipsis: false,
-    //   linesRendered: 11,
-    // },
   });
 
   switch (lang) {
@@ -321,7 +278,7 @@ export async function showSelectPrompt(): Promise<UserInput["lang"]> {
   return lang;
 }
 
-export async function showMultiselectPrompt(): Promise<UserInput["langs"]> {
+export async function showMultiselectPrompt() {
   const jokes: Record<string, string> = {
     TypeScript:
       "- Why did TypeScript bring a type-checker to the party? Because it couldn't handle any loose ends!",
@@ -341,7 +298,9 @@ export async function showMultiselectPrompt(): Promise<UserInput["langs"]> {
   };
 
   const multiselectOptions = await multiselectPrompt({
-    title: "Select your favorite programming languages",
+    title: "[multiselectPrompt] Select your favorite programming languages",
+    content:
+      "“Code is like humor. When you have to explain it, it’s bad.” – Cory House",
     options: [
       {
         label: "TypeScript",
@@ -397,44 +356,6 @@ export async function showMultiselectPrompt(): Promise<UserInput["langs"]> {
     defaultValue: ["TypeScript", "JavaScript"],
     ...experimentalConfig,
     debug: false, // multiselectPrompt
-    /*
-    // [debug: true]
-    // without terminal-size library
-    {
-      terminalHeight: 16,
-      availableHeight: 12,
-      computedMaxItems: 11,
-      displayItems: 11,
-      startIdx: 0,
-      endIdx: 10,
-      shouldRenderTopEllipsis: false,
-      shouldRenderBottomEllipsis: false,
-      linesRendered: 13,
-    }
-    // with https://github.com/sindresorhus/terminal-size
-    {
-      terminalHeight: 19,
-      availableHeight: 15,
-      computedMaxItems: 11,
-      displayItems: 11,
-      startIdx: 0,
-      endIdx: 10,
-      shouldRenderTopEllipsis: false,
-      shouldRenderBottomEllipsis: false,
-      linesRendered: 13,
-    }
-    */
-    // hardcoded: {
-    //   terminalHeight: 16,
-    //   availableHeight: 12,
-    //   computedMaxItems: 11,
-    //   displayItems: 11,
-    //   startIdx: 0,
-    //   endIdx: 10,
-    //   shouldRenderTopEllipsis: false,
-    //   shouldRenderBottomEllipsis: false,
-    //   linesRendered: 13,
-    // },
   });
 
   if (!Array.isArray(multiselectOptions)) {
@@ -483,7 +404,7 @@ export async function showMultiselectPrompt(): Promise<UserInput["langs"]> {
   return multiselectOptions;
 }
 
-export async function showNumSelectPrompt(): Promise<UserInput["color"]> {
+export async function showNumSelectPrompt() {
   const choices = createColorChoices();
 
   const color = await numSelectPrompt({
@@ -494,15 +415,12 @@ export async function showNumSelectPrompt(): Promise<UserInput["color"]> {
     choices,
     defaultValue: "17",
     hint: "Default: 17",
-    schema: schema.properties.color,
   });
 
   return color.toString() ?? "red";
 }
 
-export async function showNumMultiselectPrompt(): Promise<
-  UserInput["features"]
-> {
+export async function showNumMultiselectPrompt() {
   const features = await numMultiSelectPrompt({
     title: "[numMultiSelectPrompt] What web technologies do you like?",
     defaultValue: ["react", "typescript"],
@@ -525,16 +443,15 @@ export async function showNumMultiselectPrompt(): Promise<
         description: "A tool for identifying patterns in JavaScript code.",
       },
     ] as const,
-    schema: schema.properties.features,
   });
   return features ?? ["react", "typescript"];
 }
 
-export async function showTogglePrompt(): Promise<UserInput["toggle"]> {
+export async function showTogglePrompt() {
   const result = await togglePrompt({
     title: "[togglePrompt] Do you like @reliverse/prompts library?",
-    options: ["Yes", "No"],
-    defaultValue: "Yes",
+    content:
+      "You can share your thoughts with us here:\n- https://github.com/reliverse/prompts/issues \n- https://discord.gg/Pb8uKbwpsJ",
   });
 
   msg({
@@ -548,9 +465,7 @@ export async function showTogglePrompt(): Promise<UserInput["toggle"]> {
   return result;
 }
 
-export async function showConfirmPrompt(
-  username: string,
-): Promise<UserInput["spinner"]> {
+export async function showConfirmPrompt(username: string) {
   await showAnykeyPrompt("pm", username);
 
   const spinner = await confirmPrompt({
@@ -560,7 +475,6 @@ export async function showConfirmPrompt(
     titleVariant: "doubleBox",
     // Schema is not required for confirm prompts,
     // because of boolean nature of the value.
-    // schema: schema.properties.spinner,
     // @reliverse/prompts includes styled prompts, with the `title` color defaulting
     // to "cyanBright". Setting the color to "none" removes the default styling.
     content: "Spinners are helpful for long-running tasks.",
@@ -610,7 +524,7 @@ export async function showProgressBar() {
   });
 }
 
-export async function showResults(userInput: UserInput) {
+export async function showResults(userInput) {
   await promptsDisplayResults({
     // Display all user input values, e.g.:
     // ┌────────────────────────────────┐
@@ -631,7 +545,7 @@ export async function showResults(userInput: UserInput) {
   });
 }
 
-export async function doSomeFunStuff(userInput: UserInput) {
+export async function doSomeFunStuff(userInput) {
   // Just for fun, let's create an age calculator
   // based on the birthday to verify age accuracy.
   const calculatedAge = calculateAge(userInput.birthday);

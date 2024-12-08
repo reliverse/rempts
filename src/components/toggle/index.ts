@@ -8,38 +8,48 @@ import type {
   VariantName,
 } from "~/types/general.js";
 
+import { deleteLastLine } from "~/main.js";
 import { bar, fmt, msg, symbols } from "~/utils/messages.js";
 
 export async function togglePrompt<T extends string>(params: {
   title: string;
-  options: [T, T];
+  content?: string;
+  options?: [T, T];
   defaultValue?: T;
   borderColor?: ColorName;
   titleColor?: ColorName;
   titleTypography?: TypographyName;
   titleVariant?: VariantName;
+  contentColor?: ColorName;
+  contentTypography?: TypographyName;
   border?: boolean;
   endTitle?: string;
   endTitleColor?: ColorName;
 }): Promise<boolean> {
   const {
     title = "",
-    options,
-    defaultValue,
+    content = "",
+    options = ["Yes", "No"],
+    defaultValue = "Yes",
     borderColor = "viceGradient",
     titleColor = "blueBright",
     titleTypography = "bold",
     titleVariant,
+    contentColor = "dim",
+    contentTypography = "bold",
     border = true,
     endTitle = "",
     endTitleColor = "dim",
   } = params;
 
-  let selectedIndex = defaultValue
-    ? options.findIndex((option) => option === defaultValue)
-    : 0;
+  // Validate options length
+  if (options.length !== 2) {
+    throw new Error("togglePrompt requires exactly two options.");
+  }
+
+  let selectedIndex = options.findIndex((option) => option === defaultValue);
   if (selectedIndex === -1) {
-    selectedIndex = 0;
+    selectedIndex = 0; // Default to first option if defaultValue not found
   }
 
   const rl = readline.createInterface({ input, output });
@@ -68,6 +78,16 @@ export async function togglePrompt<T extends string>(params: {
       titleVariant,
     })}\n`;
 
+    // Render content if provided
+    if (content) {
+      outputStr += `${fmt({
+        type: "M_NULL",
+        content,
+        contentColor,
+        contentTypography,
+      })}\n`;
+    }
+
     // Display error message if present; otherwise, show instructions
     if (errorMessage) {
       outputStr += `${pc.redBright(symbols.step_error)}  ${errorMessage}\n`;
@@ -75,6 +95,7 @@ export async function togglePrompt<T extends string>(params: {
       outputStr += `${formattedBar}  ${pc.dim(instructions)}\n`;
     }
 
+    // Display options with the selected option highlighted
     const displayOptions = options.map((option, index) => {
       return index === selectedIndex ? pc.cyanBright(option) : option;
     });
@@ -83,7 +104,7 @@ export async function togglePrompt<T extends string>(params: {
     outputStr += `${formattedBar}  ${displayString}\n`;
 
     process.stdout.write(outputStr);
-    linesRendered = 3; // 1 for title line, 1 for instructions/error line, 1 for options line
+    linesRendered = 4; // 1 for step symbol + title, 1 for content, 1 for instructions/error, 1 for options
   }
 
   renderOption();
@@ -91,10 +112,12 @@ export async function togglePrompt<T extends string>(params: {
   return new Promise<boolean>((resolve) => {
     function onKeyPress(_str: string, key: readline.Key) {
       if (key.name === "left" || key.name === "h") {
+        // Move selection to the left option
         selectedIndex = (selectedIndex - 1 + options.length) % options.length;
         errorMessage = "";
         renderOption();
       } else if (key.name === "right" || key.name === "l") {
+        // Move selection to the right option
         selectedIndex = (selectedIndex + 1) % options.length;
         errorMessage = "";
         renderOption();
@@ -120,6 +143,11 @@ export async function togglePrompt<T extends string>(params: {
             });
           }
           resolve(booleanValue);
+          deleteLastLine();
+          msg({
+            type: "M_MIDDLE",
+            title: "",
+          });
         }
       } else if (key.name === "c" && key.ctrl) {
         // Ctrl+C

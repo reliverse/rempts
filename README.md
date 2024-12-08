@@ -1,6 +1,6 @@
 # @reliverse/prompts
 
-[**Docs**](.github/DOCS.md) | [**npmjs.com**](https://npmjs.com/package/@reliverse/prompts) | [**GitHub**](https://github.com/reliverse/prompts)
+[**Docs**](.github/DOCS.md) | [**npmjs.com**](https://npmjs.com/package/@reliverse/prompts) | [**GitHub**](https://github.com/reliverse/prompts) | [**Discord**](https://discord.gg/Pb8uKbwpsJ)
 
 <p align="left">
   <a href="https://npmjs.org/package/@reliverse/prompts">

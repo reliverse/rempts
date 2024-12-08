@@ -1,6 +1,6 @@
 {
   "name": "@reliverse/prompts",
-  "version": "1.3.13",
+  "version": "1.3.14",
   "author": "blefnk",
   "license": "MIT",
   "exports": "./dist-jsr/main.ts",

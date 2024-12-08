@@ -10,7 +10,7 @@ import type {
 } from "~/types/general.js";
 
 import { colorize, deleteLastLine } from "~/main.js";
-import { bar, symbols, msg } from "~/utils/messages.js";
+import { bar, symbols, msg, fmt } from "~/utils/messages.js";
 
 type SelectOption<T> = {
   label: string;
@@ -33,6 +33,7 @@ function isSelectOption<T>(
 
 export async function multiselectPrompt<T extends string>(params: {
   title: string;
+  content?: string;
   options: (SelectOption<T> | SeparatorOption)[];
   required?: boolean;
   defaultValue?: T[];
@@ -40,6 +41,8 @@ export async function multiselectPrompt<T extends string>(params: {
   titleColor?: ColorName;
   titleTypography?: TypographyName;
   titleVariant?: VariantName;
+  contentColor?: ColorName;
+  contentTypography?: TypographyName;
   border?: boolean;
   endTitle?: string;
   endTitleColor?: ColorName;
@@ -48,6 +51,7 @@ export async function multiselectPrompt<T extends string>(params: {
 }): Promise<T[]> {
   const {
     title = "",
+    content = "",
     options,
     required = false,
     defaultValue = [],
@@ -55,6 +59,8 @@ export async function multiselectPrompt<T extends string>(params: {
     titleColor = "blueBright",
     titleTypography = "bold",
     titleVariant,
+    contentColor = "dim",
+    contentTypography = "bold",
     border = true,
     endTitle = "",
     endTitleColor = "dim",
@@ -99,10 +105,11 @@ export async function multiselectPrompt<T extends string>(params: {
 
   const formattedBar = bar({ borderColor });
   let currentLinesRendered = 0;
-  const instructions = `Use <↑/↓> or <k/j> to navigate, <Space> to select/deselect, <Enter> to confirm, <Ctrl+C> to exit`;
+  const instructions = `Use <↑/↓> or <k/j> to navigate, <Space> to toggle, <A> to select/deselect all, <Enter> to confirm, <Ctrl+C> to exit`;
   let errorMessage = "";
 
   // Check if all selectable options are disabled
+
   const allDisabled = options
     .filter(isSelectOption)
     .every((option) => option.disabled);
@@ -118,6 +125,16 @@ export async function multiselectPrompt<T extends string>(params: {
       titleColor,
       titleTypography,
     )}\n`;
+
+    // content line
+    if (content) {
+      outputStr += `${fmt({
+        type: "M_NULL",
+        content,
+        contentColor,
+        contentTypography,
+      })}\n`;
+    }
 
     if (errorMessage) {
       outputStr += `${pc.redBright(symbols.step_error)}  ${pc.redBright(errorMessage)}\n`;
@@ -204,7 +221,8 @@ export async function multiselectPrompt<T extends string>(params: {
 
     currentLinesRendered =
       1 + // Title line
-      1 + // Instructions/Error line
+      (content ? 1 : 0) + // Content line if present
+      1 + // Instructions/error line
       (shouldRenderTopEllipsis ? 1 : 0) +
       (endIdx - startIdx + 1) +
       (shouldRenderBottomEllipsis ? 1 : 0);
@@ -224,6 +242,26 @@ export async function multiselectPrompt<T extends string>(params: {
     }
 
     process.stdout.write(outputStr);
+  }
+
+  function toggleSelectAll() {
+    const selectableIndexes = options
+      .map((opt, i) => (isSelectOption(opt) && !opt.disabled ? i : -1))
+      .filter((i) => i !== -1);
+
+    const allSelected = selectableIndexes.every((i) => selectedOptions.has(i));
+
+    if (allSelected) {
+      // Deselect all
+      for (const i of selectableIndexes) {
+        selectedOptions.delete(i);
+      }
+    } else {
+      // Select all
+      for (const i of selectableIndexes) {
+        selectedOptions.add(i);
+      }
+    }
   }
 
   renderOptions();
@@ -327,6 +365,11 @@ export async function multiselectPrompt<T extends string>(params: {
           });
         }
         cleanup(true);
+      } else if (key.name === "a") {
+        // Toggle select all
+        toggleSelectAll();
+        errorMessage = "";
+        renderOptions();
       }
     }
 

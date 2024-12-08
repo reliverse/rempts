@@ -32,6 +32,7 @@ function isSelectOption<T>(
 
 export async function selectPrompt<T extends string>(params: {
   title: string;
+  content?: string;
   options: (SelectOption<T> | SeparatorOption)[];
   defaultValue?: T;
   required?: boolean;
@@ -39,6 +40,8 @@ export async function selectPrompt<T extends string>(params: {
   titleColor?: ColorName;
   titleTypography?: TypographyName;
   titleVariant?: VariantName;
+  contentColor?: ColorName;
+  contentTypography?: TypographyName;
   border?: boolean;
   endTitle?: string;
   endTitleColor?: ColorName;
@@ -47,6 +50,7 @@ export async function selectPrompt<T extends string>(params: {
 }): Promise<T> {
   const {
     title = "",
+    content = "",
     options,
     defaultValue,
     required = false,
@@ -54,6 +58,8 @@ export async function selectPrompt<T extends string>(params: {
     titleColor = "blueBright",
     titleTypography = "bold",
     titleVariant,
+    contentColor = "dim",
+    contentTypography = "bold",
     border = true,
     endTitle = "",
     endTitleColor = "dim",
@@ -113,6 +119,16 @@ export async function selectPrompt<T extends string>(params: {
       titleColor,
     })}\n`;
 
+    // content line
+    if (content) {
+      outputStr += `${fmt({
+        type: "M_NULL",
+        content,
+        contentColor,
+        contentTypography,
+      })}\n`;
+    }
+
     // Display error message if present; otherwise, show instructions or all disabled message
     if (errorMessage) {
       outputStr += `${pc.redBright(symbols.step_error)}  ${errorMessage}\n`;
@@ -126,9 +142,8 @@ export async function selectPrompt<T extends string>(params: {
     const size = terminalSize(); // Get terminal size
     const effectiveTerminalHeight = size.rows ?? 24; // fallback to 24 if rows is undefined
     // We'll reserve a few lines for the title and instructions, so:
-    const availableHeight = effectiveTerminalHeight - 4; // Title, instructions, and some margin
+    const availableHeight = effectiveTerminalHeight - 4; // Subtract 4 lines for the footer: Title, instructions, and some margin
 
-    // Determine how many items to display
     const effectiveMaxItems = maxItems
       ? Math.min(maxItems, options.length)
       : options.length;
@@ -196,6 +211,7 @@ export async function selectPrompt<T extends string>(params: {
     // Calculate lines rendered for this frame
     currentLinesRendered =
       1 + // Title line
+      (content ? 1 : 0) + // Content line if present
       1 + // Instructions/error line
       (shouldRenderTopEllipsis ? 1 : 0) +
       (endIdx - startIdx + 1) +
