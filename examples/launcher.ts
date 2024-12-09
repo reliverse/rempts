@@ -1,10 +1,12 @@
-import relinka from "@reliverse/relinka";
 import pc from "picocolors";
 
 import { errorHandler, selectPrompt } from "~/main.js";
+import { preventWrongTerminalSize } from "~/utils/prevent.js";
 
 async function examplesRunner() {
   console.clear();
+  await preventWrongTerminalSize({});
+
   const exampleToRun = await selectPrompt({
     title: "Choose an example to run",
     options: [
@@ -19,23 +21,18 @@ async function examplesRunner() {
         hint: pc.dim("not finished"),
       },
       {
-        label: pc.dim("@reliverse/relinka Example"),
-        value: "3-relinka",
-        hint: pc.dim("not finished"),
-      },
-      {
         label: pc.dim("Simple Example"),
-        value: "4-simple",
+        value: "3-simple",
         hint: pc.dim("not finished"),
       },
       {
         label: pc.dim("with flags 1 Example"),
-        value: "5-cmd-a",
+        value: "4-cmd-a",
         hint: pc.dim("not finished"),
       },
       {
         label: pc.dim("with flags 2 Example"),
-        value: "6-cmd-b",
+        value: "5-cmd-b",
         hint: pc.dim("not finished"),
       },
       { label: "🗝️  Exit", value: "exit" },
@@ -50,31 +47,28 @@ async function examplesRunner() {
     case "2-mono":
       await import("./2-mono.js");
       break;
-    case "3-relinka":
-      await import("./3-relinka.js");
+    case "3-simple":
+      await import("./3-simple.js");
       break;
-    case "4-simple":
-      await import("./4-simple.js");
-      break;
-    case "5-cmd-a":
+    case "4-cmd-a":
       console.clear();
-      relinka.info(
-        "`bun examples/5-args-a.ts Alice --friendly --age 22 --adj cool`",
+      console.log(
+        "`bun examples/4-args-a.ts Alice --friendly --age 22 --adj cool`",
       );
-      relinka.info("Run without any arguments to see the help message.");
+      console.log("Run without any arguments to see the help message.");
       break;
-    case "6-cmd-b":
+    case "5-cmd-b":
       console.clear();
-      relinka.info(
-        "1. [BUILD] `bun examples/6-args-b.ts build ./src --workDir ./src`",
+      console.log(
+        "1. [BUILD] `bun examples/5-args-b.ts build ./src --workDir ./src`",
       );
-      relinka.info(
-        "2. [DEBUG] `bun examples/6-args-b.ts debug --feature database-query`",
+      console.log(
+        "2. [DEBUG] `bun examples/5-args-b.ts debug --feature database-query`",
       );
-      relinka.info(
-        "3. [DEPLOY] `bun examples/6-args-b.ts deploy --include '*.js' --exclude '*.d.ts'`",
+      console.log(
+        "3. [DEPLOY] `bun examples/5-args-b.ts deploy --include '*.js' --exclude '*.d.ts'`",
       );
-      relinka.info("Run without any arguments to see the help message.");
+      console.log("Run without any arguments to see the help message.");
       break;
     default:
       break;

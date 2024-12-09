@@ -1,2 +1,2 @@
-export * from "./relinka.js";
+export * from "./readline.js";
 export * from "./utils.js";

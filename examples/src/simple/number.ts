@@ -1,6 +1,6 @@
 import * as url from "node:url";
 
-import { number } from "~/components/prompts/index.js";
+import { number } from "~/prompts/index.js";
 
 const demo = async () => {
   console.log(

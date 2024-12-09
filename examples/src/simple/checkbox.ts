@@ -1,6 +1,6 @@
 import * as url from "node:url";
 
-import { checkbox, Separator } from "~/components/prompts/index.js";
+import { checkbox, Separator } from "~/prompts/index.js";
 
 const demo = async () => {
   let answer;

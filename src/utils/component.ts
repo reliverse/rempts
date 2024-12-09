@@ -13,10 +13,10 @@ import {
   SelectKeyPrompt,
   SelectPrompt,
   InputPrompt,
-} from "~/components/prompts/index.js";
+} from "~/prompts/index.js";
 import { isUnicodeSupported } from "~/utils/platforms.js";
 
-export { isCancel } from "~/components/prompts/prompt.js";
+export { isCancel } from "~/prompts/prompt.js";
 
 const unicode = isUnicodeSupported();
 const s = (c: string, fallback: string) => (unicode ? c : fallback);

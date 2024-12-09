@@ -5,7 +5,7 @@ import differ from "ansi-diff-stream";
 import esc from "ansi-escapes";
 import windowSize from "window-size";
 
-import type { RangePrompt } from "~/components/range/range.js";
+import type { RangePrompt } from "~/range/range.js";
 import type { Keypress } from "~/types/keypress.js";
 
 import listenForKeys from "~/utils/keypress.js";

@@ -1,13 +1,13 @@
 /// <reference types="node" />
 import type { Duplex } from "node:stream";
 /**
- * `RelinkaReadline` is a re-implementation of `readline.Interface` from Node.
+ * `BetterReadline` is a re-implementation of `readline.Interface` from Node.
  * It is reimplemented because of 3 reasons:
  * 1. The `readline.Interface` API is not complete; it's missing for example `clearLine`.
  * 2. The input/output streams are not generics, meaning they're inexact.
  * 3. Since ReadLine isn't built-in Typescript Global NodeJS type, it'd force us to ship `@types/node` as a dependency to all users.
  */
-export type RelinkaReadline = {
+export type BetterReadline = {
   output: Duplex & { mute: () => void; unmute: () => void };
   input: NodeJS.ReadableStream;
   clearLine: (dir: 0 | 1 | -1) => void; // https://nodejs.org/api/readline.html#rlclearlinedir

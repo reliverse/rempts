@@ -2,7 +2,7 @@ import { promises as fs } from "node:fs";
 import path from "node:path";
 import * as url from "node:url";
 
-import { search } from "~/components/prompts/index.js";
+import { search } from "~/prompts/index.js";
 
 async function fileExists(filepath: string) {
   return fs.access(filepath).then(
@@ -33,7 +33,7 @@ const demo = async () => {
 
     // @ts-expect-error - TODO: fix ts
     // biome-ignore lint/style/useDefaultParameterLast: <explanation>
-    source: async (input = "relinka", { signal }) => {
+    source: async (input = "@reliverse/prompts", { signal }) => {
       const response = await fetch(
         `https://registry.npmjs.org/-/v1/search?text=${encodeURIComponent(input)}&size=20`,
         { signal },

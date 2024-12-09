@@ -1,6 +1,5 @@
 // 👉 usage example: `bun pub --bump=1.2.3`
 
-import relinka from "@reliverse/relinka";
 import { execaCommand } from "execa";
 import fs from "fs-extra";
 import { globby } from "globby";
@@ -8,7 +7,7 @@ import mri from "mri";
 import path from "path";
 
 function showHelp() {
-  relinka.info(`Usage: bun tsx build.publish.ts [newVersion] [options]
+  console.log(`Usage: bun tsx build.publish.ts [newVersion] [options]
 
 Arguments:
   newVersion        The new version to set (e.g. 1.2.3)
@@ -45,7 +44,7 @@ const unknownFlags = Object.keys(argv).filter(
 );
 
 if (unknownFlags.length > 0) {
-  relinka.error(`❌ Unknown flag(s): ${unknownFlags.join(", ")}`);
+  console.error(`❌ Unknown flag(s): ${unknownFlags.join(", ")}`);
   showHelp();
   process.exit(1);
 }
@@ -58,9 +57,9 @@ async function publishNpm(dryRun: boolean) {
       await execaCommand("bun build:npm", { stdio: "inherit" });
       await execaCommand("npm publish", { stdio: "inherit" });
     }
-    relinka.success("Published to npm successfully.");
+    console.log("Published to npm successfully.");
   } catch (error) {
-    relinka.error("❌ Failed to publish to npm:", error);
+    console.error("❌ Failed to publish to npm:", error);
     process.exit(1);
   }
 }
@@ -78,9 +77,9 @@ async function publishJsr(dryRun: boolean) {
         stdio: "inherit",
       });
     }
-    relinka.success("Published to JSR successfully.");
+    console.log("Published to JSR successfully.");
   } catch (error) {
-    relinka.error("❌ Failed to publish to JSR:", error);
+    console.error("❌ Failed to publish to JSR:", error);
     process.exit(1);
   }
 }
@@ -114,7 +113,7 @@ async function bumpVersions(oldVersion: string, newVersion: string) {
     }
   }
 
-  relinka.success(`Version updated from ${oldVersion} to ${newVersion}`);
+  console.log(`Version updated from ${oldVersion} to ${newVersion}`);
 }
 
 async function main() {
@@ -130,7 +129,7 @@ async function main() {
     if (oldVersion !== newVersion) {
       await bumpVersions(oldVersion, newVersion);
     } else {
-      relinka.info(`No version change required: already at ${oldVersion}`);
+      console.log(`No version change required: already at ${oldVersion}`);
     }
   }
 
@@ -143,6 +142,6 @@ async function main() {
 }
 
 main().catch((error) => {
-  relinka.error("❌ An unexpected error occurred:", error);
+  console.error("❌ An unexpected error occurred:", error);
   process.exit(1);
 });

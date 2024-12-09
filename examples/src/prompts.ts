@@ -64,6 +64,12 @@ export async function showStartPrompt() {
     clearConsole: true,
     packageName: pkg.name,
     packageVersion: pkg.version,
+    terminalSizeOptions: {
+      widthErrorMessage: "Oops! Terminal width is too small. Expected >",
+      heightErrorMessage: "Oops! Terminal height is too small. Expected >",
+      sizeErrorDescription:
+        "Please increase the terminal size to run this prompts example",
+    },
   });
 }
 
@@ -89,7 +95,7 @@ export async function showInputPrompt() {
     hint: "Press <Enter> to use the default value.",
     placeholder: "[Default: johnny911]",
     defaultValue: "johnny911",
-    ...extendedConfig,
+    ...experimentalConfig,
     // hardcoded: { // For testing purposes only
     //   userInput: "JohnDoe", // Predefined user input
     //   errorMessage: "", // No error message
@@ -105,7 +111,7 @@ export async function askDir(username: string) {
     title: `[inputPrompt] Great! Nice to meet you, ${username}!`,
     content: "Where should we create your project?",
     // Schema is required, because it provides a runtime typesafety validation.
-    ...extendedConfig,
+    ...experimentalConfig,
     titleVariant: "doubleBox",
     hint: "Default: ./prefilled-default-value",
     defaultValue: "./prefilled-default-value",
@@ -117,6 +123,8 @@ export async function showNumberPrompt() {
   const age = await numberPrompt({
     ...extendedConfig,
     title: "[numberPrompt] Enter your age",
+    content:
+      "“It matters not how long we live but how we live.“ – Philip James Bailey",
     // Adding a hint helps users understand the expected input format.
     hint: "Try: 42 | Default: 36",
     defaultValue: "36",
@@ -126,7 +134,7 @@ export async function showNumberPrompt() {
     validate: (value) => {
       const num = Number(value);
       if (num === 42) {
-        return "42 is the answer to the ultimate question of life, the universe, and everything. Try a different number.";
+        return "Try a different number... “42 is the answer to the ultimate question of life, the universe, and everything.“ – Douglas Adams";
       }
       return true;
     },
@@ -152,10 +160,11 @@ export async function showPasswordPrompt() {
       },
     });
   } catch (error) {
-    msg({
-      type: "M_ERROR",
-      title: "Password prompt was aborted or something went wrong.",
-    });
+    process.exit(0);
+    // msg({
+    //   type: "M_ERROR",
+    //   title: "Password prompt was aborted or something went wrong.",
+    // });
   }
   // We can set default values for missing responses, especially
   // for the cases when we allow the user to cancel the prompt.
@@ -561,7 +570,11 @@ export async function doSomeFunStuff(userInput) {
 export async function showNextStepsPrompt() {
   await nextStepsPrompt({
     title: "[nextStepsPrompt] Next Steps",
-    content: "- Set up your profile\n- Review your dashboard\n- Add tasks",
+    content: [
+      "- Set up your profile",
+      "- Review your dashboard",
+      "- Add tasks",
+    ],
     ...extendedConfig,
   });
 }
@@ -582,7 +595,7 @@ export async function showAnimatedText() {
 export async function showEndPrompt() {
   await endPrompt({
     title: emojify(
-      "ℹ  :books: Learn the docs here: https://docs.reliverse.org/relinka",
+      "ℹ  :books: Learn the docs here: https://docs.reliverse.org/prompts",
     ),
     titleAnimation: "glitch",
     ...basicConfig,

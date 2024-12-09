@@ -1,4 +1,3 @@
-import relinka from "@reliverse/relinka";
 import fs from "fs-extra";
 import { globby } from "globby";
 import path from "pathe";
@@ -26,13 +25,22 @@ const outputDir: string = path.resolve(
 const npmFilesToDelete: string[] = [
   "**/*.test.js",
   "**/*.test.d.ts",
+  "**/*.spec.js",
+  "**/*.spec.d.ts",
   "types/internal.js",
   "types/internal.d.ts",
   "**/*.temp.js",
   "**/*.temp.d.ts",
+  "__snapshots__",
+  "testing",
 ];
 
-const jsrFilesToDelete: string[] = ["**/*.test.ts", "**/*.temp.ts"];
+const jsrFilesToDelete: string[] = [
+  "**/*.test.ts",
+  "**/*.spec.ts",
+  "**/*.temp.ts",
+  "__snapshots__",
+];
 
 /**
  * Deletes files matching the provided patterns within the base directory.
@@ -238,18 +246,16 @@ async function copySrcToOutput(): Promise<void> {
  */
 async function optimizeBuildForProduction(dir: string): Promise<void> {
   if (isJSR) {
-    relinka.info(
-      "Preparing JSR build by removing existing output directory...",
-    );
+    console.log("Preparing JSR build by removing existing output directory...");
     await removeOutputDirectory(); // Remove outputDir before copying
-    relinka.info("Copying 'src' to output directory...");
+    console.log("Copying 'src' to output directory...");
     await copySrcToOutput();
-    relinka.info("Processing copied files to replace import paths...");
+    console.log("Processing copied files to replace import paths...");
     await processFiles(outputDir); // Process files after copying
   } else {
-    relinka.info("Creating an optimized production build...");
+    console.log("Creating an optimized production build...");
     await processFiles(dir);
-    relinka.info("Cleaning up unnecessary files...");
+    console.log("Cleaning up unnecessary files...");
     const filesToDelete: string[] = isJSR ? jsrFilesToDelete : npmFilesToDelete;
     await deleteFiles(filesToDelete, dir);
   }
@@ -277,10 +283,10 @@ await optimizeBuildForProduction(outputDir)
   .then(() => {
     getDirectorySize(outputDir)
       .then((size) => {
-        relinka.info(`Total size of ${outputDir}: ${size} bytes`);
+        console.log(`Total size of ${outputDir}: ${size} bytes`);
       })
       .catch((error) => {
-        relinka.error(
+        console.error(
           `Error calculating directory size for ${outputDir}: ${error instanceof Error ? error.message : "Unknown error"}`,
         );
       });

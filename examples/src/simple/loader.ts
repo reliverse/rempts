@@ -5,7 +5,7 @@ import {
   useKeypress,
   usePrefix,
   isEnterKey,
-} from "~/components/core/index.js";
+} from "~/core/index.js";
 
 const loader = createPrompt((_config, done: (value: void) => void) => {
   const prefix = usePrefix({ status: "loading" });

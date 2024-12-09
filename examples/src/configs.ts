@@ -18,7 +18,7 @@ export const experimentalConfig = {
   titleColor: "cyanBright",
   titleTypography: "bold",
   endTitle: emojify(
-    ":books: Learn the docs here: https://docs.reliverse.org/relinka",
+    ":books: Learn the docs here: https://docs.reliverse.org/prompts",
   ),
   endTitleColor: "retroGradient",
 } satisfies PromptOptions;

@@ -1,6 +1,6 @@
 import * as url from "node:url";
 
-import { input } from "~/components/prompts/index.js";
+import { input } from "~/prompts/index.js";
 
 async function demo() {
   const answer = await input(

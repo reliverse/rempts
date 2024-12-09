@@ -1,4 +1,3 @@
-import relinka from "@reliverse/relinka";
 import pc from "picocolors";
 
 import type {
@@ -39,7 +38,7 @@ function applyStyles(
     if (colorName && colorMap[colorName]) {
       styledText = colorMap[colorName](styledText);
     } else if (colorName) {
-      relinka.warn(
+      console.warn(
         `Warning: Invalid color "${colorName}" provided to applyStyles.`,
       );
     }
@@ -47,7 +46,7 @@ function applyStyles(
     if (typographyName && typographyMap[typographyName]) {
       styledText = typographyMap[typographyName](styledText);
     } else if (typographyName) {
-      relinka.warn(
+      console.warn(
         `Warning: Invalid typography "${typographyName}" provided to applyStyles.`,
       );
     }
@@ -56,7 +55,7 @@ function applyStyles(
   if (variantName && variantMap[variantName]) {
     styledText = variantMap[variantName](styledText, borderColor);
   } else if (variantName) {
-    relinka.warn(
+    console.warn(
       `Warning: Invalid variant "${variantName}" provided to applyStyles.`,
     );
   }
