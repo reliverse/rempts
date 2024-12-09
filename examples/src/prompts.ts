@@ -2,7 +2,7 @@ import { detect } from "detect-package-manager";
 import { emojify } from "node-emoji";
 import pc from "picocolors";
 
-import { anykeyPrompt } from "~/main.js";
+import { anykeyPrompt, task } from "~/main.js";
 import { multiselectPrompt } from "~/main.js";
 import { progressbar } from "~/main.js";
 import {
@@ -22,7 +22,6 @@ import {
 import { promptsDisplayResults } from "~/main.js";
 import { numSelectPrompt } from "~/main.js";
 import { selectPrompt } from "~/main.js";
-import { spinner } from "~/main.js";
 
 import { basicConfig, experimentalConfig, extendedConfig } from "./configs.js";
 import {
@@ -505,7 +504,7 @@ export async function showConfirmPrompt(username: string) {
 // components, as they don't return any values.
 
 export async function showSpinner() {
-  await spinner({
+  await task({
     initialMessage: "Some long-running task is in progress...",
     successMessage: "Hooray! The long-running task was a success!",
     errorMessage: "An error occurred while the long-running task!",

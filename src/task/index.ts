@@ -7,10 +7,10 @@ import { cursor, erase } from "sisteransi";
 import { msg } from "~/utils/messages.js";
 
 type SimpleSpinnerType = "default" | "dottedCircle" | "boxSpinner";
-type OraAllowedSpinners = "dots" | "bouncingBar" | "arc";
 type OraSpinnerType = Extract<SpinnerName, OraAllowedSpinners>;
+type OraAllowedSpinners = "dots" | "bouncingBar" | "arc";
 
-type CreateSpinnerOptions<T extends "simple" | "ora"> = {
+type TaskOptions<T extends "simple" | "ora"> = {
   initialMessage: string;
   successMessage?: string;
   errorMessage?: string;
@@ -20,8 +20,8 @@ type CreateSpinnerOptions<T extends "simple" | "ora"> = {
   action: (updateMessage: (message: string) => void) => Promise<void>;
 };
 
-export async function spinner<T extends "simple" | "ora">(
-  options: CreateSpinnerOptions<T>,
+export async function task<T extends "simple" | "ora">(
+  options: TaskOptions<T>,
 ): Promise<void> {
   const {
     initialMessage,
