@@ -1,11 +1,11 @@
 import pc from "picocolors";
 
 import { errorHandler, selectPrompt } from "~/main.js";
-import { preventWrongTerminalSize } from "~/utils/prevent.js";
+
+import { showStartPrompt } from "./src/prompts.js";
 
 async function examplesRunner() {
-  console.clear();
-  await preventWrongTerminalSize({});
+  await showStartPrompt();
 
   const exampleToRun = await selectPrompt({
     title: "Choose an example to run",

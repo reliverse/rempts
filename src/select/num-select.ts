@@ -1,8 +1,7 @@
-import type { TSchema, Static } from "@sinclair/typebox";
-
 import { Value } from "@sinclair/typebox/value";
 import { stdin as input, stdout as output } from "node:process";
 import readline from "node:readline/promises";
+import pc from "picocolors";
 
 import type { PromptOptions } from "~/types/general.js";
 
@@ -23,18 +22,18 @@ export async function numSelectPrompt(opts: NumSelectPromptOptions) {
   const {
     title = "",
     hint,
-    hintColor = "gray",
+    hintPlaceholderColor = "blue",
     validate,
     defaultValue,
     schema,
-    titleColor = "blueBright",
-    titleTypography = "bold",
+    titleColor = "cyan",
+    titleTypography = "none",
     titleVariant,
     content,
     contentColor = "dim",
     contentTypography = "italic",
     contentVariant,
-    borderColor = "viceGradient",
+    borderColor = "dim",
     variantOptions,
     inline = true,
     choices,
@@ -56,8 +55,8 @@ export async function numSelectPrompt(opts: NumSelectPromptOptions) {
       deleteLastLines(linesToDelete);
     }
 
-    const question = fmt({
-      hintColor,
+    const { text: question } = fmt({
+      hintPlaceholderColor,
       type: errorMessage !== "" ? "M_ERROR" : "M_GENERAL",
       title,
       titleColor,
@@ -96,10 +95,10 @@ export async function numSelectPrompt(opts: NumSelectPromptOptions) {
     }
 
     // Combine question and choices
-    const formattedPrompt = fmt({
-      hintColor,
+    const { text: formattedPrompt } = fmt({
+      hintPlaceholderColor,
       type: "M_NULL",
-      title: `${question}${choicesText}\n${formattedBar}  ${colorize(
+      title: `${question}\n${choicesText}\n${formattedBar}  ${colorize(
         `Enter your choice:`,
         contentColor,
       )}\n${formattedBar}  `,
@@ -122,6 +121,7 @@ export async function numSelectPrompt(opts: NumSelectPromptOptions) {
         title: `  ${defaultValue}`,
         titleColor: "none",
       });
+      msg({ type: "M_BAR", borderColor });
     }
 
     const num = Number(answer);
@@ -157,7 +157,6 @@ export async function numSelectPrompt(opts: NumSelectPromptOptions) {
     }
 
     if (isValid) {
-      msg({ type: "M_NEWLINE" });
       rl.close();
       if (selectedChoice?.action) {
         await selectedChoice.action();

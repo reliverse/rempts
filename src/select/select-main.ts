@@ -1,9 +1,7 @@
-import cliTruncate from "cli-truncate";
 import { stdin as input, stdout as output } from "node:process";
 import readline from "node:readline";
 import pc from "picocolors";
 import terminalSize from "terminal-size";
-import wrapAnsi from "wrap-ansi";
 
 import type {
   ColorName,
@@ -11,8 +9,8 @@ import type {
   TypographyName,
 } from "~/types/general.js";
 
-import { deleteLastLine, terminalColumns } from "~/main.js";
-import { bar, fmt, msg, symbols } from "~/utils/messages.js";
+import { deleteLastLine } from "~/main.js";
+import { msg, msgUndoAll, bar, symbols } from "~/utils/messages.js";
 
 type SelectOption<T> = {
   label: string;
@@ -20,6 +18,7 @@ type SelectOption<T> = {
   hint?: string;
   disabled?: boolean;
 };
+
 type SeparatorOption = {
   separator: true;
   width?: number;
@@ -32,7 +31,7 @@ function isSelectOption<T>(
   return !("separator" in option);
 }
 
-export async function selectPrompt<T extends string>(params: {
+type SelectPromptParams<T extends string> = {
   title: string;
   content?: string;
   options: (SelectOption<T> | SeparatorOption)[];
@@ -49,21 +48,216 @@ export async function selectPrompt<T extends string>(params: {
   endTitleColor?: ColorName;
   maxItems?: number;
   debug?: boolean;
-  linesHandler?: "wrap" | "truncate" | "columns" | "clear";
+  linesHandler?: "wrap" | "truncate" | "columns" | "clear"; // no longer used
   terminalWidth?: number;
-}): Promise<T> {
+  displayInstructions?: boolean;
+};
+
+/**
+ * Renders the entire prompt UI by printing each line using `msg()`.
+ * Returns the number of interactive UI lines rendered (for clearing during re-renders).
+ */
+function renderPromptUI<T extends string>(params: {
+  title: string;
+  content: string;
+  options: (SelectOption<T> | SeparatorOption)[];
+  selectedIndex: number;
+  errorMessage: string;
+  displayInstructions: boolean;
+  allDisabled: boolean;
+  instructions: string;
+  borderColor: ColorName;
+  titleColor: ColorName;
+  contentColor: ColorName;
+  contentTypography: TypographyName;
+  debug: boolean;
+  maxItems?: number;
+  titleVariant?: VariantName;
+  titleTypography?: TypographyName;
+  terminalWidth?: number;
+  isRerender?: boolean;
+}): number {
+  const {
+    title,
+    content,
+    options,
+    selectedIndex,
+    errorMessage,
+    displayInstructions,
+    allDisabled,
+    instructions,
+    borderColor,
+    titleColor,
+    contentColor,
+    contentTypography,
+    debug,
+    maxItems,
+    titleVariant,
+    titleTypography,
+    terminalWidth,
+    isRerender = false,
+  } = params;
+
+  const size = terminalSize();
+  const effectiveTerminalHeight = size.rows ?? 24;
+
+  // Only render title and content on first render
+  if (!isRerender) {
+    // Title
+    msg({
+      type: "M_GENERAL",
+      title,
+      titleColor,
+      // wrapTitle and wrapContent handled in messages.ts if needed
+    });
+
+    // Content
+    if (content) {
+      msg({
+        type: "M_NULL",
+        content,
+        contentColor,
+        contentTypography,
+      });
+    }
+  }
+
+  let uiLineCount = 0;
+
+  // Error or instructions
+  if (errorMessage) {
+    msg({
+      type: "M_ERROR",
+      title: `${pc.redBright(symbols.step_error)} ${pc.redBright(errorMessage)}`,
+    });
+    uiLineCount++;
+  } else if (allDisabled) {
+    msg({
+      type: "M_ERROR",
+      title: pc.redBright("All options are disabled."),
+    });
+    uiLineCount++;
+  } else if (displayInstructions && !isRerender) {
+    msg({
+      type: "M_NULL",
+      title: pc.blue(instructions),
+    });
+    uiLineCount++;
+  }
+
+  // Determine how many items to display
+  const effectiveMaxItems = maxItems
+    ? Math.min(maxItems, options.length)
+    : options.length;
+  const minItems = 3;
+  const displayItems = maxItems
+    ? Math.max(effectiveMaxItems, minItems)
+    : options.length;
+
+  // Calculate start/end indexes for "scrolling"
+  let startIdx = 0;
+  let endIdx = options.length - 1;
+
+  if (maxItems && options.length > displayItems) {
+    const half = Math.floor(displayItems / 2);
+    startIdx = selectedIndex - half;
+    endIdx = selectedIndex + (displayItems - half - 1);
+
+    if (startIdx < 0) {
+      startIdx = 0;
+      endIdx = displayItems - 1;
+    } else if (endIdx >= options.length) {
+      endIdx = options.length - 1;
+      startIdx = options.length - displayItems;
+    }
+  }
+
+  const shouldRenderTopEllipsis = Boolean(maxItems && startIdx > 0);
+  const shouldRenderBottomEllipsis = Boolean(
+    maxItems && endIdx < options.length - 1,
+  );
+
+  if (shouldRenderTopEllipsis) {
+    msg({ type: "M_NULL", title: pc.dim("...") });
+    uiLineCount++;
+  }
+
+  // Render options
+  for (let index = startIdx; index <= endIdx; index++) {
+    const option = options[index];
+    if (!isSelectOption(option)) {
+      // Separator
+      const width = option.width ?? 20;
+      const symbolKey = option.symbol ?? "line";
+      const lineSymbol = symbolKey in symbols ? symbols[symbolKey] : "─";
+      msg({
+        type: "M_NULL",
+        title: pc.dim(lineSymbol.repeat(width)),
+      });
+      uiLineCount++;
+      continue;
+    }
+
+    const isSelected = index === selectedIndex;
+    const isDisabled = option.disabled;
+    const prefix = isSelected ? pc.dim(pc.reset("> ")) : "  ";
+    const labelColor = isDisabled
+      ? pc.dim(pc.reset(option.label))
+      : isSelected
+        ? pc.reset(pc.yellow(option.label))
+        : pc.reset(option.label);
+
+    const hint = option.hint
+      ? pc.reset(
+          ` (${isDisabled ? pc.dim(option.hint) : pc.italic(pc.dim(option.hint))})`,
+        )
+      : "";
+
+    msg({
+      type: "M_NULL",
+      title: `${prefix}${labelColor}${hint}`,
+    });
+    uiLineCount++;
+  }
+
+  if (shouldRenderBottomEllipsis) {
+    msg({ type: "M_NULL", title: pc.dim("...") });
+    uiLineCount++;
+  }
+
+  if (debug) {
+    console.log({
+      terminalHeight: effectiveTerminalHeight,
+      computedMaxItems: effectiveMaxItems,
+      displayItems,
+      startIdx,
+      endIdx,
+      shouldRenderTopEllipsis,
+      shouldRenderBottomEllipsis,
+    });
+  }
+
+  return uiLineCount;
+}
+
+/**
+ * Displays a selectable prompt in the terminal and returns the chosen value.
+ */
+export async function selectPrompt<T extends string>(
+  params: SelectPromptParams<T>,
+): Promise<T> {
   const {
     title = "",
     content = "",
     options,
     defaultValue,
     required = false,
-    borderColor = "viceGradient",
-    titleColor = "blueBright",
-    titleTypography = "bold",
+    borderColor = "dim",
+    titleColor = "cyan",
+    titleTypography = "none",
     titleVariant,
     contentColor = "dim",
-    contentTypography = "bold",
+    contentTypography = "italic",
     border = true,
     endTitle = "",
     endTitleColor = "dim",
@@ -71,12 +265,13 @@ export async function selectPrompt<T extends string>(params: {
     debug = false,
     linesHandler = "wrap",
     terminalWidth: customTerminalWidth = 90,
+    displayInstructions = false,
   } = params;
 
   let selectedIndex = defaultValue
     ? options.findIndex(
         (option) =>
-          "value" in option &&
+          isSelectOption(option) &&
           option.value === defaultValue &&
           !option.disabled,
       )
@@ -84,7 +279,7 @@ export async function selectPrompt<T extends string>(params: {
 
   if (selectedIndex === -1) {
     selectedIndex = options.findIndex(
-      (option) => "disabled" in option && !option.disabled,
+      (option) => isSelectOption(option) && !option.disabled,
     );
   }
 
@@ -98,303 +293,154 @@ export async function selectPrompt<T extends string>(params: {
     input.setRawMode(true);
   }
 
-  const formattedBar = bar({ borderColor });
-
-  let currentLinesRendered = 0;
   const instructions = `Use <↑/↓> or <k/j> to navigate, <Enter> to select, <Ctrl+C> to exit`;
   let errorMessage = "";
-
   const allDisabled = options.every(
-    (option) => "disabled" in option && option.disabled,
+    (option) => isSelectOption(option) && option.disabled,
   );
 
+  let lastUILineCount = 0;
+
   function renderOptions() {
-    const effectiveTerminalWidth =
-      customTerminalWidth ?? process.stdout.columns ?? 80;
-
-    if (currentLinesRendered > 0) {
-      process.stdout.write(`\x1B[${currentLinesRendered}A`);
-    }
-
-    const linesToPrint: string[] = [];
-
-    linesToPrint.push(
-      `${pc.greenBright(symbols.step_active)}  ${fmt({
-        hintColor: "gray",
-        type: "M_NULL",
-        title,
-        titleColor,
-      })}`,
-    );
-
-    if (content) {
-      linesToPrint.push(
-        fmt({
-          type: "M_NULL",
-          content,
-          contentColor,
-          contentTypography,
-        }),
-      );
-    }
-
-    if (errorMessage) {
-      linesToPrint.push(`${pc.redBright(symbols.step_error)}  ${errorMessage}`);
-    } else if (allDisabled) {
-      linesToPrint.push(
-        `${formattedBar}  ${pc.dim("All options are disabled.")}`,
-      );
-    } else {
-      linesToPrint.push(`${formattedBar}  ${pc.dim(instructions)}`);
-    }
-
-    const size = terminalSize();
-    const effectiveTerminalHeight = size.rows ?? 24;
-    const availableHeight = effectiveTerminalHeight - 4;
-
-    const effectiveMaxItems = maxItems
-      ? Math.min(maxItems, options.length)
-      : options.length;
-    const minItems = 3;
-    const displayItems = maxItems
-      ? Math.max(effectiveMaxItems, minItems)
-      : options.length;
-
-    let startIdx = 0;
-    let endIdx = options.length - 1;
-    if (maxItems && options.length > displayItems) {
-      const half = Math.floor(displayItems / 2);
-      startIdx = selectedIndex - half;
-      endIdx = selectedIndex + (displayItems - half - 1);
-
-      if (startIdx < 0) {
-        startIdx = 0;
-        endIdx = displayItems - 1;
-      } else if (endIdx >= options.length) {
-        endIdx = options.length - 1;
-        startIdx = options.length - displayItems;
+    // Clear only the previous UI lines
+    if (lastUILineCount > 0) {
+      for (let i = 0; i < lastUILineCount; i++) {
+        process.stdout.write("\x1b[1A\x1b[2K");
       }
     }
-
-    const shouldRenderTopEllipsis = maxItems ? startIdx > 0 : false;
-    const shouldRenderBottomEllipsis = maxItems
-      ? endIdx < options.length - 1
-      : false;
-
-    if (shouldRenderTopEllipsis) {
-      linesToPrint.push(`${formattedBar}  ${pc.dim("...")}`);
-    }
-
-    for (let index = startIdx; index <= endIdx; index++) {
-      const option = options[index];
-      if ("separator" in option) {
-        const width = option.width ?? 20;
-        const symbol = option.symbol ?? "line";
-        const lineSymbol = symbol in symbols ? symbols[symbol] : "─";
-        linesToPrint.push(
-          `${formattedBar}  ${pc.dim(lineSymbol.repeat(width))}`,
-        );
-        continue;
-      }
-
-      const isSelected = index === selectedIndex;
-      const isDisabled = option.disabled;
-      const prefix = isSelected ? "> " : "  ";
-      const optionLabel = isDisabled
-        ? pc.dim(option.label)
-        : isSelected
-          ? pc.cyanBright(option.label)
-          : option.label;
-      const hint = option.hint
-        ? ` (${isDisabled ? pc.dim(option.hint) : option.hint})`
-        : "";
-      linesToPrint.push(`${formattedBar} ${prefix}${optionLabel}${hint}`);
-    }
-
-    if (shouldRenderBottomEllipsis) {
-      linesToPrint.push(`${formattedBar}  ${pc.dim("...")}`);
-    }
-
-    let totalPrintedLines = 0;
-    switch (linesHandler) {
-      case "clear":
-        // Clear the screen and print fresh
-        process.stdout.write("\x1Bc");
-        // Print the lines as-is (wrapped)
-        for (const line of linesToPrint) {
-          const wrapped = wrapAnsi(line, effectiveTerminalWidth, {
-            hard: false,
-            trim: false,
-          });
-          const wrappedLines = wrapped.split("\n");
-
-          if (wrappedLines.length === 1) {
-            // No wrapping occurred; print line as-is
-            process.stdout.write(`${wrappedLines[0]}\n`);
-            totalPrintedLines += 1;
-          } else {
-            // Multiple wrapped lines:
-            // Print the first line as-is
-            process.stdout.write(`${wrappedLines[0]}\n`);
-            totalPrintedLines += 1;
-
-            // For subsequent wrapped lines, add `formattedBar`
-            for (let i = 1; i < wrappedLines.length; i++) {
-              process.stdout.write(`${formattedBar}  ${wrappedLines[i]}\n`);
-              totalPrintedLines += 1;
-            }
-          }
-        }
-        break;
-
-      case "truncate":
-        for (const line of linesToPrint) {
-          const truncated = cliTruncate(line, effectiveTerminalWidth, {
-            position: "middle",
-            truncationCharacter: "…",
-            space: false,
-            preferTruncationOnSpace: false,
-          });
-          process.stdout.write(`${truncated}\n`);
-          totalPrintedLines += 1;
-        }
-        break;
-
-      case "columns":
-        // Convert linesToPrint into tableData for columns mode
-        const tableData = linesToPrint.map((l) => [l]);
-        const tableString = terminalColumns(tableData, {
-          stdoutColumns: effectiveTerminalWidth,
-        });
-        process.stdout.write(tableString + "\n");
-        totalPrintedLines = tableString.split("\n").length;
-        break;
-
-      default:
-        for (const line of linesToPrint) {
-          const wrapped = wrapAnsi(line, effectiveTerminalWidth, {
-            hard: false,
-            trim: false,
-          });
-          const wrappedLines = wrapped.split("\n");
-
-          if (wrappedLines.length === 1) {
-            // No wrapping occurred; print line as-is
-            process.stdout.write(`${wrappedLines[0]}\n`);
-            totalPrintedLines += 1;
-          } else {
-            // Multiple wrapped lines:
-            // Print the first line as-is
-            process.stdout.write(`${wrappedLines[0]}\n`);
-            totalPrintedLines += 1;
-
-            // For subsequent wrapped lines, add `formattedBar`
-            for (let i = 1; i < wrappedLines.length; i++) {
-              process.stdout.write(`${formattedBar}  ${wrappedLines[i]}\n`);
-              totalPrintedLines += 1;
-            }
-          }
-        }
-        break;
-    }
-
-    currentLinesRendered = totalPrintedLines;
-
-    if (debug) {
-      console.log({
-        terminalHeight: effectiveTerminalHeight,
-        availableHeight: availableHeight,
-        computedMaxItems: effectiveMaxItems,
-        displayItems,
-        startIdx,
-        endIdx,
-        shouldRenderTopEllipsis,
-        shouldRenderBottomEllipsis,
-        linesRendered: currentLinesRendered,
-      });
-    }
+    // Print new prompt UI and track its line count
+    lastUILineCount = renderPromptUI({
+      title,
+      content,
+      options,
+      selectedIndex,
+      errorMessage,
+      displayInstructions,
+      allDisabled,
+      instructions,
+      borderColor,
+      titleColor,
+      contentColor,
+      contentTypography,
+      debug,
+      maxItems,
+      titleVariant,
+      titleTypography,
+      terminalWidth: customTerminalWidth,
+      isRerender: true,
+    });
   }
 
-  renderOptions();
+  // Initial render - render everything
+  lastUILineCount = renderPromptUI({
+    title,
+    content,
+    options,
+    selectedIndex,
+    errorMessage,
+    displayInstructions,
+    allDisabled,
+    instructions,
+    borderColor,
+    titleColor,
+    contentColor,
+    contentTypography,
+    debug,
+    maxItems,
+    titleVariant,
+    titleTypography,
+    terminalWidth: customTerminalWidth,
+    isRerender: false,
+  });
 
   return new Promise<T>((resolve) => {
     function onKeyPress(str: string, key: readline.Key) {
       if (allDisabled) {
         if (key.name === "c" && key.ctrl) {
-          msg({
-            type: "M_MIDDLE",
-          });
-          if (endTitle !== "") {
-            msg({
-              type: "M_END",
-              title: endTitle,
-              titleColor: endTitleColor,
-              titleTypography,
-              titleVariant,
-              border,
-              borderColor,
-            });
-          }
-          cleanup(true);
+          endPrompt(true);
         }
         return;
       }
 
       if (key.name === "up" || key.name === "k") {
-        const originalPointer = selectedIndex;
-        do {
-          selectedIndex = (selectedIndex - 1 + options.length) % options.length;
-          const option = options[selectedIndex];
-          if (isSelectOption(option) && !option.disabled) {
-            break;
-          }
-        } while (selectedIndex !== originalPointer);
-        renderOptions();
+        moveSelectionUp();
       } else if (key.name === "down" || key.name === "j") {
-        const originalPointer = selectedIndex;
-        do {
-          selectedIndex = (selectedIndex + 1) % options.length;
-          const option = options[selectedIndex];
-          if (isSelectOption(option) && !option.disabled) {
-            break;
-          }
-        } while (selectedIndex !== originalPointer);
-        renderOptions();
+        moveSelectionDown();
       } else if (key.name === "return") {
-        const option = options[selectedIndex];
-        if (!("separator" in option) && option.disabled) {
-          errorMessage = "This option is disabled";
-          renderOptions();
-          return;
-        }
-        if (required && (!("value" in option) || !option.value)) {
-          errorMessage = "You must select an option.";
-          renderOptions();
-        } else {
-          cleanup();
-          resolve("value" in option ? option.value : (null as T));
-          deleteLastLine();
-          msg({
-            type: "M_MIDDLE",
-          });
-        }
+        confirmSelection();
       } else if (key.name === "c" && key.ctrl) {
-        msg({
-          type: "M_MIDDLE",
-        });
-        if (endTitle !== "") {
-          msg({
-            type: "M_END",
-            title: endTitle,
-            titleColor: endTitleColor,
-            titleTypography,
-            titleVariant,
-            border,
-            borderColor,
-          });
-        }
-        cleanup(true);
+        endPrompt(true);
       }
+    }
+
+    function moveSelectionUp() {
+      const originalPointer = selectedIndex;
+      do {
+        selectedIndex = (selectedIndex - 1 + options.length) % options.length;
+        const option = options[selectedIndex];
+        if (isSelectOption(option) && !option.disabled) {
+          break;
+        }
+      } while (selectedIndex !== originalPointer);
+      renderOptions();
+    }
+
+    function moveSelectionDown() {
+      const originalPointer = selectedIndex;
+      do {
+        selectedIndex = (selectedIndex + 1) % options.length;
+        const option = options[selectedIndex];
+        if (isSelectOption(option) && !option.disabled) {
+          break;
+        }
+      } while (selectedIndex !== originalPointer);
+      renderOptions();
+    }
+
+    function confirmSelection() {
+      const option = options[selectedIndex];
+      if (!isSelectOption(option)) {
+        errorMessage = "This option is not selectable.";
+        renderOptions();
+        return;
+      }
+
+      if (option.disabled) {
+        errorMessage = "This option is disabled";
+        renderOptions();
+        return;
+      }
+
+      if (required && !option.value) {
+        errorMessage = "You must select an option.";
+        renderOptions();
+        return;
+      }
+
+      cleanup();
+      resolve(option.value);
+
+      deleteLastLine();
+      msg({ type: "M_BAR", borderColor });
+
+      // We don't clear the final state
+    }
+
+    function endPrompt(isCtrlC = false) {
+      // Don't clear anything unless there's an end title
+      if (endTitle !== "") {
+        msgUndoAll();
+        msg({
+          type: "M_END",
+          title: endTitle,
+          titleColor: endTitleColor,
+          titleTypography,
+          titleVariant,
+          border,
+          borderColor,
+        });
+      }
+      cleanup(isCtrlC);
     }
 
     function cleanup(isCtrlC = false) {

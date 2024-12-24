@@ -42,7 +42,7 @@ export function validateAge(
     msg({
       type: "M_INFO",
       title: `Your age and birthday correspond! ${ageMessage}`,
-      titleColor: "green",
+      titleColor: "cyan",
     });
   } else {
     msg({

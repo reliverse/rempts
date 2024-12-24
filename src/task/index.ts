@@ -56,7 +56,7 @@ export async function task<T extends "simple" | "ora">(
       msg({
         type: "M_INFO",
         title: successMessage,
-        titleColor: "green",
+        titleColor: "cyan",
       });
     } catch (error) {
       oraSpinner.stopAndPersist({
@@ -124,7 +124,7 @@ export async function task<T extends "simple" | "ora">(
       msg({
         type: "M_INFO",
         title: successMessage,
-        titleColor: "green",
+        titleColor: "cyan",
       });
     } catch (error) {
       if (interval) {

@@ -22,8 +22,8 @@ export async function selectPrompt(
     choices,
     defaultValue,
     schema,
-    titleColor = "blueBright",
-    titleTypography = "bold",
+    titleColor = "cyan",
+    titleTypography = "none",
   } = options;
 
   if (schema) {
@@ -57,7 +57,7 @@ export async function selectPrompt(
     console.log(pc.cyanBright(pc.bold(coloredTitle)));
     choices.forEach((choice, index) => {
       const isSelected = index === selectedIndex;
-      const prefix = isSelected ? pc.greenBright(">") : " ";
+      const prefix = isSelected ? pc.green(">") : " ";
       const choiceText = isSelected
         ? pc.bgGreen(pc.black(choice.title))
         : choice.title;
@@ -98,7 +98,9 @@ export async function selectPrompt(
         if (selectedChoice?.action) {
           selectedChoice
             .action()
-            .then(() => resolve(selectedValue ?? ""))
+            .then(() => {
+              resolve(selectedValue ?? "");
+            })
             .catch(reject);
         } else {
           resolve(selectedValue ?? "");

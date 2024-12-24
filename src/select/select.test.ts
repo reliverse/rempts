@@ -274,7 +274,9 @@ describe("select prompt", () => {
       (Use arrow keys to reveal more choices)"
     `);
 
-    numberedChoices.forEach(() => events.keypress("down"));
+    numberedChoices.forEach(() => {
+      events.keypress("down");
+    });
     events.keypress("down");
     expect(getScreen()).toMatchInlineSnapshot(`
       "? Select a number
@@ -303,7 +305,9 @@ describe("select prompt", () => {
       (Use arrow keys to reveal more choices)"
     `);
 
-    numberedChoices.forEach(() => events.keypress("down"));
+    numberedChoices.forEach(() => {
+      events.keypress("down");
+    });
     events.keypress("down");
     expect(getScreen()).toMatchInlineSnapshot(`
       "? Select a number

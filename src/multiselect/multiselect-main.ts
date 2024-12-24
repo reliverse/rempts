@@ -1,9 +1,7 @@
-import cliTruncate from "cli-truncate";
 import { stdin as input, stdout as output } from "node:process";
 import readline from "node:readline";
 import pc from "picocolors";
 import terminalSize from "terminal-size";
-import wrapAnsi from "wrap-ansi";
 
 import type {
   ColorName,
@@ -11,8 +9,8 @@ import type {
   VariantName,
 } from "~/types/general.js";
 
-import { colorize, deleteLastLine, terminalColumns } from "~/main.js";
-import { bar, symbols, msg, fmt } from "~/utils/messages.js";
+import { deleteLastLine } from "~/main.js";
+import { msg, msgUndoAll, bar, symbols } from "~/utils/messages.js";
 
 type SelectOption<T> = {
   label: string;
@@ -33,11 +31,10 @@ function isSelectOption<T>(
   return !("separator" in option);
 }
 
-export async function multiselectPrompt<T extends string>(params: {
+type MultiselectPromptParams<T extends string> = {
   title: string;
   content?: string;
   options: (SelectOption<T> | SeparatorOption)[];
-  required?: boolean;
   defaultValue?: T[];
   borderColor?: ColorName;
   titleColor?: ColorName;
@@ -50,28 +47,224 @@ export async function multiselectPrompt<T extends string>(params: {
   endTitleColor?: ColorName;
   maxItems?: number;
   debug?: boolean;
-  linesHandler?: "wrap" | "truncate" | "columns" | "clear";
   terminalWidth?: number;
-}): Promise<T[]> {
+  displayInstructions?: boolean;
+  allowAllUnselected?: boolean;
+};
+
+/**
+ * Renders the UI for the multiselect prompt using `msg()` for each line.
+ * Returns the number of interactive UI lines rendered (for clearing during re-renders).
+ */
+function renderPromptUI<T extends string>(params: {
+  title: string;
+  content: string;
+  options: (SelectOption<T> | SeparatorOption)[];
+  pointer: number;
+  selectedOptions: Set<number>;
+  errorMessage: string;
+  displayInstructions: boolean;
+  instructions: string;
+  allDisabled: boolean;
+  titleColor: ColorName;
+  contentColor: ColorName;
+  contentTypography: TypographyName;
+  debug: boolean;
+  maxItems?: number;
+  borderColor: ColorName;
+  titleVariant?: VariantName;
+  titleTypography?: TypographyName;
+  terminalWidth?: number;
+  resized: boolean;
+  isRerender?: boolean;
+}): number {
+  const {
+    title,
+    content,
+    options,
+    pointer,
+    selectedOptions,
+    errorMessage,
+    displayInstructions,
+    instructions,
+    allDisabled,
+    titleColor,
+    contentColor,
+    contentTypography,
+    debug,
+    maxItems,
+    borderColor,
+    titleVariant,
+    titleTypography,
+    terminalWidth,
+    isRerender = false,
+  } = params;
+
+  const size = terminalSize();
+  const effectiveTerminalHeight = size.rows ?? 24;
+
+  // Only render title and content on first render
+  if (!isRerender) {
+    // Title
+    msg({
+      type: "M_NULL",
+      title,
+      titleColor,
+      titleTypography,
+      titleVariant,
+    });
+
+    // Content
+    if (content) {
+      msg({
+        type: "M_NULL",
+        content,
+        contentColor,
+        contentTypography,
+      });
+    }
+  }
+
+  let uiLineCount = 0;
+
+  if (errorMessage) {
+    msg({
+      type: "M_NULL",
+      title: `${pc.redBright(symbols.step_error)} ${pc.redBright(errorMessage)}`,
+    });
+    uiLineCount++;
+  } else if (allDisabled) {
+    msg({
+      type: "M_NULL",
+      title: pc.redBright("All options are disabled."),
+    });
+    uiLineCount++;
+  } else if (displayInstructions && !isRerender) {
+    msg({
+      type: "M_NULL",
+      title: pc.blue(instructions),
+    });
+    uiLineCount++;
+  }
+
+  const effectiveMaxItems = maxItems
+    ? Math.min(maxItems, options.length)
+    : options.length;
+  const minItems = 3;
+  const displayItems = maxItems
+    ? Math.max(effectiveMaxItems, minItems)
+    : options.length;
+
+  let startIdx = 0;
+  let endIdx = options.length - 1;
+  if (maxItems && options.length > displayItems) {
+    const half = Math.floor(displayItems / 2);
+    startIdx = pointer - half;
+    endIdx = pointer + (displayItems - half - 1);
+
+    if (startIdx < 0) {
+      startIdx = 0;
+      endIdx = displayItems - 1;
+    } else if (endIdx >= options.length) {
+      endIdx = options.length - 1;
+      startIdx = options.length - displayItems;
+    }
+  }
+
+  const shouldRenderTopEllipsis = Boolean(maxItems && startIdx > 0);
+  const shouldRenderBottomEllipsis = Boolean(
+    maxItems && endIdx < options.length - 1,
+  );
+
+  if (shouldRenderTopEllipsis) {
+    msg({ type: "M_NULL", title: pc.dim("...") });
+    uiLineCount++;
+  }
+
+  // Render options
+  for (let index = startIdx; index <= endIdx; index++) {
+    const option = options[index];
+
+    if (!isSelectOption(option)) {
+      const width = option.width ?? 20;
+      const symbolKey = option.symbol ?? "line";
+      const lineSymbol = symbolKey in symbols ? symbols[symbolKey] : "─";
+      msg({
+        type: "M_NULL",
+        title: pc.dim(lineSymbol.repeat(width)),
+      });
+      uiLineCount++;
+      continue;
+    }
+
+    const isSelected = selectedOptions.has(index);
+    const isHighlighted = index === pointer;
+    const isDisabled = option.disabled;
+    const checkbox = isSelected ? "[x]" : "[ ]";
+    const prefix = isHighlighted ? pc.yellow(pc.reset("> ")) : "  ";
+    const labelColor = isDisabled
+      ? pc.dim(pc.reset(option.label))
+      : isHighlighted
+        ? pc.reset(pc.yellow(option.label))
+        : pc.reset(option.label);
+
+    const hint = option.hint
+      ? pc.reset(
+          ` (${isDisabled ? pc.dim(option.hint) : pc.gray(option.hint)})`,
+        )
+      : "";
+
+    const formattedCheckbox = isHighlighted ? pc.yellow(checkbox) : checkbox;
+
+    msg({
+      type: "M_NULL",
+      title: `${prefix}${formattedCheckbox} ${labelColor}${hint}`,
+    });
+    uiLineCount++;
+  }
+
+  if (shouldRenderBottomEllipsis) {
+    msg({ type: "M_NULL", title: pc.dim("...") });
+    uiLineCount++;
+  }
+
+  if (debug) {
+    console.log({
+      terminalHeight: effectiveTerminalHeight,
+      computedMaxItems: effectiveMaxItems,
+      displayItems,
+      startIdx,
+      endIdx,
+      shouldRenderTopEllipsis,
+      shouldRenderBottomEllipsis,
+    });
+  }
+
+  return uiLineCount;
+}
+
+export async function multiselectPrompt<T extends string>(
+  params: MultiselectPromptParams<T>,
+): Promise<T[]> {
   const {
     title = "",
     content = "",
     options,
-    required = false,
     defaultValue = [],
-    borderColor = "viceGradient",
-    titleColor = "blueBright",
-    titleTypography = "bold",
+    borderColor = "dim",
+    titleColor = "cyan",
+    titleTypography = "none",
     titleVariant,
     contentColor = "dim",
-    contentTypography = "bold",
+    contentTypography = "italic",
     border = true,
     endTitle = "",
     endTitleColor = "dim",
     maxItems,
     debug = false,
-    linesHandler = "wrap", 
     terminalWidth: customTerminalWidth = 90,
+    displayInstructions = false,
+    allowAllUnselected = true,
   } = params;
 
   let pointer =
@@ -93,8 +286,8 @@ export async function multiselectPrompt<T extends string>(params: {
 
   const selectedOptions = new Set<number>(
     defaultValue
-      .map((opt) =>
-        options.findIndex((o) => isSelectOption(o) && o.value === opt),
+      .map((val) =>
+        options.findIndex((o) => isSelectOption(o) && o.value === val),
       )
       .filter(
         (i) => i >= 0 && isSelectOption(options[i]) && !options[i].disabled,
@@ -107,19 +300,12 @@ export async function multiselectPrompt<T extends string>(params: {
     input.setRawMode(true);
   }
 
-  const formattedBar = bar({ borderColor });
-  let currentLinesRendered = 0;
-  const instructions = `Use <↑/↓> or <k/j> to navigate, <Space> to toggle, <A> to select/deselect all, <Enter> to confirm, <Ctrl+C> to exit`;
   let errorMessage = "";
-
   const allDisabled = options
     .filter(isSelectOption)
     .every((option) => option.disabled);
 
-  let resized = false;
-  process.stdout.on("resize", () => {
-    resized = true;
-  });
+  const instructions = `Use <↑/↓> to navigate, <Space> to toggle, <A> to select/deselect all`;
 
   function toggleSelectAll() {
     const selectableIndexes = options
@@ -127,7 +313,6 @@ export async function multiselectPrompt<T extends string>(params: {
       .filter((i) => i !== -1);
 
     const allSelected = selectableIndexes.every((i) => selectedOptions.has(i));
-
     if (allSelected) {
       for (const i of selectableIndexes) {
         selectedOptions.delete(i);
@@ -139,321 +324,89 @@ export async function multiselectPrompt<T extends string>(params: {
     }
   }
 
-  function renderOptions() {
-    const effectiveTerminalWidth =
-      customTerminalWidth ?? process.stdout.columns ?? 80;
-
-    if (resized) {
-      process.stdout.write("\x1Bc");
-      resized = false;
-      currentLinesRendered = 0;
-    } else {
-      if (currentLinesRendered > 0) {
-        process.stdout.write(`\x1B[${currentLinesRendered}A`);
+  function movePointerUp() {
+    const originalPointer = pointer;
+    do {
+      pointer = (pointer - 1 + options.length) % options.length;
+      const currentOption = options[pointer];
+      if (isSelectOption(currentOption) && !currentOption.disabled) {
+        break;
       }
-    }
-
-    const linesToPrint: string[] = [];
-    linesToPrint.push(
-      `${pc.greenBright(symbols.step_active)}  ${colorize(
-        title,
-        titleColor,
-        titleTypography,
-      )}`,
-    );
-
-    if (content) {
-      linesToPrint.push(
-        fmt({
-          type: "M_NULL",
-          content,
-          contentColor,
-          contentTypography,
-        }),
-      );
-    }
-
-    if (errorMessage) {
-      linesToPrint.push(
-        `${pc.redBright(symbols.step_error)}  ${pc.redBright(errorMessage)}`,
-      );
-    } else if (allDisabled) {
-      linesToPrint.push(
-        `${formattedBar}  ${pc.dim("All options are disabled.")}`,
-      );
-    } else {
-      linesToPrint.push(`${formattedBar}  ${pc.dim(instructions)}`);
-    }
-
-    const size = terminalSize();
-    const effectiveTerminalHeight = size.rows ?? 24;
-    const availableHeight = effectiveTerminalHeight - 4;
-
-    const effectiveMaxItems = maxItems
-      ? Math.min(maxItems, options.length)
-      : options.length;
-    const minItems = 3;
-    const displayItems = maxItems
-      ? Math.max(effectiveMaxItems, minItems)
-      : options.length;
-
-    let startIdx = 0;
-    let endIdx = options.length - 1;
-    if (maxItems && options.length > displayItems) {
-      const half = Math.floor(displayItems / 2);
-      startIdx = pointer - half;
-      endIdx = pointer + (displayItems - half - 1);
-
-      if (startIdx < 0) {
-        startIdx = 0;
-        endIdx = displayItems - 1;
-      } else if (endIdx >= options.length) {
-        endIdx = options.length - 1;
-        startIdx = options.length - displayItems;
-      }
-    }
-
-    const shouldRenderTopEllipsis = maxItems ? startIdx > 0 : false;
-    const shouldRenderBottomEllipsis = maxItems
-      ? endIdx < options.length - 1
-      : false;
-
-    if (shouldRenderTopEllipsis) {
-      linesToPrint.push(`${formattedBar}  ${pc.dim("...")}`);
-    }
-
-    for (let index = startIdx; index <= endIdx; index++) {
-      const option = options[index];
-
-      if (!isSelectOption(option)) {
-        const width = option.width ?? 20;
-        const symbol = option.symbol ?? "line";
-        const lineSymbol = symbol in symbols ? symbols[symbol] : "─";
-        linesToPrint.push(
-          `${formattedBar}  ${pc.dim(lineSymbol.repeat(width))}`,
-        );
-        continue;
-      }
-
-      const isSelected = selectedOptions.has(index);
-      const isHighlighted = index === pointer;
-      const isDisabled = option.disabled;
-      const checkbox = isSelected ? "[x]" : "[ ]";
-      const prefix = isHighlighted ? "> " : "  ";
-
-      const optionLabel = isDisabled
-        ? pc.dim(option.label)
-        : isHighlighted
-          ? pc.cyanBright(option.label)
-          : option.label;
-
-      const hint = option.hint
-        ? ` (${isDisabled ? pc.dim(option.hint) : option.hint})`
-        : "";
-
-      linesToPrint.push(
-        `${formattedBar} ${prefix}${checkbox} ${optionLabel}${pc.dim(hint)}`,
-      );
-    }
-
-    if (shouldRenderBottomEllipsis) {
-      linesToPrint.push(`${formattedBar}  ${pc.dim("...")}`);
-    }
-
-    let totalPrintedLines = 0;
-    switch (linesHandler) {
-      case "clear":
-        // Clear the screen and print fresh
-        process.stdout.write("\x1Bc");
-        // Print the lines as-is (wrapped)
-        for (const line of linesToPrint) {
-          const wrapped = wrapAnsi(line, effectiveTerminalWidth, {
-            hard: false,
-            trim: false,
-          });
-          const wrappedLines = wrapped.split("\n");
-
-          if (wrappedLines.length === 1) {
-            process.stdout.write(`${wrappedLines[0]}\n`);
-            totalPrintedLines += 1;
-          } else {
-            process.stdout.write(`${wrappedLines[0]}\n`);
-            totalPrintedLines += 1;
-            for (let i = 1; i < wrappedLines.length; i++) {
-              process.stdout.write(`${formattedBar}  ${wrappedLines[i]}\n`);
-              totalPrintedLines += 1;
-            }
-          }
-        }
-        break;
-
-      case "truncate":
-        for (const line of linesToPrint) {
-          const truncated = cliTruncate(line, effectiveTerminalWidth, {
-            position: "middle",
-            truncationCharacter: "…",
-            space: false,
-            preferTruncationOnSpace: false,
-          });
-          process.stdout.write(`${truncated}\n`);
-          totalPrintedLines += 1;
-        }
-        break;
-
-      case "columns":
-        // Convert linesToPrint into tableData for columns mode
-        const tableData = linesToPrint.map((l) => [l]);
-        const tableString = terminalColumns(tableData, {
-          stdoutColumns: effectiveTerminalWidth,
-        });
-        process.stdout.write(tableString + "\n");
-        totalPrintedLines = tableString.split("\n").length;
-        break;
-
-      default:
-        // wrap mode
-        for (const line of linesToPrint) {
-          const wrapped = wrapAnsi(line, effectiveTerminalWidth, {
-            hard: false,
-            trim: false,
-          });
-          const wrappedLines = wrapped.split("\n");
-
-          if (wrappedLines.length === 1) {
-            // No wrapping occurred; print line as-is
-            process.stdout.write(`${wrappedLines[0]}\n`);
-            totalPrintedLines += 1;
-          } else {
-            // Multiple wrapped lines:
-            // Print the first line as-is
-            process.stdout.write(`${wrappedLines[0]}\n`);
-            totalPrintedLines += 1;
-
-            // For subsequent wrapped lines, add `formattedBar`
-            for (let i = 1; i < wrappedLines.length; i++) {
-              process.stdout.write(`${formattedBar}  ${wrappedLines[i]}\n`);
-              totalPrintedLines += 1;
-            }
-          }
-        }
-        break;
-    }
-
-    currentLinesRendered = totalPrintedLines;
-
-    if (debug) {
-      console.log({
-        terminalHeight: effectiveTerminalHeight,
-        availableHeight: availableHeight,
-        computedMaxItems: effectiveMaxItems,
-        displayItems,
-        startIdx,
-        endIdx,
-        shouldRenderTopEllipsis,
-        shouldRenderBottomEllipsis,
-        linesRendered: currentLinesRendered,
-      });
-    }
+    } while (pointer !== originalPointer);
+    errorMessage = "";
   }
 
-  renderOptions();
-
-  return new Promise<T[]>((resolve) => {
-    function onKeyPress(_str: string, key: readline.Key) {
-      if (allDisabled) {
-        if (key.name === "c" && key.ctrl) {
-          msg({ type: "M_MIDDLE" });
-          if (endTitle !== "") {
-            msg({
-              type: "M_END",
-              title: endTitle,
-              titleColor: endTitleColor,
-              titleTypography,
-              titleVariant,
-              border,
-              borderColor,
-            });
-          }
-          cleanup(true);
-        }
-        return;
+  function movePointerDown() {
+    const originalPointer = pointer;
+    do {
+      pointer = (pointer + 1) % options.length;
+      const currentOption = options[pointer];
+      if (isSelectOption(currentOption) && !currentOption.disabled) {
+        break;
       }
+    } while (pointer !== originalPointer);
+    errorMessage = "";
+  }
 
-      if (key.name === "up" || key.name === "k") {
-        const originalPointer = pointer;
-        do {
-          pointer = (pointer - 1 + options.length) % options.length;
-          const currentOption = options[pointer];
-          if (isSelectOption(currentOption) && !currentOption.disabled) {
-            break;
-          }
-        } while (pointer !== originalPointer);
-        errorMessage = "";
-        renderOptions();
-      } else if (key.name === "down" || key.name === "j") {
-        const originalPointer = pointer;
-        do {
-          pointer = (pointer + 1) % options.length;
-          const currentOption = options[pointer];
-          if (isSelectOption(currentOption) && !currentOption.disabled) {
-            break;
-          }
-        } while (pointer !== originalPointer);
-        errorMessage = "";
-        renderOptions();
-      } else if (key.name === "space") {
-        const currentOption = options[pointer];
-        if (!isSelectOption(currentOption) || currentOption.disabled) {
-          errorMessage = "This option is disabled";
-        } else {
-          if (selectedOptions.has(pointer)) {
-            selectedOptions.delete(pointer);
-          } else {
-            selectedOptions.add(pointer);
-          }
-          errorMessage = "";
-        }
-        renderOptions();
-      } else if (key.name === "return") {
-        if (!required || selectedOptions.size > 0) {
-          const selectedValues = Array.from(selectedOptions)
-            .filter(
-              (index) =>
-                isSelectOption(options[index]) && !options[index].disabled,
-            )
-            .map((index) =>
-              isSelectOption(options[index]) ? options[index].value : null,
-            );
-          cleanup();
-          resolve(selectedValues);
-          deleteLastLine();
-          msg({ type: "M_MIDDLE" });
-        } else {
-          deleteLastLine();
-          errorMessage = "You must select at least one option.";
-          renderOptions();
-        }
-      } else if (key.name === "c" && key.ctrl) {
-        msg({ type: "M_MIDDLE" });
-        if (endTitle !== "") {
-          msg({
-            type: "M_END",
-            title: endTitle,
-            titleColor: endTitleColor,
-            titleTypography,
-            titleVariant,
-            border,
-            borderColor,
-          });
-        }
-        cleanup(true);
-      } else if (key.name === "a") {
-        toggleSelectAll();
-        errorMessage = "";
-        renderOptions();
+  let lastUILineCount = 0;
+
+  function renderOptions() {
+    // Clear only the previous UI lines
+    if (lastUILineCount > 0) {
+      for (let i = 0; i < lastUILineCount; i++) {
+        process.stdout.write("\x1b[1A\x1b[2K");
       }
     }
+    // Render new lines and track their count
+    lastUILineCount = renderPromptUI({
+      title,
+      content,
+      options,
+      pointer,
+      selectedOptions,
+      errorMessage,
+      displayInstructions,
+      instructions,
+      allDisabled,
+      titleColor,
+      contentColor,
+      contentTypography,
+      debug,
+      maxItems,
+      borderColor,
+      titleVariant,
+      titleTypography,
+      terminalWidth: customTerminalWidth,
+      resized: false,
+      isRerender: true,
+    });
+  }
 
+  // Initial render - render everything
+  lastUILineCount = renderPromptUI({
+    title,
+    content,
+    options,
+    pointer,
+    selectedOptions,
+    errorMessage,
+    displayInstructions,
+    instructions,
+    allDisabled,
+    titleColor,
+    contentColor,
+    contentTypography,
+    debug,
+    maxItems,
+    borderColor,
+    titleVariant,
+    titleTypography,
+    terminalWidth: customTerminalWidth,
+    resized: false,
+    isRerender: false,
+  });
+
+  return new Promise<T[]>((resolve) => {
     function cleanup(isCtrlC = false) {
       if (typeof input.setRawMode === "function") {
         input.setRawMode(false);
@@ -462,6 +415,102 @@ export async function multiselectPrompt<T extends string>(params: {
       input.removeListener("keypress", onKeyPress);
       if (isCtrlC) {
         process.exit(0);
+      }
+    }
+
+    function confirmSelection() {
+      if (allowAllUnselected || selectedOptions.size > 0) {
+        const selectedValues = Array.from(selectedOptions)
+          .filter(
+            (idx) => isSelectOption(options[idx]) && !options[idx].disabled,
+          )
+          .map((idx) =>
+            isSelectOption(options[idx]) ? options[idx].value : null,
+          )
+          .filter((val): val is T => val !== null);
+
+        cleanup();
+        resolve(selectedValues);
+
+        deleteLastLine();
+        msg({ type: "M_BAR", titleColor });
+
+        // Don't clear the final state
+      } else {
+        errorMessage = "You must select at least one option.";
+        renderOptions();
+      }
+    }
+
+    function endPrompt(isCtrlC = false) {
+      // Don't clear anything unless there's an end title
+      if (endTitle !== "") {
+        msgUndoAll();
+        msg({
+          type: "M_END",
+          title: endTitle,
+          titleColor: endTitleColor,
+          titleTypography,
+          titleVariant,
+          border,
+          borderColor,
+        });
+      }
+      cleanup(isCtrlC);
+    }
+
+    function onKeyPress(_str: string, key: readline.Key) {
+      if (allDisabled) {
+        if (key.name === "c" && key.ctrl) {
+          endPrompt(true);
+        }
+        return;
+      }
+
+      switch (key.name) {
+        case "up":
+        case "k":
+          movePointerUp();
+          renderOptions();
+          break;
+
+        case "down":
+        case "j":
+          movePointerDown();
+          renderOptions();
+          break;
+
+        case "space": {
+          const currentOption = options[pointer];
+          if (!isSelectOption(currentOption) || currentOption.disabled) {
+            errorMessage = "This option is disabled";
+          } else {
+            if (selectedOptions.has(pointer)) {
+              selectedOptions.delete(pointer);
+            } else {
+              selectedOptions.add(pointer);
+            }
+            errorMessage = "";
+          }
+          renderOptions();
+          break;
+        }
+
+        case "return":
+          confirmSelection();
+          break;
+
+        case "c":
+          if (key.ctrl) {
+            endPrompt(true);
+          }
+          break;
+
+        case "a":
+          toggleSelectAll();
+          errorMessage = "";
+          renderOptions();
+          break;
       }
     }
 

@@ -28,7 +28,10 @@ export async function prompt<T extends TSchema>(
       value = null;
       break;
     case "number":
-      value = await numberPrompt(options);
+      value = await numberPrompt({
+        ...options,
+        title: options.title,
+      });
       break;
     case "confirm":
       value = await confirmPrompt({

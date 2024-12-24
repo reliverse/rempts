@@ -3,10 +3,13 @@ import {
   type Animation,
   type AnimationName,
 } from "@figliolia/chalk-animation";
+import pc from "picocolors";
 
 import type { ColorName, MsgType, TypographyName } from "~/types/general.js";
 
-import { msg } from "~/utils/messages.js";
+import { getTerminalWidth } from "~/core/utils.js";
+import { colorize } from "~/main.js";
+import { bar, msg } from "~/utils/messages.js";
 import { deleteLastLine } from "~/utils/terminal.js";
 
 export const animationMap: Record<AnimationName, (text: string) => Animation> =
@@ -30,10 +33,12 @@ export async function animateText({
   anim,
   delay,
   type = "M_INFO",
-  titleColor = "blueBright",
-  titleTypography = "bold",
+  titleColor = "cyan",
+  titleTypography = "none",
   border = true,
-  borderColor = "viceGradient",
+  borderColor = "dim",
+  isEndPrompt = false,
+  horizontalLineLength = 0,
 }: {
   title: string;
   anim: AnimationName;
@@ -43,7 +48,13 @@ export async function animateText({
   titleTypography?: TypographyName;
   borderColor?: ColorName;
   border?: boolean;
+  isEndPrompt?: boolean;
+  horizontalLineLength?: number;
 }) {
+  if (horizontalLineLength === 0) {
+    horizontalLineLength = getTerminalWidth() - 5;
+  }
+
   const finalDelay = delay ?? calculateDelay(title);
   const animation = animationMap[anim](title);
 
@@ -61,11 +72,13 @@ export async function animateText({
 
         msg({
           type,
-          title,
+          title: title,
           titleColor,
           titleTypography,
+          content: isEndPrompt ? "⠀" : "",
           borderColor,
           border,
+          horizontalLineLength,
         });
         resolve();
       }, finalDelay);

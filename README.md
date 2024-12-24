@@ -90,7 +90,7 @@ Run `bun dev` to launch the [examples/launcher.ts](./examples/launcher.ts) CLI, 
 const basicConfig = {
   titleColor: "cyanBright",
   titleTypography: "bold",
-  borderColor: "viceGradient",
+  borderColor: "dim",
 } satisfies PromptOptions;
 
 const extendedConfig = {

@@ -5,18 +5,24 @@ export type State = "initial" | "active" | "cancel" | "submit" | "error";
 
 export type MsgType =
   | "M_NULL"
+  | "M_INFO_NULL"
   | "M_START"
   | "M_MIDDLE"
   | "M_GENERAL"
   | "M_GENERAL_NULL"
   | "M_INFO"
-  | "M_INFO_NULL"
-  | "M_NEWLINE"
-  | "M_END"
   | "M_ERROR"
-  | "M_ERROR_NULL";
+  | "M_ERROR_NULL"
+  | "M_END"
+  | "M_NEWLINE"
+  | "M_BAR";
 
-export type TypographyName = "bold" | "strikethrough" | "underline" | "italic";
+export type TypographyName =
+  | "bold"
+  | "strikethrough"
+  | "underline"
+  | "italic"
+  | "none";
 
 export type VariantName =
   | "box"
@@ -26,29 +32,30 @@ export type VariantName =
   | "none"
   | "animated";
 
-export type ColorName =
-  | "dim"
+export type BorderColorName =
+  | "reset"
   | "inverse"
+  | "dim"
   | "black"
   | "red"
   | "redBright"
-  | "bgRed"
-  | "bgRedBright"
   | "green"
   | "greenBright"
-  | "bgGreen"
-  | "bgGreenBright"
   | "yellow"
   | "yellowBright"
   | "blue"
   | "blueBright"
   | "magenta"
+  | "magentaBright"
   | "cyan"
   | "cyanBright"
   | "bgCyan"
   | "bgCyanBright"
   | "white"
-  | "gray"
+  | "gray";
+
+export type ColorName =
+  | BorderColorName
   | "gradientGradient"
   | "rainbowGradient"
   | "cristalGradient"
@@ -65,35 +72,6 @@ export type MsgConfig = {
   newLineBefore?: boolean;
   newLineAfter?: boolean;
   suffix?: string;
-};
-
-export type FmtMsgOptions = {
-  type: MsgType;
-  title?: string;
-  titleAfterAnim?: string;
-  content?: string;
-  titleColor?: ColorName;
-  titleTypography?: TypographyName;
-  titleVariant?: VariantName;
-  contentColor?: ColorName;
-  contentTypography?: TypographyName;
-  contentVariant?: VariantName;
-  hint?: string;
-  hintColor?: ColorName;
-  border?: boolean;
-  borderColor?: ColorName;
-  dontRemoveBar?: boolean;
-  variantOptions?: {
-    box?: {
-      limit?: number;
-    };
-  };
-  errorMessage?: string;
-  addNewLineBefore?: boolean;
-  addNewLineAfter?: boolean;
-  placeholder?: string;
-  horizontalLine?: boolean;
-  horizontalLineLength?: number;
 };
 
 export type OldPromptOptions<T extends TSchema = any> = {
@@ -126,14 +104,18 @@ export type PromptOptions<T extends TSchema = any> = {
   };
   action?: () => Promise<void>;
   border?: boolean;
-  borderColor?: ColorName;
+  borderColor?: BorderColorName;
   additionalLinesToDelete?: number;
-  hintColor?: ColorName;
+  hintPlaceholderColor?: ColorName;
   hints?: string[];
   required?: boolean;
   initial?: any[];
   endTitle?: string;
   endTitleColor?: ColorName;
+  horizontalLine?: boolean;
+  horizontalLineLength?: number;
+  symbol?: string;
+  customSymbol?: string;
 };
 
 export type ChoiceRequiredOptions = {

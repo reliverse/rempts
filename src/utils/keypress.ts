@@ -385,7 +385,9 @@ const listenForKeys = (
     const keys = parse(data, "utf8");
 
     if (Array.isArray(keys)) {
-      keys.forEach((key) => callback(key));
+      keys.forEach((key) => {
+        callback(key);
+      });
     } else {
       callback(keys);
     }

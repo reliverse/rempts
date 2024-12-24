@@ -4,7 +4,7 @@ import { lines, type Layout } from "./lines.js";
 import { finite, infinite } from "./position.js";
 import { type Theme } from "./theme.js";
 import { useRef } from "./use-ref.js";
-import { readlineWidth } from "./utils.js";
+import { getExactTerminalWidth } from "./utils.js";
 
 export function usePagination<T>({
   items,
@@ -45,7 +45,7 @@ export function usePagination<T>({
 
   return lines({
     items,
-    width: readlineWidth(),
+    width: getExactTerminalWidth(),
     renderItem,
     active,
     position,

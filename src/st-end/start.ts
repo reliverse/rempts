@@ -1,5 +1,10 @@
 import type { PromptOptions } from "~/types/general.js";
 
+import {
+  getExactTerminalWidth,
+  getTerminalHeight,
+  getTerminalWidth,
+} from "~/core/utils.js";
 import { getCurrentTerminalName } from "~/main.js";
 import { msg } from "~/utils/messages.js";
 import { pkg, pm, pmv } from "~/utils/platforms.js";
@@ -16,21 +21,23 @@ type StartPromptOptions = PromptOptions & {
   packageVersion?: string;
   shouldPreventWrongTerminalSize?: boolean;
   terminalSizeOptions?: PreventWrongTerminalSizeOptions;
+  isDev?: boolean;
 };
 
 export async function startPrompt({
   title = "",
-  titleColor = "blueBright",
-  titleTypography = "bold",
+  titleColor = "inverse",
+  titleTypography = "none",
   titleVariant,
-  borderColor = "viceGradient",
+  borderColor = "dim",
   clearConsole = false,
   horizontalLine = true,
-  horizontalLineLength = 30,
+  horizontalLineLength = 0,
   packageName = pkg.name,
   packageVersion = pkg.version,
   terminalSizeOptions = {},
   shouldPreventWrongTerminalSize = true,
+  isDev = false,
 }: StartPromptOptions): Promise<void> {
   if (clearConsole) {
     console.clear();
@@ -39,18 +46,34 @@ export async function startPrompt({
     console.log("");
   }
 
-  if (shouldPreventWrongTerminalSize) {
-    await preventWrongTerminalSize({ ...terminalSizeOptions });
-  }
+  const terminalWidth = getTerminalWidth();
+  const exactTerminalWidth = getExactTerminalWidth();
+  const terminalHeight = getTerminalHeight();
 
   const formattedTitle =
     title !== ""
-      ? ` ${title} `
-      : ` ${packageName} v${packageVersion} | ${pm} v${pmv} | ${getCurrentTerminalName()} `;
+      ? title
+      : `${packageName} v${packageVersion} | ${pm} v${pmv} | ${getCurrentTerminalName()}` +
+        (isDev && terminalWidth > 80
+          ? ` | isDev | w${terminalWidth} h${terminalHeight}`
+          : "");
+
+  if (horizontalLineLength === 0) {
+    const titleFullLength =
+      titleColor === "inverse"
+        ? `⠀${formattedTitle}⠀`.length + 5
+        : formattedTitle.length + 5;
+
+    horizontalLineLength = Math.max(1, exactTerminalWidth - titleFullLength);
+  }
+
+  if (shouldPreventWrongTerminalSize) {
+    await preventWrongTerminalSize({ ...terminalSizeOptions, isDev });
+  }
 
   msg({
     type: "M_START",
-    title: formattedTitle,
+    title: titleColor === "inverse" ? `⠀${formattedTitle}⠀` : formattedTitle,
     titleColor,
     titleTypography,
     titleVariant,
@@ -64,7 +87,8 @@ export async function startPrompt({
       "│  Your terminal does not support cursor manipulations.\n│  It's recommended to use a terminal which supports TTY.",
     );
     msg({
-      type: "M_NEWLINE",
+      type: "M_BAR",
+      borderColor,
     });
   }
 }

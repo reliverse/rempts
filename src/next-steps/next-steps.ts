@@ -22,9 +22,9 @@ export async function nextStepsPrompt(
 ): Promise<void> {
   const {
     title = "",
-    titleColor = "blueBright",
+    titleColor = "cyan",
     titleVariant,
-    titleTypography = "bold",
+    titleTypography = "none",
     content = [],
     contentColor = "dim",
     contentVariant,

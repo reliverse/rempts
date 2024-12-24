@@ -1,8 +1,7 @@
-// import type { Static, TSchema } from "@sinclair/typebox";
-
 import { Value } from "@sinclair/typebox/value";
 import { stdin as input, stdout as output } from "node:process";
 import readline from "node:readline/promises";
+import pc from "picocolors";
 
 import type { PromptOptions } from "~/types/general.js";
 
@@ -24,16 +23,16 @@ export async function numMultiSelectPrompt(opts: NumMultiSelectPromptOptions) {
     choices,
     schema,
     defaultValue,
-    titleColor = "blueBright",
-    titleTypography = "bold",
+    titleColor = "cyan",
+    titleTypography = "none",
     titleVariant,
     hint,
-    hintColor = "gray",
+    hintPlaceholderColor = "blue",
     content,
     contentColor = "dim",
     contentTypography = "italic",
     contentVariant,
-    borderColor = "viceGradient",
+    borderColor = "dim",
     variantOptions,
   } = opts;
 
@@ -54,8 +53,8 @@ export async function numMultiSelectPrompt(opts: NumMultiSelectPromptOptions) {
         deleteLastLines(linesToDelete);
       }
 
-      const question = fmt({
-        hintColor,
+      const { text: question } = fmt({
+        hintPlaceholderColor,
         type: errorMessage !== "" ? "M_ERROR" : "M_GENERAL",
         title: `${title}${defaultValue ? ` [Default: ${Array.isArray(defaultValue) ? defaultValue.join(", ") : defaultValue}]` : ""}`,
         titleColor,
@@ -69,24 +68,23 @@ export async function numMultiSelectPrompt(opts: NumMultiSelectPromptOptions) {
         hint,
         variantOptions,
         errorMessage,
-        addNewLineBefore: false,
-        addNewLineAfter: false,
       });
 
       // Generate choices text with formatted bar
       const choicesText = choices
-        .map(
-          (choice, index) =>
+        .map((choice, index) =>
+          pc.dim(
             `${formattedBar}  ${index + 1}) ${choice.title}${
               choice.description ? ` - ${choice.description}` : ""
             }`,
+          ),
         )
         .join("\n");
 
-      const fullPrompt = `${question}\n${choicesText}\n${formattedBar}  ${colorize(`Enter your choices (comma-separated numbers between 1-${choices.length})`, contentColor)}:\n${formattedBar}  `;
+      const fullPrompt = `${question}\n${choicesText}\n${formattedBar}  ${pc.bold(pc.blue(`Enter your choices (comma-separated numbers between 1-${choices.length})`))}:\n${formattedBar}  `;
 
-      const formattedPrompt = fmt({
-        hintColor,
+      const { text: formattedPrompt } = fmt({
+        hintPlaceholderColor,
         type: "M_NULL",
         title: fullPrompt,
       });
@@ -94,7 +92,7 @@ export async function numMultiSelectPrompt(opts: NumMultiSelectPromptOptions) {
       const questionLines = countLines(formattedPrompt);
       linesToDelete = questionLines + 1; // +1 for the user's input line
 
-      const answer = (await rl.question(formattedPrompt)).trim();
+      const answer = (await rl.question(`${formattedPrompt}  `)).trim();
 
       // Use defaultValue if no input is provided
       if (!answer && defaultValue !== undefined) {
@@ -104,7 +102,8 @@ export async function numMultiSelectPrompt(opts: NumMultiSelectPromptOptions) {
           title: `  ${Array.isArray(defaultValue) ? defaultValue.join(", ") : defaultValue}`,
           titleColor: "none",
         });
-        msg({ type: "M_NEWLINE" });
+        msg({ type: "M_BAR", borderColor });
+
         return defaultValue;
       }
 
@@ -140,8 +139,8 @@ export async function numMultiSelectPrompt(opts: NumMultiSelectPromptOptions) {
       }
 
       if (isValid) {
-        msg({ type: "M_NEWLINE" });
         rl.close();
+        msg({ type: "M_BAR", borderColor });
         return selectedValues;
       }
     }

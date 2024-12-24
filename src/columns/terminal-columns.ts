@@ -1,5 +1,6 @@
 import type { Row, Options, OptionsFunction } from "./types.js";
 
+import { getTerminalWidth } from "../core/utils.js";
 import { computeColumnWidths } from "./utils/compute-column-widths.js";
 import { getColumnContentWidths } from "./utils/get-column-content-widths.js";
 import { getOptions } from "./utils/get-options.js";
@@ -19,7 +20,8 @@ export function terminalColumns(
     return "";
   }
 
-  const { stdoutColumns, columns } = getOptions(options);
+  const { columns } = getOptions(options);
+  const adjustedStdoutColumns = getTerminalWidth();
 
   if (columns.length > columnCount) {
     throw new Error(
@@ -28,7 +30,7 @@ export function terminalColumns(
   }
 
   const computedColumns = computeColumnWidths(
-    stdoutColumns,
+    adjustedStdoutColumns,
     columns,
     columnContentWidths,
   );

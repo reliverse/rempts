@@ -59,17 +59,22 @@ export function createPrompt<Value, Config>(view: ViewFunction<Value, Config>) {
 
     const { promise, resolve, reject } = PromisePolyfill.withResolver<Value>();
     /** @deprecated pass an AbortSignal in the context options instead. */
-    const cancel = () => reject(new CancelPromptError());
+    const cancel = () => {
+      reject(new CancelPromptError());
+    };
 
     if (signal) {
-      const abort = () =>
+      const abort = () => {
         reject(new AbortPromptError({ cause: signal.reason }));
+      };
       if (signal.aborted) {
         abort();
         return Object.assign(promise, { cancel });
       }
       signal.addEventListener("abort", abort);
-      cleanups.add(() => signal.removeEventListener("abort", abort));
+      cleanups.add(() => {
+        signal.removeEventListener("abort", abort);
+      });
     }
 
     cleanups.add(
@@ -86,7 +91,9 @@ export function createPrompt<Value, Config>(view: ViewFunction<Value, Config>) {
     // and that also requires a re-render (and a manual one because we mute the streams).
     // We set the listener after the initial workLoop to avoid a double render if render triggered
     // by a state change sets the cursor to the right position.
-    const checkCursorPos = () => screen.checkCursorPos();
+    const checkCursorPos = () => {
+      screen.checkCursorPos();
+    };
     rl.input.on("keypress", checkCursorPos);
     cleanups.add(() => rl.input.removeListener("keypress", checkCursorPos));
 
@@ -94,14 +101,20 @@ export function createPrompt<Value, Config>(view: ViewFunction<Value, Config>) {
       // The close event triggers immediately when the user press ctrl+c. SignalExit on the other hand
       // triggers after the process is done (which happens after timeouts are done triggering.)
       // We triggers the hooks cleanup phase on rl `close` so active timeouts can be cleared.
-      const hooksCleanup = AsyncResource.bind(() => effectScheduler.clearAll());
+      const hooksCleanup = AsyncResource.bind(() => {
+        effectScheduler.clearAll();
+      });
       rl.on("close", hooksCleanup);
-      cleanups.add(() => rl.removeListener("close", hooksCleanup));
+      cleanups.add(() => {
+        rl.removeListener("close", hooksCleanup);
+      });
 
       cycle(() => {
         try {
           const nextView = view(config, (value) => {
-            setImmediate(() => resolve(value));
+            setImmediate(() => {
+              resolve(value);
+            });
           });
 
           // Typescript won't allow this, but not all users rely on typescript.
@@ -136,7 +149,9 @@ export function createPrompt<Value, Config>(view: ViewFunction<Value, Config>) {
           )
           // Wait for the promise to settle, then cleanup.
           .finally(() => {
-            cleanups.forEach((cleanup) => cleanup());
+            cleanups.forEach((cleanup) => {
+              cleanup();
+            });
 
             screen.done({ clearContent: Boolean(context.clearPromptOnDone) });
             output.end();

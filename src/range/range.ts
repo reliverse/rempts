@@ -2,9 +2,9 @@ import type { Writable } from "stream";
 
 import Differ from "ansi-diff-stream";
 import esc from "ansi-escapes";
-import chalk from "chalk";
 import ui from "cli-styles";
 import { EventEmitter } from "events";
+import pc from "picocolors";
 import precision from "precision";
 import stringWidth from "string-width";
 import windowSize from "window-size";
@@ -67,7 +67,7 @@ export class RangePrompt extends EventEmitter {
     // Default options
     const defaults: Required<RangePromptOptions> = {
       hint: "– Use arrow keys or type a value.",
-      marker: chalk.cyan.bold("●"),
+      marker: pc.cyan("●"),
       bar: "–",
       values: [],
       value: null,
@@ -346,10 +346,10 @@ export class RangePrompt extends EventEmitter {
     out +=
       [
         ui.symbol(this.done, this.aborted),
-        chalk.bold(this.msg),
+        pc.bold(this.msg),
         ui.delimiter(this.done),
         this.value !== null ? this.value : "",
-        chalk.gray(this.unit),
+        pc.gray(this.unit),
       ].join(" ") + "\n";
 
     const size =
@@ -372,7 +372,7 @@ export class RangePrompt extends EventEmitter {
       [
         "",
         this.min,
-        chalk.gray(leftBar) + this.marker + chalk.gray(rightBar),
+        pc.gray(leftBar) + this.marker + pc.gray(rightBar),
         this.max,
         "",
       ].join(" ") + "\n";

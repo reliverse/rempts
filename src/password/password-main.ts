@@ -23,18 +23,18 @@ export async function passwordPrompt(opts: PasswordPromptOptions) {
   const {
     title = "",
     hint,
-    hintColor = "gray",
+    hintPlaceholderColor = "blue",
     validate,
     schema,
     defaultValue,
-    titleColor = "blueBright",
-    titleTypography = "bold",
+    titleColor = "cyan",
+    titleTypography = "none",
     titleVariant,
     content,
     contentColor = "dim",
     contentTypography = "italic",
     contentVariant,
-    borderColor = "viceGradient",
+    borderColor = "dim",
     variantOptions,
   } = opts;
 
@@ -42,8 +42,8 @@ export async function passwordPrompt(opts: PasswordPromptOptions) {
   let errorMessage = "";
 
   while (true) {
-    const question = fmt({
-      hintColor,
+    const { text: question } = fmt({
+      hintPlaceholderColor,
       type: errorMessage !== "" ? "M_ERROR" : "M_GENERAL",
       title: `${title}${defaultValue ? ` [Default: ****]` : ""}`,
       titleColor,

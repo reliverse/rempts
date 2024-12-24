@@ -7,6 +7,8 @@ import { WriteStream } from "node:tty";
 import { cursor, erase } from "sisteransi";
 import wrap from "wrap-ansi";
 
+import { getTerminalWidth } from "~/core/utils.js";
+
 function diffLines(a: string, b: string) {
   if (a === b) {
     return;
@@ -228,12 +230,12 @@ export function createPrompt(
 
   function restoreCursor() {
     const lines =
-      wrap(_prevFrame, process.stdout.columns, { hard: true }).split("\n")
-        .length - 1;
+      wrap(_prevFrame, getTerminalWidth(), { hard: true }).split("\n").length -
+      1;
     _output.write(cursor.move(-999, lines * -1));
   }
   function render() {
-    const frame = wrap(_render() || "", process.stdout.columns, {
+    const frame = wrap(_render() || "", getTerminalWidth(), {
       hard: true,
     });
 

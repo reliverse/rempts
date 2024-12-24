@@ -31,13 +31,9 @@ const demo = async () => {
     message: "(Slow validation) provide a number:",
     validate: (value) =>
       new Promise((resolve) => {
-        setTimeout(
-          () =>
-            resolve(
-              !Number.isNaN(Number(value)) || "You must provide a number",
-            ),
-          3000,
-        );
+        setTimeout(() => {
+          resolve(!Number.isNaN(Number(value)) || "You must provide a number");
+        }, 3000);
       }),
   });
   console.log("Answer:", answer);

@@ -1,4 +1,3 @@
-import type Differ from "ansi-diff-stream";
 import type { Writable } from "stream";
 
 import differ from "ansi-diff-stream";
@@ -9,6 +8,8 @@ import type { RangePrompt } from "~/range/range.js";
 import type { Keypress } from "~/types/keypress.js";
 
 import listenForKeys from "~/utils/keypress.js";
+
+import { getTerminalWidth } from "../core/utils.js";
 
 /**
  * Action mapping based on keypress
@@ -95,6 +96,7 @@ type WrappedRangePrompt = {
   pause: () => void;
   resume: () => void;
   close: () => void;
+  terminalWidth: number;
 } & RangePrompt;
 
 /**
@@ -108,6 +110,10 @@ const wrap = (p: RangePrompt): Promise<number | null> => {
   // Initialize ansi-diff-stream
   wrappedPrompt.out = differ();
   wrappedPrompt.out.pipe(process.stdout);
+
+  // Initialize terminal width with adjusted value
+  const { width } = windowSize;
+  wrappedPrompt.terminalWidth = getTerminalWidth(width);
 
   // Define the bell method
   wrappedPrompt.bell = () => {
@@ -126,10 +132,12 @@ const wrap = (p: RangePrompt): Promise<number | null> => {
   const onKey = (key: Keypress) => {
     const a = action(key);
     if (a === "abort") {
-      return wrappedPrompt.close();
+      wrappedPrompt.close();
+      return;
     }
     if (a === false) {
-      return wrappedPrompt._(key.raw);
+      wrappedPrompt._(key.raw);
+      return;
     }
     if (typeof wrappedPrompt[a] === "function") {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
@@ -144,7 +152,8 @@ const wrap = (p: RangePrompt): Promise<number | null> => {
    */
   const onNewSize = () => {
     const { width, height } = windowSize;
-    wrappedPrompt.out.reset(); // Now valid as 'out' is Differ
+    wrappedPrompt.terminalWidth = getTerminalWidth(width);
+    wrappedPrompt.out.reset();
     wrappedPrompt.render(true);
   };
 
@@ -196,18 +205,20 @@ const wrap = (p: RangePrompt): Promise<number | null> => {
       }
       isClosed = true;
 
-      wrappedPrompt.out.unpipe(process.stdout); // Now valid as 'out' is Differ
+      wrappedPrompt.out.unpipe(process.stdout);
       pause();
 
       if (wrappedPrompt.aborted) {
-        reject(new Error("Prompt aborted")); // Reject with an Error object
+        reject(new Error("Prompt aborted"));
       } else {
         resolve(wrappedPrompt.value);
       }
     };
 
     // Ensure the prompt is closed on process exit
-    process.on("beforeExit", () => wrappedPrompt.close());
+    process.on("beforeExit", () => {
+      wrappedPrompt.close();
+    });
 
     // Fallback for submit method
     if (typeof wrappedPrompt.submit !== "function") {

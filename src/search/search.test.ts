@@ -321,9 +321,9 @@ describe("search prompt", () => {
     // This event will be ignored;
     events.keypress("enter");
 
-    Array.from({ length: "France".length }).forEach(() =>
-      events.keypress("backspace"),
-    );
+    Array.from({ length: "France".length }).forEach(() => {
+      events.keypress("backspace");
+    });
     await Promise.resolve();
     expect(getScreen()).toMatchInlineSnapshot(`
       "? Select a country 

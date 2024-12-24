@@ -21,13 +21,14 @@ export async function anykeyPrompt(
   const { ctrlC = 1, preserveLog = false, hideMessage = false } = options;
 
   if (message) {
-    message = fmt({
-      hintColor: "gray",
+    const { text } = fmt({
+      hintPlaceholderColor: "gray",
       type: "M_GENERAL",
       title: message,
       titleColor: "dim",
       dontRemoveBar: true,
     });
+    message = text;
   }
 
   if (message && !hideMessage) {

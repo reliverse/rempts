@@ -9,6 +9,8 @@ import wrap from "wrap-ansi";
 
 import type { State } from "~/types/general.js";
 
+import { getTerminalWidth } from "~/core/utils.js";
+
 function diffLines(a: string, b: string) {
   if (a === b) {
     return;
@@ -231,7 +233,7 @@ export default class Prompt {
 
   private restoreCursor() {
     const lines =
-      wrap(this._prevFrame, process.stdout.columns, { hard: true }).split("\n")
+      wrap(this._prevFrame, getTerminalWidth(), { hard: true }).split("\n")
         .length - 1;
     this.output.write(cursor.move(-999, lines * -1));
   }
@@ -239,7 +241,7 @@ export default class Prompt {
   private _prevFrame = "";
   private render() {
     // @ts-expect-error - TODO: fix ts
-    const frame = wrap(this._render(this) ?? "", process.stdout.columns, {
+    const frame = wrap(this._render(this) ?? "", getTerminalWidth(), {
       hard: true,
     });
 

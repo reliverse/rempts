@@ -23,7 +23,7 @@ import { promptsDisplayResults } from "~/main.js";
 import { numSelectPrompt } from "~/main.js";
 import { selectPrompt } from "~/main.js";
 
-import { basicConfig, experimentalConfig, extendedConfig } from "./configs.js";
+import { basicConfig, extendedConfig } from "./configs.js";
 import {
   calculateAge,
   createColorChoices,
@@ -36,7 +36,7 @@ import {
 // const pkg = packageJson;
 const pkg = {
   name: "@reliverse/prompts",
-  version: "1.3.13",
+  version: "1.3.16",
   description:
     "@reliverse/prompts is a powerful library that enables seamless, typesafe, and resilient prompts for command-line applications. Crafted with simplicity and elegance, it provides developers with an intuitive and robust way to build interactive CLIs.",
 };
@@ -56,18 +56,17 @@ const IDs = {
 
 export async function showStartPrompt() {
   await startPrompt({
-    ...basicConfig,
     // startPrompt is a special component: if you don't provide
     // a title, it will display the useful technical information
+    ...basicConfig,
+    isDev: true,
     titleColor: "inverse",
     clearConsole: true,
     packageName: pkg.name,
     packageVersion: pkg.version,
     terminalSizeOptions: {
-      widthErrorMessage: "Oops! Terminal width is too small. Expected >",
-      heightErrorMessage: "Oops! Terminal height is too small. Expected >",
       sizeErrorDescription:
-        "Please increase the terminal size to run this prompts example",
+        "Please increase the terminal size to run this prompts example.",
     },
   });
 }
@@ -79,10 +78,10 @@ export async function showAnykeyPrompt(
   const pm = await detect();
   let notification = pc.bold("[anykeyPrompt] Press any key to continue...");
   if (kind === "privacy") {
-    notification = `Before you continue, please note that you are only testing an example CLI app.\n│  None of your responses will be sent anywhere. No actions, such as installing dependencies, will actually take place;\n│  this is simply a simulation with a sleep timer and spinner. You can always review the source code to learn more.\n│  ============================\n│  ${notification}`;
+    notification = `Before you continue, please note that you are only testing an example CLI app. None of your responses will be sent anywhere. No actions, such as installing dependencies, will actually take place; this is simply a simulation with a sleep timer and spinner. You can always review the source code to learn more.\n============================\n${notification}`;
   }
   if (kind === "pm" && pm === "bun" && username) {
-    notification += `\n│  ============================\n│  ${username}, did you know? Bun currently may crash if you press Enter while setTimeout\n│  is running. So please avoid doing that in the prompts after this one! 😅`;
+    notification += `\n============================\n${username}, did you know? Bun currently may crash if you press Enter while setTimeout is running. So please avoid doing that in the prompts after this one! 😅`;
   }
   await anykeyPrompt(notification);
 }
@@ -94,7 +93,9 @@ export async function showInputPrompt() {
     hint: "Press <Enter> to use the default value.",
     placeholder: "[Default: johnny911]",
     defaultValue: "johnny911",
-    ...experimentalConfig,
+    ...extendedConfig,
+    symbol: "pointer",
+    customSymbol: "👋",
     // hardcoded: { // For testing purposes only
     //   userInput: "JohnDoe", // Predefined user input
     //   errorMessage: "", // No error message
@@ -110,7 +111,7 @@ export async function askDir(username: string) {
     title: `[inputPrompt] Great! Nice to meet you, ${username}!`,
     content: "Where should we create your project?",
     // Schema is required, because it provides a runtime typesafety validation.
-    ...experimentalConfig,
+    ...extendedConfig,
     titleVariant: "doubleBox",
     hint: "Default: ./prefilled-default-value",
     defaultValue: "./prefilled-default-value",
@@ -155,7 +156,7 @@ export async function showPasswordPrompt() {
         if (!/[A-Z]/.test(input)) {
           return "Password must be latin letters and contain at least one uppercase letter.";
         }
-        return true;
+        return;
       },
     });
   } catch (error) {
@@ -175,7 +176,6 @@ export async function showDatePrompt() {
     dateKind: "birthday",
     dateFormat: "DD.MM.YYYY",
     title: "[datePrompt] Enter your birthday",
-    hint: "Default: 16.11.1988",
     // You can set a default value for the prompt if desired.
     defaultValue: "16.11.1988",
   });
@@ -220,6 +220,7 @@ export async function showDatePromptTwo() {
 export async function showSelectPrompt() {
   const lang = await selectPrompt({
     title: "[selectPrompt] Choose your language",
+    displayInstructions: true,
     content:
       "“You can have brilliant ideas, but if you can’t get them across, your ideas won’t get you anywhere.” – Lee Iacocca",
     options: [
@@ -240,7 +241,7 @@ export async function showSelectPrompt() {
       { label: "Other", value: "other", hint: "Other" },
     ],
     defaultValue: "en",
-    ...experimentalConfig,
+    ...extendedConfig,
     // @reliverse/prompts is a very young library, so something might break.
     // If you encounter any issues, please report them to the GitHub repository.
     // By using the debug, you can try to manually handle some of your issues.
@@ -307,6 +308,7 @@ export async function showMultiselectPrompt() {
 
   const multiselectOptions = await multiselectPrompt({
     title: "[multiselectPrompt] Select your favorite programming languages",
+    displayInstructions: true,
     content:
       "“Code is like humor. When you have to explain it, it’s bad.” – Cory House",
     options: [
@@ -360,9 +362,8 @@ export async function showMultiselectPrompt() {
         hint: "Other",
       },
     ],
-    required: true,
     defaultValue: ["TypeScript", "JavaScript"],
-    ...experimentalConfig,
+    ...extendedConfig,
     debug: false, // multiselectPrompt
   });
 
@@ -391,8 +392,6 @@ export async function showMultiselectPrompt() {
     title: "Here are some dumb jokes for you:",
     titleTypography: "bold",
     titleColor: "viceGradient",
-    addNewLineBefore: false,
-    addNewLineAfter: false,
   });
 
   multiselectOptions.forEach((option) => {
@@ -400,13 +399,12 @@ export async function showMultiselectPrompt() {
     msg({
       type: "M_INFO_NULL",
       title: joke ? joke : `${option} selected.`,
-      addNewLineBefore: false,
-      addNewLineAfter: false,
     });
   });
 
   msg({
-    type: "M_NEWLINE",
+    type: "M_BAR",
+    borderColor: "dim",
   });
 
   return multiselectOptions;
@@ -417,8 +415,7 @@ export async function showNumSelectPrompt() {
 
   const color = await numSelectPrompt({
     title: "[numSelectPrompt] Choose your favorite color",
-    content:
-      "You are free to customize everything in your prompts using the following color palette.",
+    content: "You are free to customize everything in your prompts!",
     ...extendedConfig,
     choices,
     defaultValue: "17",
@@ -477,7 +474,8 @@ export async function showConfirmPrompt(username: string) {
   await showAnykeyPrompt("pm", username);
 
   const spinner = await confirmPrompt({
-    title: "[confirmPrompt] Do you want to see spinner in action?",
+    title:
+      "[confirmPrompt] Do you want to see spinner and progressbar in action?",
     // Intellisense will show you all available colors thanks to the enum.
     titleColor: "red",
     titleVariant: "doubleBox",
@@ -494,6 +492,7 @@ export async function showConfirmPrompt(username: string) {
 
   if (spinner) {
     await showSpinner();
+    await showProgressBar();
   }
 
   // A return value is unnecessary for prompts when the result is not needed later.
@@ -528,14 +527,14 @@ export async function showProgressBar() {
     incompleteChar: "-",
     colorize: true, // Enable colorization
     increment: 5, // Increment by 5
-    desiredTotalTime: 3000, // 3 seconds
+    desiredTotalTime: 2000, // 2 seconds
   });
 }
 
 export async function showResults(userInput) {
   await promptsDisplayResults({
     // Display all user input values, e.g.:
-    // ┌────────────────────────────────┐
+    // ┌────────���───────────────────────┐
     // │ Here is your input result:     │
     // │ {                              │
     // │   "deps": true,                │
@@ -584,22 +583,21 @@ export async function showAnimatedText() {
       "ℹ  :exploding_head: Our library even supports animated messages and emojis!",
     ),
     anim: "neon",
-    delay: 2000,
+    delay: 1000,
     ...basicConfig,
-    titleColor: "passionGradient",
+    titleColor: "cyan",
     titleTypography: "bold",
   });
 }
 
 export async function showEndPrompt() {
   await endPrompt({
-    title: emojify(
-      "ℹ  :books: Learn the docs here: https://docs.reliverse.org/prompts",
-    ),
+    title: "📖 Learn the docs here: https://docs.reliverse.org/prompts",
     titleAnimation: "glitch",
     ...basicConfig,
-    titleColor: "retroGradient",
-    titleTypography: "bold",
-    titleAnimationDelay: 2000,
+    titleColor: "viceGradient",
+    titleTypography: "italic",
+    endTitleColor: "viceGradient",
+    titleAnimationDelay: 1000,
   });
 }

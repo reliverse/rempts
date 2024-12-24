@@ -121,8 +121,8 @@ export function parseRawArgs<T = Default>(
     } else if (arg.substring(j, j + 3) === "no-") {
       name = arg.slice(Math.max(0, j + 3));
       if (strict && !~keys.indexOf(name)) {
-        // @ts-expect-error TODO: fix ts
-        return opts.unknown(arg);
+        opts.unknown(arg);
+        return;
       }
       out[name] = false;
     } else {
@@ -143,8 +143,8 @@ export function parseRawArgs<T = Default>(
       for (idx = 0; idx < arr.length; idx++) {
         name = arr[idx];
         if (strict && !~keys.indexOf(name)) {
-          // @ts-expect-error TODO: fix ts
-          return opts.unknown("-".repeat(j) + name);
+          opts.unknown("-".repeat(j) + name);
+          return;
         }
         toVal(out, name, idx + 1 < arr.length || val, opts);
       }

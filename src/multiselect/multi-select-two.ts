@@ -22,16 +22,16 @@ export async function multiselectPrompt(opts: MultiSelectPromptOptions) {
     choices,
     schema,
     defaultValue,
-    titleColor = "blueBright",
-    titleTypography = "bold",
+    titleColor = "cyan",
+    titleTypography = "none",
     titleVariant,
     hint,
-    hintColor = "gray",
+    hintPlaceholderColor = "blue",
     content,
     contentColor = "dim",
     contentTypography = "italic",
     contentVariant,
-    borderColor = "viceGradient",
+    borderColor = "dim",
     variantOptions,
   } = opts;
 
@@ -52,8 +52,8 @@ export async function multiselectPrompt(opts: MultiSelectPromptOptions) {
         deleteLastLines(linesToDelete);
       }
 
-      const question = fmt({
-        hintColor,
+      const { text: question } = fmt({
+        hintPlaceholderColor,
         type: errorMessage !== "" ? "M_ERROR" : "M_GENERAL",
         title: `${title}${defaultValue ? ` [Default: ${Array.isArray(defaultValue) ? defaultValue.join(", ") : defaultValue}]` : ""}`,
         titleColor,
@@ -67,8 +67,6 @@ export async function multiselectPrompt(opts: MultiSelectPromptOptions) {
         hint,
         variantOptions,
         errorMessage,
-        addNewLineBefore: false,
-        addNewLineAfter: false,
       });
 
       // Generate choices text with formatted bar
@@ -83,8 +81,8 @@ export async function multiselectPrompt(opts: MultiSelectPromptOptions) {
 
       const fullPrompt = `${question}\n${choicesText}\n${formattedBar}  ${colorize(`Enter your choices (comma-separated numbers between 1-${choices.length})`, contentColor)}:\n${formattedBar}  `;
 
-      const formattedPrompt = fmt({
-        hintColor,
+      const { text: formattedPrompt } = fmt({
+        hintPlaceholderColor,
         type: "M_NULL",
         title: fullPrompt,
       });
@@ -102,7 +100,7 @@ export async function multiselectPrompt(opts: MultiSelectPromptOptions) {
           title: `  ${Array.isArray(defaultValue) ? defaultValue.join(", ") : defaultValue}`,
           titleColor: "none",
         });
-        msg({ type: "M_NEWLINE" });
+
         return defaultValue;
       }
 
@@ -138,7 +136,6 @@ export async function multiselectPrompt(opts: MultiSelectPromptOptions) {
       }
 
       if (isValid) {
-        msg({ type: "M_NEWLINE" });
         rl.close();
         return selectedValues;
       }

@@ -1,3 +1,5 @@
+import { getTerminalWidth } from "~/core/utils.js";
+
 import type { Options, OptionsFunction, ColumnMetasArray } from "../types.js";
 
 type InternalOptions = {
@@ -8,7 +10,7 @@ type InternalOptions = {
 export const getOptions = (
   options?: Options | OptionsFunction,
 ): InternalOptions => {
-  const stdoutColumns = process.stdout.columns ?? Number.POSITIVE_INFINITY;
+  const stdoutColumns = getTerminalWidth() ?? Number.POSITIVE_INFINITY;
 
   if (typeof options === "function") {
     options = options(stdoutColumns);

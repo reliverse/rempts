@@ -187,7 +187,9 @@ describe("checkbox prompt", () => {
       (Use arrow keys to reveal more choices)"
     `);
 
-    numberedChoices.forEach(() => events.keypress("down"));
+    numberedChoices.forEach(() => {
+      events.keypress("down");
+    });
     events.keypress("down");
     events.keypress("space");
     expect(getScreen()).toMatchInlineSnapshot(`
@@ -227,7 +229,9 @@ describe("checkbox prompt", () => {
       (Use arrow keys to reveal more choices)"
     `);
 
-    numberedChoices.forEach(() => events.keypress("down"));
+    numberedChoices.forEach(() => {
+      events.keypress("down");
+    });
     events.keypress("down");
     events.keypress("space");
     expect(getScreen()).toMatchInlineSnapshot(`

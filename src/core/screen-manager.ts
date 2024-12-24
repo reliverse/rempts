@@ -3,7 +3,7 @@ import stripAnsi from "strip-ansi";
 
 import type { BetterReadline } from "~/types/index.js";
 
-import { breakLines, readlineWidth } from "./utils.js";
+import { breakLines, getExactTerminalWidth } from "./utils.js";
 
 const height = (content: string): number => content.split("\n").length;
 const lastLine = (content: string): string => content.split("\n").pop() ?? "";
@@ -47,10 +47,10 @@ export default class ScreenManager {
 
     this.rl.setPrompt(prompt);
 
-    // SetPrompt will change cursor position, now we can get correct value
+    // SetPrompt will change cursor position, so we can get correct value
     this.cursorPos = this.rl.getCursorPos();
 
-    const width = readlineWidth();
+    const width = getExactTerminalWidth();
     content = breakLines(content, width);
     bottomContent = breakLines(bottomContent, width);
 

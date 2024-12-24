@@ -32,7 +32,7 @@ export async function progressbar(
   const {
     total,
     increment = 1,
-    desiredTotalTime = 3000,
+    desiredTotalTime = 2000,
     ...progressBarOptions
   } = options;
 
@@ -66,7 +66,7 @@ export async function progressbar(
   msg({
     type: "M_MIDDLE",
     title: "",
-    borderColor: "viceGradient",
+    borderColor: "dim",
   });
 }
 

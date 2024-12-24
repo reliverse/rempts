@@ -691,8 +691,12 @@ export const spinner = () => {
     }
   };
 
-  const errorEventHandler = () => handleExit(2);
-  const signalEventHandler = () => handleExit(1);
+  const errorEventHandler = () => {
+    handleExit(2);
+  };
+  const signalEventHandler = () => {
+    handleExit(1);
+  };
 
   const registerHooks = () => {
     // Reference: https://nodejs.org/api/process.html#event-uncaughtexception

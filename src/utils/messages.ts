@@ -1,18 +1,76 @@
 import pc from "picocolors";
+import wrapAnsi from "wrap-ansi";
 
 import type {
   ColorName,
-  FmtMsgOptions,
   MsgConfig,
   MsgType,
+  TypographyName,
+  VariantName,
 } from "~/types/general.js";
 
 import { colorMap, typographyMap } from "~/utils/mapping.js";
 import { isUnicodeSupported } from "~/utils/platforms.js";
+import { deleteLastLines } from "~/utils/terminal.js";
 import { variantMap } from "~/utils/variants.js";
+
+import { getTerminalWidth } from "../core/utils.js";
+
+/**
+ * Known symbol names that will have IntelliSense support
+ */
+export type SymbolName =
+  | "pointer"
+  | "start"
+  | "middle"
+  | "end"
+  | "line"
+  | "corner_top_right"
+  | "step_active"
+  | "step_error"
+  | "info";
+
+export type FmtMsgOptions = {
+  type: MsgType;
+  title?: string;
+  titleAfterAnim?: string;
+  content?: string;
+  titleColor?: ColorName;
+  titleTypography?: TypographyName;
+  titleVariant?: VariantName;
+  contentColor?: ColorName;
+  contentTypography?: TypographyName;
+  contentVariant?: VariantName;
+  hint?: string;
+  hintPlaceholderColor?: ColorName;
+  hintTypography?: TypographyName;
+  border?: boolean;
+  borderColor?: ColorName;
+  dontRemoveBar?: boolean;
+  variantOptions?: {
+    box?: {
+      limit?: number;
+    };
+  };
+  errorMessage?: string;
+  addNewLineBefore?: boolean;
+  addNewLineAfter?: boolean;
+  placeholder?: string;
+  horizontalLine?: boolean;
+  horizontalLineLength?: number;
+  terminalWidth?: number;
+  linesHandler?: "wrap" | "truncate" | "clear" | "none";
+  instructions?: string;
+  wrapTitle?: boolean;
+  wrapContent?: boolean;
+  symbol?: SymbolName;
+  customSymbol?: string;
+  symbolColor?: ColorName;
+};
 
 const unicode = isUnicodeSupported();
 const u = (c: string, fallback: string) => (unicode ? c : fallback);
+
 export const symbols = {
   pointer: u("👉", ">"),
   start: u("╭", "T"),
@@ -23,14 +81,55 @@ export const symbols = {
   step_active: u("◆", "♦"),
   step_error: u("🗴", "x"),
   info: u("ℹ", "i"),
-};
+} as const;
 
+/**
+ * Wraps text first, then applies styling to each line to maintain consistent formatting
+ */
+function wrapAndStyleText(
+  input: string,
+  typographyName: TypographyName | undefined,
+  colorName: ColorName | undefined,
+  variantName: string | undefined,
+  borderColor: ColorName | undefined,
+): string {
+  // 1) Wrap first.
+  const adjustedWidth = getTerminalWidth();
+  const wrappedText = wrapAnsi(input, adjustedWidth, {
+    hard: false,
+    trim: true,
+  });
+
+  // 2) Then apply styles line by line.
+  return wrappedText
+    .split("\n")
+    .map((line) => {
+      // Re-apply your is-option logic, if needed
+      const isOption =
+        line.startsWith("  ") ||
+        line.startsWith("[ ]") ||
+        line.startsWith("[x]");
+
+      return applyStyles(
+        line,
+        colorName && !isOption ? colorName : undefined,
+        typographyName && !isOption ? typographyName : undefined,
+        variantName,
+        borderColor,
+      );
+    })
+    .join("\n");
+}
+
+/**
+ * Applies color, typography, and variant styles to a given text.
+ */
 function applyStyles(
   text: string,
-  colorName = "",
-  typographyName = "",
-  variantName = "",
-  borderColor = "",
+  colorName?: ColorName,
+  typographyName?: TypographyName,
+  variantName?: string,
+  borderColor?: ColorName,
 ) {
   let styledText = text;
 
@@ -63,21 +162,43 @@ function applyStyles(
   return styledText;
 }
 
+/**
+ * Returns a colored vertical bar symbol.
+ */
 export const bar = ({
-  borderColor = "viceGradient",
-}: { borderColor?: ColorName }): string =>
-  colorMap[borderColor](symbols.middle);
-
-export function fmt(opts: FmtMsgOptions): string {
-  if (opts.title?.includes("│  ") && !opts.dontRemoveBar) {
-    opts.title = opts.title.replace("│  ", "");
+  borderColor = "dim",
+}: { borderColor?: ColorName }): string => {
+  // Prevent gradient colors for bars
+  if (borderColor.endsWith("Gradient")) {
+    console.error(
+      "Gradient colors are not supported for bars. Please use a solid color instead.",
+    );
+    return colorMap.dim(symbols.middle);
   }
+  return colorMap[borderColor](symbols.middle);
+};
 
+/**
+ * Counts how many lines a string spans.
+ */
+function countLines(text: string): number {
+  return text.split("\n").length;
+}
+
+/**
+ * Formats a message line according to the given FmtMsgOptions.
+ * Returns both the formatted text and the number of lines it would occupy.
+ */
+export function fmt(opts: FmtMsgOptions): { text: string; lineCount: number } {
   if (!opts.borderColor) {
-    opts.borderColor = "viceGradient";
+    opts.borderColor = "dim";
   }
 
   const formattedBar = bar({ borderColor: opts.borderColor });
+  const border = applyStyles(symbols.middle, opts.borderColor);
+  const borderError = applyStyles(symbols.middle, "red");
+  // Every line should start with bar and two spaces
+  const borderWithSpace = `${border}  `;
 
   const prefixStartLine = opts.borderColor
     ? colorMap[opts.borderColor](symbols.start + symbols.line)
@@ -89,92 +210,123 @@ export function fmt(opts: FmtMsgOptions): string {
 
   const suffixStartLine = opts.borderColor
     ? colorMap[opts.borderColor](
-        `${symbols.line.repeat(opts.horizontalLineLength ?? 30)}⊱`,
+        `${symbols.line.repeat(opts.horizontalLineLength ?? 23)}⊱`,
       )
-    : `${symbols.line.repeat(opts.horizontalLineLength ?? 30)}⊱`;
+    : `${symbols.line.repeat(opts.horizontalLineLength ?? 23)}⊱`;
 
   const suffixEndLine = opts.borderColor
-    ? colorMap[opts.borderColor](`${symbols.line.repeat(58)}⊱`)
-    : `${symbols.line.repeat(58)}⊱`;
+    ? colorMap[opts.borderColor](
+        `${symbols.line.repeat(opts.horizontalLineLength ?? 23)}⊱`,
+      )
+    : `${symbols.line.repeat(opts.horizontalLineLength ?? 23)}⊱`;
 
   const MSG_CONFIGS: Record<MsgType, MsgConfig> = {
     M_NULL: {
       symbol: "",
-      prefix: "",
+      prefix: borderWithSpace,
       suffix: "",
       newLineBefore: opts.addNewLineBefore ?? false,
       newLineAfter: opts.addNewLineAfter ?? false,
     },
+    M_BAR: {
+      symbol: "",
+      prefix: "",
+      suffix: "",
+      newLineBefore: false,
+      newLineAfter: false,
+    },
     M_INFO_NULL: {
       symbol: "",
-      prefix: formattedBar,
+      prefix: borderWithSpace,
       suffix: "",
       newLineBefore: opts.addNewLineBefore ?? false,
       newLineAfter: opts.addNewLineAfter ?? false,
     },
     M_START: {
       symbol: "",
-      prefix: prefixStartLine,
-      suffix: ` ${suffixStartLine}\n${formattedBar}`,
+      prefix: "",
+      suffix: `\n${borderWithSpace}`,
       newLineBefore: opts.addNewLineBefore ?? false,
       newLineAfter: opts.addNewLineAfter ?? false,
     },
     M_MIDDLE: {
-      symbol: formattedBar,
-      prefix: "",
+      symbol: "",
+      prefix: borderWithSpace,
       suffix: "",
       newLineBefore: opts.addNewLineBefore ?? false,
       newLineAfter: opts.addNewLineAfter ?? false,
     },
     M_GENERAL: {
-      symbol: "",
-      prefix: pc.greenBright(symbols.step_active),
-      suffix: opts.placeholder
-        ? pc.dim(opts.placeholder) + "\n" + formattedBar + "  "
-        : "",
+      symbol: opts.customSymbol
+        ? opts.symbolColor
+          ? colorMap[opts.symbolColor](opts.customSymbol)
+          : opts.customSymbol
+        : opts.symbol
+          ? opts.symbolColor
+            ? colorMap[opts.symbolColor](symbols[opts.symbol])
+            : symbols[opts.symbol]
+          : pc.green(symbols.step_active),
+      prefix: borderWithSpace,
+      suffix: "",
       newLineBefore: opts.addNewLineBefore ?? false,
-      newLineAfter: opts.addNewLineAfter ?? true,
+      newLineAfter: opts.addNewLineAfter ?? false,
     },
     M_GENERAL_NULL: {
       symbol: "",
-      prefix: "",
+      prefix: borderWithSpace,
       suffix: opts.placeholder
-        ? pc.dim(opts.placeholder) + "\n" + formattedBar + "  "
+        ? colorMap[opts.hintPlaceholderColor ?? "mindGradient"](
+            opts.placeholder,
+          )
         : "",
       newLineBefore: opts.addNewLineBefore ?? false,
-      newLineAfter: opts.addNewLineAfter ?? true,
+      newLineAfter: opts.addNewLineAfter ?? false,
     },
     M_INFO: {
-      symbol: "",
-      prefix: pc.greenBright(symbols.info),
+      symbol: opts.customSymbol
+        ? opts.symbolColor
+          ? colorMap[opts.symbolColor](opts.customSymbol)
+          : opts.customSymbol
+        : opts.symbol
+          ? opts.symbolColor
+            ? colorMap[opts.symbolColor](symbols[opts.symbol])
+            : symbols[opts.symbol]
+          : pc.green(symbols.info),
+      prefix: borderWithSpace,
       suffix: "",
       newLineBefore: opts.addNewLineBefore ?? false,
       newLineAfter: opts.addNewLineAfter ?? true,
     },
     M_ERROR: {
-      symbol: "",
-      prefix: pc.redBright(symbols.step_error),
+      symbol: opts.customSymbol
+        ? opts.symbolColor
+          ? colorMap[opts.symbolColor](opts.customSymbol)
+          : opts.customSymbol
+        : opts.symbol
+          ? opts.symbolColor
+            ? colorMap[opts.symbolColor](symbols[opts.symbol])
+            : symbols[opts.symbol]
+          : pc.redBright(symbols.step_error),
+      prefix: borderWithSpace,
       newLineBefore: opts.addNewLineBefore ?? false,
-      newLineAfter: opts.addNewLineAfter ?? true,
+      newLineAfter: opts.addNewLineAfter ?? false,
     },
     M_ERROR_NULL: {
       symbol: "",
-      prefix: "",
+      prefix: borderWithSpace,
       newLineBefore: opts.addNewLineBefore ?? false,
-      newLineAfter: opts.addNewLineAfter ?? true,
+      newLineAfter: opts.addNewLineAfter ?? false,
     },
     M_END: {
       symbol: "",
-      prefix: pc.greenBright(symbols.info),
-      suffix: opts.border
-        ? `\n${formattedBar}\n${prefixEndLine}${suffixEndLine}\n`
-        : "",
+      prefix: "",
+      suffix: "",
       newLineBefore: opts.addNewLineBefore ?? false,
       newLineAfter: opts.addNewLineAfter ?? false,
     },
     M_NEWLINE: {
       symbol: "",
-      prefix: formattedBar,
+      prefix: borderWithSpace,
       newLineBefore: opts.addNewLineBefore ?? false,
       newLineAfter: opts.addNewLineAfter ?? false,
     },
@@ -187,42 +339,64 @@ export function fmt(opts: FmtMsgOptions): string {
 
   const {
     symbol = "",
-    prefix = "",
     suffix = "",
     newLineBefore = false,
     newLineAfter = false,
   } = config;
-  const formattedPrefix = prefix
-    ? `${prefix}${opts.type === "M_START" ? " " : "  "}`
-    : "";
 
-  const border = applyStyles(symbols.middle, opts.borderColor);
-  const borderError = applyStyles(symbols.middle, "red");
-  const borderWithSpace = `${border}  `;
+  function validateColorName(
+    colorName: string,
+  ): asserts colorName is ColorName {
+    if (!colorMap[colorName as ColorName]) {
+      throw new Error(`Invalid color name: ${colorName}`);
+    }
+  }
 
+  // Process title
   let formattedTitle = "";
   if (opts.title) {
-    formattedTitle = applyStyles(
-      opts.title,
-      opts.titleColor,
-      opts.titleTypography,
-      opts.titleVariant,
-      opts.borderColor,
-    );
-    function validateColorName(
-      colorName: string,
-    ): asserts colorName is ColorName {
-      if (!colorMap[colorName as ColorName]) {
-        throw new Error(`Invalid color name: ${colorName}`);
-      }
+    const rawTitle = opts.title;
+    // If we want to wrap the title
+    if (opts.wrapTitle ?? true) {
+      formattedTitle = wrapAndStyleText(
+        rawTitle,
+        opts.titleTypography ?? "bold",
+        opts.titleColor ?? "cyan",
+        opts.titleVariant,
+        opts.borderColor,
+      );
+    } else {
+      // No wrap => just apply once to entire title
+      formattedTitle = applyStyles(
+        rawTitle,
+        opts.titleColor ?? "cyan",
+        opts.titleTypography ?? "bold",
+        opts.titleVariant,
+        opts.borderColor,
+      );
     }
+
     if (opts.hint) {
-      validateColorName(opts.hintColor);
-      const hintColor =
-        opts.hintColor && colorMap[opts.hintColor] ? opts.hintColor : "dim";
-      const colorFunc = colorMap[hintColor] || ((text: string) => text);
-      formattedTitle += `\n${borderWithSpace}${colorFunc(opts.hint)}`;
+      const hintPlaceholderColor = opts.hintPlaceholderColor ?? "mindGradient";
+      if (opts.hintPlaceholderColor) {
+        validateColorName(opts.hintPlaceholderColor);
+      }
+      // Apply the same wrapping and styling logic to hints
+      const formattedHint = wrapAndStyleText(
+        opts.hint,
+        opts.hintTypography ?? "italic",
+        hintPlaceholderColor,
+        undefined,
+        opts.borderColor,
+      );
+      formattedTitle += `\n${borderWithSpace}${formattedHint}`;
     }
+
+    // Add placeholder on a new line if it exists
+    if (opts.placeholder && opts.type === "M_GENERAL") {
+      formattedTitle += `\n${borderWithSpace}${colorMap[opts.hintPlaceholderColor ?? "mindGradient"](opts.placeholder)}`;
+    }
+
     if (opts.errorMessage) {
       const formattedError = applyStyles(
         opts.errorMessage,
@@ -235,43 +409,116 @@ export function fmt(opts: FmtMsgOptions): string {
     }
   }
 
+  // Process content
   let formattedContent = "";
   if (opts.content) {
-    const contentLines = opts.content.split("\n");
-    formattedContent = contentLines
-      .map((line) => {
-        const styledLine = applyStyles(
-          line,
-          opts.contentColor,
-          opts.contentTypography,
-          opts.contentVariant,
-          opts.borderColor,
-        );
-        if (opts.type !== "M_START") {
-          return `${borderWithSpace}${styledLine}`;
-        } else {
-          return styledLine;
-        }
-      })
-      .join("\n");
+    const rawContent = opts.content;
+    if (opts.wrapContent ?? true) {
+      formattedContent = wrapAndStyleText(
+        rawContent,
+        opts.contentTypography ?? "italic",
+        opts.contentColor ?? "dim",
+        opts.contentVariant,
+        opts.borderColor,
+      );
+    } else {
+      formattedContent = applyStyles(
+        rawContent,
+        opts.contentColor ?? "dim",
+        opts.contentTypography ?? "italic",
+        opts.contentVariant,
+        opts.borderColor,
+      );
+    }
   }
 
-  const text = [formattedTitle, formattedContent].filter(Boolean).join(`\n`);
+  // Combine title and content
+  let text = "";
+  if (opts.type === "M_BAR") {
+    text = bar({ borderColor: opts.borderColor });
+  } else {
+    text = [formattedTitle, formattedContent].filter(Boolean).join(`\n`);
+  }
 
-  return [
-    symbol,
-    newLineBefore ? `\n${formattedBar}  ` : "",
-    formattedPrefix,
+  const fullText = [
+    newLineBefore ? `\n${borderWithSpace}` : "",
     text,
-    newLineAfter ? `\n${formattedBar}  ` : "",
+    newLineAfter ? `\n${borderWithSpace}` : "",
     suffix,
   ]
     .filter(Boolean)
     .join("");
+
+  // Add bar to the start of each line except those that already have it
+  const lines = fullText.split("\n").map((line, index) => {
+    // For M_START, use the start line format and add bar on next line
+    if (opts.type === "M_START") {
+      if (index === 0) {
+        return `${prefixStartLine} ${line} ${suffixStartLine}`;
+      }
+      if (index === 1) {
+        return borderWithSpace;
+      }
+    }
+    // For M_END with border, format the title line
+    if (opts.type === "M_END" && opts.border && index === 0) {
+      // Title line with info symbol
+      return `${pc.green(symbols.info)}  ${line}`;
+    }
+    // Skip if line already has a bar or is empty
+    if (!line.trim() || line.includes(symbols.middle)) {
+      return line;
+    }
+    // Add symbol to first line only
+    if (index === 0 && symbol) {
+      return `${symbol}  ${line}`;
+    }
+    return `${borderWithSpace}${line}`;
+  });
+
+  // Add end line for M_END type if needed
+  if (opts.type === "M_END" && opts.border) {
+    lines.push(`${prefixEndLine}${suffixEndLine}`);
+  }
+
+  const finalText = lines.join("\n");
+  const lineCount = countLines(finalText);
+  return { text: finalText, lineCount };
 }
 
+// A stack to keep track of printed messages line counts
+const printedLineStack: number[] = [];
+
+/**
+ * Logs a formatted message to the console and records how many lines it occupies.
+ */
 export function msg(opts: FmtMsgOptions): void {
-  console[
-    opts.type === "M_ERROR" || opts.type === "M_ERROR_NULL" ? "error" : "log"
-  ](fmt(opts));
+  const { text, lineCount } = fmt(opts);
+  process.stdout.write(text + `\n`);
+  printedLineStack.push(lineCount + 1); // +1 for the extra newline at the end
+}
+
+/**
+ * Undo the last printed message by deleting its lines from the terminal.
+ * @param count How many messages to undo. Defaults to 1.
+ */
+export function msgUndo(count = 1): void {
+  for (let i = 0; i < count; i++) {
+    const linesToDelete = printedLineStack.pop();
+    if (typeof linesToDelete === "number" && linesToDelete > 0) {
+      deleteLastLines(linesToDelete);
+    }
+  }
+}
+
+/**
+ * Undo all printed messages so far.
+ */
+export function msgUndoAll(): void {
+  while (printedLineStack.length > 0) {
+    const linesToDelete = printedLineStack.pop();
+    if (typeof linesToDelete === "number" && linesToDelete > 0) {
+      deleteLastLines(linesToDelete);
+    }
+  }
 }

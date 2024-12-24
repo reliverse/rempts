@@ -3,6 +3,7 @@ import wrapAnsi from "wrap-ansi";
 
 import type { Row, InternalColumnMeta } from "../types.js";
 
+import { getTerminalWidth } from "../../core/utils.js";
 import { getLongestLineWidth } from "./get-longest-line-width.js";
 
 const emptyLines = (length: number) =>
@@ -26,8 +27,9 @@ export function renderRow(
         cellText = column.preprocess(cellText);
       }
 
-      if (getLongestLineWidth(cellText) > column.width) {
-        cellText = wrapAnsi(cellText, column.width, {
+      const adjustedWidth = getTerminalWidth(column.width);
+      if (getLongestLineWidth(cellText) > adjustedWidth) {
+        cellText = wrapAnsi(cellText, adjustedWidth, {
           hard: true,
         });
       }
@@ -56,6 +58,7 @@ export function renderRow(
       return {
         ...column,
         lines,
+        adjustedWidth,
       };
     });
 
@@ -66,7 +69,7 @@ export function renderRow(
           const cellLine = column.lines[i] ?? "";
 
           const lineFiller = Number.isFinite(column.width)
-            ? " ".repeat(column.width - stringWidth(cellLine))
+            ? " ".repeat(column.adjustedWidth - stringWidth(cellLine))
             : "";
           let text = column.paddingLeftString;
 

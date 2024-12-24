@@ -6,21 +6,19 @@ import readline from "node:readline/promises";
 
 import type {
   ColorName,
+  PromptOptions,
   TypographyName,
   VariantName,
 } from "~/types/general.js";
+import type { SymbolName } from "~/utils/messages.js";
 
-import { fmt, msg } from "~/utils/messages.js";
-import {
-  countLines,
-  deleteLastLine,
-  deleteLastLines,
-} from "~/utils/terminal.js";
+import { msg, msgUndoAll, bar } from "~/utils/messages.js";
+import { deleteLastLine } from "~/utils/terminal.js";
 
-type InputPromptOptions = {
+export type InputPromptOptions = {
   title: string;
   hint?: string;
-  hintColor?: ColorName;
+  hintPlaceholderColor?: ColorName;
   validate?: (value: string) => string | void | Promise<string | void>;
   defaultValue?: string;
   schema?: TSchema;
@@ -40,45 +38,136 @@ type InputPromptOptions = {
   hardcoded?: {
     userInput?: string;
     errorMessage?: string;
-    linesRendered?: number;
     showPlaceholder?: boolean;
   };
+  symbol?: SymbolName;
+  customSymbol?: string;
+  symbolColor?: ColorName;
+} & PromptOptions;
+
+type RenderParams = {
+  title: string;
+  hint?: string;
+  hintPlaceholderColor?: ColorName;
+  content?: string;
+  contentColor?: ColorName;
+  contentTypography?: TypographyName;
+  contentVariant?: VariantName;
+  titleColor?: ColorName;
+  titleTypography?: TypographyName;
+  titleVariant?: VariantName;
+  borderColor?: ColorName;
+  placeholder?: string;
+  userInput: string;
+  errorMessage: string;
+  border: boolean;
+  symbol?: SymbolName;
+  customSymbol?: string;
+  symbolColor?: ColorName;
 };
 
+/**
+ * Renders the prompt UI.
+ * Uses `msg()` for all printing, so we can easily undo and re-render.
+ * Returns nothing (the line counting is handled internally by `msg()` and `msgUndoAll()`).
+ */
+function renderPromptUI(params: RenderParams & { isRerender?: boolean }) {
+  const {
+    title,
+    hint,
+    hintPlaceholderColor = "blue",
+    content,
+    contentColor = "dim",
+    contentTypography = "italic",
+    contentVariant,
+    titleColor = "cyan",
+    titleTypography = "none",
+    titleVariant,
+    borderColor = "dim",
+    placeholder,
+    userInput,
+    errorMessage,
+    border,
+    isRerender = false,
+    symbol,
+    customSymbol,
+    symbolColor,
+  } = params;
+
+  // Decide message type based on error state
+  const type = errorMessage !== "" ? "M_ERROR" : "M_GENERAL";
+
+  // Main prompt line
+  msg({
+    type,
+    title,
+    titleColor,
+    titleTypography,
+    titleVariant,
+    content,
+    contentColor,
+    contentTypography,
+    contentVariant,
+    borderColor,
+    hint,
+    hintPlaceholderColor,
+    placeholder: userInput === "" ? placeholder : undefined,
+    errorMessage,
+    symbol,
+    customSymbol,
+    symbolColor,
+  });
+
+  // If user already typed something, show it
+  if (userInput !== "") {
+    msg({ type: "M_MIDDLE", title: `  ${userInput}` });
+  }
+}
+
+/**
+ * The inputPrompt function:
+ * - Renders a text prompt, possibly with a hint, placeholder, and content.
+ * - Waits for user input.
+ * - Validates input using an optional schema or validate function.
+ * - If invalid, shows an error and re-prompts.
+ * - Exits on Ctrl+C, optionally printing an endTitle.
+ * - Returns the user's validated input (or default value if none provided).
+ */
 export async function inputPrompt(
   options: InputPromptOptions,
 ): Promise<string> {
   const {
     title = "",
     hint,
-    hintColor = "gray",
+    hintPlaceholderColor = "viceGradient",
     validate,
     defaultValue = "",
     schema,
-    titleColor = "blueBright",
-    titleTypography = "bold",
+    titleColor = "cyan",
+    titleTypography = "none",
     titleVariant,
     content,
     contentColor = "dim",
     contentTypography = "italic",
     contentVariant,
-    borderColor = "viceGradient",
+    borderColor = "dim",
     variantOptions,
     placeholder,
     hardcoded,
     endTitle = "",
     endTitleColor = "dim",
     border = true,
+    symbol,
+    customSymbol,
+    symbolColor,
   } = options;
 
   const rl = readline.createInterface({ input, output });
 
-  // Handle Ctrl+C gracefully:
+  // Graceful Ctrl+C handling:
   rl.on("SIGINT", () => {
-    // Clean up and exit process
-    rl.close();
-
     if (endTitle !== "") {
+      msgUndoAll();
       msg({
         type: "M_END",
         title: endTitle,
@@ -86,137 +175,93 @@ export async function inputPrompt(
         titleTypography,
         border,
         borderColor,
-        addNewLineBefore: true,
       });
     }
-
+    rl.close();
     process.exit(0);
   });
 
-  let linesToDelete = 0;
-  let errorMessage = hardcoded?.errorMessage || "";
   let currentInput = hardcoded?.userInput || "";
+  let errorMessage = hardcoded?.errorMessage || "";
   let showPlaceholder = hardcoded?.showPlaceholder ?? true;
+  let isRerender = false;
 
-  // If hardcoded user input is provided, skip the interactive prompt
+  // If we have a hardcoded user input, skip interactive input and just validate
   if (hardcoded?.userInput !== undefined) {
-    // Simulate the rendering of the prompt with hardcoded input
-    const question = fmt({
-      hintColor,
-      type: errorMessage !== "" ? "M_ERROR" : "M_GENERAL",
+    // Render once
+    msgUndoAll();
+    renderPromptUI({
       title,
-      titleColor,
-      titleTypography,
-      titleVariant,
+      hint,
+      hintPlaceholderColor,
       content,
       contentColor,
       contentTypography,
       contentVariant,
-      borderColor,
-      hint,
-      placeholder: showPlaceholder ? placeholder : undefined,
-      variantOptions,
-      errorMessage,
-    });
-
-    const questionLines = countLines(question);
-    process.stdout.write(question + "\n");
-    linesToDelete += questionLines + 1;
-
-    // Simulate user input
-    currentInput = hardcoded.userInput.trim();
-
-    if (showPlaceholder && currentInput !== "") {
-      showPlaceholder = false;
-      deleteLastLine();
-      deleteLastLine();
-      msg({ type: "M_MIDDLE", title: `  ${currentInput}` });
-    }
-
-    linesToDelete += countLines(currentInput) + 1;
-
-    const answer = currentInput || defaultValue;
-
-    if (currentInput === "" && defaultValue !== "") {
-      deleteLastLine();
-      deleteLastLine();
-      const defaultMsg = fmt({
-        hintColor,
-        type: "M_MIDDLE",
-        title: `  ${defaultValue}`,
-        borderColor,
-      });
-      console.log(defaultMsg);
-      linesToDelete += countLines(defaultMsg);
-    }
-
-    let isValid = true;
-    errorMessage = "";
-    if (schema) {
-      isValid = Value.Check(schema, answer);
-      if (!isValid) {
-        const errors = [...Value.Errors(schema, answer)];
-        if (errors.length > 0) {
-          errorMessage = errors[0]?.message ?? "Invalid input.";
-        } else {
-          errorMessage = "Invalid input.";
-        }
-      }
-    }
-
-    if (validate && isValid) {
-      const validationResult = await validate(answer);
-      if (typeof validationResult === "string") {
-        isValid = false;
-        errorMessage = validationResult;
-      }
-    }
-
-    if (isValid) {
-      deleteLastLine();
-      msg({ type: "M_MIDDLE", title: `  ${answer}` });
-      msg({ type: "M_NEWLINE" });
-      rl.close();
-      return answer;
-    } else {
-      // If hardcoded input is invalid, and an error message is provided, return the error
-      rl.close();
-      throw new Error(errorMessage || "Invalid input.");
-    }
-  }
-
-  while (true) {
-    if (linesToDelete > 0) {
-      deleteLastLines(linesToDelete);
-      linesToDelete = 0;
-    }
-
-    const question = fmt({
-      hintColor,
-      type: errorMessage !== "" ? "M_ERROR" : "M_GENERAL",
-      title,
       titleColor,
       titleTypography,
       titleVariant,
-      content,
-      contentColor: "dim",
-      contentTypography,
-      contentVariant,
       borderColor,
-      hint,
       placeholder: showPlaceholder ? placeholder : undefined,
-      variantOptions,
+      userInput: currentInput,
       errorMessage,
+      border,
+      isRerender,
+      symbol,
+      customSymbol,
+      symbolColor,
     });
 
-    const questionLines = countLines(question);
-    const prompt = await rl.question(question);
+    const answer = currentInput || defaultValue;
+    const validated = await validateInput(answer, schema, validate);
 
-    // Check if user pressed Ctrl+C or input stream closed:
-    if (prompt === null) {
+    if (validated.isValid) {
+      msg({ type: "M_MIDDLE", title: `  ${answer}` });
+      msg({ type: "M_BAR", borderColor });
       rl.close();
+      return answer;
+    } else {
+      rl.close();
+      throw new Error(validated.errorMessage || "Invalid input.");
+    }
+  }
 
+  // Interactive loop
+  while (true) {
+    if (isRerender) {
+      msgUndoAll();
+    }
+    renderPromptUI({
+      title,
+      hint,
+      hintPlaceholderColor,
+      content,
+      contentColor,
+      contentTypography,
+      contentVariant,
+      titleColor,
+      titleTypography,
+      titleVariant,
+      borderColor,
+      placeholder: showPlaceholder ? placeholder : undefined,
+      userInput: currentInput,
+      errorMessage,
+      border,
+      isRerender,
+      symbol,
+      customSymbol,
+      symbolColor,
+    });
+
+    const formattedBar = bar({ borderColor });
+    const answerInput = await rl.question(`${formattedBar}  `);
+
+    isRerender = true; // Set to true after first render
+
+    // Check for Ctrl+C or stream closed
+    if (answerInput === null) {
       if (endTitle !== "") {
+        msgUndoAll();
         msg({
           type: "M_END",
           title: endTitle,
@@ -226,69 +271,68 @@ export async function inputPrompt(
           borderColor,
         });
       }
-
+      rl.close();
       process.exit(0);
     }
 
-    currentInput = prompt.trim();
+    currentInput = answerInput.trim();
 
     if (showPlaceholder && currentInput !== "") {
       showPlaceholder = false;
-      deleteLastLine();
-      if (placeholder !== undefined) {
-        deleteLastLine();
-      }
-      msg({ type: "M_MIDDLE", title: `  ${currentInput}` });
     }
-
-    linesToDelete += questionLines + 1;
 
     const answer = currentInput || defaultValue;
+    const validated = await validateInput(answer, schema, validate);
 
-    if (currentInput === "" && defaultValue !== "") {
+    if (validated.isValid) {
+      // Delete the last line with user input since it's already displayed
       deleteLastLine();
-      if (placeholder !== undefined) {
-        deleteLastLine();
-      }
-      const defaultMsg = fmt({
-        hintColor,
-        type: "M_MIDDLE",
-        title: `  ${defaultValue}`,
-        borderColor,
-      });
-      console.log(defaultMsg);
-      linesToDelete += countLines(defaultMsg);
-    }
 
-    let isValid = true;
-    errorMessage = "";
-    if (schema) {
-      isValid = Value.Check(schema, answer);
-      if (!isValid) {
-        const errors = [...Value.Errors(schema, answer)];
-        if (errors.length > 0) {
-          errorMessage = errors[0]?.message ?? "Invalid input.";
-        } else {
-          errorMessage = "Invalid input.";
-        }
+      // Show either default value or user input
+      if (!currentInput && defaultValue) {
+        msg({ type: "M_MIDDLE", title: `  ${defaultValue}` });
+      } else if (currentInput) {
+        msg({ type: "M_MIDDLE", title: `  ${currentInput}` });
       }
-    }
-
-    if (validate && isValid) {
-      const validationResult = await validate(answer);
-      if (typeof validationResult === "string") {
-        isValid = false;
-        errorMessage = validationResult;
-      }
-    }
-
-    if (isValid) {
-      msg({ type: "M_NEWLINE" });
+      // Add a bar after the answer
+      msg({ type: "M_BAR", borderColor });
       rl.close();
       return answer;
     } else {
-      // Prepare to re-render with error message
-      linesToDelete += 0;
+      // Show error and re-render
+      errorMessage = validated.errorMessage;
     }
   }
+}
+
+/**
+ * Validates the user input against the schema and validate function.
+ */
+async function validateInput(
+  input: string,
+  schema?: TSchema,
+  validate?: (value: string) => string | void | Promise<string | void>,
+): Promise<{ isValid: boolean; errorMessage: string }> {
+  let isValid = true;
+  let errorMessage = "";
+
+  // Schema validation
+  if (schema) {
+    isValid = Value.Check(schema, input);
+    if (!isValid) {
+      const errors = [...Value.Errors(schema, input)];
+      errorMessage = errors.length > 0 ? errors[0].message : "Invalid input.";
+    }
+  }
+
+  // Custom validation function
+  if (validate && isValid) {
+    const validationResult = await validate(input);
+    if (typeof validationResult === "string") {
+      isValid = false;
+      errorMessage = validationResult;
+    }
+  }
+
+  return { isValid, errorMessage };
 }

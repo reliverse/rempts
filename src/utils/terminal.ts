@@ -2,6 +2,7 @@ import ansiEscapes from "ansi-escapes";
 import { cursor } from "sisteransi";
 import wrapAnsi from "wrap-ansi";
 
+import { getTerminalWidth } from "../core/utils.js";
 import { msg } from "./messages.js";
 
 export function removeCursor() {
@@ -28,12 +29,12 @@ export function deleteLastLines(count: number) {
 }
 
 export function countLines(text: string): number {
-  const terminalWidth = process.stdout.columns || 80;
+  const adjustedWidth = getTerminalWidth();
   const lines = text.split("\n");
   let lineCount = 0;
 
   for (const line of lines) {
-    const wrapped = wrapAnsi(line, terminalWidth, { hard: true });
+    const wrapped = wrapAnsi(line, adjustedWidth, { hard: true });
     lineCount += wrapped.split("\n").length;
   }
 

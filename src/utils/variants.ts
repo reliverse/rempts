@@ -52,7 +52,7 @@ function createDoubleBox(
   const indentation = "";
 
   if (borderColor === undefined) {
-    borderColor = "viceGradient";
+    borderColor = "dim";
   }
 
   const topBorder = borderColor

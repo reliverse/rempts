@@ -15,7 +15,7 @@ import {
 
 import type { ColorName, PromptOptions } from "~/types/general.js";
 
-import { fmt, msg } from "~/utils/messages.js";
+import { fmt, msg, symbols } from "~/utils/messages.js";
 import {
   countLines,
   deleteLastLine,
@@ -85,18 +85,18 @@ export async function datePrompt<T extends TSchema>(
     dateFormat,
     dateKind,
     hint,
-    hintColor = "gray",
+    hintPlaceholderColor = "blue",
     validate,
     defaultValue = "",
     schema,
-    titleColor = "blueBright",
-    titleTypography = "bold",
+    titleColor = "cyan",
+    titleTypography = "none",
     titleVariant,
     content,
     contentColor = "dim",
     contentTypography = "italic",
     contentVariant,
-    borderColor = "viceGradient",
+    borderColor = "dim",
     variantOptions,
     endTitle = "",
     endTitleColor = "dim",
@@ -118,7 +118,6 @@ export async function datePrompt<T extends TSchema>(
         titleTypography,
         border,
         borderColor,
-        addNewLineBefore: true,
       });
     }
 
@@ -137,10 +136,9 @@ export async function datePrompt<T extends TSchema>(
       }
 
       // Format the question prompt
-      const questionText = fmt({
-        hintColor,
+      const { text: questionText } = fmt({
         type: errorMessage !== "" ? "M_ERROR_NULL" : "M_GENERAL_NULL",
-        title: `${title} [Format: ${dateFormat}]`,
+        title: `${title} [${dateFormat}]`,
         titleColor,
         titleTypography,
         titleVariant,
@@ -149,10 +147,10 @@ export async function datePrompt<T extends TSchema>(
         contentTypography,
         contentVariant,
         borderColor,
-        hint,
+        hint: `${hint ? `${hint} ` : ""}${defaultValue ? `Default: ${defaultValue}` : ""}`,
+        hintPlaceholderColor,
         variantOptions,
         errorMessage,
-        addNewLineBefore: false,
       });
 
       const questionLines = countLines(questionText);
@@ -164,11 +162,14 @@ export async function datePrompt<T extends TSchema>(
         title: questionText,
       });
 
-      deleteLastLine();
-      deleteLastLine();
+      // Only delete lines if we're not on the first render
+      if (errorMessage !== "") {
+        deleteLastLine();
+        deleteLastLine();
+      }
 
       // Prompt the user for input
-      const answerInput = await rl.question(`${pc.cyanBright(">")}  `);
+      const answerInput = await rl.question(`${pc.dim(symbols.middle)}  `);
 
       // Check if user pressed Ctrl+C or input stream closed:
       if (answerInput === null) {
@@ -190,20 +191,23 @@ export async function datePrompt<T extends TSchema>(
 
       const answer = answerInput.trim() || defaultValue;
 
-      // Display defaultValue if it is used
-      if (answer === defaultValue && defaultValue) {
+      // Display the answer (whether it's user input or default)
+      if (errorMessage !== "") {
         deleteLastLine();
-        msg({
-          type: "M_MIDDLE",
-          title: `  ${defaultValue}`,
-          titleColor: "none",
-        });
       }
+      deleteLastLine();
+      msg({
+        type: "M_MIDDLE",
+        title: `  ${answer}`,
+        titleColor: "none",
+      });
 
       // Validate the answer against the dateFormatSchema
       if (!Value.Check(dateFormatSchema, answer)) {
-        deleteLastLine();
-        deleteLastLine();
+        if (errorMessage !== "") {
+          deleteLastLine();
+          deleteLastLine();
+        }
         errorMessage = `Please enter a valid date in ${dateFormat} format.`;
         msg({ type: "M_ERROR", title: errorMessage });
         linesToDelete = countLines(errorMessage) + 1;
@@ -301,7 +305,10 @@ export async function datePrompt<T extends TSchema>(
           deleteLastLine();
           msg({ type: "M_MIDDLE", title: `  ${answer}` });
         }
-        msg({ type: "M_NEWLINE", title: "" });
+        msg({
+          type: "M_BAR",
+          borderColor,
+        });
         rl.close();
         return answer;
       }

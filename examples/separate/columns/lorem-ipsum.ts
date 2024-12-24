@@ -9,6 +9,7 @@
 import ansiEscapes from "ansi-escapes";
 import { bold, underline, italic } from "colorette";
 
+import { getTerminalWidth } from "~/core/utils.js";
 import { terminalColumns } from "~/main.js";
 
 const tableData = [
@@ -25,9 +26,12 @@ const tableData = [
   ],
 ];
 
-const renderTable = (stdoutColumns: number) => {
+const renderTable = (tableWidth = 0) => {
+  if (tableWidth === 0) {
+    tableWidth = getTerminalWidth();
+  }
   const table = terminalColumns(tableData, {
-    stdoutColumns,
+    stdoutColumns: tableWidth,
     columns: [
       {
         align: "right",
@@ -44,8 +48,8 @@ const renderTable = (stdoutColumns: number) => {
   process.stdout.write(`${ansiEscapes.clearTerminal + table}\n\n\n`);
 };
 
-const stdoutWidth = process.stdout.columns;
-let tableWidth = process.stdout.columns;
+const stdoutWidth = getTerminalWidth();
+let tableWidth = getTerminalWidth();
 let movingDown = true;
 
 setInterval(() => {

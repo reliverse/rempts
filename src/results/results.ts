@@ -34,6 +34,7 @@ export async function promptsDisplayResults({
       content: formattedResults,
       titleColor: "cyan",
       contentColor: "dim",
+      wrapContent: true,
     });
   } else {
     const formattedResults = JSON.stringify(results, null, 2);

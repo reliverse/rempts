@@ -53,7 +53,6 @@ export async function detailedExample() {
     spinner,
     toggle,
   } satisfies UserInput;
-  await showProgressBar();
   await showResults(userInput);
   await doSomeFunStuff(userInput);
   await showNextStepsPrompt();
