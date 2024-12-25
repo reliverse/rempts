@@ -151,7 +151,7 @@ const wrap = (p: RangePrompt): Promise<number | null> => {
    * Handle window resize events
    */
   const onNewSize = () => {
-    const { width, height } = windowSize;
+    const { width } = windowSize;
     wrappedPrompt.terminalWidth = getTerminalWidth(width);
     wrappedPrompt.out.reset();
     wrappedPrompt.render(true);

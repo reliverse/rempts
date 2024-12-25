@@ -365,17 +365,6 @@ export const multiselect = <Value>(opts: MultiSelectOptions<Value>) => {
     initialValues: opts.initialValues,
     required: opts.required ?? true,
     cursorAt: opts.cursorAt,
-    validate(selected: Value[]) {
-      if (this.required && selected.length === 0) {
-        return `Please select at least one option.\n${pc.reset(
-          pc.dim(
-            `Press ${pc.gray(pc.bgWhite(pc.inverse(" space ")))} to select, ${pc.gray(
-              pc.bgWhite(pc.inverse(" enter ")),
-            )} to submit`,
-          ),
-        )}`;
-      }
-    },
     render() {
       const title = `${pc.gray(S_BAR)}\n${symbol(this.state)}  ${opts.message}\n`;
 
@@ -494,17 +483,6 @@ export const groupMultiselect = <Value>(
     initialValues: opts.initialValues,
     required: opts.required ?? true,
     cursorAt: opts.cursorAt,
-    validate(selected: Value[]) {
-      if (this.required && selected.length === 0) {
-        return `Please select at least one option.\n${pc.reset(
-          pc.dim(
-            `Press ${pc.gray(pc.bgWhite(pc.inverse(" space ")))} to select, ${pc.gray(
-              pc.bgWhite(pc.inverse(" enter ")),
-            )} to submit`,
-          ),
-        )}`;
-      }
-    },
     render() {
       const title = `${pc.gray(S_BAR)}\n${symbol(this.state)}  ${opts.message}\n`;
 

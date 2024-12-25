@@ -1,7 +1,6 @@
 import { Value } from "@sinclair/typebox/value";
 import { stdin as input, stdout as output } from "node:process";
 import readline from "node:readline/promises";
-import pc from "picocolors";
 
 import type { PromptOptions } from "~/types/general.js";
 

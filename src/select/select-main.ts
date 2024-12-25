@@ -3,14 +3,11 @@ import readline from "node:readline";
 import pc from "picocolors";
 import terminalSize from "terminal-size";
 
-import type {
-  ColorName,
-  VariantName,
-  TypographyName,
-} from "~/types/general.js";
+import type { ColorName, TypographyName } from "~/types/general.js";
+import type { VariantName } from "~/utils/variants.js";
 
 import { deleteLastLine } from "~/main.js";
-import { msg, msgUndoAll, bar, symbols } from "~/utils/messages.js";
+import { msg, msgUndoAll, symbols } from "~/utils/messages.js";
 
 type SelectOption<T> = {
   label: string;
@@ -48,7 +45,6 @@ type SelectPromptParams<T extends string> = {
   endTitleColor?: ColorName;
   maxItems?: number;
   debug?: boolean;
-  linesHandler?: "wrap" | "truncate" | "columns" | "clear"; // no longer used
   terminalWidth?: number;
   displayInstructions?: boolean;
 };
@@ -86,15 +82,11 @@ function renderPromptUI<T extends string>(params: {
     displayInstructions,
     allDisabled,
     instructions,
-    borderColor,
     titleColor,
     contentColor,
     contentTypography,
     debug,
     maxItems,
-    titleVariant,
-    titleTypography,
-    terminalWidth,
     isRerender = false,
   } = params;
 
@@ -108,7 +100,6 @@ function renderPromptUI<T extends string>(params: {
       type: "M_GENERAL",
       title,
       titleColor,
-      // wrapTitle and wrapContent handled in messages.ts if needed
     });
 
     // Content
@@ -183,8 +174,14 @@ function renderPromptUI<T extends string>(params: {
   }
 
   // Render options
-  for (let index = startIdx; index <= endIdx; index++) {
+  for (
+    let index = startIdx;
+    index <= endIdx && index < options.length;
+    index++
+  ) {
     const option = options[index];
+    if (!option) continue;
+
     if (!isSelectOption(option)) {
       // Separator
       const width = option.width ?? 20;
@@ -263,7 +260,6 @@ export async function selectPrompt<T extends string>(
     endTitleColor = "dim",
     maxItems,
     debug = false,
-    linesHandler = "wrap",
     terminalWidth: customTerminalWidth = 90,
     displayInstructions = false,
   } = params;
@@ -323,8 +319,8 @@ export async function selectPrompt<T extends string>(
       contentColor,
       contentTypography,
       debug,
-      maxItems,
-      titleVariant,
+      ...(maxItems ? { maxItems } : {}),
+      ...(titleVariant ? { titleVariant } : {}),
       titleTypography,
       terminalWidth: customTerminalWidth,
       isRerender: true,
@@ -346,15 +342,15 @@ export async function selectPrompt<T extends string>(
     contentColor,
     contentTypography,
     debug,
-    maxItems,
-    titleVariant,
+    ...(maxItems ? { maxItems } : {}),
+    ...(titleVariant ? { titleVariant } : {}),
     titleTypography,
     terminalWidth: customTerminalWidth,
     isRerender: false,
   });
 
   return new Promise<T>((resolve) => {
-    function onKeyPress(str: string, key: readline.Key) {
+    function onKeyPress(_str: string, key: readline.Key) {
       if (allDisabled) {
         if (key.name === "c" && key.ctrl) {
           endPrompt(true);
@@ -378,7 +374,7 @@ export async function selectPrompt<T extends string>(
       do {
         selectedIndex = (selectedIndex - 1 + options.length) % options.length;
         const option = options[selectedIndex];
-        if (isSelectOption(option) && !option.disabled) {
+        if (option && isSelectOption(option) && !option.disabled) {
           break;
         }
       } while (selectedIndex !== originalPointer);
@@ -390,7 +386,7 @@ export async function selectPrompt<T extends string>(
       do {
         selectedIndex = (selectedIndex + 1) % options.length;
         const option = options[selectedIndex];
-        if (isSelectOption(option) && !option.disabled) {
+        if (option && isSelectOption(option) && !option.disabled) {
           break;
         }
       } while (selectedIndex !== originalPointer);
@@ -399,7 +395,7 @@ export async function selectPrompt<T extends string>(
 
     function confirmSelection() {
       const option = options[selectedIndex];
-      if (!isSelectOption(option)) {
+      if (!option || !isSelectOption(option)) {
         errorMessage = "This option is not selectable.";
         renderOptions();
         return;
@@ -435,7 +431,7 @@ export async function selectPrompt<T extends string>(
           title: endTitle,
           titleColor: endTitleColor,
           titleTypography,
-          titleVariant,
+          ...(titleVariant ? { titleVariant } : {}),
           border,
           borderColor,
         });

@@ -1,7 +1,6 @@
 /* eslint-disable no-control-regex */
 import type * as SafeBuffer from "safe-buffer";
 import type { Readable } from "stream";
-import type * as NodeStream from "stream";
 
 import type { Keypress } from "~/types/keypress.js";
 
@@ -406,7 +405,6 @@ const listenForKeys = (
   return stopListening;
 };
 
-// Attach the parse function for external access if needed
 listenForKeys.parse = parse;
 
 export default listenForKeys;

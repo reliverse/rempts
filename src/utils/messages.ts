@@ -6,13 +6,16 @@ import type {
   MsgConfig,
   MsgType,
   TypographyName,
-  VariantName,
 } from "~/types/general.js";
 
 import { colorMap, typographyMap } from "~/utils/mapping.js";
 import { isUnicodeSupported } from "~/utils/platforms.js";
 import { deleteLastLines } from "~/utils/terminal.js";
-import { variantMap } from "~/utils/variants.js";
+import {
+  variantMap,
+  type VariantName,
+  isValidVariant,
+} from "~/utils/variants.js";
 
 import { getTerminalWidth } from "../core/utils.js";
 
@@ -34,7 +37,7 @@ export type FmtMsgOptions = {
   type: MsgType;
   title?: string;
   titleAfterAnim?: string;
-  content?: string;
+  content?: string | undefined;
   titleColor?: ColorName;
   titleTypography?: TypographyName;
   titleVariant?: VariantName;
@@ -59,7 +62,6 @@ export type FmtMsgOptions = {
   horizontalLine?: boolean;
   horizontalLineLength?: number;
   terminalWidth?: number;
-  linesHandler?: "wrap" | "truncate" | "clear" | "none";
   instructions?: string;
   wrapTitle?: boolean;
   wrapContent?: boolean;
@@ -77,7 +79,7 @@ export const symbols = {
   middle: u("│", "|"),
   end: u("╰", "*"),
   line: u("─", "—"),
-  corner_top_right: u("»", "T"),
+  corner_top_right: u("����", "T"),
   step_active: u("◆", "♦"),
   step_error: u("🗴", "x"),
   info: u("ℹ", "i"),
@@ -90,7 +92,7 @@ function wrapAndStyleText(
   input: string,
   typographyName: TypographyName | undefined,
   colorName: ColorName | undefined,
-  variantName: string | undefined,
+  variantName: VariantName | undefined,
   borderColor: ColorName | undefined,
 ): string {
   // 1) Wrap first.
@@ -104,7 +106,6 @@ function wrapAndStyleText(
   return wrappedText
     .split("\n")
     .map((line) => {
-      // Re-apply your is-option logic, if needed
       const isOption =
         line.startsWith("  ") ||
         line.startsWith("[ ]") ||
@@ -114,7 +115,9 @@ function wrapAndStyleText(
         line,
         colorName && !isOption ? colorName : undefined,
         typographyName && !isOption ? typographyName : undefined,
-        variantName,
+        variantName && variantName !== "none"
+          ? (variantName as keyof typeof variantMap)
+          : undefined,
         borderColor,
       );
     })
@@ -133,30 +136,19 @@ function applyStyles(
 ) {
   let styledText = text;
 
-  if (!variantName) {
+  if (!isValidVariant(variantName)) {
     if (colorName && colorMap[colorName]) {
       styledText = colorMap[colorName](styledText);
-    } else if (colorName) {
-      console.warn(
-        `Warning: Invalid color "${colorName}" provided to applyStyles.`,
-      );
     }
-
     if (typographyName && typographyMap[typographyName]) {
       styledText = typographyMap[typographyName](styledText);
-    } else if (typographyName) {
-      console.warn(
-        `Warning: Invalid typography "${typographyName}" provided to applyStyles.`,
-      );
     }
-  }
-
-  if (variantName && variantMap[variantName]) {
-    styledText = variantMap[variantName](styledText, borderColor);
   } else if (variantName) {
-    console.warn(
-      `Warning: Invalid variant "${variantName}" provided to applyStyles.`,
-    );
+    styledText = variantMap[variantName](
+      [styledText],
+      undefined,
+      borderColor,
+    ).toString();
   }
 
   return styledText;
@@ -194,7 +186,6 @@ export function fmt(opts: FmtMsgOptions): { text: string; lineCount: number } {
     opts.borderColor = "dim";
   }
 
-  const formattedBar = bar({ borderColor: opts.borderColor });
   const border = applyStyles(symbols.middle, opts.borderColor);
   const borderError = applyStyles(symbols.middle, "red");
   // Every line should start with bar and two spaces
@@ -476,7 +467,6 @@ export function fmt(opts: FmtMsgOptions): { text: string; lineCount: number } {
     return `${borderWithSpace}${line}`;
   });
 
-  // Add end line for M_END type if needed
   if (opts.type === "M_END" && opts.border) {
     lines.push(`${prefixEndLine}${suffixEndLine}`);
   }

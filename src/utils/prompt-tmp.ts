@@ -11,7 +11,7 @@ import { getTerminalWidth } from "~/core/utils.js";
 
 function diffLines(a: string, b: string) {
   if (a === b) {
-    return;
+    return [];
   }
 
   const aLines = a.split("\n");
@@ -95,7 +95,7 @@ export function createPrompt(
 
   function prompt() {
     const sink = new WriteStream(0);
-    sink._write = (chunk, encoding, done) => {
+    sink._write = (_chunk, _encoding, done) => {
       if (_track) {
         value = _rl.line.replace(/\t/g, "");
         _cursor = _rl.cursor;

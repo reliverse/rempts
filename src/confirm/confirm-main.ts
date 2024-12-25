@@ -2,11 +2,8 @@ import { stdin as input, stdout as output } from "node:process";
 import readline from "node:readline/promises";
 import pc from "picocolors";
 
-import type {
-  ColorName,
-  TypographyName,
-  VariantName,
-} from "~/types/general.js";
+import type { ColorName, TypographyName } from "~/types/general.js";
+import type { VariantName } from "~/utils/variants.js";
 
 import { colorize } from "~/utils/colorize.js";
 import { bar, msg, msgUndoAll } from "~/utils/messages.js";
@@ -31,7 +28,6 @@ export type ConfirmPromptOptions = {
   endTitle?: string;
   endTitleColor?: ColorName;
   border?: boolean;
-  linesHandler?: "wrap" | "truncate" | "columns" | "clear";
   terminalWidth?: number;
 };
 
@@ -73,9 +69,7 @@ function renderPrompt(params: {
     border,
     variantOptions,
     errorMessage,
-    effectiveDefault,
     displayInstructions,
-    defaultHint,
     instructions,
     isRerender = false,
   } = params;
@@ -84,29 +78,28 @@ function renderPrompt(params: {
 
   // Only render title and content on first render
   if (!isRerender) {
-    const type = errorMessage ? "M_ERROR" : "M_GENERAL";
-
     msg({
       hintPlaceholderColor,
-      type,
+      type: errorMessage ? "M_ERROR" : "M_GENERAL",
       title,
       titleColor,
       titleTypography,
-      titleVariant,
-      content: content
-        ? content
-            .split("\n")
-            .map((line) => line.trim())
-            .join("\n")
-        : undefined,
+      ...(titleVariant ? { titleVariant } : {}),
+      ...(content
+        ? {
+            content: content
+              .split("\n")
+              .map((line) => line.trim())
+              .join("\n"),
+          }
+        : {}),
       contentColor,
       contentTypography,
-      contentVariant,
+      ...(contentVariant ? { contentVariant } : {}),
       borderColor,
       variantOptions,
       errorMessage,
       border,
-      // wrapTitle and wrapContent handled by messages.ts
     });
   }
 
@@ -157,7 +150,7 @@ async function endPrompt(
       title: endTitle,
       titleColor: endTitleColor,
       titleTypography,
-      titleVariant,
+      ...(titleVariant ? { titleVariant } : {}),
       border,
       borderColor,
     });
@@ -193,12 +186,9 @@ export async function confirmPrompt(
     variantOptions,
     action,
     displayInstructions = false,
-    debug = false,
     endTitle = "",
     endTitleColor = "dim",
     border = true,
-    // linesHandler no longer used, ignore it
-    terminalWidth = 90,
   } = options;
 
   const rl = readline.createInterface({ input, output });
@@ -228,14 +218,14 @@ export async function confirmPrompt(
       // Render prompt and track UI line count
       lastUILineCount = renderPrompt({
         title: adjustedTitle,
-        content,
+        ...(content ? { content } : {}),
         borderColor,
         titleColor,
         titleTypography,
-        titleVariant,
+        ...(titleVariant ? { titleVariant } : {}),
         contentColor,
         contentTypography,
-        contentVariant,
+        ...(contentVariant ? { contentVariant } : {}),
         hintPlaceholderColor,
         border,
         variantOptions,
@@ -278,7 +268,7 @@ export async function confirmPrompt(
         endTitle,
         endTitleColor,
         titleTypography,
-        titleVariant,
+        titleVariant ? titleVariant : undefined,
         border,
         borderColor,
         action,

@@ -5,7 +5,6 @@ import pc from "picocolors";
 
 import type { PromptOptions } from "~/types/general.js";
 
-import { colorize } from "~/utils/colorize.js";
 import { bar, fmt, msg } from "~/utils/messages.js";
 import {
   countLines,
@@ -59,14 +58,14 @@ export async function numMultiSelectPrompt(opts: NumMultiSelectPromptOptions) {
         title: `${title}${defaultValue ? ` [Default: ${Array.isArray(defaultValue) ? defaultValue.join(", ") : defaultValue}]` : ""}`,
         titleColor,
         titleTypography,
-        titleVariant,
-        content,
-        contentColor,
-        contentTypography,
-        contentVariant,
+        titleVariant: titleVariant ?? "none",
+        content: content ?? "",
+        contentColor: contentColor ?? "dim",
+        contentTypography: contentTypography ?? "none",
+        contentVariant: contentVariant ?? "none",
         borderColor,
-        hint,
-        variantOptions,
+        hint: hint ?? "",
+        variantOptions: variantOptions ?? {},
         errorMessage,
       });
 

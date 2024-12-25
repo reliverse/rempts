@@ -11,9 +11,9 @@ import type { State } from "~/types/general.js";
 
 import { getTerminalWidth } from "~/core/utils.js";
 
-function diffLines(a: string, b: string) {
+function diffLines(a: string, b: string): number[] {
   if (a === b) {
-    return;
+    return [];
   }
 
   const aLines = a.split("\n");
@@ -97,7 +97,7 @@ export default class Prompt {
 
   public prompt() {
     const sink = new WriteStream(0);
-    sink._write = (chunk, encoding, done) => {
+    sink._write = (_chunk, _encoding, done) => {
       if (this._track) {
         this.value = this.rl.line.replace(/\t/g, "");
         this._cursor = this.rl.cursor;
@@ -126,7 +126,7 @@ export default class Prompt {
 
     this.render();
 
-    return new Promise<string | symbol>((resolve, reject) => {
+    return new Promise<string | symbol>((resolve) => {
       this.once("submit", () => {
         this.output.write(cursor.show);
         this.output.off("resize", this.render);

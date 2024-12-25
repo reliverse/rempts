@@ -185,7 +185,7 @@ export class StringDecoder {
  */
 function utf8FillLast(this: StringDecoder, buf: Buffer): string | undefined {
   const p = this.lastTotal - this.lastNeed;
-  const r = utf8CheckExtraBytes(this, buf, p);
+  const r = utf8CheckExtraBytes(this, buf);
   if (r !== undefined) {
     return r;
   }
@@ -197,6 +197,7 @@ function utf8FillLast(this: StringDecoder, buf: Buffer): string | undefined {
 
   buf.copy(this.lastChar, p, 0, buf.length);
   this.lastNeed -= buf.length;
+  return undefined;
 }
 
 /**
@@ -205,30 +206,29 @@ function utf8FillLast(this: StringDecoder, buf: Buffer): string | undefined {
  * @param i - The starting index.
  * @returns The decoded string.
  */
-function utf8Text(this: StringDecoder, buf: Buffer, i: number): string {
-  const total = utf8CheckIncomplete(this, buf, i);
-  if (!this.lastNeed) {
-    return buf.toString("utf8", i);
-  }
-
-  this.lastTotal = total;
-  const end = buf.length - (total - this.lastNeed);
-  buf.copy(this.lastChar, 0, end);
-  return buf.toString("utf8", i, end);
-}
+// function utf8Text(this: StringDecoder, buf: Buffer, i: number): string {
+//   const total = utf8CheckIncomplete(this, buf, i);
+//   if (!this.lastNeed) {
+//     return buf.toString("utf8", i);
+//   }
+//   this.lastTotal = total;
+//   const end = buf.length - (total - this.lastNeed);
+//   buf.copy(this.lastChar, 0, end);
+//   return buf.toString("utf8", i, end);
+// }
 
 /**
  * Ends the UTF-8 decoding process.
  * @param buf - Optional buffer to write before ending.
  * @returns The final decoded string.
  */
-function utf8End(this: StringDecoder, buf?: Buffer): string {
-  const r = buf?.length ? this.write(buf) : "";
-  if (this.lastNeed) {
-    return r + "\ufffd";
-  }
-  return r;
-}
+// function utf8End(this: StringDecoder, buf?: Buffer): string {
+//   const r = buf?.length ? this.write(buf) : "";
+//   if (this.lastNeed) {
+//     return r + "\ufffd";
+//   }
+//   return r;
+// }
 
 /**
  * Checks the type of a UTF-8 byte.
@@ -255,7 +255,7 @@ function utf8CheckByte(byte: number): number {
  * @param i - The starting index.
  * @returns The number of bytes needed or 0 if complete.
  */
-function utf8CheckIncomplete(
+export function utf8CheckIncomplete(
   self: StringDecoder,
   buf: Buffer,
   i: number,
@@ -312,7 +312,6 @@ function utf8CheckIncomplete(
 function utf8CheckExtraBytes(
   self: StringDecoder,
   buf: Buffer,
-  p: number,
 ): string | undefined {
   if ((buf[0] & 0xc0) !== 0x80) {
     self.lastNeed = 0;
@@ -330,6 +329,7 @@ function utf8CheckExtraBytes(
       }
     }
   }
+  return undefined;
 }
 
 /**

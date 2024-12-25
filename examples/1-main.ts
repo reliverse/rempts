@@ -19,7 +19,6 @@ import {
   showInputPrompt,
   showSelectPrompt,
   showMultiselectPrompt,
-  showProgressBar,
   showTogglePrompt,
 } from "@/src/prompts.js";
 import { type UserInput } from "@/src/schema.js";
@@ -31,13 +30,13 @@ export async function detailedExample() {
   await showAnykeyPrompt("privacy");
   const username = await showInputPrompt();
   const dir = await askDir(username);
+  const lang = await showSelectPrompt();
+  await showNumMultiselectPrompt();
   const age = await showNumberPrompt();
   const password = await showPasswordPrompt();
   const birthday = await showDatePrompt();
-  const lang = await showSelectPrompt();
   const langs = await showMultiselectPrompt();
   const color = await showNumSelectPrompt();
-  const features = await showNumMultiselectPrompt();
   const toggle = await showTogglePrompt();
   const spinner = await showConfirmPrompt(username);
   const userInput = {
@@ -48,8 +47,7 @@ export async function detailedExample() {
     color,
     password,
     birthday,
-    langs,
-    features,
+    langs: langs,
     spinner,
     toggle,
   } satisfies UserInput;

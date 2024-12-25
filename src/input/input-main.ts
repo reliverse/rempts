@@ -8,9 +8,10 @@ import type {
   ColorName,
   PromptOptions,
   TypographyName,
-  VariantName,
+  MsgType,
 } from "~/types/general.js";
 import type { SymbolName } from "~/utils/messages.js";
+import type { VariantName } from "~/utils/variants.js";
 
 import { msg, msgUndoAll, bar } from "~/utils/messages.js";
 import { deleteLastLine } from "~/utils/terminal.js";
@@ -19,7 +20,9 @@ export type InputPromptOptions = {
   title: string;
   hint?: string;
   hintPlaceholderColor?: ColorName;
-  validate?: (value: string) => string | void | Promise<string | void>;
+  validate?: (
+    value: string,
+  ) => string | boolean | void | Promise<string | boolean | void>;
   defaultValue?: string;
   schema?: TSchema;
   titleColor?: ColorName;
@@ -47,23 +50,23 @@ export type InputPromptOptions = {
 
 type RenderParams = {
   title: string;
-  hint?: string;
-  hintPlaceholderColor?: ColorName;
-  content?: string;
-  contentColor?: ColorName;
-  contentTypography?: TypographyName;
-  contentVariant?: VariantName;
-  titleColor?: ColorName;
-  titleTypography?: TypographyName;
-  titleVariant?: VariantName;
-  borderColor?: ColorName;
-  placeholder?: string;
   userInput: string;
   errorMessage: string;
   border: boolean;
-  symbol?: SymbolName;
-  customSymbol?: string;
-  symbolColor?: ColorName;
+  hint?: string | undefined;
+  hintPlaceholderColor?: ColorName | undefined;
+  content?: string | undefined;
+  contentColor?: ColorName | undefined;
+  contentTypography?: TypographyName | undefined;
+  contentVariant?: VariantName | undefined;
+  titleColor?: ColorName | undefined;
+  titleTypography?: TypographyName | undefined;
+  titleVariant?: VariantName | undefined;
+  borderColor?: ColorName | undefined;
+  placeholder?: string | undefined;
+  symbol?: SymbolName | undefined;
+  customSymbol?: string | undefined;
+  symbolColor?: ColorName | undefined;
 };
 
 /**
@@ -74,31 +77,29 @@ type RenderParams = {
 function renderPromptUI(params: RenderParams & { isRerender?: boolean }) {
   const {
     title,
-    hint,
+    hint = "",
     hintPlaceholderColor = "blue",
-    content,
+    content = "",
     contentColor = "dim",
     contentTypography = "italic",
-    contentVariant,
+    contentVariant = "none",
     titleColor = "cyan",
     titleTypography = "none",
-    titleVariant,
+    titleVariant = "none",
     borderColor = "dim",
-    placeholder,
+    placeholder = "",
     userInput,
     errorMessage,
-    border,
-    isRerender = false,
-    symbol,
-    customSymbol,
-    symbolColor,
+    symbol = "pointer",
+    customSymbol = "",
+    symbolColor = "cyan",
   } = params;
 
   // Decide message type based on error state
-  const type = errorMessage !== "" ? "M_ERROR" : "M_GENERAL";
+  const type: MsgType = errorMessage !== "" ? "M_ERROR" : "M_GENERAL";
 
   // Main prompt line
-  msg({
+  const msgParams = {
     type,
     title,
     titleColor,
@@ -111,12 +112,34 @@ function renderPromptUI(params: RenderParams & { isRerender?: boolean }) {
     borderColor,
     hint,
     hintPlaceholderColor,
-    placeholder: userInput === "" ? placeholder : undefined,
+    placeholder: userInput === "" ? placeholder : "",
     errorMessage,
     symbol,
     customSymbol,
     symbolColor,
-  });
+  };
+
+  msg(
+    msgParams as {
+      type: MsgType;
+      title: string;
+      titleColor: ColorName;
+      titleTypography: TypographyName;
+      titleVariant: VariantName;
+      content: string;
+      contentColor: ColorName;
+      contentTypography: TypographyName;
+      contentVariant: VariantName;
+      borderColor: ColorName;
+      hint: string;
+      hintPlaceholderColor: ColorName;
+      placeholder: string;
+      errorMessage: string;
+      symbol: SymbolName;
+      customSymbol: string;
+      symbolColor: ColorName;
+    },
+  );
 
   // If user already typed something, show it
   if (userInput !== "") {
@@ -151,7 +174,6 @@ export async function inputPrompt(
     contentTypography = "italic",
     contentVariant,
     borderColor = "dim",
-    variantOptions,
     placeholder,
     hardcoded,
     endTitle = "",
@@ -311,7 +333,9 @@ export async function inputPrompt(
 async function validateInput(
   input: string,
   schema?: TSchema,
-  validate?: (value: string) => string | void | Promise<string | void>,
+  validate?: (
+    value: string,
+  ) => string | boolean | void | Promise<string | boolean | void>,
 ): Promise<{ isValid: boolean; errorMessage: string }> {
   let isValid = true;
   let errorMessage = "";
@@ -321,7 +345,10 @@ async function validateInput(
     isValid = Value.Check(schema, input);
     if (!isValid) {
       const errors = [...Value.Errors(schema, input)];
-      errorMessage = errors.length > 0 ? errors[0].message : "Invalid input.";
+      errorMessage =
+        errors.length > 0 && errors[0]?.message
+          ? errors[0].message
+          : "Invalid input.";
     }
   }
 
@@ -331,6 +358,9 @@ async function validateInput(
     if (typeof validationResult === "string") {
       isValid = false;
       errorMessage = validationResult;
+    } else if (validationResult === false) {
+      isValid = false;
+      errorMessage = "Invalid input.";
     }
   }
 

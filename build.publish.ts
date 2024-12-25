@@ -32,7 +32,7 @@ const argv = mri(process.argv.slice(2), {
 });
 
 // If help flag is present, display help and exit
-if (argv.help) {
+if (argv["help"]) {
   showHelp();
   process.exit(0);
 }

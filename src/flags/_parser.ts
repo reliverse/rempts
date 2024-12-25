@@ -122,7 +122,7 @@ export function parseRawArgs<T = Default>(
       name = arg.slice(Math.max(0, j + 3));
       if (strict && !~keys.indexOf(name)) {
         opts.unknown(arg);
-        return;
+        return out as Argv<T>;
       }
       out[name] = false;
     } else {
@@ -144,7 +144,7 @@ export function parseRawArgs<T = Default>(
         name = arr[idx];
         if (strict && !~keys.indexOf(name)) {
           opts.unknown("-".repeat(j) + name);
-          return;
+          return out as Argv<T>;
         }
         toVal(out, name, idx + 1 < arr.length || val, opts);
       }

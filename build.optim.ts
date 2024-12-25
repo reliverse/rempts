@@ -93,7 +93,7 @@ function replaceImportPaths(
     // Matches both static and dynamic imports
     /(from\s+['"]|import\s*\(\s*['"])(~\/?[^'"]*)(['"]\s*\)?)/g,
     (
-      match: string,
+      _match: string,
       prefix: string,
       importPath: string,
       suffix: string,

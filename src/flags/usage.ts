@@ -36,9 +36,7 @@ export async function renderUsage<T extends ArgsDef = ArgsDef>(
   for (const arg of cmdArgs) {
     if (arg.type === "positional") {
       const name = arg.name.toUpperCase();
-      // eslint-disable-next-line @typescript-eslint/no-unnecessary-boolean-literal-compare
-      const isRequired = arg.required !== false && arg.default === undefined;
-      // (isRequired ? " (required)" : " (optional)"
+      const isRequired = arg.required && arg.default === undefined;
       const defaultHint = arg.default ? `="${arg.default}"` : "";
       posLines.push([
         "`" + name + defaultHint + "`",
@@ -47,11 +45,9 @@ export async function renderUsage<T extends ArgsDef = ArgsDef>(
       ]);
       usageLine.push(isRequired ? `<${name}>` : `[${name}]`);
     } else {
-      // eslint-disable-next-line @typescript-eslint/no-unnecessary-boolean-literal-compare
-      const isRequired = arg.required === true && arg.default === undefined;
+      const isRequired = arg.required && arg.default === undefined;
       const argStr =
-        // eslint-disable-next-line @typescript-eslint/no-unnecessary-boolean-literal-compare
-        (arg.type === "boolean" && arg.default === true
+        (arg.type === "boolean" && arg.default
           ? [
               ...(arg.alias || []).map((a) => `--no-${a}`),
               `--no-${arg.name}`,
@@ -67,8 +63,8 @@ export async function renderUsage<T extends ArgsDef = ArgsDef>(
         (arg.type === "enum" && arg.options
           ? `=<${arg.options.join("|")}>`
           : "");
-      // eslint-disable-next-line @typescript-eslint/no-unnecessary-boolean-literal-compare
-      const isNegative = arg.type === "boolean" && arg.default === true;
+
+      const isNegative = arg.type === "boolean" && arg.default;
       const description = isNegative
         ? arg.negativeDescription || arg.description
         : arg.description;

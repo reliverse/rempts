@@ -1,6 +1,5 @@
 import logUpdate from "log-update";
 
-import { colorize } from "~/utils/colorize.js";
 import { fmt } from "~/utils/messages.js";
 import { restoreCursor } from "~/utils/terminal.js";
 

@@ -76,7 +76,7 @@ export async function startPrompt({
     title: titleColor === "inverse" ? `⠀${formattedTitle}⠀` : formattedTitle,
     titleColor,
     titleTypography,
-    titleVariant,
+    ...(titleVariant ? { titleVariant } : {}),
     borderColor,
     horizontalLine,
     horizontalLineLength,

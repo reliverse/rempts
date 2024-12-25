@@ -41,18 +41,18 @@ const pkg = {
     "@reliverse/prompts is a powerful library that enables seamless, typesafe, and resilient prompts for command-line applications. Crafted with simplicity and elegance, it provides developers with an intuitive and robust way to build interactive CLIs.",
 };
 
-const IDs = {
-  start: "start",
-  username: "username",
-  dir: "dir",
-  spinner: "spinner",
-  password: "password",
-  age: "age",
-  lang: "lang",
-  color: "color",
-  birthday: "birthday",
-  features: "features",
-};
+// const IDs = {
+//   start: "start",
+//   username: "username",
+//   dir: "dir",
+//   spinner: "spinner",
+//   password: "password",
+//   age: "age",
+//   lang: "lang",
+//   color: "color",
+//   birthday: "birthday",
+//   features: "features",
+// };
 
 export async function showStartPrompt() {
   await startPrompt({
@@ -102,6 +102,15 @@ export async function showInputPrompt() {
     //   linesRendered: 3, // Number of lines rendered
     //   showPlaceholder: false, // Do not show placeholder since input is provided
     // },
+    validate: (value) => {
+      if (!value?.trim()) {
+        return "GitHub username is required for deployment";
+      }
+      if (!/^[a-z\d](?:[a-z\d]|-(?=[a-z\d])){0,38}$/i.test(value)) {
+        return "Invalid GitHub username format";
+      }
+      return true;
+    },
   });
   return username ?? "johnny911";
 }
@@ -156,7 +165,7 @@ export async function showPasswordPrompt() {
         if (!/[A-Z]/.test(input)) {
           return "Password must be latin letters and contain at least one uppercase letter.";
         }
-        return;
+        return true;
       },
     });
   } catch (error) {
@@ -288,29 +297,11 @@ export async function showSelectPrompt() {
 }
 
 export async function showMultiselectPrompt() {
-  const jokes: Record<string, string> = {
-    TypeScript:
-      "- Why did TypeScript bring a type-checker to the party? Because it couldn't handle any loose ends!",
-    JavaScript:
-      "- Why was the JavaScript developer sad? Because he didn't Node how to Express himself.",
-    CoffeeScript:
-      "- Why do CoffeeScript developers always seem calm? Because they never have to deal with too much Java!",
-    Python:
-      "- Why do Python programmers prefer dark mode? Because light attracts bugs!",
-    Java: "- Why do Java developers wear glasses? Because they don't C#.",
-    CSharp:
-      "- Why did the C# developer go broke? Because he used up all his cache.",
-    Go: "- Why do Go programmers prefer the beach? Because they love to handle their goroutines!",
-    Rust: "- Why did the Rust programmer never get lost? Because he always borrowed the right path.",
-    Swift:
-      "- Why did the Swift developer quit his job? Because he didn't like being optional!",
-  };
-
-  const multiselectOptions = await multiselectPrompt({
+  const langs = await multiselectPrompt({
     title: "[multiselectPrompt] Select your favorite programming languages",
     displayInstructions: true,
     content:
-      "“Code is like humor. When you have to explain it, it’s bad.” – Cory House",
+      '"Code is like humor. When you have to explain it, it\'s bad." – Cory House',
     options: [
       {
         label: "TypeScript",
@@ -364,50 +355,24 @@ export async function showMultiselectPrompt() {
     ],
     defaultValue: ["TypeScript", "JavaScript"],
     ...extendedConfig,
-    debug: false, // multiselectPrompt
+    debug: false,
   });
-
-  if (!Array.isArray(multiselectOptions)) {
-    process.exit(0);
-  }
-
-  multiselectOptions.forEach((option) => {
-    // By using forEach, @reliverse/prompts
-    // has Intellisense to each selected option
-    switch (option) {
-      case "CoffeeScript":
-        msg({
-          type: "M_INFO",
-          title: "CoffeeScript... 🤔",
-          titleColor: "dim",
-        });
-        break;
-      default:
-        break;
-    }
-  });
-
-  msg({
-    type: "M_INFO",
-    title: "Here are some dumb jokes for you:",
-    titleTypography: "bold",
-    titleColor: "viceGradient",
-  });
-
-  multiselectOptions.forEach((option) => {
-    const joke = jokes[option];
-    msg({
-      type: "M_INFO_NULL",
-      title: joke ? joke : `${option} selected.`,
-    });
-  });
-
-  msg({
-    type: "M_BAR",
-    borderColor: "dim",
-  });
-
-  return multiselectOptions;
+  return (langs ?? []).filter(
+    (
+      lang,
+    ): lang is
+      | "TypeScript"
+      | "JavaScript"
+      | "Pawn"
+      | "CoffeeScript"
+      | "Python"
+      | "Java"
+      | "CSharp"
+      | "Go"
+      | "Rust"
+      | "Swift"
+      | "Other" => lang !== undefined,
+  );
 }
 
 export async function showNumSelectPrompt() {
@@ -433,7 +398,6 @@ export async function showNumMultiselectPrompt() {
       {
         id: "react",
         title: "React",
-        // Some properties, like 'choices.description', are optional.
         description: "A library for building user interfaces.",
       },
       {
@@ -449,7 +413,7 @@ export async function showNumMultiselectPrompt() {
       },
     ] as const,
   });
-  return features ?? ["react", "typescript"];
+  return features ?? [];
 }
 
 export async function showTogglePrompt() {
@@ -476,6 +440,7 @@ export async function showConfirmPrompt(username: string) {
   const spinner = await confirmPrompt({
     title:
       "[confirmPrompt] Do you want to see spinner and progressbar in action?",
+    ...extendedConfig,
     // Intellisense will show you all available colors thanks to the enum.
     titleColor: "red",
     titleVariant: "doubleBox",
@@ -484,7 +449,6 @@ export async function showConfirmPrompt(username: string) {
     // @reliverse/prompts includes styled prompts, with the `title` color defaulting
     // to "cyanBright". Setting the color to "none" removes the default styling.
     content: "Spinners are helpful for long-running tasks.",
-    ...extendedConfig,
     // Default value can be set both by the `defaultValue` property,
     // or by returning the value in your own function like this one.
     defaultValue: true,
@@ -531,10 +495,10 @@ export async function showProgressBar() {
   });
 }
 
-export async function showResults(userInput) {
+export async function showResults(userInput: any) {
   await promptsDisplayResults({
     // Display all user input values, e.g.:
-    // ┌────────���───────────────────────┐
+    // ┌──────────────────────────────────────┐
     // │ Here is your input result:     │
     // │ {                              │
     // │   "deps": true,                │
@@ -552,7 +516,7 @@ export async function showResults(userInput) {
   });
 }
 
-export async function doSomeFunStuff(userInput) {
+export async function doSomeFunStuff(userInput: any) {
   // Just for fun, let's create an age calculator
   // based on the birthday to verify age accuracy.
   const calculatedAge = calculateAge(userInput.birthday);

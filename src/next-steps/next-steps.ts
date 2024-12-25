@@ -1,8 +1,5 @@
-import type {
-  VariantName,
-  TypographyName,
-  ColorName,
-} from "~/types/general.js";
+import type { TypographyName, ColorName } from "~/types/general.js";
+import type { VariantName } from "~/utils/variants.js";
 
 import { msg } from "~/utils/messages.js";
 
@@ -35,11 +32,11 @@ export async function nextStepsPrompt(
     type: "M_INFO",
     title,
     titleColor,
-    titleVariant,
     titleTypography,
+    ...(titleVariant ? { titleVariant } : {}),
     content: Array.isArray(content) ? content.join("\n") : content,
     contentColor,
-    contentVariant,
     contentTypography,
+    ...(contentVariant ? { contentVariant } : {}),
   });
 }

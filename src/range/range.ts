@@ -326,8 +326,8 @@ export class RangePrompt extends EventEmitter {
    * Handles unknown input
    * @param input - The input string
    */
-  handleUnknownInput(input: string): void {
-    // Define what to do with unknown inputs, possibly emit an event or handle gracefully
+  handleUnknownInput(_input: string): void {
+    // TODO: Define what to do with unknown inputs, possibly emit an event or handle gracefully
     this.bell();
   }
 

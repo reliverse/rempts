@@ -15,9 +15,9 @@ const {
 const isDisabled = "NO_COLOR" in env || argv.includes("--no-color");
 const isForced = "FORCE_COLOR" in env || argv.includes("--color");
 const isWindows = platform === "win32";
-const isDumbTerminal = env.TERM === "dumb";
+const isDumbTerminal = env["TERM"] === "dumb";
 const isCompatibleTerminal =
-  tty?.isatty && tty.isatty(1) && env.TERM && !isDumbTerminal;
+  tty?.isatty && tty.isatty(1) && env["TERM"] && !isDumbTerminal;
 const isCI =
   "CI" in env &&
   ("GITHUB_ACTIONS" in env || "GITLAB_CI" in env || "CIRCLECI" in env);

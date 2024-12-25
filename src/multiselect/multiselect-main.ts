@@ -3,14 +3,11 @@ import readline from "node:readline";
 import pc from "picocolors";
 import terminalSize from "terminal-size";
 
-import type {
-  ColorName,
-  TypographyName,
-  VariantName,
-} from "~/types/general.js";
+import type { ColorName, TypographyName } from "~/types/general.js";
+import type { VariantName } from "~/utils/variants.js";
 
 import { deleteLastLine } from "~/main.js";
-import { msg, msgUndoAll, bar, symbols } from "~/utils/messages.js";
+import { msg, msgUndoAll, symbols } from "~/utils/messages.js";
 
 type SelectOption<T> = {
   label: string;
@@ -93,10 +90,8 @@ function renderPromptUI<T extends string>(params: {
     contentTypography,
     debug,
     maxItems,
-    borderColor,
     titleVariant,
     titleTypography,
-    terminalWidth,
     isRerender = false,
   } = params;
 
@@ -110,8 +105,8 @@ function renderPromptUI<T extends string>(params: {
       type: "M_NULL",
       title,
       titleColor,
-      titleTypography,
-      titleVariant,
+      ...(titleTypography ? { titleTypography } : {}),
+      ...(titleVariant ? { titleVariant } : {}),
     });
 
     // Content
@@ -182,8 +177,13 @@ function renderPromptUI<T extends string>(params: {
   }
 
   // Render options
-  for (let index = startIdx; index <= endIdx; index++) {
+  for (
+    let index = startIdx;
+    index <= endIdx && index < options.length;
+    index++
+  ) {
     const option = options[index];
+    if (!option) continue;
 
     if (!isSelectOption(option)) {
       const width = option.width ?? 20;
@@ -271,6 +271,7 @@ export async function multiselectPrompt<T extends string>(
     defaultValue.length > 0
       ? options.findIndex(
           (opt) =>
+            opt &&
             isSelectOption(opt) &&
             defaultValue.includes(opt.value) &&
             !opt.disabled,
@@ -278,7 +279,9 @@ export async function multiselectPrompt<T extends string>(
       : 0;
 
   if (pointer === -1) {
-    pointer = options.findIndex((opt) => isSelectOption(opt) && !opt.disabled);
+    pointer = options.findIndex(
+      (opt) => opt && isSelectOption(opt) && !opt.disabled,
+    );
     if (pointer === -1) {
       pointer = 0;
     }
@@ -287,10 +290,14 @@ export async function multiselectPrompt<T extends string>(
   const selectedOptions = new Set<number>(
     defaultValue
       .map((val) =>
-        options.findIndex((o) => isSelectOption(o) && o.value === val),
+        options.findIndex((o) => o && isSelectOption(o) && o.value === val),
       )
       .filter(
-        (i) => i >= 0 && isSelectOption(options[i]) && !options[i].disabled,
+        (i) =>
+          i >= 0 &&
+          options[i] &&
+          isSelectOption(options[i]) &&
+          !options[i].disabled,
       ),
   );
 
@@ -329,7 +336,11 @@ export async function multiselectPrompt<T extends string>(
     do {
       pointer = (pointer - 1 + options.length) % options.length;
       const currentOption = options[pointer];
-      if (isSelectOption(currentOption) && !currentOption.disabled) {
+      if (
+        currentOption &&
+        isSelectOption(currentOption) &&
+        !currentOption.disabled
+      ) {
         break;
       }
     } while (pointer !== originalPointer);
@@ -341,7 +352,11 @@ export async function multiselectPrompt<T extends string>(
     do {
       pointer = (pointer + 1) % options.length;
       const currentOption = options[pointer];
-      if (isSelectOption(currentOption) && !currentOption.disabled) {
+      if (
+        currentOption &&
+        isSelectOption(currentOption) &&
+        !currentOption.disabled
+      ) {
         break;
       }
     } while (pointer !== originalPointer);
@@ -372,10 +387,10 @@ export async function multiselectPrompt<T extends string>(
       contentColor,
       contentTypography,
       debug,
-      maxItems,
+      ...(maxItems ? { maxItems } : {}),
       borderColor,
-      titleVariant,
-      titleTypography,
+      ...(titleVariant ? { titleVariant } : {}),
+      ...(titleTypography ? { titleTypography } : {}),
       terminalWidth: customTerminalWidth,
       resized: false,
       isRerender: true,
@@ -397,10 +412,10 @@ export async function multiselectPrompt<T extends string>(
     contentColor,
     contentTypography,
     debug,
-    maxItems,
+    ...(maxItems ? { maxItems } : {}),
     borderColor,
-    titleVariant,
-    titleTypography,
+    ...(titleVariant ? { titleVariant } : {}),
+    ...(titleTypography ? { titleTypography } : {}),
     terminalWidth: customTerminalWidth,
     resized: false,
     isRerender: false,
@@ -421,13 +436,15 @@ export async function multiselectPrompt<T extends string>(
     function confirmSelection() {
       if (allowAllUnselected || selectedOptions.size > 0) {
         const selectedValues = Array.from(selectedOptions)
-          .filter(
-            (idx) => isSelectOption(options[idx]) && !options[idx].disabled,
-          )
-          .map((idx) =>
-            isSelectOption(options[idx]) ? options[idx].value : null,
-          )
-          .filter((val): val is T => val !== null);
+          .filter((idx) => {
+            const opt = options[idx];
+            return opt && isSelectOption(opt) && !opt.disabled;
+          })
+          .map((idx) => {
+            const opt = options[idx];
+            return opt && isSelectOption(opt) ? opt.value : null;
+          })
+          .filter((val): val is T => val !== null && val !== undefined);
 
         cleanup();
         resolve(selectedValues);
@@ -450,8 +467,8 @@ export async function multiselectPrompt<T extends string>(
           type: "M_END",
           title: endTitle,
           titleColor: endTitleColor,
-          titleTypography,
-          titleVariant,
+          ...(titleTypography ? { titleTypography } : {}),
+          ...(titleVariant ? { titleVariant } : {}),
           border,
           borderColor,
         });
@@ -482,7 +499,11 @@ export async function multiselectPrompt<T extends string>(
 
         case "space": {
           const currentOption = options[pointer];
-          if (!isSelectOption(currentOption) || currentOption.disabled) {
+          if (
+            !currentOption ||
+            !isSelectOption(currentOption) ||
+            currentOption.disabled
+          ) {
             errorMessage = "This option is disabled";
           } else {
             if (selectedOptions.has(pointer)) {

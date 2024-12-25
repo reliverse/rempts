@@ -46,7 +46,6 @@ export const schema = Type.Object({
   color: colorSchema,
   birthday: Type.String({ minLength: 10, maxLength: 10 }),
   langs: Type.Array(Type.String()),
-  features: Type.Array(Type.String()),
   toggle: Type.Boolean(),
 });
 

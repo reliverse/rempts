@@ -1,4 +1,4 @@
-import type { ColorName, VariantName } from "~/types/general.js";
+import type { ColorName } from "~/types/general.js";
 
 import { colorMap } from "./mapping.js";
 
@@ -8,6 +8,15 @@ export const variantMap = {
   // banner: createBanner,
   // underline: createUnderline,
 };
+
+type ValidVariant = keyof typeof variantMap;
+export type VariantName = ValidVariant | "none";
+
+export function isValidVariant(
+  variant: string | undefined,
+): variant is ValidVariant {
+  return variant !== undefined && variant !== "none" && variant in variantMap;
+}
 
 export async function applyVariant(
   lines: string[] | string,

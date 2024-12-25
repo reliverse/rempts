@@ -9,17 +9,17 @@ import { env, isWindows, isLinux, isMacOS } from "std-env";
  */
 export function isUnicodeSupported(): boolean {
   if (isLinux) {
-    return env.TERM !== "linux";
+    return env["TERM"] !== "linux";
   }
   return (
-    env.WT_SESSION !== undefined ||
-    env.TERMINUS_SUBLIME !== undefined ||
-    env.ConEmuTask === "{cmd::Cmder}" ||
-    env.TERM_PROGRAM === "Terminus-Sublime" ||
-    env.TERM_PROGRAM === "vscode" ||
-    env.TERM === "xterm-256color" ||
-    env.TERM === "alacritty" ||
-    env.TERMINAL_EMULATOR === "JetBrains-JediTerm"
+    env["WT_SESSION"] !== undefined ||
+    env["TERMINUS_SUBLIME"] !== undefined ||
+    env["ConEmuTask"] === "{cmd::Cmder}" ||
+    env["TERM_PROGRAM"] === "Terminus-Sublime" ||
+    env["TERM_PROGRAM"] === "vscode" ||
+    env["TERM"] === "xterm-256color" ||
+    env["TERM"] === "alacritty" ||
+    env["TERMINAL_EMULATOR"] === "JetBrains-JediTerm"
   );
 }
 
@@ -28,9 +28,9 @@ export function isUnicodeSupported(): boolean {
  * @returns {string} The name of the current terminal or "Unknown" if it cannot be determined.
  */
 export function getCurrentTerminalName(): string {
-  const termProgram = env.TERM_PROGRAM;
-  const term = env.TERM;
-  const terminalEmulator = env.TERMINAL_EMULATOR;
+  const termProgram = env["TERM_PROGRAM"];
+  const term = env["TERM"];
+  const terminalEmulator = env["TERMINAL_EMULATOR"];
 
   if (termProgram) {
     switch (termProgram.toLowerCase()) {
@@ -99,7 +99,7 @@ export const pmv = await getNpmVersion(pm);
 // export const pkg = packageJson;
 export const pkg = {
   name: "@reliverse/prompts",
-  version: "1.4.1",
+  version: "1.4.2",
   description:
     "@reliverse/prompts is a powerful library that enables seamless, typesafe, and resilient prompts for command-line applications. Crafted with simplicity and elegance, it provides developers with an intuitive and robust way to build interactive CLIs.",
 };

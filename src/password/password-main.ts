@@ -5,11 +5,7 @@ import { Value } from "@sinclair/typebox/value";
 import type { ColorName, PromptOptions } from "~/types/general.js";
 
 import { bar, fmt } from "~/utils/messages.js";
-import {
-  countLines,
-  deleteLastLine,
-  deleteLastLines,
-} from "~/utils/terminal.js";
+import { countLines, deleteLastLines } from "~/utils/terminal.js";
 
 // export async function passwordPrompt<T extends TSchema>(
 // options: PromptOptions<T>,
@@ -48,14 +44,14 @@ export async function passwordPrompt(opts: PasswordPromptOptions) {
       title: `${title}${defaultValue ? ` [Default: ****]` : ""}`,
       titleColor,
       titleTypography,
-      titleVariant,
-      content,
-      contentColor,
-      contentTypography,
-      contentVariant,
+      titleVariant: titleVariant ?? "none",
+      content: content ?? "",
+      contentColor: contentColor ?? "dim",
+      contentTypography: contentTypography ?? "none",
+      contentVariant: contentVariant ?? "none",
       borderColor,
-      hint,
-      variantOptions,
+      hint: hint ?? "",
+      variantOptions: variantOptions ?? {},
       errorMessage,
     });
 

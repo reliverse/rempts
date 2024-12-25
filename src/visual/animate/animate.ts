@@ -3,13 +3,11 @@ import {
   type Animation,
   type AnimationName,
 } from "@figliolia/chalk-animation";
-import pc from "picocolors";
 
 import type { ColorName, MsgType, TypographyName } from "~/types/general.js";
 
 import { getTerminalWidth } from "~/core/utils.js";
-import { colorize } from "~/main.js";
-import { bar, msg } from "~/utils/messages.js";
+import { msg } from "~/utils/messages.js";
 import { deleteLastLine } from "~/utils/terminal.js";
 
 export const animationMap: Record<AnimationName, (text: string) => Animation> =

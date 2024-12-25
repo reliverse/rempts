@@ -2,14 +2,12 @@ import { Value } from "@sinclair/typebox/value";
 import { stdin as input, stdout as output } from "node:process";
 import readline from "node:readline/promises";
 
-import type {
-  ColorName,
-  TypographyName,
-  VariantName,
-} from "~/types/general.js";
+import type { ColorName, TypographyName } from "~/types/general.js";
 
-import { fmt, msg, msgUndoAll, bar } from "~/utils/messages.js";
+import { msg, msgUndoAll, bar, type FmtMsgOptions } from "~/utils/messages.js";
 import { deleteLastLine, deleteLastLines } from "~/utils/terminal.js";
+
+type VariantName = FmtMsgOptions["titleVariant"];
 
 type NumberPromptOptions = {
   title: string;
@@ -40,19 +38,19 @@ type NumberPromptOptions = {
 
 type RenderParams = {
   title: string;
-  hint?: string;
-  hintPlaceholderColor?: ColorName;
-  content?: string;
-  contentColor?: ColorName;
-  contentTypography?: TypographyName;
-  contentVariant?: VariantName;
-  titleColor?: ColorName;
-  titleTypography?: TypographyName;
-  titleVariant?: VariantName;
-  borderColor?: ColorName;
   userInput: string;
   errorMessage: string;
   border: boolean;
+  hint: string | undefined;
+  hintPlaceholderColor: ColorName | undefined;
+  content: string | undefined;
+  contentColor: ColorName | undefined;
+  contentTypography: TypographyName | undefined;
+  contentVariant: VariantName | undefined;
+  titleColor: ColorName | undefined;
+  titleTypography: TypographyName | undefined;
+  titleVariant: VariantName | undefined;
+  borderColor: ColorName | undefined;
 };
 
 /**
@@ -66,7 +64,6 @@ function renderPromptUI(
   const {
     title,
     hint,
-    hintPlaceholderColor = "blue",
     content,
     contentColor = "dim",
     contentTypography = "italic",
@@ -77,8 +74,6 @@ function renderPromptUI(
     borderColor = "dim",
     userInput,
     errorMessage,
-    border,
-    isRerender = false,
   } = params;
 
   let lineCount = 0;
@@ -87,20 +82,22 @@ function renderPromptUI(
   const type = errorMessage !== "" ? "M_ERROR" : "M_GENERAL";
 
   // Main prompt line
-  msg({
+  const msgParams: FmtMsgOptions = {
     type,
     title,
     titleColor,
     titleTypography,
-    titleVariant,
-    content,
+    titleVariant: titleVariant ?? "none",
+    content: content ?? "",
     contentColor,
     contentTypography,
-    contentVariant,
+    contentVariant: contentVariant ?? "none",
     borderColor,
-    hint,
+    hint: hint ?? "",
     errorMessage,
-  });
+  };
+
+  msg(msgParams);
   lineCount++;
 
   // If user already typed something, show it
@@ -128,7 +125,6 @@ export async function numberPrompt(opts: NumberPromptOptions): Promise<number> {
     contentTypography = "italic",
     contentVariant,
     borderColor = "dim",
-    variantOptions,
     hardcoded,
     endTitle = "",
     endTitleColor = "dim",
@@ -166,7 +162,7 @@ export async function numberPrompt(opts: NumberPromptOptions): Promise<number> {
   // If we have a hardcoded user input, skip interactive input and just validate
   if (hardcoded?.userInput !== undefined) {
     // Render once
-    const lineCount = renderPromptUI({
+    renderPromptUI({
       title,
       hint,
       hintPlaceholderColor,
@@ -300,7 +296,10 @@ async function validateInput(
     isValid = Value.Check(schema, input);
     if (!isValid) {
       const errors = [...Value.Errors(schema, input)];
-      errorMessage = errors.length > 0 ? errors[0].message : "Invalid input.";
+      errorMessage =
+        errors.length > 0
+          ? (errors[0]?.message ?? "Invalid input.")
+          : "Invalid input.";
     }
   }
 

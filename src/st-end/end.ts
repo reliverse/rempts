@@ -1,6 +1,6 @@
 import type { PromptOptions } from "~/types/general.js";
 
-import { getTerminalWidth, getExactTerminalWidth } from "~/core/utils.js";
+import { getExactTerminalWidth } from "~/core/utils.js";
 import { msg } from "~/utils/messages.js";
 import { animateText } from "~/visual/animate/animate.js";
 

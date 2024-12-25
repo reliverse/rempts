@@ -2,14 +2,11 @@ import { stdin as input, stdout as output } from "node:process";
 import readline from "node:readline";
 import pc from "picocolors";
 
-import type {
-  ColorName,
-  TypographyName,
-  VariantName,
-} from "~/types/general.js";
+import type { ColorName, TypographyName } from "~/types/general.js";
+import type { VariantName } from "~/utils/variants.js";
 
 import { deleteLastLine } from "~/main.js";
-import { bar, msg, msgUndoAll, symbols } from "~/utils/messages.js";
+import { msg, msgUndoAll } from "~/utils/messages.js";
 
 export type TogglePromptParams<T extends string> = {
   title: string;
@@ -58,13 +55,11 @@ function renderTogglePrompt<T extends string>(params: {
     selectedIndex,
     errorMessage,
     instructions,
-    borderColor,
     titleColor,
     titleTypography,
     titleVariant,
     contentColor,
     contentTypography,
-    border,
     displayInstructions,
     debug,
     isRerender = false,
@@ -78,7 +73,7 @@ function renderTogglePrompt<T extends string>(params: {
       title,
       titleColor,
       titleTypography,
-      titleVariant,
+      ...(titleVariant ? { titleVariant } : {}),
     });
 
     // Content - use string content directly without bar
@@ -192,7 +187,7 @@ export async function togglePrompt<T extends string>(
       borderColor,
       titleColor,
       titleTypography,
-      titleVariant,
+      ...(titleVariant ? { titleVariant } : {}),
       contentColor,
       contentTypography,
       border,
@@ -213,7 +208,7 @@ export async function togglePrompt<T extends string>(
     borderColor,
     titleColor,
     titleTypography,
-    titleVariant,
+    ...(titleVariant ? { titleVariant } : {}),
     contentColor,
     contentTypography,
     border,
@@ -250,7 +245,7 @@ export async function togglePrompt<T extends string>(
               title: endTitle,
               titleColor: endTitleColor,
               titleTypography,
-              titleVariant,
+              ...(titleVariant ? { titleVariant } : {}),
               border,
               borderColor,
             });
@@ -269,7 +264,7 @@ export async function togglePrompt<T extends string>(
             title: endTitle,
             titleColor: endTitleColor,
             titleTypography,
-            titleVariant,
+            ...(titleVariant ? { titleVariant } : {}),
             border,
             borderColor,
           });

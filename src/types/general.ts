@@ -1,6 +1,8 @@
 import type { AnimationName } from "@figliolia/chalk-animation";
 import type { TSchema } from "@sinclair/typebox";
 
+import type { VariantName } from "~/utils/variants.js";
+
 export type State = "initial" | "active" | "cancel" | "submit" | "error";
 
 export type MsgType =
@@ -23,14 +25,6 @@ export type TypographyName =
   | "underline"
   | "italic"
   | "none";
-
-export type VariantName =
-  | "box"
-  | "doubleBox"
-  | "banner"
-  | "underline"
-  | "none"
-  | "animated";
 
 export type BorderColorName =
   | "reset"
