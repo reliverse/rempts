@@ -171,25 +171,22 @@ You can’t build an amazing CLI without argument parsing. We’ve got a built-i
 - **Zero guesswork** with TypeScript integrations  
 - **Minimal boilerplate** with maximum results
 
+## More Goodies
+
+- [**Reliverse Docs**](https://docs.reliverse.org/reliverse/prompts/)
+
 ## Special Thanks
 
-**@inquirer/prompts**, **@terkelg/prompts**, **@clack/prompts**, **@unjs/citty**, and all the open-source legends. You built the shoulders we stand on.
+**@inquirer/prompts**, **@terkelg/prompts**, **@clack/prompts**, **@unjs/citty**, and many more other open-source legends. You built the shoulders we stand on.
 
 ## License
 
 **MIT** © [Nazarii Korniienko](https://github.com/reliverse/prompts)
 
-> **Stop reading. Start coding.**  
-> If you’re serious about CLIs—don’t just build—**Reliverse it** with `@reliverse/prompts`.
-
-## More Goodies
-
-- [**Reliverse Docs**](https://docs.reliverse.org/reliverse/prompts/)
-
 ## Screenshot Brag
 
-[![CLI Example](./examples/1.png)](./examples/1.png)
+[![CLI Example](./examples/main.png)](./examples/main.png)
 
-**That’s it.** Now go forth and build unstoppable CLIs with `@reliverse/prompts`. And remember:  
-
-> **Don’t just build a CLI. Reliverse it.**  
+> **Stop reading. Start coding.**  
+>
+> If you’re serious about CLIs—don’t just build—**Reliverse it** with `@reliverse/prompts`.
