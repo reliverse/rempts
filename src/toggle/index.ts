@@ -6,7 +6,8 @@ import type { ColorName, TypographyName } from "~/types/general.js";
 import type { VariantName } from "~/utils/variants.js";
 
 import { deleteLastLine } from "~/main.js";
-import { msg, msgUndoAll } from "~/utils/messages.js";
+import { msg } from "~/utils/messages.js";
+import { completePrompt } from "~/utils/prompt-end.js";
 
 export type TogglePromptParams<T extends string> = {
   title: string;
@@ -218,7 +219,33 @@ export async function togglePrompt<T extends string>(
   });
 
   return new Promise<boolean>((resolve) => {
-    function onKeyPress(_str: string, key: readline.Key) {
+    function cleanup(isCtrlC = false) {
+      if (typeof input.setRawMode === "function") {
+        input.setRawMode(false);
+      }
+      rl.close();
+      input.removeListener("keypress", handleKeypress);
+      if (isCtrlC) {
+        process.exit(0);
+      }
+    }
+
+    function endPrompt(isCtrlC = false) {
+      if (endTitle !== "") {
+        msg({
+          type: "M_END",
+          title: endTitle,
+          titleColor: endTitleColor,
+          titleTypography,
+          ...(titleVariant ? { titleVariant } : {}),
+          border,
+          borderColor,
+        });
+      }
+      cleanup(isCtrlC);
+    }
+
+    function handleKeypress(_str: string, key: readline.Key): void {
       if (key.name === "left" || key.name === "h") {
         selectedIndex = (selectedIndex - 1 + options.length) % options.length;
         errorMessage = "";
@@ -236,54 +263,26 @@ export async function togglePrompt<T extends string>(
           cleanup();
           // Return boolean: first option = true, second option = false
           const booleanValue = selectedIndex === 0;
-
-          // Only clear and show end title if one is provided
-          if (endTitle !== "") {
-            msgUndoAll();
-            msg({
-              type: "M_END",
-              title: endTitle,
-              titleColor: endTitleColor,
-              titleTypography,
-              ...(titleVariant ? { titleVariant } : {}),
-              border,
-              borderColor,
-            });
-          }
+          void completePrompt(
+            false,
+            endTitle,
+            endTitleColor,
+            titleTypography,
+            titleVariant ? titleVariant : undefined,
+            border,
+            borderColor,
+            undefined,
+            booleanValue,
+          );
           resolve(booleanValue);
-
           deleteLastLine();
           msg({ type: "M_BAR", borderColor });
         }
       } else if (key.name === "c" && key.ctrl) {
-        // Only clear and show end title if one is provided
-        if (endTitle !== "") {
-          msgUndoAll();
-          msg({
-            type: "M_END",
-            title: endTitle,
-            titleColor: endTitleColor,
-            titleTypography,
-            ...(titleVariant ? { titleVariant } : {}),
-            border,
-            borderColor,
-          });
-        }
-        cleanup(true);
+        endPrompt(true);
       }
     }
 
-    function cleanup(isCtrlC = false) {
-      if (typeof input.setRawMode === "function") {
-        input.setRawMode(false);
-      }
-      rl.close();
-      input.removeListener("keypress", onKeyPress);
-      if (isCtrlC) {
-        process.exit(0);
-      }
-    }
-
-    input.on("keypress", onKeyPress);
+    input.on("keypress", handleKeypress);
   });
 }

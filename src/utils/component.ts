@@ -25,7 +25,7 @@ const S_STEP_CANCEL = s("■", "x");
 const S_STEP_ERROR = s("▲", "x");
 const S_STEP_SUBMIT = s("◇", "o");
 
-const S_BAR_START = s("┌", "T");
+const S_BAR_START = s("╭", "T");
 const S_BAR = s("│", "|");
 const S_BAR_END = s("└", "—");
 

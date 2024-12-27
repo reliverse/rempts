@@ -1,6 +1,6 @@
 import ansiEscapes from "ansi-escapes";
 
-import type { PartialDeep } from "~/types/index.js";
+import type { PartialDeep } from "~/types/utils.js";
 
 import {
   createPrompt,

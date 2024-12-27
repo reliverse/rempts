@@ -7,11 +7,11 @@
       "#/*": ["./addons/*"],
       "@/*": ["./examples/*"]
     },
-    "target": "ES2022",
+    "target": "ES2023",
     "module": "NodeNext",
     "moduleDetection": "force",
     "moduleResolution": "nodenext",
-    "lib": ["DOM", "DOM.Iterable", "ES2022"],
+    "lib": ["DOM", "DOM.Iterable", "ES2023"],
     "resolveJsonModule": true,
     "verbatimModuleSyntax": true,
     "isolatedModules": true,

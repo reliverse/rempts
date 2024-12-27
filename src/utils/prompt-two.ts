@@ -68,10 +68,17 @@ export function createPrompt(
     render: renderFn,
     input = stdin,
     output = stdout,
+    debug = process.env["DEBUG"] === "true",
     ...opts
   }: PromptOptions<any>,
   trackValue = true,
 ) {
+  if (debug) {
+    console.debug("Terminal info:", {
+      isTTY: process.stdout.isTTY,
+      columns: process.stdout.columns,
+    });
+  }
   const _input = input;
   const _output = output;
   let _rl!: ReadLine;
@@ -94,8 +101,8 @@ export function createPrompt(
   const _render = () => renderFn.call(self);
 
   function prompt() {
-    const sink = new WriteStream(0);
-    sink._write = (_chunk, _encoding, done) => {
+    const stream = new WriteStream(0);
+    stream._write = (_chunk, _encoding, done) => {
       if (_track) {
         value = _rl.line.replace(/\t/g, "");
         _cursor = _rl.cursor;
@@ -103,11 +110,11 @@ export function createPrompt(
       }
       done();
     };
-    _input.pipe(sink);
+    _input.pipe(stream);
 
     _rl = readline.createInterface({
       input: _input,
-      output: sink,
+      output: stream,
       tabSize: 2,
       prompt: "",
       escapeCodeTimeout: 50,

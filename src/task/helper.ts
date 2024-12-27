@@ -1,8 +1,8 @@
 import { msg } from "~/utils/messages.js";
 
-import type { ProgressBarOptions } from "./ProgressBar.js";
+import type { ProgressBarOptions } from "./types.js";
 
-import { ProgressBar } from "./ProgressBar.js";
+import { progressTaskPrompt } from "./progress.js";
 
 /**
  * Options for the progressbar helper function.
@@ -43,31 +43,32 @@ export async function progressbar(
   const iterations = Math.ceil(total / increment) + 1;
   const delay = desiredTotalTime / iterations;
 
-  const progressBar = new ProgressBar({
+  const progressBar = await progressTaskPrompt({
     total,
     ...progressBarOptions,
   });
 
   try {
     for (let i = 0; i <= total; i += increment) {
-      progressBar.update(i);
+      await progressBar.update(i);
       await sleep(delay);
     }
 
-    // Ensure the progress bar completes if not already
     if (total % increment !== 0) {
-      progressBar.update(total);
+      await progressBar.update(total);
     }
-  } catch (error) {
-    console.error("Progress bar encountered an error:", error);
-  }
 
-  // New line
-  msg({
-    type: "M_MIDDLE",
-    title: "",
-    borderColor: "dim",
-  });
+    msg({
+      type: "M_MIDDLE",
+      title: "",
+      borderColor: "dim",
+    });
+  } catch (error) {
+    const errorMessage =
+      error instanceof Error ? error.message : "Progress bar error";
+    console.error("Progress bar encountered an error:", errorMessage);
+    throw new Error(errorMessage);
+  }
 }
 
 /**

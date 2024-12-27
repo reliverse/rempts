@@ -7,7 +7,8 @@ import type { ColorName, TypographyName } from "~/types/general.js";
 import type { VariantName } from "~/utils/variants.js";
 
 import { deleteLastLine } from "~/main.js";
-import { msg, msgUndoAll, symbols } from "~/utils/messages.js";
+import { msg, symbols } from "~/utils/messages.js";
+import { completePrompt } from "~/utils/prompt-end.js";
 
 type SelectOption<T> = {
   label: string;
@@ -257,7 +258,7 @@ export async function selectPrompt<T extends string>(
     contentTypography = "italic",
     border = true,
     endTitle = "",
-    endTitleColor = "dim",
+    endTitleColor = "retroGradient",
     maxItems,
     debug = false,
     terminalWidth: customTerminalWidth = 90,
@@ -350,10 +351,11 @@ export async function selectPrompt<T extends string>(
   });
 
   return new Promise<T>((resolve) => {
-    function onKeyPress(_str: string, key: readline.Key) {
+    function handleKeypress(_str: string, key: readline.Key): void {
       if (allDisabled) {
         if (key.name === "c" && key.ctrl) {
-          endPrompt(true);
+          void endPrompt(true);
+          return;
         }
         return;
       }
@@ -363,9 +365,9 @@ export async function selectPrompt<T extends string>(
       } else if (key.name === "down" || key.name === "j") {
         moveSelectionDown();
       } else if (key.name === "return") {
-        confirmSelection();
+        void confirmSelection();
       } else if (key.name === "c" && key.ctrl) {
-        endPrompt(true);
+        void endPrompt(true);
       }
     }
 
@@ -393,7 +395,7 @@ export async function selectPrompt<T extends string>(
       renderOptions();
     }
 
-    function confirmSelection() {
+    async function confirmSelection() {
       const option = options[selectedIndex];
       if (!option || !isSelectOption(option)) {
         errorMessage = "This option is not selectable.";
@@ -417,25 +419,31 @@ export async function selectPrompt<T extends string>(
       resolve(option.value);
 
       deleteLastLine();
-      msg({ type: "M_BAR", borderColor });
-
-      // We don't clear the final state
+      await completePrompt(
+        false,
+        endTitle,
+        endTitleColor,
+        titleTypography,
+        titleVariant ? titleVariant : undefined,
+        border,
+        borderColor,
+        undefined,
+        true,
+      );
     }
 
-    function endPrompt(isCtrlC = false) {
-      // Don't clear anything unless there's an end title
-      if (endTitle !== "") {
-        msgUndoAll();
-        msg({
-          type: "M_END",
-          title: endTitle,
-          titleColor: endTitleColor,
-          titleTypography,
-          ...(titleVariant ? { titleVariant } : {}),
-          border,
-          borderColor,
-        });
-      }
+    async function endPrompt(isCtrlC = false) {
+      await completePrompt(
+        isCtrlC,
+        endTitle,
+        endTitleColor,
+        titleTypography,
+        titleVariant ? titleVariant : undefined,
+        border,
+        borderColor,
+        undefined,
+        false,
+      );
       cleanup(isCtrlC);
     }
 
@@ -444,13 +452,12 @@ export async function selectPrompt<T extends string>(
         input.setRawMode(false);
       }
       rl.close();
-      input.removeListener("keypress", onKeyPress);
-
+      input.removeListener("keypress", handleKeypress);
       if (isCtrlC) {
         process.exit(0);
       }
     }
 
-    input.on("keypress", onKeyPress);
+    input.on("keypress", handleKeypress);
   });
 }

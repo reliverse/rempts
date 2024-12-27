@@ -9,64 +9,81 @@ async function examplesRunner() {
 
   const exampleToRun = await selectPrompt({
     title: "Choose an example to run",
+    titleColor: "passionGradient",
     options: [
       {
-        label: "✨ The Most Full-Featured Example",
-        value: "1-main",
+        label: "✨ Full-Featured Example",
+        value: "main",
         hint: "recommended",
       },
       {
-        label: pc.dim("Mono Component Example"),
-        value: "2-mono",
+        label: "Spinner Example",
+        value: "spinner",
+        hint: "experimental",
+      },
+      {
+        label: pc.dim("Task Example"),
+        value: "task",
+        hint: pc.dim("not finished"),
+      },
+      {
+        label: pc.dim("Progressbar Example"),
+        value: "progressbar",
         hint: pc.dim("not finished"),
       },
       {
         label: pc.dim("Simple Example"),
-        value: "3-simple",
+        value: "simple",
         hint: pc.dim("not finished"),
       },
       {
         label: pc.dim("with flags 1 Example"),
-        value: "4-cmd-a",
+        value: "cmd-a",
         hint: pc.dim("not finished"),
       },
       {
         label: pc.dim("with flags 2 Example"),
-        value: "5-cmd-b",
+        value: "cmd-b",
         hint: pc.dim("not finished"),
       },
       { label: "🗝️  Exit", value: "exit" },
     ] as const,
-    defaultValue: "1-main",
+    defaultValue: "main",
   });
 
   switch (exampleToRun) {
-    case "1-main":
-      await import("./1-main.js");
+    case "main":
+      await import("./main.js");
       break;
-    case "2-mono":
-      await import("./2-mono.js");
+    case "spinner":
+      await import("./other/spinner.js");
       break;
-    case "3-simple":
-      await import("./3-simple.js");
+    case "task":
+      await import("./other/task.js");
       break;
-    case "4-cmd-a":
+    case "progressbar":
+      await import("./other/progress.js");
+      break;
+    case "simple":
+      await import("./other/simple.js");
+      break;
+    case "cmd-a":
       console.clear();
       console.log(
-        "`bun examples/4-args-a.ts Alice --friendly --age 22 --adj cool`",
+        "`bun examples/other/args-a.ts Alice --friendly --age 22 --adj cool`",
       );
       console.log("Run without any arguments to see the help message.");
       break;
-    case "5-cmd-b":
+    case "cmd-b":
       console.clear();
       console.log(
-        "1. [BUILD] `bun examples/5-args-b.ts build ./src --workDir ./src`",
+        "1. [BUILD] `bun examples/other/args-b.ts build ./src --workDir ./src`",
       );
       console.log(
-        "2. [DEBUG] `bun examples/5-args-b.ts debug --feature database-query`",
+        "2. [DEBUG] `bun examples/other/args-b.ts debug --feature database-query`",
       );
       console.log(
-        "3. [DEPLOY] `bun examples/5-args-b.ts deploy --include '*.js' --exclude '*.d.ts'`",
+        "3. [DEPLOY] `bun examples/other/args-b.ts deploy --include '*.js' --exclude '*.d.ts'`",
       );
       console.log("Run without any arguments to see the help message.");
       break;

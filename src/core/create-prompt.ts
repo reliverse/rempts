@@ -3,20 +3,21 @@ import { AsyncResource } from "node:async_hooks";
 import * as readline from "node:readline";
 import { onExit as onSignalExit } from "signal-exit";
 
-import { type Prompt, type Prettify } from "~/types/index.js";
+import { type Prompt, type PromptConfig } from "~/types/index.js";
 import { type BetterReadline } from "~/types/index.js";
 
 import {
   AbortPromptError,
   CancelPromptError,
   ExitPromptError,
+  NonInteractiveError,
 } from "./errors.js";
 import { withHooks, effectScheduler } from "./hook-engine.js";
 import { PromisePolyfill } from "./promise-polyfill.js";
 import ScreenManager from "./screen-manager.js";
 
 type ViewFunction<Value, Config> = (
-  config: Prettify<Config>,
+  config: Config,
   done: (value: Value) => void,
 ) => string | [string, string | undefined];
 
@@ -38,13 +39,38 @@ function getCallSites() {
 }
 
 export function createPrompt<Value, Config>(view: ViewFunction<Value, Config>) {
-  const callSites = getCallSites();
-  const callerFilename = callSites[1]?.getFileName?.();
+  const callerFilename = getCallSites()[0]?.getFileName() ?? "unknown";
 
-  const prompt: Prompt<Value, Config> = (config, context = {}) => {
+  const prompt: Prompt<Value, Config & PromptConfig> = (
+    config,
+    context = {},
+  ) => {
     // Default `input` to stdin
-    const { input = process.stdin, signal } = context;
+    const { input = process.stdin, signal, nonInteractive = false } = context;
     const cleanups = new Set<() => void>();
+
+    // Check if terminal is interactive
+    if (nonInteractive || !("isTTY" in input && input.isTTY)) {
+      // In non-interactive mode, generate prompts.json with default values or placeholders
+      const promptsJson = {
+        type: "prompts",
+        message:
+          "Please fill this file and run the CLI again to continue with your terminal, which doesn't support interactivity (or use tty-supported terminal)",
+        prompts: [
+          {
+            name: "value",
+            message: config.message || "Input required",
+            type: "input",
+            default: config.default || "",
+          },
+        ],
+      };
+
+      console.log(JSON.stringify(promptsJson, null, 2));
+      throw new NonInteractiveError(
+        "Terminal does not support interactivity. A prompts.json file has been generated.",
+      );
+    }
 
     // Add mute capabilities to the output
     const output = new MuteStream();
@@ -165,3 +191,11 @@ export function createPrompt<Value, Config>(view: ViewFunction<Value, Config>) {
 
   return prompt;
 }
+
+export type PromptOptions = {
+  analytics?: {
+    enabled?: boolean;
+    askConsent?: boolean;
+    dataCollection?: string[];
+  };
+};

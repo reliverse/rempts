@@ -17,7 +17,7 @@ import {
   isValidVariant,
 } from "~/utils/variants.js";
 
-import { getTerminalWidth } from "../core/utils.js";
+import { getExactTerminalWidth, getTerminalWidth } from "../core/utils.js";
 
 /**
  * Known symbol names that will have IntelliSense support
@@ -75,14 +75,15 @@ const u = (c: string, fallback: string) => (unicode ? c : fallback);
 
 export const symbols = {
   pointer: u("👉", ">"),
-  start: u("╭", "T"),
+  start: u("╭", "*"),
   middle: u("│", "|"),
   end: u("╰", "*"),
   line: u("─", "—"),
-  corner_top_right: u("����", "T"),
+  corner_top_right: u("╭", "*"),
   step_active: u("◆", "♦"),
   step_error: u("🗴", "x"),
   info: u("ℹ", "i"),
+  success: u("✅", "✓"),
 } as const;
 
 /**
@@ -199,17 +200,18 @@ export function fmt(opts: FmtMsgOptions): { text: string; lineCount: number } {
     ? colorMap[opts.borderColor](symbols.end + symbols.line)
     : symbols.end + symbols.line;
 
+  const lineLength =
+    opts.horizontalLineLength === 0
+      ? getExactTerminalWidth() - 3
+      : (opts.horizontalLineLength ?? getExactTerminalWidth() - 3);
+
   const suffixStartLine = opts.borderColor
-    ? colorMap[opts.borderColor](
-        `${symbols.line.repeat(opts.horizontalLineLength ?? 23)}⊱`,
-      )
-    : `${symbols.line.repeat(opts.horizontalLineLength ?? 23)}⊱`;
+    ? colorMap[opts.borderColor](`${symbols.line.repeat(lineLength)}⊱`)
+    : `${symbols.line.repeat(lineLength)}⊱`;
 
   const suffixEndLine = opts.borderColor
-    ? colorMap[opts.borderColor](
-        `${symbols.line.repeat(opts.horizontalLineLength ?? 23)}⊱`,
-      )
-    : `${symbols.line.repeat(opts.horizontalLineLength ?? 23)}⊱`;
+    ? colorMap[opts.borderColor](`${symbols.line.repeat(lineLength)}⊱`)
+    : `${symbols.line.repeat(lineLength)}⊱`;
 
   const MSG_CONFIGS: Record<MsgType, MsgConfig> = {
     M_NULL: {
@@ -453,8 +455,10 @@ export function fmt(opts: FmtMsgOptions): { text: string; lineCount: number } {
     }
     // For M_END with border, format the title line
     if (opts.type === "M_END" && opts.border && index === 0) {
-      // Title line with info symbol
-      return `${pc.green(symbols.info)}  ${line}`;
+      // Use middle bar if title is empty, otherwise use info icon
+      return !opts.title
+        ? `${borderWithSpace}${line}`
+        : `${pc.green(symbols.info)}  ${line}`;
     }
     // Skip if line already has a bar or is empty
     if (!line.trim() || line.includes(symbols.middle)) {
@@ -468,7 +472,7 @@ export function fmt(opts: FmtMsgOptions): { text: string; lineCount: number } {
   });
 
   if (opts.type === "M_END" && opts.border) {
-    lines.push(`${prefixEndLine}${suffixEndLine}`);
+    lines.push(`${prefixEndLine}${suffixEndLine}\n`);
   }
 
   const finalText = lines.join("\n");

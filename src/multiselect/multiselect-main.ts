@@ -7,7 +7,8 @@ import type { ColorName, TypographyName } from "~/types/general.js";
 import type { VariantName } from "~/utils/variants.js";
 
 import { deleteLastLine } from "~/main.js";
-import { msg, msgUndoAll, symbols } from "~/utils/messages.js";
+import { msg, symbols } from "~/utils/messages.js";
+import { completePrompt } from "~/utils/prompt-end.js";
 
 type SelectOption<T> = {
   label: string;
@@ -264,7 +265,7 @@ export async function multiselectPrompt<T extends string>(
     debug = false,
     terminalWidth: customTerminalWidth = 90,
     displayInstructions = false,
-    allowAllUnselected = true,
+    allowAllUnselected = false,
   } = params;
 
   let pointer =
@@ -427,13 +428,28 @@ export async function multiselectPrompt<T extends string>(
         input.setRawMode(false);
       }
       rl.close();
-      input.removeListener("keypress", onKeyPress);
+      input.removeListener("keypress", handleKeypress);
       if (isCtrlC) {
         process.exit(0);
       }
     }
 
-    function confirmSelection() {
+    async function endPrompt(isCtrlC = false) {
+      await completePrompt(
+        isCtrlC,
+        endTitle,
+        endTitleColor,
+        titleTypography,
+        titleVariant ? titleVariant : undefined,
+        border,
+        borderColor,
+        undefined,
+        false,
+      );
+      cleanup(isCtrlC);
+    }
+
+    async function confirmSelection() {
       if (allowAllUnselected || selectedOptions.size > 0) {
         const selectedValues = Array.from(selectedOptions)
           .filter((idx) => {
@@ -450,36 +466,29 @@ export async function multiselectPrompt<T extends string>(
         resolve(selectedValues);
 
         deleteLastLine();
-        msg({ type: "M_BAR", titleColor });
-
-        // Don't clear the final state
+        await completePrompt(
+          false,
+          endTitle,
+          endTitleColor,
+          titleTypography,
+          titleVariant ? titleVariant : undefined,
+          border,
+          borderColor,
+          undefined,
+          true,
+        );
       } else {
+        deleteLastLine();
         errorMessage = "You must select at least one option.";
         renderOptions();
       }
     }
 
-    function endPrompt(isCtrlC = false) {
-      // Don't clear anything unless there's an end title
-      if (endTitle !== "") {
-        msgUndoAll();
-        msg({
-          type: "M_END",
-          title: endTitle,
-          titleColor: endTitleColor,
-          ...(titleTypography ? { titleTypography } : {}),
-          ...(titleVariant ? { titleVariant } : {}),
-          border,
-          borderColor,
-        });
-      }
-      cleanup(isCtrlC);
-    }
-
-    function onKeyPress(_str: string, key: readline.Key) {
+    function handleKeypress(_str: string, key: readline.Key): void {
       if (allDisabled) {
         if (key.name === "c" && key.ctrl) {
-          endPrompt(true);
+          void endPrompt(true);
+          return;
         }
         return;
       }
@@ -518,12 +527,12 @@ export async function multiselectPrompt<T extends string>(
         }
 
         case "return":
-          confirmSelection();
+          void confirmSelection();
           break;
 
         case "c":
           if (key.ctrl) {
-            endPrompt(true);
+            void endPrompt(true);
           }
           break;
 
@@ -535,6 +544,6 @@ export async function multiselectPrompt<T extends string>(
       }
     }
 
-    input.on("keypress", onKeyPress);
+    input.on("keypress", handleKeypress);
   });
 }

@@ -3,7 +3,7 @@
 import { EnquirerWrapper } from "~/fallback/enquirer.temp.js";
 
 const longText =
-  "Let's embark on a creative journey and build something completely new! Afterward, it's all yours to refine. What category best describes your project? What web technologies do you like? 42 is the answer to everything. What do you think about testing the very very very long text? Is something broken for you?";
+  "Let's embark on a creative journey and build something completely new! Afterward, it's all yours to refine. What category best describes your project? What web technologies do you like? 42 is the answer to everything. What do you mind about testing the very very very long text? Is something broken for you?";
 
 async function main() {
   const enq = new EnquirerWrapper();

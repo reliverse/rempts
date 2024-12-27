@@ -1,7 +1,7 @@
 import ansiEscapes from "ansi-escapes";
 import pc from "picocolors";
 
-import type { PartialDeep } from "~/types/index.js";
+import type { PartialDeep } from "~/types/utils.js";
 
 import {
   createPrompt,

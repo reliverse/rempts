@@ -2,9 +2,9 @@ import { detect } from "detect-package-manager";
 import { emojify } from "node-emoji";
 import pc from "picocolors";
 
-import { anykeyPrompt, task } from "~/main.js";
+import { anykeyPrompt, spinnerTaskPrompt } from "~/main.js";
 import { multiselectPrompt } from "~/main.js";
-import { progressbar } from "~/main.js";
+import { progressTaskPrompt } from "~/main.js";
 import {
   animateText,
   confirmPrompt,
@@ -456,7 +456,7 @@ export async function showConfirmPrompt(username: string) {
 
   if (spinner) {
     await showSpinner();
-    await showProgressBar();
+    await showProgressbar();
   }
 
   // A return value is unnecessary for prompts when the result is not needed later.
@@ -467,7 +467,7 @@ export async function showConfirmPrompt(username: string) {
 // components, as they don't return any values.
 
 export async function showSpinner() {
-  await task({
+  await spinnerTaskPrompt({
     initialMessage: "Some long-running task is in progress...",
     successMessage: "Hooray! The long-running task was a success!",
     errorMessage: "An error occurred while the long-running task!",
@@ -481,8 +481,8 @@ export async function showSpinner() {
   });
 }
 
-export async function showProgressBar() {
-  await progressbar({
+export async function showProgressbar() {
+  await progressTaskPrompt({
     total: 100,
     width: 10,
     format:

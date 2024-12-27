@@ -9,6 +9,7 @@ import wrap from "wrap-ansi";
 
 import type { State } from "~/types/general.js";
 
+import { NonInteractiveError } from "~/core/errors.js";
 import { getTerminalWidth } from "~/core/utils.js";
 
 function diffLines(a: string, b: string): number[] {
@@ -56,6 +57,8 @@ export type PromptOptions<Self extends Prompt> = {
   input?: Readable;
   output?: Writable;
   debug?: boolean;
+  nonInteractive?: boolean;
+  message?: string;
 };
 
 export default class Prompt {
@@ -77,6 +80,7 @@ export default class Prompt {
       input = stdin,
       output = stdout,
       initialValue = "",
+      nonInteractive = false,
       ...opts
     }: PromptOptions<Prompt>,
     trackValue = true,
@@ -90,6 +94,29 @@ export default class Prompt {
 
     this.input = input;
     this.output = output;
+
+    // Check for non-interactive mode
+    if (nonInteractive || !(this.input as typeof stdin).isTTY) {
+      // Generate prompts.json with default values or placeholders
+      const promptsJson = {
+        type: "prompts",
+        message:
+          "Please fill this file and run the CLI again to continue with your terminal, which doesn't support interactivity (or use tty-supported terminal)",
+        prompts: [
+          {
+            name: "value",
+            message: opts.message || "Input required",
+            type: "input",
+            default: initialValue || "",
+          },
+        ],
+      };
+
+      console.log(JSON.stringify(promptsJson, null, 2));
+      throw new NonInteractiveError(
+        "Terminal does not support interactivity. A prompts.json file has been generated.",
+      );
+    }
 
     // Ensure `this.value` is always initialized, either from initialValue or as an empty string
     this.value = initialValue ?? "";

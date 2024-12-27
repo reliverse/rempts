@@ -6,7 +6,8 @@ import type { ColorName, TypographyName } from "~/types/general.js";
 import type { VariantName } from "~/utils/variants.js";
 
 import { colorize } from "~/utils/colorize.js";
-import { bar, msg, msgUndoAll } from "~/utils/messages.js";
+import { bar, msg } from "~/utils/messages.js";
+import { completePrompt } from "~/utils/prompt-end.js";
 import { deleteLastLine } from "~/utils/terminal.js";
 
 export type ConfirmPromptOptions = {
@@ -125,47 +126,6 @@ function renderPrompt(params: {
 }
 
 /**
- * Ends the prompt by optionally displaying an end message and running the action if confirmed.
- * Preserves the last prompt state unless there's an endTitle.
- */
-async function endPrompt(
-  endTitle: string,
-  endTitleColor: ColorName,
-  titleTypography: TypographyName,
-  titleVariant: VariantName | undefined,
-  border: boolean,
-  borderColor: ColorName,
-  action?: () => Promise<void>,
-  value?: boolean,
-): Promise<boolean> {
-  if (action && value) {
-    await action();
-  }
-
-  if (endTitle) {
-    // Only clear previous lines if we need to show an end title
-    msgUndoAll();
-    msg({
-      type: "M_END",
-      title: endTitle,
-      titleColor: endTitleColor,
-      titleTypography,
-      ...(titleVariant ? { titleVariant } : {}),
-      border,
-      borderColor,
-    });
-  } else {
-    // Add a bar between prompts when there's no end title
-    msg({
-      type: "M_BAR",
-      borderColor,
-    });
-  }
-
-  return value ?? false;
-}
-
-/**
  * Prompts the user with a yes/no question, returning a boolean based on their input.
  */
 export async function confirmPrompt(
@@ -205,6 +165,29 @@ export async function confirmPrompt(
   const instructions = `Use <y/n> to confirm or deny, <Enter> for default (${effectiveDefault ? "Y" : "N"}), <Ctrl+C> to exit`;
 
   let lastUILineCount = 0;
+
+  function endPrompt(isCtrlC = false): void {
+    if (endTitle !== "") {
+      msg({
+        type: "M_END",
+        title: endTitle,
+        titleColor: endTitleColor,
+        titleTypography,
+        ...(titleVariant ? { titleVariant } : {}),
+        border,
+        borderColor,
+      });
+    }
+    rl.close();
+    if (isCtrlC) {
+      process.exit(0);
+    }
+  }
+
+  // Handle Ctrl+C
+  rl.on("SIGINT", () => {
+    endPrompt(true);
+  });
 
   try {
     while (true) {
@@ -264,7 +247,8 @@ export async function confirmPrompt(
         continue;
       }
 
-      return await endPrompt(
+      return await completePrompt(
+        false,
         endTitle,
         endTitleColor,
         titleTypography,

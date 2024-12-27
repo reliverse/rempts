@@ -4,7 +4,7 @@ import readline from "node:readline/promises";
 
 import type { ColorName, TypographyName } from "~/types/general.js";
 
-import { msg, msgUndoAll, bar, type FmtMsgOptions } from "~/utils/messages.js";
+import { msg, bar, type FmtMsgOptions } from "~/utils/messages.js";
 import { deleteLastLine, deleteLastLines } from "~/utils/terminal.js";
 
 type VariantName = FmtMsgOptions["titleVariant"];
@@ -136,7 +136,6 @@ export async function numberPrompt(opts: NumberPromptOptions): Promise<number> {
   // Graceful Ctrl+C handling:
   rl.on("SIGINT", () => {
     if (endTitle !== "") {
-      msgUndoAll();
       msg({
         type: "M_END",
         title: endTitle,
@@ -230,7 +229,6 @@ export async function numberPrompt(opts: NumberPromptOptions): Promise<number> {
     // Check for Ctrl+C or stream closed
     if (answerInput === null) {
       if (endTitle !== "") {
-        msgUndoAll();
         msg({
           type: "M_END",
           title: endTitle,

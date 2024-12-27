@@ -14,6 +14,7 @@ import type { SymbolName } from "~/utils/messages.js";
 import type { VariantName } from "~/utils/variants.js";
 
 import { msg, msgUndoAll, bar } from "~/utils/messages.js";
+import { completePrompt } from "~/utils/prompt-end.js";
 import { deleteLastLine } from "~/utils/terminal.js";
 
 export type InputPromptOptions = {
@@ -187,20 +188,26 @@ export async function inputPrompt(
   const rl = readline.createInterface({ input, output });
 
   // Graceful Ctrl+C handling:
-  rl.on("SIGINT", () => {
-    if (endTitle !== "") {
-      msgUndoAll();
-      msg({
-        type: "M_END",
-        title: endTitle,
-        titleColor: endTitleColor,
-        titleTypography,
-        border,
-        borderColor,
-      });
-    }
+  async function endPrompt(isCtrlC = false) {
+    await completePrompt(
+      isCtrlC,
+      endTitle,
+      endTitleColor,
+      titleTypography,
+      titleVariant ? titleVariant : undefined,
+      border,
+      borderColor,
+      undefined,
+      false,
+    );
     rl.close();
-    process.exit(0);
+    if (isCtrlC) {
+      process.exit(0);
+    }
+  }
+
+  rl.on("SIGINT", () => {
+    void endPrompt(true);
   });
 
   let currentInput = hardcoded?.userInput || "";
@@ -282,19 +289,7 @@ export async function inputPrompt(
 
     // Check for Ctrl+C or stream closed
     if (answerInput === null) {
-      if (endTitle !== "") {
-        msgUndoAll();
-        msg({
-          type: "M_END",
-          title: endTitle,
-          titleColor: endTitleColor,
-          titleTypography,
-          border,
-          borderColor,
-        });
-      }
-      rl.close();
-      process.exit(0);
+      void endPrompt(true);
     }
 
     currentInput = answerInput.trim();

@@ -1,3 +1,5 @@
+import type { WriteStream } from "node:tty";
+
 import ansiEscapes from "ansi-escapes";
 import { AsyncResource } from "node:async_hooks";
 import { Stream } from "node:stream";
@@ -598,7 +600,7 @@ describe("createPrompt()", () => {
     process.on("warning", warningSpy);
 
     // We need to reuse the same stream to ensure it gets cleaned up properly.
-    const output = new WritableStream();
+    const output = new WritableStream() as unknown as WriteStream;
     for (let i = 0; i < 15; i++) {
       const { answer, events } = await render(
         prompt,

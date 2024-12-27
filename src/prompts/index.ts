@@ -1,3 +1,7 @@
+export { NonInteractiveError } from "~/core/errors.js";
+export function isTerminalInteractive(input = process.stdin): boolean {
+  return Boolean(input.isTTY);
+}
 export type { ColorName } from "~/types/general.js";
 export type { ChoiceOptions } from "~/types/general.js";
 export type { PromptOptions } from "~/types/general.js";
@@ -19,6 +23,8 @@ export {
 export { colorize } from "~/utils/colorize.js";
 export { fmt, msg } from "~/utils/messages.js";
 export { errorHandler } from "~/utils/errors.js";
+export { defineCommand } from "~/flags/command.js";
+export { runMain } from "~/flags/main.js";
 export { colorMap } from "~/utils/mapping.js";
 export { animateText } from "~/visual/animate/animate.js";
 export { createAsciiArt } from "~/visual/ascii-art/ascii-art.js";
@@ -36,10 +42,9 @@ export { nextStepsPrompt } from "~/next-steps/next-steps.js";
 export { numberPrompt } from "~/number/number-main.js";
 export { passwordPrompt } from "~/password/password-main.js";
 export { endPrompt } from "~/st-end/end.js";
-export { progressbar } from "~/progressbar/index.js";
+export * from "~/task/index.js";
 export { promptsDisplayResults } from "~/results/results.js";
 export { prompt } from "~/mono/mono.js";
-export { task } from "~/task/index.js";
 export { default as block } from "~/block/block.js";
 export { default as checkbox, Separator } from "~/checkbox/index.js";
 export { default as expand } from "~/expand/index.js";

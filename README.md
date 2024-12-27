@@ -1,92 +1,127 @@
 # @reliverse/prompts
 
-[**Docs**](.github/DOCS.md) | [**npmjs.com**](https://npmjs.com/package/@reliverse/prompts) | [**GitHub**](https://github.com/reliverse/prompts) | [**Discord**](https://discord.gg/Pb8uKbwpsJ)
+> **The CLI prompt library you didn’t realize you’ve been desperate for.**
 
-<p align="left">
-  <a href="https://npmjs.org/package/@reliverse/prompts">
-    <img src="https://img.shields.io/npm/v/@reliverse/prompts.svg" alt="version" />
-  </a>
-  <!-- <a href="https://github.com/reliverse/prompts/actions/workflows/test.yml">
-    <img src="https://github.com/reliverse/prompts/actions/workflows/test.yml/badge.svg" alt="test" />
-  </a> -->
-  <a href="https://npmjs.org/package/@reliverse/prompts">
-    <img src="https://img.shields.io/npm/dm/@reliverse/prompts.svg" alt="downloads" />
-  </a>
-  <!-- <a href="https://licenses.dev/npm/@reliverse/prompts">
-    <img src="https://licenses.dev/b/npm/@reliverse/prompts" alt="licenses" />
-  </a> -->
-  <!---
-   <a href="https://packagephobia.now.sh/result?p=@reliverse/prompts">
-    <img src="https://packagephobia.now.sh/badge?p=@reliverse/prompts" alt="install size" />
-  </a>
-  --->
-</p>
+It’s blazing-fast, type-safe, and has built-in crash resilience—so your command-line app can look slick without bursting into flames. Forget boilerplate-heavy setups—this library makes CLI development smooth and effortless.
 
-@reliverse/prompts is a powerful library that enables seamless, type-safe, and resilient prompts for command-line applications. Crafted with simplicity and elegance, it provides developers with an intuitive and robust way to build interactive CLIs.
+## Rapid-Fire Overview
 
-@reliverse/prompts is a full-featured alternative to @inquirer/prompts (Inquirer.js), enquirer, @clack/prompts, terkelg prompts, cronvel terminal-kit, unjs consola, and similar libraries.
+<div align="left">
+  <a href="https://npmjs.org/package/@reliverse/prompts"><img src="https://img.shields.io/npm/v/@reliverse/prompts.svg" alt="version" /></a>
+  <a href="https://npmjs.org/package/@reliverse/prompts"><img src="https://img.shields.io/npm/dm/@reliverse/prompts.svg" alt="downloads" /></a>
+</div>
 
-## Installation
+- **Docs**: [docs.reliverse.org/reliverse/prompts](https://docs.reliverse.org/reliverse/prompts/)  
+- **NPM**: [npmjs.com/package/@reliverse/prompts](https://www.npmjs.com/package/@reliverse/prompts)  
+- **GitHub**: [github.com/reliverse/prompts](https://github.com/reliverse/prompts)  
+- **Discord**: [discord.gg/3GawfWfAPe](https://discord.gg/3GawfWfAPe)
 
-Install with your preferred package manager:
+## Install in 3.2 Seconds
 
-```sh
-bun add @reliverse/prompts # Replace 'bun' with npm, pnpm, or yarn if desired (deno and jsr support coming soon)
+```bash
+bun add @reliverse/prompts
+# Or npm/pnpm/yarn if that’s your style
+# (deno with jsr support soon™)
 ```
 
-## Screenshot
+> **Pro Tip**: Make sure you have [Bun](https://bun.sh), [Node.js](https://nodejs.org), and [Git](https://git-scm.com/downloads) installed.
 
-[![CLI Example](./example.png)](./example.png)
+## The 3-Second Pitch
 
-## Key Features
+> This thing is **blazing fast**, **type-safe**, and basically a bulletproof vest for your CLI.  
+> No more spaghetti prompt code. Just shiny, stable, next-gen developer bliss.
 
-- **Type Safety**: Built with TypeScript, ensuring strong typing to prevent runtime errors.
-- **Schema Validation**: Validates user inputs using schemas for enhanced reliability.
-- **Flexible Prompt Types**: Supports a range of prompt types, including text, password, number, select, and multiselect.
-- **Crash Resilience**: Designed to handle cancellations and errors gracefully, ensuring stability.
+### *“But why not stick with Inquirer or Clack?”*
 
-## Prompt Types
+1. Better typed validation, bigger ASCII art, more interactive goodies, and next-level color theming.  
+2. Because you deserve better than “just good enough.”
 
-Each type has its own validation and display logic. More types are planned for future releases.
+## Key Selling Points
 
-- **Text**: Collects text input.
-- **Password**: Hidden input for secure password entries.
-- **Number**: Numeric input with optional validation.
-- **Confirm**: Simple Yes/No prompt.
-- **Select**: Dropdown selection for multiple choices.
-- **Multiselect**: Allows users to select multiple items from a list.
+- **TypeScript-first**: So your TypeScript dev heart can flutter in peace. Enjoy IntelliSense and zero guesswork.
+- **Flexible Prompt Types**: Text, confirm, select, multiselect, password, number, spinner, toggle, and many more… you do you.  
+- **Schema-driven Validations**: Easily integrates with TypeBox, Zod, or your own thing. No more “hope it works” solutions.  
+- **Accessibility**: Terminal-size awareness, WCAG AA color contrast, the whole enchilada.
+- **Crash-safe**: Ctrl+C or random cosmic rays? It shrugs them off.  
 
-## Input Validation
+## Why @reliverse/prompts?
 
-All prompts support custom validation logic, providing immediate feedback to users.
+Consider it your brand-new sports car, while your old CLI prompt library was a rusty lawnmower. Also, it’s a feature-packed replacement for Inquirer, Enquirer, Clack, Terkelg, Terminal-Kit, and a bunch more.  
 
-## Contributing
+[**Go deeper in the docs →**](https://docs.reliverse.org/reliverse/prompts/)
 
-@reliverse/prompts is a work in progress. We welcome feedback and contributions to help make it the best library it can be. Thank you!
+### Straight-Up GOAT Features
 
-Here is how to install the library for development:
+- **Full Cross-Platform ESM**: Seamlessly works with the Node.js and Bun environments.  
+- **Extensible UI**: Because color, typography, animations, and more matter to your terminal fashion sense.
+- **Built for DX**: Minimal dependencies, clean API, full validation baked in, and more.
+- **Mono Component**: Perfect for rapid prototyping. Or if you’re feeling lazy.  
 
-```sh
+## Speedrun Example
+
+```ts
+import { inputPrompt } from "@reliverse/prompts";
+
+await startPrompt({
+  clearConsole: true,
+  titleColor: "inverse",
+  packageName: "@reliverse/cli",
+  packageVersion: "1.0.0",
+  terminalSizeOptions: {
+    minWidth: 100,
+    minHeight: 16,
+    // 🗴  Oops! Terminal width is too small. Expected >100 | Current: 97
+  },
+});
+
+const username = await inputPrompt({
+  id: "username",
+  title: "Welcome to @reliverse/prompts Demo!",
+  content: "What's your name?",
+});
+
+console.log(`Hey there, ${username}!`);
+```
+
+## Task Management
+
+The library provides a powerful task management system with built-in verification steps, spinners, and error handling:
+
+- **Spinner and progress bars that actually move**: Progress tracking with current/total counts and status messages  
+- **Task priorities (because some stuff is more important)**: Critical, high, normal, low  
+- **Built-in stats, error handling, and cancellation**: Task timing and statistics, built-in error handling and cancellation support  
+- **Customizable spinners to keep your eyes happy**: Customizable spinners and progress indicators  
+- **Nested subtasks and task groups**: Group tasks and subtasks for better organization  
+- **Automatic verification steps with customizable delays**
+- **Simple error handling with proper formatting**
+- **Progress tracking for long-running operations**
+- **Custom validation and business logic support**
+
+Visit [docs](https://docs.reliverse.org/reliverse/prompts/#task-management) to learn more and see examples.
+
+## Playground Mode
+
+```bash
 git clone https://github.com/reliverse/prompts.git
 cd prompts
 bun i
+bun dev
 ```
 
-## Playground
+Check out `examples/launcher.ts` for a smorgasbord of demos (including a quiz). Who says CLIs can’t be fun?
 
-Run `bun dev` to launch the [examples/launcher.ts](./examples/launcher.ts) CLI, which helps you to dive into and explore any of the examples listed below. Experiment with @reliverse/prompts by running examples locally or reviewing the linked code:
+## Examples to Copy-Paste
 
-1. **[1-main.ts](./examples/1-main.ts)**: A comprehensive example of a CLI application featuring a well styled UI config. This example showcases all available prompt components, with code organized into separate functions and files for better readability and clarity.
-2. **[2-mono.ts](./examples/2-mono.ts)**: A quiz game example inspired by Fireship's video about CLIs. It demonstrates the dynamic capabilities of @reliverse/prompts by using a prompt() that includes all prompt components, so you don't need to import each component separately.
-3. **[3-simple.ts](./examples/3-simple.ts)**: A simple example highlighting the core functionalities of @reliverse/prompts. The entire implementation is contained within a single file for easy understanding.
-4. **[4-args-a.ts](./examples/4-args-a.ts)**: An example of how to run commands using arguments.
-5. **[5-args-b.ts](./examples/5-args-b.ts)**: Another example of how to run commands using arguments.
+1. **1-main.ts**: A powerhouse CLI example with all the trimmings, with advanced styling and all prompts.
+2. **2-mono.ts**: A single `prompt()` for multiple components—perfect for CLI where performance doesn't matter.  
+3. **3-simple.ts**: Less code, more speed.  
+4. **4-args-a.ts** + **5-args-b.ts**: Turn sub-commands into a more headless experience.
 
-## Extendable Configuration
+## Custom Config FTW
 
-**Example Configuration:**
+You don’t want a one-size-fits-all library. We got you:
 
-```typescript
+```ts
 const basicConfig = {
   titleColor: "cyanBright",
   titleTypography: "bold",
@@ -101,110 +136,60 @@ const extendedConfig = {
 
 const username = await inputPrompt({
   id: "username",
-  title: "We're glad you're testing our library!",
-  content: "Let's get to know each other!\nWhat's your username?",
-  schema: schema.properties.username,
+  title: "Testing out our fancy library!",
+  content: "What's your username?",
   ...extendedConfig,
 });
 ```
 
-## Mono Component
+## Mono Component: One Import to Rule Them All
 
-The Mono Component is a special component that includes all other components. It's a great way to get started quickly or to see how all the components work together.
-
-This component requires providing prompt id. To have typesafety use something like the following:
+If you’re lazy (like the rest of us), in a hurry, or just want everything jammed together, the Mono Component wraps up all prompt types in a single import.
 
 ```ts
 export const IDs = {
   start: "start",
   username: "username",
-  dir: "dir",
-  spinner: "spinner",
-  password: "password",
-  age: "age",
-  lang: "lang",
-  color: "color",
-  birthday: "birthday",
-  features: "features",
+  // ...
 };
 ```
 
-## Prompts Library Comparison
+## Comparison Table
 
-> **Note:** This table contains approximate and placeholder values. More detailed assessments will be provided as libraries continue to evolve.
+We’re not shy. We lined up **@reliverse/prompts** against Inquirer, Clack, Terminal-Kit, etc. Our goal? **Turn every feature dot green**. [**Check out the epic chart**](https://docs.reliverse.org/reliverse/prompts/#prompts-library-comparison)
 
-The mission of @reliverse/prompts is to achieve the 🟢 in all categories.
+## Arguments Support
 
-**Icon Legend:**
+You can’t build an amazing CLI without argument parsing. We’ve got a built-in fast parser that typecasts your things automatically.
 
-- 🟡: Not yet verified
-- 🟢: Fully supported
-- 🔵: Partially supported
-- 🔴: Not supported
+## Wrap It Up
 
-| **Feature**                                              | **@reliverse/prompts**                                         | **@inquirer/prompts**                      | **@enquirer/enquirer** | **@clack/prompts** | **@terkelg/prompts** | **@cronvel/terminal-kit** | **@unjs/citty** | **@unjs/consola**  | **@chjj/blessed** |
-| -------------------------------------------------------- | -------------------------------------------------------------- | ------------------------------------------ | ---------------------- | ------------------ | -------------------- | ------------------------- | --------------- | ------------------ | ----------------- |
-| - Full ES Modules Support                                | 🟢 Native ES module package                                    | 🟢                                        | 🟡                     | 🟡                 | 🔴 CJS-only          | 🔴 CJS-only             | 🟢              | 🟢                | 🟡                |
-| - Works both in node, bun, and deno environments         | 🔵 node+bun (deno support is coming soon)                      | 🟡                                        | 🟡                     | 🟡                 | 🟡                   | 🟡                      | 🔵              | 🔵                | 🟡                |
-| - Codebase typesafety with intellisense                  | 🔵                                                             | 🟡                                        | 🟡                     | 🟡                 | 🟡                   | 🟡                      | 🟡              | 🟡                | 🟡                |
-| - Runtime typesafety with schema validation              | 🟢 TypeBox & Custom                                            | 🟡                                        | 🟡                     | 🟡                 | 🟡                   | 🟡                      | 🟡              | 🟡                | 🟡                |
-| - Usage Examples                                         | 🟢                                                             | 🟡                                        | 🟡                     | 🟡                 | 🟡                   | 🟡                      | 🟡              | 🟡                | 🟡                |
-| - Customization                                          | 🟢 Colors, typography, variants, borders, and more             | 🟡                                        | 🟡                     | 🟡                 | 🟡                   | 🟡                      | 🟡              | 🟡                | 🟡                |
-| - Custom Validation                                      | 🔵                                                             | 🟡                                        | 🟡                     | 🟡                 | 🟡                   | 🟡                      | 🟡              | 🟡                | 🟡                |
-| - Error Handling                                         | 🔵                                                             | 🟡                                        | 🟡                     | 🟡                 | 🟡                   | 🟡                      | 🟡              | 🟡                | 🟡                |
-| - Ease of Setup                                          | 🔵                                                             | 🟡                                        | 🟡                     | 🟡                 | 🟡                   | 🟡                      | 🟡              | 🟡                | 🟡                |
-| - Crash Resilience                                       | 🔵                                                             | 🟡                                        | 🟡                     | 🟡                 | 🟡                   | 🟡                      | 🟡              | 🟡                | 🟡                |
-| - General DX                                             | 🔵 Clean and understandable TypeScript code                    | 🟡                                        | 🟡                     | 🟡                 | 🔴 JS-only           | 🔴 JS-only              | 🟡              | 🟡                | 🟡                |
-| - DX: Classes                                            | 🟢 Minimal number of classes as possible                       | 🟡                                        | 🟡                     | 🟡                 | 🟡                   | 🟡                      | 🟡              | 🟡                | 🟡                |
-| - Documentation                                          | 🔵                                                             | 🟡                                        | 🟡                     | 🟡                 | 🔵                   | 🟢                      | 🟡              | 🟡                | 🟢                |
-| - Extendable APIs                                        | 🟢 Works well with @reliverse/relinka                          | 🟢 Huge number of community prompts       | 🟡                     | 🟡                 | 🟡                   | 🟡                      | 🟡              | 🟡                | 🟡                |
-| - Designed With UX/DX in Mind                            | 🟢                                                             | 🟡                                        | 🟡                     | 🟡                 | 🟡                   | 🟡                      | 🟡              | 🟡                | 🟡                |
-| - All components support Ctrl+C                          | 🔵                                                             | 🟡                                        | 🟡                     | 🟡                 | 🟡                   | 🟡                      | 🟡              | 🟡                | 🟡                |
-| - As minimal number of dependencies as possible          | 🔵                                                             | 🟢                                        | 🟡                     | 🟡                 | 🟡                   | 🟡                      | 🟡              | 🟡                | 🟡                |
-| -------------------------------------------------------- | -------------------------------------------------------------- | ------------------------------------------ | ---------------------- | ------------------ | -------------------- | ------------------------- | --------------- | ------------------ | ----------------- |
-| **Components**                                           |                                                                |                                            |                        |                    |                      |                           |                 |                    |                   |
-| -------------------------------------------------------- | -------------------------------------------------------------- | ------------------------------------------ | ---------------------- | ------------------ | -------------------- | ------------------------- | --------------- | ------------------ | ----------------- |
-| - Visual Components                                      | 🟢 Animated Text (incl. 6 anims) & ASCII Art (incl. 290 fonts) | 🟡                                        | 🟡                     | 🟡                 | 🟡                   | 🟡                      | 🟡              | 🟡                | 🟡                |
-| - Mono Component                                         | 🟢 Mono (All-In-One) & Separate                                | 🟡                                        | 🟡                     | 🟡                 | 🔵 Mono-only         | 🟡                      | 🟡              | 🟡                | 🟡                |
-| - Start Component                                        | 🟢                                                             | 🟡                                        | 🟡                     | 🟡                 | 🟡                   | 🟡                      | 🟡              | 🟡                | 🟡                |
-| - Text Component                                         | 🟢                                                             | 🟡                                        | 🟡                     | 🟡                 | 🟡                   | 🟡                      | 🟡              | 🟡                | 🟡                |
-| - Password Component                                     | 🔵                                                             | 🟡                                        | 🟡                     | 🟡                 | 🟡                   | 🟡                      | 🟡              | 🟡                | 🟡                |
-| - Number Component                                       | 🔵                                                             | 🟡                                        | 🟡                     | 🟡                 | 🟡                   | 🟡                      | 🟡              | 🟡                | 🟡                |
-| - Confirm Component                                      | 🔵                                                             | 🟡                                        | 🟡                     | 🟡                 | 🟡                   | 🟡                      | 🟡              | 🟡                | 🟡                |
-| - Select Component                                       | 🔵 Native separator support                                    | 🔵 Separator supported via `new` keyword  | 🟡                     | 🟡                 | 🟡                   | 🟡                      | 🟡              | 🟡                | 🟡                |
-| - Multiselect Component                                  | 🔵 Native separator support                                    | 🔵 Separator supported via `new` keyword  | 🟡                     | 🟡                 | 🟡                   | 🟡                      | 🟡              | 🟡                | 🟡                |
-| - Search/Autocomplete Component                          | 🔵                                                             | 🟡                                        | 🟡                     | 🟡                 | 🟡                   | 🟡                      | 🟡              | 🟡                | 🟡                |
-| - Task/Spinner & Progressbar Components                  | 🔵                                                             | 🟡                                        | 🟡                     | 🟡                 | 🟡                   | 🟢                      | 🟡              | 🟡                | 🟡                |
-| - Image Component                                        | 🔴 Planned                                                     | 🟡                                        | 🟡                     | 🟡                 | 🟡                   | 🟢                      | 🟡              | 🟡                | 🟡                |
-| - Range Component                                        | 🔵                                                             | 🟡                                        | 🟡                     | 🟡                 | 🟡                   | 🟢                      | 🟡              | 🟡                | 🟡                |
-| -------------------------------------------------------- | -------------------------------------------------------------- | ------------------------------------------ | ---------------------- | ------------------ | -------------------- | ------------------------- | --------------- | ------------------ | ----------------- |
-| **Arguments Support**                                    |                                                                |                                            |                        |                    |                      |                           |                 |                    |                   |
-| -------------------------------------------------------- | -------------------------------------------------------------- | ------------------------------------------ | ---------------------- | ------------------ | -------------------- | ------------------------- | --------------- | ------------------ | ----------------- |
-| - Fast and lightweight argument parser                   | 🟢                                                             | 🟡                                        | 🟡                     | 🟡                 | 🟡                   | 🟡                      | 🟢              | 🟡                | 🟡                |
-| - Smart value parsing with typecast                      | 🟢                                                             | 🟡                                        | 🟡                     | 🟡                 | 🟡                   | 🟡                      | 🟢              | 🟡                | 🟡                |
-| - Boolean shortcuts and unknown flag handling            | 🟢                                                             | 🟡                                        | 🟡                     | 🟡                 | 🟡                   | 🟡                      | 🟢              | 🟡                | 🟡                |
-| - Nested sub-commands                                    | 🟢                                                             | 🟡                                        | 🟡                     | 🟡                 | 🟡                   | 🟡                      | 🟢              | 🟡                | 🟡                |
-| - Lazy and Async commands                                | 🟢                                                             | 🟡                                        | 🟡                     | 🟡                 | 🟡                   | 🟡                      | 🟢              | 🟡                | 🟡                |
-| - Pluggable and composable API                           | 🟢                                                             | 🟡                                        | 🟡                     | 🟡                 | 🟡                   | 🟡                      | 🟢              | 🟡                | 🟡                |
-| - Auto generated usage and help                          | 🟢                                                             | 🟡                                        | 🟡                     | 🟡                 | 🟡                   | 🟡                      | 🟢              | 🟡                | 🟡                |
+@reliverse/prompts is more than just pretty and fast prompts—it’s a full-blown CLI builder with customizable designs and robust typing. It’s built to slot seamlessly into Reliverse’s ecosystem, but even if you’re rolling your own thing, you’ll appreciate the minimal boilerplate and fancy visuals.
 
-**Related Links**: [@reliverse/relinka](https://github.com/reliverse/relinka#readme), [ESM/CJS](https://dev.to/iggredible/what-the-heck-are-cjs-amd-umd-and-esm-ikm), ["Pure ESM package"](https://gist.github.com/sindresorhus/a39789f98801d908bbc7ff3ecc99d99c), [Clean code](https://github.com/ryanmcdermott/clean-code-javascript#readme), ["UX patterns for CLI tools"](https://lucasfcosta.com/2022/06/01/ux-patterns-cli-tools.html), [DX (Developer Experience)](https://github.blog/enterprise-software/collaboration/developer-experience-what-is-it-and-why-should-you-care), [TypeBox](https://github.com/sinclairzx81/typebox#readme), ["ANSI Escape Sequences"](https://gist.github.com/ConnerWill/d4b6c776b509add763e17f9f113fd25b), [@chjj/blessed](https://github.com/chjj/blessed#readme), [Wrapping](https://github.com/SBoudrias/Inquirer.js/pull/255), [Visual Control](https://stackoverflow.com/questions/68344362/how-do-i-get-full-visual-control-of-a-terminal-with-node)
-
-## Wrap-Up
-
-@reliverse/prompts is a versatile library designed to accelerate CLI development by providing customizable prompt components. Integrated into the [Reliverse CLI](https://github.com/blefnk/reliverse#readme), @reliverse/prompts enables you to create a unique design aligned with your CLI app’s aesthetics, similar to how @shadcn/ui supports customizable web UI components. Quickly get started by copying configurations from the [Reliverse Docs](https://docs.reliverse.org/prompts) and using components that fit your project, making it faster to bring your CLI app to life. You’re free to customize each component as desired, with default designs provided to ensure an attractive interface from the start.
-
-## Learn More
-
-- [Temporary @reliverse/prompts Docs](.github/DOCS.md)
-- [Reliverse Docs](https://docs.reliverse.org)
+- **CLI builder** with style & resilience  
+- **Customizable** design and color theming  
+- **Zero guesswork** with TypeScript integrations  
+- **Minimal boilerplate** with maximum results
 
 ## Special Thanks
 
-This project wouldn’t exist without the amazing work of the huge number of contributors to the list of projects below. Many of the @reliverse/prompts prompts are based on the incredible work of:
-
-[@inquirer/prompts](https://github.com/SBoudrias/Inquirer.js#readme) | [terkelg/prompts](https://github.com/terkelg/prompts#readme) | [@clack/prompts](https://github.com/bombshell-dev/clack#readme) | [create-t3-app](https://github.com/t3-oss/create-t3-app#readme) | [create-astro](https://github.com/withastro/astro/tree/main/packages/create-astro#readme) | [cronvel/terminal-kit](https://github.com/cronvel/terminal-kit#readme) | [unjs/consola](https://github.com/unjs/consola#readme) | [nodejs/string_decoder](https://github.com/nodejs/string_decoder) | [TooTallNate/keypress](https://github.com/TooTallNate/keypress) | [derhuerst](https://github.com/derhuerst)
+**@inquirer/prompts**, **@terkelg/prompts**, **@clack/prompts**, **@unjs/citty**, and all the open-source legends. You built the shoulders we stand on.
 
 ## License
 
-[MIT](./LICENSE.md) © [Nazarii Korniienko](https://github.com/blefnk)
+**MIT** © [Nazarii Korniienko](https://github.com/reliverse/prompts)
+
+> **Stop reading. Start coding.**  
+> If you’re serious about CLIs—don’t just build—**Reliverse it** with `@reliverse/prompts`.
+
+## More Goodies
+
+- [**Reliverse Docs**](https://docs.reliverse.org/reliverse/prompts/)
+
+## Screenshot Brag
+
+[![CLI Example](./examples/1.png)](./examples/1.png)
+
+**That’s it.** Now go forth and build unstoppable CLIs with `@reliverse/prompts`. And remember:  
+
+> **Don’t just build a CLI. Reliverse it.**  

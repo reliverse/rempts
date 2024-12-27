@@ -1,6 +1,12 @@
 // 2-mono-example.ts: A fun example of a quiz game. Inspired by CLI-game created by Fireship. The example demonstrates how to use a mono prompt() component.
 
-import { animateText, inputPrompt, task } from "~/main.js";
+import {
+  animateText,
+  inputPrompt,
+  advancedTaskPrompt,
+  endPrompt,
+  msg,
+} from "~/main.js";
 import { prompt } from "~/mono/mono.js";
 import { colorize } from "~/utils/colorize.js";
 import { errorHandler } from "~/utils/errors.js";
@@ -48,7 +54,7 @@ async function main() {
     ],
   });
 
-  await task({
+  /* await advancedTaskPrompt({
     initialMessage: "Checking answer...",
     successMessage: "Answer checked successfully.",
     spinnerSolution: "ora",
@@ -58,11 +64,54 @@ async function main() {
       updateMessage(
         answer === "Dec 4th, 1995"
           ? `Nice work ${playerName}. That's a legit answer!`
-          : `🫠 Game over, ${playerName}! You lose!`,
+          : `🫠  Game over, ${playerName}! You lose!`,
       );
       await new Promise((resolve) => setTimeout(resolve, 1000));
     },
-  });
+  }); */
+
+  const result = await advancedTaskPrompt(
+    "Check answer",
+    {
+      priority: "normal",
+      displayType: "progress",
+    },
+    async ({ setStatus, setError, setProgress }) => {
+      setProgress({
+        current: 0,
+        total: 5,
+        message: "Starting verification...",
+      });
+      await new Promise((resolve) => setTimeout(resolve, 500));
+
+      for (let i = 0; i < 5; i++) {
+        setProgress({
+          current: i + 1,
+          total: 5,
+          message: `Step ${i + 1}: Verifying answer...`,
+        });
+        await new Promise((resolve) => setTimeout(resolve, 400));
+      }
+
+      const isCorrect = answer === "Dec 4th, 1995";
+
+      if (!isCorrect) {
+        setError(
+          `🫠  Game over, ${playerName}! You lose!\nNo worries, you can try again!`,
+        );
+        // Wait a bit to ensure the message is displayed
+        await new Promise((resolve) => setTimeout(resolve, 100));
+        process.exit(1);
+      }
+
+      setStatus(`Nice work ${playerName}. That's a legit answer!`);
+      return isCorrect;
+    },
+  );
+
+  if (!result) {
+    return;
+  }
 
   const message = `Congrats !\n $ 1 , 0 0 0 , 0 0 0`;
 
@@ -81,6 +130,15 @@ async function main() {
     titleTypography: "bold",
     border: false,
   });
+
+  msg({ type: "M_BAR" });
+
+  await endPrompt({
+    title: "Thanks for playing!\n",
+    titleColor: "passionGradient",
+    titleTypography: "bold",
+  });
+
   process.exit(0);
 }
 

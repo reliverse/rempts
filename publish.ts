@@ -1,7 +1,8 @@
 // 👉 usage example: `bun pub --bump=1.2.3`
 
-import { defineCommand, errorHandler, runMain } from "@reliverse/prompts";
 import { execa } from "execa";
+
+import { defineCommand, errorHandler, runMain } from "~/main.js";
 
 const main = defineCommand({
   meta: {

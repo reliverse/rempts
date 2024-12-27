@@ -3,7 +3,8 @@ import type { IFileOptions } from "external-editor";
 import { editAsync } from "external-editor";
 import { AsyncResource } from "node:async_hooks";
 
-import type { PartialDeep, BetterReadline } from "~/types/index.js";
+import type { BetterReadline } from "~/types/index.js";
+import type { PartialDeep } from "~/types/utils.js";
 
 import {
   createPrompt,

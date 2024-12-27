@@ -1,4 +1,5 @@
-import type { Prettify, PartialDeep } from "~/types/index.js";
+import type { Prettify } from "~/types/index.js";
+import type { PartialDeep } from "~/types/utils.js";
 
 import { defaultTheme, type Theme } from "./theme.js";
 
