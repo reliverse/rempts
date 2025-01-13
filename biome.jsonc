@@ -110,6 +110,7 @@
       },
       "suspicious": {
         "noConfusingVoidType": "off",
+        "noControlCharactersInRegex": "off",
         "noApproximativeNumericConstant": "off",
         "noArrayIndexKey": "off",
         "noAssignInExpressions": "off",

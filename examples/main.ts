@@ -13,7 +13,7 @@ import {
   showNextStepsPrompt,
   showNumberPrompt,
   showNumSelectPrompt,
-  showPasswordPrompt,
+  showInputPromptMasked,
   showResults,
   showStartPrompt,
   showInputPrompt,
@@ -33,7 +33,7 @@ export async function detailedExample() {
   const lang = await showSelectPrompt();
   await showNumMultiselectPrompt();
   const age = await showNumberPrompt();
-  const password = await showPasswordPrompt();
+  const password = await showInputPromptMasked();
   const birthday = await showDatePrompt();
   const langs = await showMultiselectPrompt();
   const color = await showNumSelectPrompt();

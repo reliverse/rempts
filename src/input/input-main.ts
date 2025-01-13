@@ -6,10 +6,16 @@ import type {
   VariantName,
 } from "@reliverse/relinka";
 import type { TSchema } from "@sinclair/typebox";
+import type { Interface } from "node:readline/promises";
 
-import { bar, deleteLastLine, msg, msgUndoAll } from "@reliverse/relinka";
+import {
+  bar,
+  deleteLastLine,
+  isUnicodeSupported,
+  msg,
+  msgUndoAll,
+} from "@reliverse/relinka";
 import { Value } from "@sinclair/typebox/value";
-import { stdin as input, stdout as output } from "node:process";
 import readline from "node:readline/promises";
 import pc from "picocolors";
 
@@ -17,65 +23,180 @@ import type { PromptOptions } from "~/main.js";
 
 import { completePrompt } from "~/utils/prompt-end.js";
 
+const unicode = isUnicodeSupported();
+const S_MASK = unicode ? "▋" : "*";
+
+/**
+ * getMaskChar()
+ * Returns the appropriate mask character based on Unicode support.
+ * Falls back to "*" if Unicode is not supported, regardless of custom mask.
+ */
+function getMaskChar(customMask?: string): string {
+  if (!unicode) return "*";
+  return customMask ?? S_MASK;
+}
+
+/**
+ * InputPromptOptions
+ *
+ * Extended options for handling user input prompts, including validation
+ * and UI styling. Inherits from PromptOptions.
+ */
 export type InputPromptOptions = {
-  title: string;
-  hint?: string;
-  hintPlaceholderColor?: ColorName;
-  validate?: (
-    value: string,
-  ) => string | boolean | void | Promise<string | boolean | void>;
-  defaultValue?: string;
-  schema?: TSchema;
-  titleColor?: ColorName;
-  titleTypography?: TypographyName;
-  titleVariant?: VariantName;
+  border?: boolean;
+  borderColor?: ColorName;
   content?: string;
   contentColor?: ColorName;
   contentTypography?: TypographyName;
   contentVariant?: VariantName;
-  borderColor?: ColorName;
-  variantOptions?: any;
-  placeholder?: string;
+  customSymbol?: string;
+  defaultValue?: string;
   endTitle?: string;
   endTitleColor?: ColorName;
-  border?: boolean;
   hardcoded?: {
     userInput?: string;
     errorMessage?: string;
     showPlaceholder?: boolean;
   };
+  hint?: string;
+  hintPlaceholderColor?: ColorName;
+  mode?: "plain" | "password";
+  mask?: string;
+  placeholder?: string;
+  schema?: TSchema;
   symbol?: SymbolName;
-  customSymbol?: string;
   symbolColor?: ColorName;
+  title: string;
+  titleColor?: ColorName;
+  titleTypography?: TypographyName;
+  titleVariant?: VariantName;
+  validate?: (
+    value: string,
+  ) => string | boolean | void | Promise<string | boolean | void>;
+  variantOptions?: unknown;
 } & PromptOptions;
 
 type RenderParams = {
-  title: string;
-  userInput: string;
-  errorMessage: string;
   border: boolean;
-  hint?: string | undefined;
-  hintPlaceholderColor?: ColorName | undefined;
-  content?: string | undefined;
-  contentColor?: ColorName | undefined;
-  contentTypography?: TypographyName | undefined;
-  contentVariant?: VariantName | undefined;
-  titleColor?: ColorName | undefined;
-  titleTypography?: TypographyName | undefined;
-  titleVariant?: VariantName | undefined;
-  borderColor?: ColorName | undefined;
-  placeholder?: string | undefined;
-  symbol?: SymbolName | undefined;
-  customSymbol?: string | undefined;
-  symbolColor?: ColorName | undefined;
+  borderColor?: ColorName;
+  content?: string;
+  contentColor?: ColorName;
+  contentTypography?: TypographyName;
+  contentVariant?: VariantName;
+  customSymbol?: string;
+  errorMessage: string;
+  hint?: string;
+  hintPlaceholderColor?: ColorName;
+  mask?: string;
+  placeholder?: string;
+  symbol?: SymbolName;
+  symbolColor?: ColorName;
+  title: string;
+  titleColor?: ColorName;
+  titleTypography?: TypographyName;
+  titleVariant?: VariantName;
+  userInput: string;
+  isRerender?: boolean;
 };
 
 /**
- * Renders the prompt UI.
- * Uses `msg()` for all printing, so we can easily undo and re-render.
- * Returns nothing (the line counting is handled internally by `msg()` and `msgUndoAll()`).
+ * ask()
+ *
+ * Prompt the user for input.
+ * - If 'mode' is 'password', handle character-by-character masking.
+ * - Otherwise, use readline’s .question().
+ *
+ * @param terminal The readline interface.
+ * @param prompt   The text to display before user input.
+ * @param mode     The type of input prompt ("plain" or "password").
+ * @param endPrompt Callback to handle Ctrl+C or closing the prompt.
+ * @returns The user input in plain text, or null if canceled (Ctrl+C).
  */
-function renderPromptUI(params: RenderParams & { isRerender?: boolean }) {
+async function ask(
+  terminal: Interface,
+  prompt: string,
+  mode: "plain" | "password",
+  mask?: string,
+): Promise<string | null> {
+  if (mode === "password") {
+    // Manual character-by-character reading for masking:
+    return new Promise((resolve) => {
+      let buffer = "";
+      const maskChar = getMaskChar(mask);
+
+      // Print the prompt manually:
+      process.stdout.write(prompt);
+
+      const onData = (data: Buffer) => {
+        const str = data.toString("utf-8");
+
+        for (const char of str) {
+          // If user presses Enter or Return, we're done
+          if (char === "\n" || char === "\r") {
+            process.stdout.write("\n");
+            cleanup();
+            resolve(buffer);
+            return;
+          }
+
+          // If user presses Ctrl+C
+          if (char === "\u0003") {
+            cleanup();
+            resolve(null);
+            return;
+          }
+
+          // If user presses backspace (ASCII DEL or BS)
+          if (char === "\u007F" || char === "\b") {
+            if (buffer.length > 0) {
+              buffer = buffer.slice(0, -1);
+            }
+            redrawPrompt(buffer, prompt);
+            continue;
+          }
+
+          // Otherwise, add this char to the buffer
+          buffer += char;
+          redrawPrompt(buffer, prompt);
+        }
+      };
+
+      // Attach our listener
+      process.stdin.on("data", onData);
+
+      /**
+       * cleanup()
+       * Removes event listener once we're finished.
+       */
+      const cleanup = () => {
+        process.stdin.removeListener("data", onData);
+      };
+
+      /**
+       * redrawPrompt()
+       * Clears line and re-renders the prompt with masked input.
+       */
+      const redrawPrompt = (maskedBuffer: string, textPrompt: string) => {
+        process.stdout.clearLine(0);
+        process.stdout.cursorTo(0);
+        process.stdout.write(textPrompt + maskChar.repeat(maskedBuffer.length));
+      };
+    });
+  }
+
+  // "plain" mode uses the normal question flow:
+  return terminal.question(prompt);
+}
+
+/**
+ * renderPromptUI()
+ *
+ * Renders the text prompt UI, including optional hint, placeholder,
+ * or error messages. Uses reliverse/relinka's msg() for rendering.
+ *
+ * @param params RenderParams containing display options, user input, etc.
+ */
+function renderPromptUI(params: RenderParams): void {
   const {
     title,
     hint = "",
@@ -99,8 +220,7 @@ function renderPromptUI(params: RenderParams & { isRerender?: boolean }) {
   // Decide message type based on error state
   const type: MsgType = errorMessage !== "" ? "M_ERROR" : "M_GENERAL";
 
-  // Main prompt line
-  const msgParams = {
+  msg({
     type,
     title,
     titleColor,
@@ -118,29 +238,7 @@ function renderPromptUI(params: RenderParams & { isRerender?: boolean }) {
     symbol,
     customSymbol,
     symbolColor,
-  };
-
-  msg(
-    msgParams as {
-      type: MsgType;
-      title: string;
-      titleColor: ColorName;
-      titleTypography: TypographyName;
-      titleVariant: VariantName;
-      content: string;
-      contentColor: ColorName;
-      contentTypography: TypographyName;
-      contentVariant: VariantName;
-      borderColor: ColorName;
-      hint: string;
-      hintPlaceholderColor: ColorName;
-      placeholder: string;
-      errorMessage: string;
-      symbol: SymbolName;
-      customSymbol: string;
-      symbolColor: ColorName;
-    },
-  );
+  });
 
   // If user already typed something, show it
   if (userInput !== "") {
@@ -149,19 +247,73 @@ function renderPromptUI(params: RenderParams & { isRerender?: boolean }) {
 }
 
 /**
- * The inputPrompt function:
- * - Renders a text prompt, possibly with a hint, placeholder, and content.
- * - Waits for user input.
- * - Validates input using an optional schema or validate function.
- * - If invalid, shows an error and re-prompts.
- * - Exits on Ctrl+C, optionally printing an endTitle.
- * - Returns the user's validated input (or default value if none provided).
+ * validateInput()
+ *
+ * Validates the user input against:
+ * - An optional TypeBox schema
+ * - An optional custom validate function
+ *
+ * @param input  The user input string to validate.
+ * @param schema Optional TypeBox schema for structural validation.
+ * @param validate Optional custom validator function.
+ * @returns Object with .isValid and .errorMessage
+ */
+async function validateInput(
+  input: string,
+  schema?: TSchema,
+  validate?: (
+    value: string,
+  ) => string | boolean | void | Promise<string | boolean | void>,
+): Promise<{ isValid: boolean; errorMessage: string }> {
+  let isValid = true;
+  let errorMessage = "";
+
+  // 1. Schema validation
+  if (schema) {
+    isValid = Value.Check(schema, input);
+    if (!isValid) {
+      const errors = [...Value.Errors(schema, input)];
+      errorMessage =
+        errors.length > 0 && errors[0]?.message
+          ? errors[0].message
+          : "Invalid input.";
+    }
+  }
+
+  // 2. Custom validation function
+  if (validate && isValid) {
+    const validationResult = await validate(input);
+    if (typeof validationResult === "string") {
+      isValid = false;
+      errorMessage = validationResult;
+    } else if (validationResult === false) {
+      isValid = false;
+      errorMessage = "Invalid input.";
+    }
+  }
+
+  return { isValid, errorMessage };
+}
+
+/**
+ * inputPrompt()
+ *
+ * Main entry point to prompt the user for input.
+ * - Renders a text prompt with optional hint, placeholder, and content.
+ * - Waits for user input (supporting "plain" or "password" modes).
+ * - Validates input with an optional TypeBox schema or custom validate() fn.
+ * - Shows errors if invalid, re-prompts if necessary.
+ * - Handles Ctrl+C gracefully, optionally printing an endTitle.
+ * - Returns the user's validated input, or a default value if empty.
+ *
+ * @param options InputPromptOptions to customize the prompt.
+ * @returns A Promise resolving to the validated user input (string).
  */
 export async function inputPrompt(
   options: InputPromptOptions,
 ): Promise<string> {
   const {
-    title = "",
+    title,
     hint,
     hintPlaceholderColor = "blue",
     validate,
@@ -169,11 +321,11 @@ export async function inputPrompt(
     schema,
     titleColor = "cyan",
     titleTypography = "none",
-    titleVariant,
+    titleVariant = "none",
     content,
     contentColor = "dim",
     contentTypography = "italic",
-    contentVariant,
+    contentVariant = "none",
     borderColor = "dim",
     placeholder,
     hardcoded,
@@ -183,41 +335,57 @@ export async function inputPrompt(
     symbol,
     customSymbol,
     symbolColor,
+    mode = "plain",
+    mask,
   } = options;
 
-  const rl = readline.createInterface({ input, output });
+  // Create a new readline interface
+  const terminal = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout,
+  });
 
-  // Graceful Ctrl+C handling:
-  async function endPrompt(isCtrlC: boolean) {
+  /**
+   * endPrompt()
+   *
+   * Handles the final actions if the user hits Ctrl+C or the prompt completes.
+   * Closes the terminal interface and optionally exits the process.
+   */
+  async function endPrompt(isCtrlC: boolean): Promise<void> {
     await completePrompt(
       isCtrlC,
       endTitle,
       endTitleColor,
       titleTypography,
-      titleVariant ? titleVariant : undefined,
+      titleVariant,
       border,
       borderColor,
       undefined,
       false,
     );
-    rl.close();
+    terminal.close();
     if (isCtrlC) {
       process.exit(0);
     }
   }
 
-  rl.on("SIGINT", () => {
+  // Handle SIGINT manually for readline
+  terminal.on("SIGINT", () => {
     void endPrompt(true);
   });
 
-  let currentInput = hardcoded?.userInput || "";
-  let errorMessage = hardcoded?.errorMessage || "";
+  let currentInput = hardcoded?.userInput ?? "";
+  let errorMessage = hardcoded?.errorMessage ?? "";
   let showPlaceholder = hardcoded?.showPlaceholder ?? true;
   let isRerender = false;
 
-  // If we have a hardcoded user input, skip interactive input and just validate
-  if (hardcoded?.userInput !== undefined) {
-    // Render once
+  /**
+   * handleHardcodedInput()
+   *
+   * If user input is pre-supplied in 'hardcoded', validate it immediately
+   * without interactive input. Throws if invalid.
+   */
+  async function handleHardcodedInput(): Promise<string> {
     msgUndoAll();
     renderPromptUI({
       title,
@@ -231,35 +399,55 @@ export async function inputPrompt(
       titleTypography,
       titleVariant,
       borderColor,
-      placeholder: showPlaceholder ? placeholder : undefined,
+      placeholder: showPlaceholder ? placeholder : "",
       userInput: currentInput,
       errorMessage,
       border,
-      isRerender,
       symbol,
       customSymbol,
       symbolColor,
+      mask,
     });
 
-    const answer = currentInput || defaultValue;
-    const validated = await validateInput(answer, schema, validate);
+    const finalAnswer = currentInput || defaultValue;
+    const validated = await validateInput(finalAnswer, schema, validate);
 
-    if (validated.isValid) {
-      msg({ type: "M_MIDDLE", title: `  ${answer}` });
-      msg({ type: "M_BAR", borderColor });
-      rl.close();
-      return answer;
-    } else {
-      rl.close();
+    if (!validated.isValid) {
+      terminal.close();
       throw new Error(validated.errorMessage || "Invalid input.");
     }
+    // If valid, display final input, close, and return
+    msg({ type: "M_MIDDLE", title: `  ${finalAnswer}` });
+    msg({ type: "M_BAR", borderColor });
+    terminal.close();
+    return finalAnswer;
   }
 
-  // Interactive loop
+  // If we have a hardcoded user input, skip interactive input
+  if (hardcoded?.userInput !== undefined) {
+    return handleHardcodedInput();
+  }
+
+  /**
+   * Interactive loop: repeatedly prompt user for input until validated
+   */
   while (true) {
     if (isRerender) {
+      // Clear all lines previously rendered by msg()
       msgUndoAll();
     }
+
+    // Mask the displayed userInput if mode === 'password'
+    const displayedUserInput =
+      mode === "password"
+        ? getMaskChar(mask).repeat(currentInput.length)
+        : currentInput;
+
+    if (errorMessage) {
+      deleteLastLine();
+      deleteLastLine();
+    }
+
     renderPromptUI({
       title,
       hint,
@@ -272,92 +460,68 @@ export async function inputPrompt(
       titleTypography,
       titleVariant,
       borderColor,
-      placeholder: showPlaceholder ? placeholder : undefined,
-      userInput: currentInput,
+      placeholder: showPlaceholder ? placeholder : "",
+      userInput: displayedUserInput,
       errorMessage,
       border,
-      isRerender,
       symbol,
       customSymbol,
       symbolColor,
+      mask,
     });
 
-    const formattedBar = bar({ borderColor });
-    const answerInput = await rl.question(`${formattedBar}  `);
-
-    isRerender = true; // Set to true after first render
-
-    // Check for Ctrl+C or stream closed
-    if (answerInput === null) {
-      void endPrompt(true);
+    if (errorMessage) {
+      deleteLastLine();
     }
 
-    currentInput = answerInput.trim();
+    // Format the 'bar' for the question prompt
+    const formattedBar = bar({ borderColor });
 
+    // Use our custom ask() helper
+    const userInputRaw = await ask(terminal, `${formattedBar}  `, mode, mask);
+    isRerender = true;
+
+    // If ask() returns null, the user pressed Ctrl+C (endPrompt called).
+    if (userInputRaw === null) {
+      return ""; // or never, depending on your design
+    }
+
+    currentInput = userInputRaw.trim();
+
+    // Once the user provides any input, disable the placeholder
     if (showPlaceholder && currentInput !== "") {
       showPlaceholder = false;
     }
 
-    const answer = currentInput || defaultValue;
-    const validated = await validateInput(answer, schema, validate);
+    // Use defaultValue if nothing is entered
+    const finalAnswer = currentInput || defaultValue;
+    const validated = await validateInput(finalAnswer, schema, validate);
 
     if (validated.isValid) {
-      // Delete the last line with user input since it's already displayed
-      deleteLastLine();
-
-      // Show either default value or user input
+      // Show user what was accepted if input was empty but default is used
       if (!currentInput && defaultValue) {
-        msg({ type: "M_MIDDLE", title: `  ${pc.reset(defaultValue)}` });
-      } else if (currentInput) {
-        msg({ type: "M_MIDDLE", title: `  ${pc.reset(currentInput)}` });
+        if (mode === "password") {
+          deleteLastLine();
+          deleteLastLine();
+          // Mask the default
+          msg({
+            type: "M_MIDDLE",
+            title: `  ${getMaskChar(mask).repeat(defaultValue.length)}`,
+          });
+        } else {
+          deleteLastLine();
+          msg({ type: "M_MIDDLE", title: `  ${pc.reset(defaultValue)}` });
+        }
       }
-      // Add a bar after the answer
+      if (errorMessage) {
+        deleteLastLine();
+      }
       msg({ type: "M_BAR", borderColor });
-      rl.close();
-      return answer;
-    } else {
-      // Show error and re-render
-      errorMessage = validated.errorMessage;
+      terminal.close();
+      return finalAnswer;
     }
+
+    // Input was invalid; store error and re-render
+    errorMessage = validated.errorMessage;
   }
-}
-
-/**
- * Validates the user input against the schema and validate function.
- */
-async function validateInput(
-  input: string,
-  schema?: TSchema,
-  validate?: (
-    value: string,
-  ) => string | boolean | void | Promise<string | boolean | void>,
-): Promise<{ isValid: boolean; errorMessage: string }> {
-  let isValid = true;
-  let errorMessage = "";
-
-  // Schema validation
-  if (schema) {
-    isValid = Value.Check(schema, input);
-    if (!isValid) {
-      const errors = [...Value.Errors(schema, input)];
-      errorMessage =
-        errors.length > 0 && errors[0]?.message
-          ? errors[0].message
-          : "Invalid input.";
-    }
-  }
-
-  // Custom validation function
-  if (validate && isValid) {
-    const validationResult = await validate(input);
-    if (typeof validationResult === "string") {
-      isValid = false;
-      errorMessage = validationResult;
-    } else if (validationResult === false) {
-      isValid = false;
-      errorMessage = "Invalid input.";
-    }
-  }
-
-  return { isValid, errorMessage };
 }

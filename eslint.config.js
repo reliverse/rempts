@@ -94,6 +94,7 @@ const config = tseslint.config(
       "@stylistic/quotes": "off",
       "@stylistic/quote-props": "off",
       "@stylistic/indent-binary-ops": "off",
+      "no-control-regex": "off",
     },
   },
   {

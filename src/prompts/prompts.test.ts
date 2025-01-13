@@ -6,7 +6,6 @@ import {
   editor,
   expand,
   input,
-  password,
   rawlist,
   search,
   select,
@@ -20,7 +19,6 @@ describe("@reliverse/prompts", () => {
     expect(editor).toBeTypeOf("function");
     expect(expand).toBeTypeOf("function");
     expect(input).toBeTypeOf("function");
-    expect(password).toBeTypeOf("function");
     expect(rawlist).toBeTypeOf("function");
     expect(search).toBeTypeOf("function");
     expect(select).toBeTypeOf("function");

@@ -1,20 +1,20 @@
 import * as url from "node:url";
 
-import { password } from "~/prompts/index.js";
+import { inputPrompt } from "~/main.js";
 
 const demo = async () => {
   console.log(
     "Answer:",
-    await password({
-      message: "Enter a silent password?",
+    await inputPrompt({
+      title: "Enter a silent password?",
     }),
   );
 
   console.log(
     "Answer:",
-    await password({
-      message: "Enter a masked password?",
-      mask: "*",
+    await inputPrompt({
+      title: "Enter a masked password?",
+      mode: "password",
     }),
   );
 };

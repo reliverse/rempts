@@ -7,7 +7,6 @@ import { datePrompt } from "~/date/date.js";
 import { multiselectPrompt } from "~/multiselect/multi-select-two.js";
 import { nextStepsPrompt } from "~/next-steps/next-steps.js";
 import { numberPrompt } from "~/number/number-main.js";
-import { passwordPrompt } from "~/password/password-main.js";
 import { numSelectPrompt } from "~/select/num-select.js";
 import { selectPrompt } from "~/select/select-two.js";
 import { endPrompt } from "~/st-end/end.js";
@@ -47,9 +46,6 @@ export async function prompt<T extends TSchema>(
       break;
     case "multiselect":
       value = await multiselectPrompt(options);
-      break;
-    case "password":
-      value = await passwordPrompt(options);
       break;
     case "date":
       value = await datePrompt({

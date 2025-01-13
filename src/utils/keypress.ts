@@ -1,4 +1,3 @@
-/* eslint-disable no-control-regex */
 import type * as SafeBuffer from "safe-buffer";
 import type { Readable } from "stream";
 
@@ -7,10 +6,8 @@ import type { Keypress } from "~/types/keypress.js";
 import { StringDecoder } from "./decoder.js";
 
 // Regular expressions for parsing ANSI escape codes
-// biome-ignore lint/suspicious/noControlCharactersInRegex: <explanation>
 const metaKeyCodeRe = /^(?:\u001b)([a-zA-Z0-9])$/;
 const functionKeyCodeRe =
-  // biome-ignore lint/suspicious/noControlCharactersInRegex: <explanation>
   /^(?:\u001b+)(O|N|\[|\[\[)(?:(\d+)(?:;(\d+))?([~^$])|(?:1;)?(\d+)?([a-zA-Z]))/;
 
 /**

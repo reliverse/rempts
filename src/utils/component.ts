@@ -10,7 +10,6 @@ import {
   GroupMultiSelectPrompt,
   isCancel,
   MultiSelectPrompt,
-  PasswordPrompt,
   SelectKeyPrompt,
   SelectPrompt,
   InputPrompt,
@@ -34,7 +33,6 @@ const S_RADIO_INACTIVE = s("○", " ");
 const S_CHECKBOX_ACTIVE = s("◻", "[•]");
 const S_CHECKBOX_SELECTED = s("◼", "[+]");
 const S_CHECKBOX_INACTIVE = s("◻", "[ ]");
-const S_PASSWORD_MASK = s("▪", "•");
 
 const S_BAR_H = s("─", "-");
 const S_CORNER_TOP_RIGHT = s("╮", "+");
@@ -135,38 +133,6 @@ export const text = (opts: TextOptions) => {
           return `${title}${pc.gray(S_BAR)}  ${pc.strikethrough(
             pc.dim(this.value ?? ""),
           )}${this.value?.trim() ? `\n${pc.gray(S_BAR)}` : ""}`;
-        default:
-          return `${title}${pc.cyan(S_BAR)}  ${value}\n${pc.cyan(S_BAR_END)}\n`;
-      }
-    },
-  }).prompt();
-};
-
-export type PasswordOptions = {
-  message: string;
-  mask?: string;
-  validate?: (value: string) => string | void;
-};
-export const password = (opts: PasswordOptions) => {
-  return new PasswordPrompt({
-    validate: opts.validate,
-    mask: opts.mask ?? S_PASSWORD_MASK,
-    render() {
-      const title = `${pc.gray(S_BAR)}\n${symbol(this.state)}  ${opts.message}\n`;
-      const value = this.valueWithCursor;
-      const masked = this.masked;
-
-      switch (this.state) {
-        case "error":
-          return `${title.trim()}\n${pc.yellow(S_BAR)}  ${masked}\n${pc.yellow(
-            S_BAR_END,
-          )}  ${pc.yellow(this.error)}\n`;
-        case "submit":
-          return `${title}${pc.gray(S_BAR)}  ${pc.dim(masked)}`;
-        case "cancel":
-          return `${title}${pc.gray(S_BAR)}  ${pc.strikethrough(pc.dim(masked ?? ""))}${
-            masked ? `\n${pc.gray(S_BAR)}` : ""
-          }`;
         default:
           return `${title}${pc.cyan(S_BAR)}  ${value}\n${pc.cyan(S_BAR_END)}\n`;
       }

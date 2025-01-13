@@ -14,7 +14,6 @@ import {
   numMultiSelectPrompt,
   nextStepsPrompt,
   numberPrompt,
-  passwordPrompt,
   startPrompt,
   inputPrompt,
   togglePrompt,
@@ -23,6 +22,7 @@ import { promptsDisplayResults } from "~/main.js";
 import { numSelectPrompt } from "~/main.js";
 import { selectPrompt } from "~/main.js";
 
+import packageJson from "../../package.json" with { type: "json" };
 import { basicConfig, extendedConfig } from "./configs.js";
 import {
   calculateAge,
@@ -32,14 +32,14 @@ import {
   validateAge,
 } from "./utils.js";
 
-// import packageJson from "../../package.json" with { type: "json" };
-// const pkg = packageJson;
-const pkg = {
-  name: "@reliverse/prompts",
-  version: "1.4.4",
-  description:
-    "@reliverse/prompts is a powerful library that enables seamless, typesafe, and resilient prompts for command-line applications. Crafted with simplicity and elegance, it provides developers with an intuitive and robust way to build interactive CLIs.",
-};
+const pkg = packageJson;
+
+// const pkg = {
+//   name: "@reliverse/prompts",
+//   version: "1.4.6",
+//   description:
+//     "@reliverse/prompts is a powerful library that enables seamless, typesafe, and resilient prompts for command-line applications. Crafted with simplicity and elegance, it provides developers with an intuitive and robust way to build interactive CLIs.",
+// };
 
 // const IDs = {
 //   start: "start",
@@ -90,8 +90,7 @@ export async function showInputPrompt() {
   const username = await inputPrompt({
     title: "We're glad you're testing our interactive prompts library!",
     content: "Let's get to know each other!\nWhat's your username?",
-    hint: "Press <Enter> to use the default value.",
-    placeholder: "[Default: johnny911]",
+    hint: "Just press <Enter> to use the default value: johnny911",
     defaultValue: "johnny911",
     ...extendedConfig,
     symbol: "pointer",
@@ -102,15 +101,15 @@ export async function showInputPrompt() {
     //   linesRendered: 3, // Number of lines rendered
     //   showPlaceholder: false, // Do not show placeholder since input is provided
     // },
-    validate: (value) => {
-      if (!value?.trim()) {
-        return "GitHub username is required for deployment";
-      }
-      if (!/^[a-z\d](?:[a-z\d]|-(?=[a-z\d])){0,38}$/i.test(value)) {
-        return "Invalid GitHub username format";
-      }
-      return true;
-    },
+    // validate: (value) => {
+    //   if (!value?.trim()) {
+    //     return "GitHub username is required for deployment";
+    //   }
+    //   if (!/^[a-z\d](?:[a-z\d]|-(?=[a-z\d])){0,38}$/i.test(value)) {
+    //     return "Invalid GitHub username format";
+    //   }
+    //   return true;
+    // },
   });
   return username ?? "johnny911";
 }
@@ -151,14 +150,16 @@ export async function showNumberPrompt() {
   return age ?? 34;
 }
 
-export async function showPasswordPrompt() {
+export async function showInputPromptMasked() {
   // Initialize `passwordResult` to avoid uninitialized variable errors.
   let password = "silverHand2077";
   // Wrap password prompts with a try-catch block to handle cancellations,
   // which otherwise would terminate the process with an error.
   try {
-    password = await passwordPrompt({
-      title: "[passwordPrompt] Imagine a password",
+    password = await inputPrompt({
+      title: "[inputPrompt, mode: password] Imagine a password",
+      mode: "password",
+      mask: "🟢",
       defaultValue: "silverHand2077",
       hint: "Default: silverHand2077",
       validate: (input) => {
