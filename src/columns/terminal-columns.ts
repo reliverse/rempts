@@ -1,6 +1,7 @@
+import { getTerminalWidth } from "@reliverse/relinka";
+
 import type { Row, Options, OptionsFunction } from "./types.js";
 
-import { getTerminalWidth } from "../core/utils.js";
 import { computeColumnWidths } from "./utils/compute-column-widths.js";
 import { getColumnContentWidths } from "./utils/get-column-content-widths.js";
 import { getOptions } from "./utils/get-options.js";

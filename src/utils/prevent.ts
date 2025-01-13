@@ -1,8 +1,10 @@
+import {
+  getExactTerminalWidth,
+  getTerminalWidth,
+  msg,
+} from "@reliverse/relinka";
 import pc from "picocolors";
 import terminalSize from "terminal-size";
-
-import { getExactTerminalWidth, getTerminalWidth } from "../core/utils.js";
-import { msg } from "./messages.js";
 
 export type PreventWrongTerminalSizeOptions = {
   isDev?: boolean;

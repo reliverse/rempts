@@ -1,6 +1,5 @@
+import { getTerminalWidth } from "@reliverse/relinka";
 import stringWidth from "string-width";
-
-import { getTerminalWidth } from "../../core/utils.js";
 
 export const getLongestLineWidth = (text: string) => {
   const rawWidth = Math.max(

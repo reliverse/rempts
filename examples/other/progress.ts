@@ -1,11 +1,12 @@
 // 2-mono-example.ts: A fun example of a quiz game. Inspired by CLI-game created by Fireship. The example demonstrates how to use a mono prompt() component.
 
+import { msg } from "@reliverse/relinka";
+
 import {
   animateText,
   inputPrompt,
   advancedTaskPrompt,
   endPrompt,
-  msg,
 } from "~/main.js";
 import { prompt } from "~/mono/mono.js";
 import { colorize } from "~/utils/colorize.js";

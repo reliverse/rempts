@@ -1,15 +1,13 @@
-// import type { Static, TSchema } from "@sinclair/typebox";
-
+import {
+  bar,
+  countLines,
+  deleteLastLines,
+  fmt,
+  type ColorName,
+} from "@reliverse/relinka";
 import { Value } from "@sinclair/typebox/value";
 
-import type { ColorName, PromptOptions } from "~/types/general.js";
-
-import { bar, fmt } from "~/utils/messages.js";
-import { countLines, deleteLastLines } from "~/utils/terminal.js";
-
-// export async function passwordPrompt<T extends TSchema>(
-// options: PromptOptions<T>,
-// ): Promise<Static<T>> {\
+import type { PromptOptions } from "~/types/general.js";
 
 type PasswordPromptOptions = PromptOptions & {
   defaultValue?: string;

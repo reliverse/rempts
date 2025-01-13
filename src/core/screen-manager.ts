@@ -1,9 +1,9 @@
+import { breakLines } from "@reliverse/relinka";
+import { getExactTerminalWidth } from "@reliverse/relinka";
 import ansiEscapes from "ansi-escapes";
 import stripAnsi from "strip-ansi";
 
 import type { BetterReadline } from "~/types/index.js";
-
-import { breakLines, getExactTerminalWidth } from "./utils.js";
 
 const height = (content: string): number => content.split("\n").length;
 const lastLine = (content: string): string => content.split("\n").pop() ?? "";

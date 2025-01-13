@@ -1,11 +1,16 @@
+import type { FmtMsgOptions } from "@reliverse/relinka";
+
+import {
+  bar,
+  deleteLastLine,
+  deleteLastLines,
+  msg,
+  type ColorName,
+  type TypographyName,
+} from "@reliverse/relinka";
 import { Value } from "@sinclair/typebox/value";
 import { stdin as input, stdout as output } from "node:process";
 import readline from "node:readline/promises";
-
-import type { ColorName, TypographyName } from "~/types/general.js";
-
-import { msg, bar, type FmtMsgOptions } from "~/utils/messages.js";
-import { deleteLastLine, deleteLastLines } from "~/utils/terminal.js";
 
 type VariantName = FmtMsgOptions["titleVariant"];
 

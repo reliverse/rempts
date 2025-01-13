@@ -1,6 +1,14 @@
-import type { TSchema } from "@sinclair/typebox";
+import type { ColorName } from "@reliverse/relinka";
 
-import { Type } from "@sinclair/typebox";
+import {
+  deleteLastLine,
+  fmt,
+  symbols,
+  countLines,
+  msg,
+  deleteLastLines,
+} from "@reliverse/relinka";
+import { Type, type TSchema } from "@sinclair/typebox";
 import { Value } from "@sinclair/typebox/value";
 import { stdin as input, stdout as output } from "node:process";
 import readline from "node:readline/promises";
@@ -13,14 +21,7 @@ import {
   startOfString,
 } from "ts-regex-builder";
 
-import type { ColorName, PromptOptions } from "~/types/general.js";
-
-import { fmt, msg, symbols } from "~/utils/messages.js";
-import {
-  countLines,
-  deleteLastLine,
-  deleteLastLines,
-} from "~/utils/terminal.js";
+import type { PromptOptions } from "~/types/general.js";
 
 // Helper constructs
 const twoDigits = repeat(digit, 2); // \d{2}

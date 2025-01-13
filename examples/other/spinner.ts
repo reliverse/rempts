@@ -1,10 +1,6 @@
-import {
-  endPrompt,
-  inputPrompt,
-  msg,
-  selectPrompt,
-  startPrompt,
-} from "~/main.js";
+import { msg } from "@reliverse/relinka";
+
+import { endPrompt, inputPrompt, selectPrompt, startPrompt } from "~/main.js";
 import { prompt } from "~/mono/mono.js";
 import { spinnerTaskPrompt } from "~/task/spinner.js";
 import { colorize } from "~/utils/colorize.js";

@@ -1,17 +1,18 @@
-import type { PromptOptions } from "~/types/general.js";
-
 import {
+  getCurrentTerminalName,
   getExactTerminalWidth,
   getTerminalHeight,
   getTerminalWidth,
-} from "~/core/utils.js";
-import { getCurrentTerminalName } from "~/main.js";
-import { msg } from "~/utils/messages.js";
-import { pkg, pm, pmv } from "~/utils/platforms.js";
+  msg,
+} from "@reliverse/relinka";
+
+import type { PromptOptions } from "~/types/general.js";
+
 import {
   preventWrongTerminalSize,
   type PreventWrongTerminalSizeOptions,
 } from "~/utils/prevent.js";
+import { pkg, pm, pmv } from "~/utils/system.js";
 
 type StartPromptOptions = PromptOptions & {
   clearConsole?: boolean;

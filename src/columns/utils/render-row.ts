@@ -1,9 +1,9 @@
+import { getTerminalWidth } from "@reliverse/relinka";
 import stringWidth from "string-width";
 import wrapAnsi from "wrap-ansi";
 
 import type { Row, InternalColumnMeta } from "../types.js";
 
-import { getTerminalWidth } from "../../core/utils.js";
 import { getLongestLineWidth } from "./get-longest-line-width.js";
 
 const emptyLines = (length: number) =>

@@ -1,7 +1,7 @@
-import type { ColorName, TypographyName } from "~/types/general.js";
-import type { VariantName } from "~/utils/variants.js";
+import type { ColorName, TypographyName } from "@reliverse/relinka";
+import type { VariantName } from "@reliverse/relinka";
 
-import { msg } from "~/utils/messages.js";
+import { msg } from "@reliverse/relinka";
 
 /**
  * Ends the prompt by optionally displaying an end message and running the action if confirmed.
@@ -9,12 +9,12 @@ import { msg } from "~/utils/messages.js";
  */
 export async function completePrompt(
   isCtrlC: boolean,
-  endTitle: string,
-  endTitleColor: ColorName,
-  titleTypography: TypographyName,
-  titleVariant: VariantName | undefined,
-  border: boolean,
-  borderColor: ColorName,
+  endTitle = "",
+  endTitleColor: ColorName = "dim",
+  titleTypography: TypographyName = "none",
+  titleVariant: VariantName | undefined = undefined,
+  border = true,
+  borderColor: ColorName = "dim",
   action?: () => Promise<void>,
   value?: boolean,
 ): Promise<boolean> {

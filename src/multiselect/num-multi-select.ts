@@ -1,16 +1,17 @@
+import {
+  bar,
+  countLines,
+  deleteLastLine,
+  deleteLastLines,
+  fmt,
+  msg,
+} from "@reliverse/relinka";
 import { Value } from "@sinclair/typebox/value";
 import { stdin as input, stdout as output } from "node:process";
 import readline from "node:readline/promises";
 import pc from "picocolors";
 
 import type { PromptOptions } from "~/types/general.js";
-
-import { bar, fmt, msg } from "~/utils/messages.js";
-import {
-  countLines,
-  deleteLastLine,
-  deleteLastLines,
-} from "~/utils/terminal.js";
 
 type NumMultiSelectPromptOptions = PromptOptions & {
   defaultValue?: string[];

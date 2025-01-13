@@ -1,5 +1,6 @@
 import type { Options } from "p-map";
 
+import { msg } from "@reliverse/relinka";
 import process from "node:process";
 import ora from "ora";
 import pMap from "p-map";
@@ -8,8 +9,6 @@ import { cursor, erase } from "sisteransi";
 import { proxy, subscribe } from "valtio";
 
 import type { ProgressBar } from "~/task/types.js";
-
-import { msg } from "~/utils/messages.js";
 
 import { progressTaskPrompt } from "./progress.js";
 

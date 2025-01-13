@@ -2,30 +2,14 @@ export { NonInteractiveError } from "~/core/errors.js";
 export function isTerminalInteractive(input = process.stdin): boolean {
   return Boolean(input.isTTY);
 }
-export type { ColorName } from "~/types/general.js";
 export type { ChoiceOptions } from "~/types/general.js";
 export type { PromptOptions } from "~/types/general.js";
 export * from "~/columns/index.js";
 export * from "~/flags/mod.js";
-export {
-  isUnicodeSupported,
-  getCurrentTerminalName,
-  pm,
-  pmv,
-} from "~/utils/platforms.js";
-export {
-  deleteLastLine,
-  deleteLastLines,
-  countLines,
-  removeCursor,
-  restoreCursor,
-} from "~/utils/terminal.js";
 export { colorize } from "~/utils/colorize.js";
-export { fmt, msg } from "~/utils/messages.js";
 export { errorHandler } from "~/utils/errors.js";
 export { defineCommand } from "~/flags/command.js";
 export { runMain } from "~/flags/main.js";
-export { colorMap } from "~/utils/mapping.js";
 export { animateText } from "~/visual/animate/animate.js";
 export { createAsciiArt } from "~/visual/ascii-art/ascii-art.js";
 export { startPrompt } from "~/st-end/start.js";

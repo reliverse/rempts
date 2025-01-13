@@ -120,7 +120,7 @@ const colorDefs = {
   bgWhiteBright: init(107, 49),
 };
 
-export type ColorName = keyof typeof colorDefs;
+export type DeprecatedColorName = keyof typeof colorDefs;
 export type ColorFunction = (text: string | number) => string;
 
 /**
@@ -138,27 +138,33 @@ function createColors(useColor = isColorSupported) {
 /**
  * An object containing functions for coloring text. Each function corresponds to a terminal color. See {@link ColorName} for available pc.
  */
-export const colors = createColors() as Record<ColorName, ColorFunction>;
+export const colors = createColors() as Record<
+  DeprecatedColorName,
+  ColorFunction
+>;
 
 /**
  * Gets a color function by name, with an option for a fallback color if the requested color is not found.
- * @param {ColorName} color - The name of the color function to get. See {@link ColorName}.
- * @param {ColorName} [fallback="reset"] - The name of the fallback color function if the requested color is not found. See {@link ColorName}.
+ * @param {ColorName} color - The name of the color function to get. See {@link DeprecatedColorName}.
+ * @param {ColorName} [fallback="reset"] - The name of the fallback color function if the requested color is not found. See {@link DeprecatedColorName}.
  * @returns {ColorFunction} The color function that corresponds to the requested color, or the fallback color function. See {@link ColorFunction}.
  */
 export function getColor(
-  color: ColorName,
-  fallback: ColorName = "reset",
+  color: DeprecatedColorName,
+  fallback: DeprecatedColorName = "reset",
 ): ColorFunction {
   return colors[color] || colors[fallback];
 }
 
 /**
  * Applies a specified color to a given text string or number.
- * @param {ColorName} color - The color to apply. See {@link ColorName}.
+ * @param {ColorName} color - The color to apply. See {@link DeprecatedColorName}.
  * @param {string | number} text - The text to color.
  * @returns {string} The colored text.
  */
-export function colorize(color: ColorName, text: string | number): string {
+export function deprecatedColorize(
+  color: DeprecatedColorName,
+  text: string | number,
+): string {
   return getColor(color)(text);
 }

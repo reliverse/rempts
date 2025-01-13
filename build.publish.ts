@@ -103,8 +103,8 @@ async function bumpVersions(oldVersion: string, newVersion: string) {
     await fs.writeFile(jsrPath, JSON.stringify(jsrConfig, null, 2));
   }
 
-  // Replace version in src/**/*.ts
-  const tsFiles = await globby("src/**/*.ts");
+  // Replace version in src/**/*.ts and examples/**/*.ts
+  const tsFiles = await globby(["src/**/*.ts", "examples/**/*.ts"]);
   for (const file of tsFiles) {
     const content = await fs.readFile(file, "utf-8");
     if (content.includes(oldVersion)) {

@@ -1,10 +1,11 @@
-// 👉 bun examples/separate/select/select-example.ts
+// 👉 `bun examples/other/different.ts`
 
 import { showEndPrompt, showStartPrompt } from "@/src/prompts.js";
+import { msg } from "@reliverse/relinka";
 
 import {
   confirmPrompt,
-  msg,
+  inputPrompt,
   multiselectPrompt,
   selectPrompt,
   togglePrompt,
@@ -13,6 +14,11 @@ import { errorHandler } from "~/utils/errors.js";
 
 export async function detailedExample() {
   await showStartPrompt();
+
+  await inputPrompt({
+    title: "What is your name?",
+    defaultValue: "John Snow",
+  });
 
   msg({
     type: "M_INFO",

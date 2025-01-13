@@ -1,6 +1,7 @@
+import { msg } from "@reliverse/relinka";
+
 import {
   inputPrompt,
-  msg,
   selectPrompt,
   startPrompt,
   advancedTaskPrompt,

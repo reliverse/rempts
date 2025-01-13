@@ -1,3 +1,4 @@
+import { colorMap } from "@reliverse/relinka";
 import { Type, type Static } from "@sinclair/typebox";
 import {
   buildRegExp,
@@ -6,22 +7,17 @@ import {
   startOfString,
 } from "ts-regex-builder";
 
-import { colorMap } from "~/main.js";
-
 // You can define pieces of the schema separately and then use them in the main schema.
 const colorSchema = Type.Enum(
-  Object.keys(colorMap).reduce(
+  Object.keys(colorMap).reduce<Record<keyof typeof colorMap, string>>(
     (acc, key) => {
       acc[key] = key;
       return acc;
     },
-    // eslint-disable-next-line @typescript-eslint/prefer-reduce-type-parameter
     {} as Record<keyof typeof colorMap, string>,
   ),
 );
 
-// You can use ts-regex-builder or magic-regexp
-// libraries to define a more stable regexes
 const usernameRegexPrecise = buildRegExp([
   startOfString,
   choiceOf(

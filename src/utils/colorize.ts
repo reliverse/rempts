@@ -1,3 +1,5 @@
+import type { ColorName, TypographyName } from "@reliverse/relinka";
+
 import gradient, {
   cristal,
   mind,
@@ -6,8 +8,6 @@ import gradient, {
   vice,
 } from "gradient-string";
 import pc from "picocolors";
-
-import type { ColorName, TypographyName } from "~/types/general.js";
 
 // Strip ANSI color codes using picocolors
 function stripAnsi(text: string): string {

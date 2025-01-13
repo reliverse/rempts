@@ -1,7 +1,5 @@
+import { fmt, restoreCursor } from "@reliverse/relinka";
 import logUpdate from "log-update";
-
-import { fmt } from "~/utils/messages.js";
-import { restoreCursor } from "~/utils/terminal.js";
 
 const DEFAULT_MESSAGE = "Press any key to continue...";
 

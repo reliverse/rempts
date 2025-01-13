@@ -1,3 +1,4 @@
+import { msg } from "@reliverse/relinka";
 import { detect } from "detect-package-manager";
 import { emojify } from "node-emoji";
 import pc from "picocolors";
@@ -10,7 +11,6 @@ import {
   confirmPrompt,
   datePrompt,
   endPrompt,
-  msg,
   numMultiSelectPrompt,
   nextStepsPrompt,
   numberPrompt,
@@ -36,7 +36,7 @@ import {
 // const pkg = packageJson;
 const pkg = {
   name: "@reliverse/prompts",
-  version: "1.3.16",
+  version: "1.4.4",
   description:
     "@reliverse/prompts is a powerful library that enables seamless, typesafe, and resilient prompts for command-line applications. Crafted with simplicity and elegance, it provides developers with an intuitive and robust way to build interactive CLIs.",
 };

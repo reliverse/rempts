@@ -1,12 +1,11 @@
+import type { ColorName, TypographyName } from "@reliverse/relinka";
+import type { VariantName } from "@reliverse/relinka";
+
+import { deleteLastLine, msg } from "@reliverse/relinka";
 import { stdin as input, stdout as output } from "node:process";
 import readline from "node:readline";
 import pc from "picocolors";
 
-import type { ColorName, TypographyName } from "~/types/general.js";
-import type { VariantName } from "~/utils/variants.js";
-
-import { deleteLastLine } from "~/main.js";
-import { msg } from "~/utils/messages.js";
 import { completePrompt } from "~/utils/prompt-end.js";
 
 export type TogglePromptParams<T extends string> = {

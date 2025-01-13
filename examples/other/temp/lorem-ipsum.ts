@@ -6,10 +6,10 @@
  * $ bun examples\separate\resizer\lorem-ipsum.ts
  */
 
+import { getTerminalWidth } from "@reliverse/relinka";
 import ansiEscapes from "ansi-escapes";
 import { bold, underline, italic } from "colorette";
 
-import { getTerminalWidth } from "~/core/utils.js";
 import { terminalColumns } from "~/main.js";
 
 const tableData = [

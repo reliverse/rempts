@@ -1,4 +1,4 @@
-import { msg } from "~/utils/messages.js";
+import { msg } from "@reliverse/relinka";
 
 import type { ProgressBarOptions } from "./types.js";
 

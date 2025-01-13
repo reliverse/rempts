@@ -1,6 +1,6 @@
-import { type Prettify } from "~/types/index.js";
+import { breakLines } from "@reliverse/relinka";
 
-import { breakLines } from "./utils.js";
+import { type Prettify } from "~/types/index.js";
 
 /** Represents an item that's part of a layout, about to be rendered */
 export type Layout<T> = {

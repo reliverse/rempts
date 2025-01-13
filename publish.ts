@@ -1,5 +1,6 @@
 // 👉 usage example: `bun pub --bump=1.2.3`
 
+import { relinka } from "@reliverse/relinka";
 import { execa } from "execa";
 
 import { defineCommand, errorHandler, runMain } from "~/main.js";
@@ -29,31 +30,31 @@ const main = defineCommand({
   },
   run: async ({ args }) => {
     if (args.jsr) {
-      console.log("Publishing the JSR version");
+      relinka("info", "Publishing the JSR version");
       await execa("bun", ["build.publish.ts", args.bump, "--jsr"], {
         stdio: "inherit",
       });
     } else if (args.npm) {
-      console.log("Publishing the NPM version");
+      relinka("info", "Publishing the NPM version");
       await execa("bun", ["build.publish.ts", args.bump], { stdio: "inherit" });
     } else if (args.dryRun) {
-      console.log("Dry run the publish process");
+      relinka("info", "Dry run the publish process");
       await execa("bun", ["pub:jsr", "--dry-run"], { stdio: "inherit" });
       await execa("bun", ["pub:npm", "--dry-run"], { stdio: "inherit" });
     } else {
-      console.log("Publishing the JSR version");
+      relinka("info", "Publishing the JSR version");
       await execa("bun", ["build.publish.ts", args.bump, "--jsr"], {
         stdio: "inherit",
       });
-      console.log("Publishing the NPM version");
+      relinka("info", "Publishing the NPM version");
       await execa("bun", ["pub:npm", args.bump], { stdio: "inherit" });
     }
   },
 });
 
-await runMain(main).catch((error: Error) =>
+await runMain(main).catch((error: unknown) =>
   errorHandler(
-    error,
+    error instanceof Error ? error : new Error(String(error)),
     "If this issue is related to @reliverse/cli itself, please\n│  report the details at https://github.com/reliverse/cli",
   ),
 );

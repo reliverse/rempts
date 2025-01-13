@@ -1,3 +1,11 @@
+import {
+  bar,
+  countLines,
+  deleteLastLine,
+  deleteLastLines,
+  fmt,
+  msg,
+} from "@reliverse/relinka";
 import { Value } from "@sinclair/typebox/value";
 import { stdin as input, stdout as output } from "node:process";
 import readline from "node:readline/promises";
@@ -5,12 +13,6 @@ import readline from "node:readline/promises";
 import type { PromptOptions } from "~/types/general.js";
 
 import { colorize } from "~/utils/colorize.js";
-import { bar, fmt, msg } from "~/utils/messages.js";
-import {
-  countLines,
-  deleteLastLine,
-  deleteLastLines,
-} from "~/utils/terminal.js";
 
 type MultiSelectPromptOptions = PromptOptions & {
   defaultValue?: string[];

@@ -1,10 +1,9 @@
+import { msg } from "@reliverse/relinka";
 import { type SpinnerName } from "cli-spinners";
 import process from "node:process";
 import ora from "ora";
 import pc from "picocolors";
 import { cursor, erase } from "sisteransi";
-
-import { msg } from "~/utils/messages.js";
 
 type SimpleSpinnerType = "default" | "dottedCircle" | "boxSpinner";
 type OraSpinnerType = Extract<SpinnerName, OraAllowedSpinners>;

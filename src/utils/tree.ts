@@ -1,4 +1,6 @@
-import { type ColorName, colorize } from "./color.js";
+import type { ColorName } from "@reliverse/relinka";
+
+import { colorize } from "./colorize.js";
 
 export type TreeItemObject = {
   /**
@@ -51,15 +53,15 @@ export function formatTree(items: TreeItem[], options?: TreeOptions): string {
     ...options,
   };
 
-  const tree = _buildTree(items, options).join("");
+  const tree = buildTree(items, options).join("");
   if (options?.color) {
-    return colorize(options.color, tree);
+    return colorize(tree, options.color);
   }
 
   return tree;
 }
 
-function _buildTree(items: TreeItem[], options?: TreeOptions): string[] {
+function buildTree(items: TreeItem[], options?: TreeOptions): string[] {
   const chunks: string[] = [];
 
   const total = items.length - 1;
@@ -72,10 +74,10 @@ function _buildTree(items: TreeItem[], options?: TreeOptions): string[] {
       chunks.push(`${prefix}${item}\n`);
     } else {
       const log = `${prefix}${item.text}\n`;
-      chunks.push(item.color ? colorize(item.color, log) : log);
+      chunks.push(item.color ? colorize(log, item.color) : log);
 
       if (item.children) {
-        const _tree = _buildTree(item.children, {
+        const _tree = buildTree(item.children, {
           ...options,
           prefix: `${options?.prefix}${isLast ? "  " : "│  "}`,
         });

@@ -1,7 +1,6 @@
-import type { ChoiceOptions, ColorName } from "~/main.js";
+import { colorMap, msg, type ColorName } from "@reliverse/relinka";
 
-import { msg } from "~/main.js";
-import { colorMap } from "~/main.js";
+import type { ChoiceOptions } from "~/main.js";
 
 import type { UserInput } from "./schema.js";
 

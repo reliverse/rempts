@@ -1,21 +1,21 @@
+import type {
+  ColorName,
+  MsgType,
+  SymbolName,
+  TypographyName,
+  VariantName,
+} from "@reliverse/relinka";
 import type { TSchema } from "@sinclair/typebox";
 
+import { bar, deleteLastLine, msg, msgUndoAll } from "@reliverse/relinka";
 import { Value } from "@sinclair/typebox/value";
 import { stdin as input, stdout as output } from "node:process";
 import readline from "node:readline/promises";
+import pc from "picocolors";
 
-import type {
-  ColorName,
-  PromptOptions,
-  TypographyName,
-  MsgType,
-} from "~/types/general.js";
-import type { SymbolName } from "~/utils/messages.js";
-import type { VariantName } from "~/utils/variants.js";
+import type { PromptOptions } from "~/main.js";
 
-import { msg, msgUndoAll, bar } from "~/utils/messages.js";
 import { completePrompt } from "~/utils/prompt-end.js";
-import { deleteLastLine } from "~/utils/terminal.js";
 
 export type InputPromptOptions = {
   title: string;
@@ -91,7 +91,7 @@ function renderPromptUI(params: RenderParams & { isRerender?: boolean }) {
     placeholder = "",
     userInput,
     errorMessage,
-    symbol = "pointer",
+    symbol = "step_active",
     customSymbol = "",
     symbolColor = "cyan",
   } = params;
@@ -163,7 +163,7 @@ export async function inputPrompt(
   const {
     title = "",
     hint,
-    hintPlaceholderColor = "viceGradient",
+    hintPlaceholderColor = "blue",
     validate,
     defaultValue = "",
     schema,
@@ -188,7 +188,7 @@ export async function inputPrompt(
   const rl = readline.createInterface({ input, output });
 
   // Graceful Ctrl+C handling:
-  async function endPrompt(isCtrlC = false) {
+  async function endPrompt(isCtrlC: boolean) {
     await completePrompt(
       isCtrlC,
       endTitle,
@@ -307,9 +307,9 @@ export async function inputPrompt(
 
       // Show either default value or user input
       if (!currentInput && defaultValue) {
-        msg({ type: "M_MIDDLE", title: `  ${defaultValue}` });
+        msg({ type: "M_MIDDLE", title: `  ${pc.reset(defaultValue)}` });
       } else if (currentInput) {
-        msg({ type: "M_MIDDLE", title: `  ${currentInput}` });
+        msg({ type: "M_MIDDLE", title: `  ${pc.reset(currentInput)}` });
       }
       // Add a bar after the answer
       msg({ type: "M_BAR", borderColor });

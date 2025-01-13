@@ -1,10 +1,11 @@
+import { getExactTerminalWidth } from "@reliverse/relinka";
+
 import type { Prettify } from "~/types/index.js";
 
 import { lines, type Layout } from "./lines.js";
 import { finite, infinite } from "./position.js";
 import { type Theme } from "./theme.js";
 import { useRef } from "./use-ref.js";
-import { getExactTerminalWidth } from "./utils.js";
 
 export function usePagination<T>({
   items,

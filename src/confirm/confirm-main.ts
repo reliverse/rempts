@@ -1,14 +1,14 @@
+import type { ColorName, TypographyName } from "@reliverse/relinka";
+import type { VariantName } from "@reliverse/relinka";
+
+import { bar, msg } from "@reliverse/relinka";
+import { deleteLastLine } from "@reliverse/relinka";
 import { stdin as input, stdout as output } from "node:process";
 import readline from "node:readline/promises";
 import pc from "picocolors";
 
-import type { ColorName, TypographyName } from "~/types/general.js";
-import type { VariantName } from "~/utils/variants.js";
-
-import { colorize } from "~/utils/colorize.js";
-import { bar, msg } from "~/utils/messages.js";
+import { colorize } from "~/main.js";
 import { completePrompt } from "~/utils/prompt-end.js";
-import { deleteLastLine } from "~/utils/terminal.js";
 
 export type ConfirmPromptOptions = {
   title: string;

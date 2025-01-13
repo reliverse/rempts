@@ -1,3 +1,4 @@
+import { isUnicodeSupported } from "@reliverse/relinka";
 import pc from "picocolors";
 import { cursor, erase } from "sisteransi";
 
@@ -14,7 +15,6 @@ import {
   SelectPrompt,
   InputPrompt,
 } from "~/prompts/index.js";
-import { isUnicodeSupported } from "~/utils/platforms.js";
 
 export { isCancel } from "~/prompts/prompt.js";
 

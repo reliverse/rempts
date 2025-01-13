@@ -5,8 +5,8 @@ import json from "@eslint/json";
 import markdown from "@eslint/markdown";
 import stylistic from "@stylistic/eslint-plugin";
 import perfectionist from "eslint-plugin-perfectionist";
-import path from "node:path";
 import { fileURLToPath } from "node:url";
+import path from "pathe";
 import tseslint from "typescript-eslint";
 
 /** @type {import("typescript-eslint").Config} */
