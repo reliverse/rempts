@@ -1,20 +1,27 @@
-import type { ColorName, TypographyName } from "@reliverse/relinka";
-import type { VariantName } from "@reliverse/relinka";
+import type { BorderColorName, VariantName } from "@reliverse/relinka";
 
-import { msg } from "@reliverse/relinka";
+import {
+  getExactTerminalWidth,
+  msg,
+  symbols,
+  type ColorName,
+  type TypographyName,
+} from "@reliverse/relinka";
+import pc from "picocolors";
 
 /**
  * Ends the prompt by optionally displaying an end message and running the action if confirmed.
  * Preserves the last prompt state unless there's an endTitle.
  */
 export async function completePrompt(
+  prompt: "input" | "confirm" | "select" | "multiselect" | "toggle",
   isCtrlC: boolean,
-  endTitle = "",
-  endTitleColor: ColorName = "dim",
-  titleTypography: TypographyName = "none",
-  titleVariant: VariantName | undefined = undefined,
-  border = true,
-  borderColor: ColorName = "dim",
+  _endTitle = "",
+  _endTitleColor: ColorName = "dim",
+  _titleTypography: TypographyName = "none",
+  _titleVariant: VariantName | undefined = undefined,
+  _border = true,
+  borderColor: BorderColorName = "dim",
   action?: () => Promise<void>,
   value?: boolean,
 ): Promise<boolean> {
@@ -22,16 +29,31 @@ export async function completePrompt(
     await action();
   }
 
+  if (prompt === "input") {
+    renderEndLineInput();
+    return value ?? false;
+  }
+
   if (isCtrlC) {
-    msg({
-      type: "M_END",
-      title: endTitle,
-      titleColor: endTitleColor,
-      titleTypography,
-      ...(titleVariant ? { titleVariant } : {}),
-      border,
-      borderColor,
-    });
+    renderEndLine();
+    // if (endTitle !== "") {
+    //   await endPrompt({
+    //     title: endTitle,
+    //     titleColor: endTitleColor,
+    //     titleTypography,
+    //     ...(titleVariant ? { titleVariant } : {}),
+    //     border,
+    //   });
+    // } else {
+    //   await endPrompt({
+    //     title: " ",
+    //     titleColor: endTitleColor,
+    //     titleTypography,
+    //     ...(titleVariant ? { titleVariant } : {}),
+    //     border,
+    //     borderColor,
+    //   });
+    // }
   } else {
     msg({
       type: "M_BAR",
@@ -40,4 +62,18 @@ export async function completePrompt(
   }
 
   return value ?? false;
+}
+
+export function renderEndLine() {
+  const lineLength = getExactTerminalWidth() - 2;
+  console.log(pc.dim(symbols.middle));
+  console.log(pc.dim(`${symbols.end}${symbols.line.repeat(lineLength)}⊱`));
+  console.log();
+}
+
+export function renderEndLineInput() {
+  const lineLength = getExactTerminalWidth() - 2;
+  console.log();
+  console.log(pc.dim(`${symbols.end}${symbols.line.repeat(lineLength)}⊱`));
+  console.log();
 }

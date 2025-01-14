@@ -1,4 +1,8 @@
-import type { ColorName, TypographyName } from "@reliverse/relinka";
+import type {
+  BorderColorName,
+  ColorName,
+  TypographyName,
+} from "@reliverse/relinka";
 import type { VariantName } from "@reliverse/relinka";
 
 import { bar, msg } from "@reliverse/relinka";
@@ -20,7 +24,7 @@ export type ConfirmPromptOptions = {
   contentColor?: ColorName;
   contentTypography?: TypographyName;
   contentVariant?: VariantName;
-  borderColor?: ColorName;
+  borderColor?: BorderColorName;
   hintPlaceholderColor?: ColorName;
   variantOptions?: any;
   action?: () => Promise<void>;
@@ -248,6 +252,7 @@ export async function confirmPrompt(
       }
 
       return await completePrompt(
+        "confirm",
         false,
         endTitle,
         endTitleColor,

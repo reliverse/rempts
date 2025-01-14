@@ -1,4 +1,8 @@
-import type { ColorName, TypographyName } from "@reliverse/relinka";
+import type {
+  BorderColorName,
+  ColorName,
+  TypographyName,
+} from "@reliverse/relinka";
 import type { VariantName } from "@reliverse/relinka";
 
 import { deleteLastLine, msg } from "@reliverse/relinka";
@@ -13,7 +17,7 @@ export type TogglePromptParams<T extends string> = {
   content?: string;
   options?: [T, T];
   defaultValue?: T;
-  borderColor?: ColorName;
+  borderColor?: BorderColorName;
   titleColor?: ColorName;
   titleTypography?: TypographyName;
   titleVariant?: VariantName;
@@ -263,6 +267,7 @@ export async function togglePrompt<T extends string>(
           // Return boolean: first option = true, second option = false
           const booleanValue = selectedIndex === 0;
           void completePrompt(
+            "toggle",
             false,
             endTitle,
             endTitleColor,

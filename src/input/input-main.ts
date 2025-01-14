@@ -1,4 +1,5 @@
 import type {
+  BorderColorName,
   ColorName,
   MsgType,
   SymbolName,
@@ -44,7 +45,7 @@ function getMaskChar(customMask?: string): string {
  */
 export type InputPromptOptions = {
   border?: boolean;
-  borderColor?: ColorName;
+  borderColor?: BorderColorName;
   content?: string;
   contentColor?: ColorName;
   contentTypography?: TypographyName;
@@ -78,7 +79,7 @@ export type InputPromptOptions = {
 
 type RenderParams = {
   border: boolean;
-  borderColor?: ColorName;
+  borderColor?: BorderColorName;
   content?: string;
   contentColor?: ColorName;
   contentTypography?: TypographyName;
@@ -353,6 +354,7 @@ export async function inputPrompt(
    */
   async function endPrompt(isCtrlC: boolean): Promise<void> {
     await completePrompt(
+      "input",
       isCtrlC,
       endTitle,
       endTitleColor,

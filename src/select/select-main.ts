@@ -1,4 +1,4 @@
-import type { VariantName } from "@reliverse/relinka";
+import type { BorderColorName, VariantName } from "@reliverse/relinka";
 
 import { deleteLastLine, symbols } from "@reliverse/relinka";
 import { msg, type ColorName, type TypographyName } from "@reliverse/relinka";
@@ -34,7 +34,7 @@ type SelectPromptParams<T extends string> = {
   options: (SelectOption<T> | SeparatorOption)[];
   defaultValue?: T;
   required?: boolean;
-  borderColor?: ColorName;
+  borderColor?: BorderColorName;
   titleColor?: ColorName;
   titleTypography?: TypographyName;
   titleVariant?: VariantName;
@@ -257,7 +257,7 @@ export async function selectPrompt<T extends string>(
     contentTypography = "italic",
     border = true,
     endTitle = "",
-    endTitleColor = "retroGradient",
+    endTitleColor = "dim",
     maxItems,
     debug = false,
     terminalWidth: customTerminalWidth = 90,
@@ -419,6 +419,7 @@ export async function selectPrompt<T extends string>(
 
       deleteLastLine();
       await completePrompt(
+        "select",
         false,
         endTitle,
         endTitleColor,
@@ -433,6 +434,7 @@ export async function selectPrompt<T extends string>(
 
     async function endPrompt(isCtrlC = false) {
       await completePrompt(
+        "select",
         isCtrlC,
         endTitle,
         endTitleColor,

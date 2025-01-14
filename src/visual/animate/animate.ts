@@ -6,6 +6,7 @@ import {
 import {
   deleteLastLine,
   getTerminalWidth,
+  type BorderColorName,
   type ColorName,
   type MsgType,
   type TypographyName,
@@ -46,7 +47,7 @@ export async function animateText({
   type?: MsgType;
   titleColor?: ColorName;
   titleTypography?: TypographyName;
-  borderColor?: ColorName;
+  borderColor?: BorderColorName;
   border?: boolean;
   isEndPrompt?: boolean;
   horizontalLineLength?: number;

@@ -23,7 +23,7 @@ export async function endPrompt({
 
   if (titleAnimation) {
     await animateText({
-      title,
+      title: title ? title : " ",
       anim: titleAnimation,
       delay: titleAnimationDelay,
       type: "M_END",
@@ -37,7 +37,7 @@ export async function endPrompt({
   } else {
     msg({
       type: "M_END",
-      title,
+      title: title ? title : " ",
       titleColor,
       titleTypography,
       titleVariant,

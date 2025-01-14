@@ -1,4 +1,4 @@
-import type { VariantName } from "@reliverse/relinka";
+import type { BorderColorName, VariantName } from "@reliverse/relinka";
 
 import {
   deleteLastLine,
@@ -38,7 +38,7 @@ type MultiselectPromptParams<T extends string> = {
   content?: string;
   options: (SelectOption<T> | SeparatorOption)[];
   defaultValue?: T[];
-  borderColor?: ColorName;
+  borderColor?: BorderColorName;
   titleColor?: ColorName;
   titleTypography?: TypographyName;
   titleVariant?: VariantName;
@@ -440,6 +440,7 @@ export async function multiselectPrompt<T extends string>(
 
     async function endPrompt(isCtrlC = false) {
       await completePrompt(
+        "multiselect",
         isCtrlC,
         endTitle,
         endTitleColor,
@@ -471,6 +472,7 @@ export async function multiselectPrompt<T extends string>(
 
         deleteLastLine();
         await completePrompt(
+          "multiselect",
           false,
           endTitle,
           endTitleColor,

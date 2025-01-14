@@ -1,4 +1,4 @@
-import type { FmtMsgOptions } from "@reliverse/relinka";
+import type { BorderColorName, FmtMsgOptions } from "@reliverse/relinka";
 
 import {
   bar,
@@ -30,7 +30,7 @@ type NumberPromptOptions = {
   contentColor?: ColorName;
   contentTypography?: TypographyName;
   contentVariant?: VariantName;
-  borderColor?: ColorName;
+  borderColor?: BorderColorName;
   variantOptions?: any;
   endTitle?: string;
   endTitleColor?: ColorName;
