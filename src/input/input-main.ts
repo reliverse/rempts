@@ -18,7 +18,7 @@ import {
 } from "@reliverse/relinka";
 import { Value } from "@sinclair/typebox/value";
 import readline from "node:readline/promises";
-import pc from "picocolors";
+import { re } from "@reliverse/relico";
 
 import type { PromptOptions } from "~/main.js";
 
@@ -512,7 +512,7 @@ export async function inputPrompt(
           });
         } else {
           deleteLastLine();
-          msg({ type: "M_MIDDLE", title: `  ${pc.reset(defaultValue)}` });
+          msg({ type: "M_MIDDLE", title: `  ${re.reset(defaultValue)}` });
         }
       }
       if (errorMessage) {

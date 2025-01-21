@@ -4,7 +4,7 @@ import Differ from "ansi-diff-stream";
 import esc from "ansi-escapes";
 import ui from "cli-styles";
 import { EventEmitter } from "events";
-import pc from "picocolors";
+import { re } from "@reliverse/relico";
 import precision from "precision";
 import stringWidth from "string-width";
 import windowSize from "window-size";
@@ -67,7 +67,7 @@ export class RangePrompt extends EventEmitter {
     // Default options
     const defaults: Required<RangePromptOptions> = {
       hint: "– Use arrow keys or type a value.",
-      marker: pc.cyan("●"),
+      marker: re.cyan("●"),
       bar: "–",
       values: [],
       value: null,
@@ -346,10 +346,10 @@ export class RangePrompt extends EventEmitter {
     out +=
       [
         ui.symbol(this.done, this.aborted),
-        pc.bold(this.msg),
+        re.bold(this.msg),
         ui.delimiter(this.done),
         this.value !== null ? this.value : "",
-        pc.gray(this.unit),
+        re.gray(this.unit),
       ].join(" ") + "\n";
 
     const size =
@@ -372,7 +372,7 @@ export class RangePrompt extends EventEmitter {
       [
         "",
         this.min,
-        pc.gray(leftBar) + this.marker + pc.gray(rightBar),
+        re.gray(leftBar) + this.marker + re.gray(rightBar),
         this.max,
         "",
       ].join(" ") + "\n";

@@ -7,7 +7,7 @@ import {
   type ColorName,
   type TypographyName,
 } from "@reliverse/relinka";
-import pc from "picocolors";
+import { re } from "@reliverse/relico";
 
 /**
  * Ends the prompt by optionally displaying an end message and running the action if confirmed.
@@ -66,14 +66,14 @@ export async function completePrompt(
 
 export function renderEndLine() {
   const lineLength = getExactTerminalWidth() - 2;
-  console.log(pc.dim(symbols.middle));
-  console.log(pc.dim(`${symbols.end}${symbols.line.repeat(lineLength)}⊱`));
+  console.log(re.dim(symbols.middle));
+  console.log(re.dim(`${symbols.end}${symbols.line.repeat(lineLength)}⊱`));
   console.log();
 }
 
 export function renderEndLineInput() {
   const lineLength = getExactTerminalWidth() - 2;
   console.log();
-  console.log(pc.dim(`${symbols.end}${symbols.line.repeat(lineLength)}⊱`));
+  console.log(re.dim(`${symbols.end}${symbols.line.repeat(lineLength)}⊱`));
   console.log();
 }

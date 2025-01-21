@@ -1,5 +1,5 @@
 import ansiEscapes from "ansi-escapes";
-import pc from "picocolors";
+import { re } from "@reliverse/relico";
 
 import type { PartialDeep } from "~/types/utils.js";
 
@@ -37,8 +37,8 @@ type SelectTheme = {
 const selectTheme: SelectTheme = {
   icon: { cursor: figures.pointer },
   style: {
-    disabled: (text: string) => pc.dim(`- ${text}`),
-    description: (text: string) => pc.cyan(text),
+    disabled: (text: string) => re.dim(`- ${text}`),
+    description: (text: string) => re.cyan(text),
   },
   helpMode: "auto",
 };

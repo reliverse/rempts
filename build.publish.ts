@@ -1,13 +1,18 @@
 // 👉 usage example: `bun pub --bump=1.2.3`
 
+import { parseJSONC, parseJSON5 } from "confbox";
+import { destr } from "destr";
 import { execaCommand } from "execa";
 import fs from "fs-extra";
 import { globby } from "globby";
 import mri from "mri";
-import path from "path";
+import path from "pathe";
+
+// TODO: implement @reliverse/bump npm library
 
 function showHelp() {
-  console.log(`Usage: bun tsx build.publish.ts [newVersion] [options]
+  console.log(
+    `Usage: bun tsx build.publish.ts [newVersion] [options]
 
 Arguments:
   newVersion        The new version to set (e.g. 1.2.3)
@@ -16,7 +21,8 @@ Options:
   --jsr             Publish to JSR registry
   --dry-run         Perform a dry run of the publish process
   -h, --help        Show help
-`);
+`,
+  );
 }
 
 const argv = mri(process.argv.slice(2), {
@@ -57,9 +63,12 @@ async function publishNpm(dryRun: boolean) {
       await execaCommand("bun build:npm", { stdio: "inherit" });
       await execaCommand("npm publish", { stdio: "inherit" });
     }
-    console.log("Published to npm successfully.");
+    console.log("success", "Published to npm successfully.");
   } catch (error) {
-    console.error("❌ Failed to publish to npm:", error);
+    console.error(
+      "❌ Failed to publish to npm:",
+      error instanceof Error ? error.message : String(error),
+    );
     process.exit(1);
   }
 }
@@ -67,81 +76,171 @@ async function publishNpm(dryRun: boolean) {
 async function publishJsr(dryRun: boolean) {
   try {
     if (dryRun) {
-      await execaCommand(
-        "bunx jsr publish --allow-slow-types --allow-dirty --dry-run",
-        { stdio: "inherit" },
-      );
+      await execaCommand("bunx jsr publish --dry-run", {
+        stdio: "inherit",
+      });
     } else {
       await execaCommand("bun build:jsr", { stdio: "inherit" });
       await execaCommand("bunx jsr publish --allow-slow-types --allow-dirty", {
         stdio: "inherit",
       });
     }
-    console.log("Published to JSR successfully.");
+    console.log("success", "Published to JSR successfully.");
   } catch (error) {
-    console.error("❌ Failed to publish to JSR:", error);
+    console.error(
+      "❌ Failed to publish to JSR:",
+      error instanceof Error ? error.message : String(error),
+    );
     process.exit(1);
   }
 }
 
 async function bumpVersions(oldVersion: string, newVersion: string) {
-  // Update package.json
-  const pkgPath = path.resolve("package.json");
-  const pkg = JSON.parse(await fs.readFile(pkgPath, "utf-8")) as {
-    version: string;
-  };
-  pkg.version = newVersion;
-  await fs.writeFile(pkgPath, JSON.stringify(pkg, null, 2));
+  try {
+    // Find all relevant files
+    const codebase = await globby("**/*.{reliverse,json,jsonc,json5,ts}", {
+      ignore: [
+        "**/node_modules/**",
+        "**/.git/**",
+        "**/dist/**",
+        "**/build/**",
+        "**/.next/**",
+        "**/coverage/**",
+        "**/.cache/**",
+        "**/tmp/**",
+        "**/.temp/**",
+        "**/package-lock.json",
+        "**/pnpm-lock.yaml",
+        "**/yarn.lock",
+        "**/bun.lockb",
+      ],
+    });
 
-  // Update jsr.jsonc
-  const jsrPath = path.resolve("jsr.jsonc");
-  if (await fs.pathExists(jsrPath)) {
-    const jsrConfig = JSON.parse(await fs.readFile(jsrPath, "utf-8")) as {
-      version: string;
-    };
-    jsrConfig.version = newVersion;
-    await fs.writeFile(jsrPath, JSON.stringify(jsrConfig, null, 2));
-  }
+    // Track which files were updated
+    const updatedFiles: string[] = [];
 
-  // Replace version in src/**/*.ts and examples/**/*.ts
-  const tsFiles = await globby(["src/**/*.ts", "examples/**/*.ts"]);
-  for (const file of tsFiles) {
-    const content = await fs.readFile(file, "utf-8");
-    if (content.includes(oldVersion)) {
-      const updated = content.replaceAll(oldVersion, newVersion);
-      await fs.writeFile(file, updated);
+    // Process each file
+    for (const file of codebase) {
+      try {
+        const content = await fs.readFile(file, "utf-8");
+
+        // Handle different file types
+        if (file.endsWith(".json") || file.endsWith(".reliverse")) {
+          const parsed = destr(content);
+          if (parsed && typeof parsed === "object" && "version" in parsed) {
+            parsed.version = newVersion;
+            await fs.writeFile(file, `${JSON.stringify(parsed, null, 2)}\n`);
+            updatedFiles.push(file);
+            continue;
+          }
+        } else if (file.endsWith(".jsonc")) {
+          const parsed = parseJSONC(content);
+          if (parsed && typeof parsed === "object" && "version" in parsed) {
+            parsed.version = newVersion;
+            await fs.writeFile(file, `${JSON.stringify(parsed, null, 2)}\n`);
+            updatedFiles.push(file);
+            continue;
+          }
+        } else if (file.endsWith(".json5")) {
+          const parsed = parseJSON5(content);
+          if (parsed && typeof parsed === "object" && "version" in parsed) {
+            parsed.version = newVersion;
+            await fs.writeFile(file, `${JSON.stringify(parsed, null, 2)}\n`);
+            updatedFiles.push(file);
+            continue;
+          }
+        }
+
+        // For other files (including .ts), do string replacement if version is found
+        if (content.includes(oldVersion)) {
+          const updated = content.replaceAll(oldVersion, newVersion);
+          await fs.writeFile(file, updated);
+          updatedFiles.push(file);
+        }
+      } catch (error) {
+        console.warn(
+          `Failed to process ${file}:`,
+          error instanceof Error ? error.message : String(error),
+        );
+      }
     }
-  }
 
-  console.log(`Version updated from ${oldVersion} to ${newVersion}`);
+    if (updatedFiles.length > 0) {
+      console.log(
+        `Version updated from ${oldVersion} to ${newVersion}`,
+        `Updated ${String(updatedFiles.length)} files:`,
+        updatedFiles.join("\n"),
+      );
+    } else {
+      console.warn("No files were updated with the new version");
+    }
+  } catch (error) {
+    console.error(
+      "Failed to bump versions:",
+      error instanceof Error ? error.message : String(error),
+    );
+    throw error;
+  }
 }
 
 async function main() {
-  const { jsr, "dry-run": dryRun } = argv;
-  const newVersion = argv._[0]; // The new version provided by the user (if any)
-
-  if (newVersion) {
-    // Perform version bump
-    const pkg = JSON.parse(await fs.readFile("package.json", "utf-8")) as {
-      version: string;
+  try {
+    const { jsr, "dry-run": dryRun } = argv as unknown as {
+      jsr: boolean;
+      "dry-run": boolean;
     };
-    const oldVersion = pkg.version;
-    if (oldVersion !== newVersion) {
-      await bumpVersions(oldVersion, newVersion);
-    } else {
-      console.log(`No version change required: already at ${oldVersion}`);
-    }
-  }
+    const newVersion = argv._[0];
 
-  // After potential bump, proceed with publishing
-  if (jsr) {
-    await publishJsr(dryRun);
-  } else {
-    await publishNpm(dryRun);
+    if (!newVersion) {
+      console.log("No version specified, skipping version bump");
+    } else {
+      // Validate version format
+      if (!/^\d+\.\d+\.\d+(?:-[\w.-]+)?(?:\+[\w.-]+)?$/.test(newVersion)) {
+        throw new Error(
+          "Invalid version format. Must be a valid semver (e.g., 1.2.3, 1.2.3-beta.1)",
+        );
+      }
+
+      // Read current version
+      const pkgPath = path.resolve("package.json");
+      if (!(await fs.pathExists(pkgPath))) {
+        throw new Error("package.json not found");
+      }
+
+      const pkg = destr<{ version: string }>(
+        await fs.readFile(pkgPath, "utf-8"),
+      );
+      if (!pkg.version) {
+        throw new Error("No version field found in package.json");
+      }
+
+      const oldVersion = pkg.version;
+      if (oldVersion === newVersion) {
+        console.log(`No version change required: already at ${oldVersion}`);
+      } else {
+        await bumpVersions(oldVersion, newVersion);
+      }
+    }
+
+    // Proceed with publishing
+    if (jsr) {
+      await publishJsr(dryRun);
+    } else {
+      await publishNpm(dryRun);
+    }
+  } catch (error) {
+    console.error(
+      "❌ An unexpected error occurred:",
+      error instanceof Error ? error.message : String(error),
+    );
+    process.exit(1);
   }
 }
 
-main().catch((error) => {
-  console.error("❌ An unexpected error occurred:", error);
+main().catch((error: unknown) => {
+  console.error(
+    "❌ An unexpected error occurred:",
+    error instanceof Error ? error.message : String(error),
+  );
   process.exit(1);
 });

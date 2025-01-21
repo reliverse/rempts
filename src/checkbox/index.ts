@@ -1,5 +1,5 @@
 import ansiEscapes from "ansi-escapes";
-import pc from "picocolors";
+import { re } from "@reliverse/relico";
 
 import type { PartialDeep } from "~/types/utils.js";
 
@@ -43,15 +43,15 @@ type CheckboxTheme = {
 
 const checkboxTheme: CheckboxTheme = {
   icon: {
-    checked: pc.green(figures.circleFilled),
+    checked: re.green(figures.circleFilled),
     unchecked: figures.circle,
     cursor: figures.pointer,
   },
   style: {
-    disabledChoice: (text: string) => pc.dim(`- ${text}`),
+    disabledChoice: (text: string) => re.dim(`- ${text}`),
     renderSelectedChoices: (selectedChoices) =>
       selectedChoices.map((choice) => choice.short).join(", "),
-    description: (text: string) => pc.cyan(text),
+    description: (text: string) => re.cyan(text),
   },
   helpMode: "auto",
 };

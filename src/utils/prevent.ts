@@ -3,7 +3,7 @@ import {
   getTerminalWidth,
   msg,
 } from "@reliverse/relinka";
-import pc from "picocolors";
+import { re } from "@reliverse/relico";
 import terminalSize from "terminal-size";
 
 export type PreventWrongTerminalSizeOptions = {
@@ -43,7 +43,7 @@ export async function preventWrongTerminalSize({
   if (errors.length > 0) {
     msg({
       type: "M_ERROR",
-      title: pc.redBright(errors.join("\n││    ")),
+      title: re.redBright(errors.join("\n││    ")),
       content:
         size.rows >= 7 && terminalWidth >= 70 ? sizeErrorDescription : "",
       contentColor: "redBright",

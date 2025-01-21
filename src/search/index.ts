@@ -1,4 +1,4 @@
-import pc from "picocolors";
+import { re } from "@reliverse/relico";
 
 import type { PartialDeep } from "~/types/utils.js";
 
@@ -32,9 +32,9 @@ type SearchTheme = {
 const searchTheme: SearchTheme = {
   icon: { cursor: figures.pointer },
   style: {
-    disabled: (text: string) => pc.dim(`- ${text}`),
-    searchTerm: (text: string) => pc.cyan(text),
-    description: (text: string) => pc.cyan(text),
+    disabled: (text: string) => re.dim(`- ${text}`),
+    searchTerm: (text: string) => re.cyan(text),
+    description: (text: string) => re.cyan(text),
   },
   helpMode: "auto",
 };

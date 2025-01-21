@@ -1,12 +1,12 @@
 import type { Options } from "p-map";
 
 import { msg } from "@reliverse/relinka";
+import { EventEmitter } from "node:events";
 import process from "node:process";
 import ora from "ora";
 import pMap from "p-map";
-import pc from "picocolors";
+import { re } from "@reliverse/relico";
 import { cursor, erase } from "sisteransi";
-import { proxy, subscribe } from "valtio";
 
 import type { ProgressBar } from "~/task/types.js";
 
@@ -157,6 +157,9 @@ function arrayRemove<T>(array: T[], element: T) {
   }
 }
 
+// Create a simple event emitter for state changes
+const stateEmitter = new EventEmitter();
+
 function registerTask<T>(
   taskList: TaskList,
   taskTitle: string,
@@ -185,8 +188,8 @@ function registerTask<T>(
 
   task.cancelToken = cancelToken;
 
-  // Subscribe to state changes for timing information
-  subscribe(task, () => {
+  // Replace valtio subscribe with event emitter
+  const handleStateChange = () => {
     if (task.state === "loading" && !task.startTime) {
       task.startTime = Date.now();
     } else if (
@@ -197,7 +200,9 @@ function registerTask<T>(
       task.endTime = Date.now();
       task.duration = task.endTime - task.startTime;
     }
-  });
+  };
+
+  stateEmitter.on(`stateChange:${task.id}`, handleStateChange);
 
   // Set up spinner
   const frames = ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"];
@@ -230,8 +235,8 @@ function registerTask<T>(
         const frames = spinnerType
           ? simpleSpinners[spinnerType]
           : simpleSpinners.default;
-        const currentFrame = pc.magenta(frames[frameIndex]);
-        process.stdout.write(`${currentFrame} ${pc.cyan(task.title)}`);
+        const currentFrame = re.magenta(frames[frameIndex]);
+        process.stdout.write(`${currentFrame} ${re.cyan(task.title)}`);
         if (task.status) {
           process.stdout.write(` - ${task.status}`);
         }
@@ -275,25 +280,25 @@ function registerTask<T>(
       // Write status with proper styling
       if (task.state === "success") {
         process.stdout.write(
-          `${statusIcon} ${pc.cyan(task.title)}${task.status ? ` - ${pc.greenBright(task.status)}` : ""}\n`,
+          `${statusIcon} ${re.cyan(task.title)}${task.status ? ` - ${re.greenBright(task.status)}` : ""}\n`,
         );
       } else if (task.state === "error" || task.state === "cancelled") {
         process.stdout.write(
-          `${statusIcon} ${pc.cyan(task.title)}${task.status ? ` - ${pc.red(task.status)}` : ""}\n`,
+          `${statusIcon} ${re.cyan(task.title)}${task.status ? ` - ${re.red(task.status)}` : ""}\n`,
         );
         if (task.error?.message) {
-          process.stdout.write(`   ${pc.red(task.error.message)}\n`);
+          process.stdout.write(`   ${re.red(task.error.message)}\n`);
         }
       } else {
         process.stdout.write(
-          `${statusIcon} ${pc.cyan(task.title)}${task.status ? ` - ${task.status}` : ""}\n`,
+          `${statusIcon} ${re.cyan(task.title)}${task.status ? ` - ${task.status}` : ""}\n`,
         );
       }
     }
   };
 
-  // Start spinner when task starts
-  subscribe(task, () => {
+  // Start spinner when task state changes
+  stateEmitter.on(`stateChange:${task.id}`, () => {
     if (task.state === "loading" && !interval) {
       interval = setInterval(() => {
         frameIndex = (frameIndex + 1) % frames.length;
@@ -309,6 +314,7 @@ function registerTask<T>(
     async [runSymbol]() {
       const api = createTaskInnerApi(task);
       task.state = "loading";
+      stateEmitter.emit(`stateChange:${task.id}`);
 
       try {
         if (cancelToken.signal.aborted) {
@@ -342,6 +348,7 @@ function registerTask<T>(
       } catch (error) {
         if (cancelToken.signal.aborted) {
           task.state = "cancelled";
+          stateEmitter.emit(`stateChange:${task.id}`);
         } else if (error instanceof Error) {
           api.setError(error);
         } else {
@@ -351,22 +358,26 @@ function registerTask<T>(
           process.exit(1);
         }
         throw error;
+      } finally {
+        stateEmitter.removeAllListeners(`stateChange:${task.id}`);
       }
     },
     clear() {
       clearLine();
       arrayRemove(taskList, task);
+      stateEmitter.removeAllListeners(`stateChange:${task.id}`);
     },
     cancel() {
       clearLine();
       cancelToken.abort();
       task.state = "cancelled";
+      stateEmitter.emit(`stateChange:${task.id}`);
     },
   };
 }
 
-// Create and export the root task list and default task function
-const rootTaskList = proxy<TaskList>([]);
+// Create and export the root task list without valtio proxy
+const rootTaskList: TaskList = [];
 
 // Add a task state manager
 const taskStateManager = new Map<string, boolean>();
@@ -522,9 +533,11 @@ const createTaskInnerApi = (taskState: TaskObject): TaskInnerAPI => {
     task: advancedTaskPrompt(taskState.children),
     setTitle(title) {
       taskState.title = title;
+      stateEmitter.emit(`stateChange:${taskState.id}`);
     },
     setStatus(status) {
       taskState.status = status;
+      stateEmitter.emit(`stateChange:${taskState.id}`);
     },
     setOutput(output) {
       taskState.output =
@@ -533,6 +546,7 @@ const createTaskInnerApi = (taskState: TaskObject): TaskInnerAPI => {
           : "message" in output
             ? output.message
             : "";
+      stateEmitter.emit(`stateChange:${taskState.id}`);
     },
     setWarning(warning) {
       taskState.state = "warning";
@@ -542,6 +556,7 @@ const createTaskInnerApi = (taskState: TaskObject): TaskInnerAPI => {
           taskState.error = warning;
         }
       }
+      stateEmitter.emit(`stateChange:${taskState.id}`);
     },
     setError(error) {
       taskState.state = "error";
@@ -551,9 +566,11 @@ const createTaskInnerApi = (taskState: TaskObject): TaskInnerAPI => {
           taskState.error = error;
         }
       }
+      stateEmitter.emit(`stateChange:${taskState.id}`);
     },
     setProgress(progress) {
       taskState.progress = progress;
+      stateEmitter.emit(`stateChange:${taskState.id}`);
     },
     updateProgress(current: number, total?: number, message?: string) {
       const currentProgress = taskState.progress || { current: 0, total: 100 };
@@ -562,11 +579,13 @@ const createTaskInnerApi = (taskState: TaskObject): TaskInnerAPI => {
         total: total ?? currentProgress.total,
         message: message ?? currentProgress.message,
       };
+      stateEmitter.emit(`stateChange:${taskState.id}`);
     },
     cancel() {
       if (taskState.cancelToken) {
         taskState.cancelToken.abort();
         taskState.state = "cancelled";
+        stateEmitter.emit(`stateChange:${taskState.id}`);
       }
     },
     isCancelled() {
@@ -612,7 +631,7 @@ export async function spinnerTask(options: SpinnerTaskOptions): Promise<void> {
       oraSpinner.stop();
     } catch (error) {
       oraSpinner.stopAndPersist({
-        symbol: pc.red("✖"),
+        symbol: re.red("✖"),
         text: errorMessage,
       });
 
@@ -656,9 +675,9 @@ export async function spinnerTask(options: SpinnerTaskOptions): Promise<void> {
       }
 
       interval = setInterval(() => {
-        const frame = pc.magenta(frames[frameIndex]);
+        const frame = re.magenta(frames[frameIndex]);
         process.stdout.write(
-          `${cursor.move(-999, 0)}${erase.line}${frame} ${pc.cyan(message)}`,
+          `${cursor.move(-999, 0)}${erase.line}${frame} ${re.cyan(message)}`,
         );
         frameIndex = (frameIndex + 1) % frames.length;
       }, delay);
@@ -675,7 +694,7 @@ export async function spinnerTask(options: SpinnerTaskOptions): Promise<void> {
       }
 
       process.stdout.write(
-        `\r${erase.line}${pc.red("✖")} ${
+        `\r${erase.line}${re.red("✖")} ${
           error instanceof Error ? errorMessage : "An unknown error occurred."
         }\n`,
       );

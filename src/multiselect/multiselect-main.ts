@@ -9,7 +9,7 @@ import {
 } from "@reliverse/relinka";
 import { stdin as input, stdout as output } from "node:process";
 import readline from "node:readline";
-import pc from "picocolors";
+import { re } from "@reliverse/relico";
 import terminalSize from "terminal-size";
 
 import { completePrompt } from "~/utils/prompt-end.js";
@@ -130,19 +130,19 @@ function renderPromptUI<T extends string>(params: {
   if (errorMessage) {
     msg({
       type: "M_NULL",
-      title: `${pc.redBright(symbols.step_error)} ${pc.redBright(errorMessage)}`,
+      title: `${re.redBright(symbols.step_error)} ${re.redBright(errorMessage)}`,
     });
     uiLineCount++;
   } else if (allDisabled) {
     msg({
       type: "M_NULL",
-      title: pc.redBright("All options are disabled."),
+      title: re.redBright("All options are disabled."),
     });
     uiLineCount++;
   } else if (displayInstructions && !isRerender) {
     msg({
       type: "M_NULL",
-      title: pc.blue(instructions),
+      title: re.blue(instructions),
     });
     uiLineCount++;
   }
@@ -177,7 +177,7 @@ function renderPromptUI<T extends string>(params: {
   );
 
   if (shouldRenderTopEllipsis) {
-    msg({ type: "M_NULL", title: pc.dim("...") });
+    msg({ type: "M_NULL", title: re.dim("...") });
     uiLineCount++;
   }
 
@@ -196,7 +196,7 @@ function renderPromptUI<T extends string>(params: {
       const lineSymbol = symbolKey in symbols ? symbols[symbolKey] : "─";
       msg({
         type: "M_NULL",
-        title: pc.dim(lineSymbol.repeat(width)),
+        title: re.dim(lineSymbol.repeat(width)),
       });
       uiLineCount++;
       continue;
@@ -206,20 +206,20 @@ function renderPromptUI<T extends string>(params: {
     const isHighlighted = index === pointer;
     const isDisabled = option.disabled;
     const checkbox = isSelected ? "[x]" : "[ ]";
-    const prefix = isHighlighted ? pc.yellow(pc.reset("> ")) : "  ";
+    const prefix = isHighlighted ? re.yellow(re.reset("> ")) : "  ";
     const labelColor = isDisabled
-      ? pc.dim(pc.reset(option.label))
+      ? re.dim(re.reset(option.label))
       : isHighlighted
-        ? pc.reset(pc.yellow(option.label))
-        : pc.reset(option.label);
+        ? re.reset(re.yellow(option.label))
+        : re.reset(option.label);
 
     const hint = option.hint
-      ? pc.reset(
-          ` (${isDisabled ? pc.dim(option.hint) : pc.gray(option.hint)})`,
+      ? re.reset(
+          ` (${isDisabled ? re.dim(option.hint) : re.gray(option.hint)})`,
         )
       : "";
 
-    const formattedCheckbox = isHighlighted ? pc.yellow(checkbox) : checkbox;
+    const formattedCheckbox = isHighlighted ? re.yellow(checkbox) : checkbox;
 
     msg({
       type: "M_NULL",
@@ -229,7 +229,7 @@ function renderPromptUI<T extends string>(params: {
   }
 
   if (shouldRenderBottomEllipsis) {
-    msg({ type: "M_NULL", title: pc.dim("...") });
+    msg({ type: "M_NULL", title: re.dim("...") });
     uiLineCount++;
   }
 

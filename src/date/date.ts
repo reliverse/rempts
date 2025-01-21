@@ -12,7 +12,7 @@ import { Type, type TSchema } from "@sinclair/typebox";
 import { Value } from "@sinclair/typebox/value";
 import { stdin as input, stdout as output } from "node:process";
 import readline from "node:readline/promises";
-import pc from "picocolors";
+import { re } from "@reliverse/relico";
 import {
   buildRegExp,
   digit,
@@ -170,7 +170,7 @@ export async function datePrompt<T extends TSchema>(
       }
 
       // Prompt the user for input
-      const answerInput = await rl.question(`${pc.dim(symbols.middle)}  `);
+      const answerInput = await rl.question(`${re.dim(symbols.middle)}  `);
 
       // Check if user pressed Ctrl+C or input stream closed:
       if (answerInput === null) {

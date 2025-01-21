@@ -9,7 +9,7 @@ import { bar, msg } from "@reliverse/relinka";
 import { deleteLastLine } from "@reliverse/relinka";
 import { stdin as input, stdout as output } from "node:process";
 import readline from "node:readline/promises";
-import pc from "picocolors";
+import { re } from "@reliverse/relico";
 
 import { colorize } from "~/main.js";
 import { completePrompt } from "~/utils/prompt-end.js";
@@ -112,7 +112,7 @@ function renderPrompt(params: {
   if (displayInstructions && !isRerender) {
     msg({
       type: "M_NULL",
-      title: pc.blue(instructions),
+      title: re.blue(instructions),
     });
     uiLineCount++;
   }
@@ -121,7 +121,7 @@ function renderPrompt(params: {
   if (errorMessage) {
     msg({
       type: "M_NULL",
-      title: pc.redBright(errorMessage),
+      title: re.redBright(errorMessage),
     });
     uiLineCount++;
   }
@@ -164,7 +164,7 @@ export async function confirmPrompt(
   // Only prepend the default hint to the title if instructions are not displayed
   const adjustedTitle = displayInstructions
     ? title
-    : `${pc.blue(defaultHint)} ${title}`;
+    : `${re.blue(defaultHint)} ${title}`;
 
   const instructions = `Use <y/n> to confirm or deny, <Enter> for default (${effectiveDefault ? "Y" : "N"}), <Ctrl+C> to exit`;
 
@@ -236,7 +236,7 @@ export async function confirmPrompt(
         deleteLastLine();
         msg({
           type: "M_NULL",
-          title: `${colorize(pc.reset(formattedBar), borderColor)}  ${pc.reset(effectiveDefault ? "y" : "n")}`,
+          title: `${colorize(re.reset(formattedBar), borderColor)}  ${re.reset(effectiveDefault ? "y" : "n")}`,
         });
         result = effectiveDefault;
       } else if (answer === "y" || answer === "yes") {

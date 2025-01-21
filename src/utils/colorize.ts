@@ -1,5 +1,6 @@
 import type { ColorName, TypographyName } from "@reliverse/relinka";
 
+import { re } from "@reliverse/relico";
 import gradient, {
   cristal,
   mind,
@@ -7,11 +8,10 @@ import gradient, {
   rainbow,
   vice,
 } from "gradient-string";
-import pc from "picocolors";
 
-// Strip ANSI color codes using picocolors
+// Strip ANSI color codes using @reliverse/relico
 function stripAnsi(text: string): string {
-  return pc.reset(text);
+  return re.reset(text);
 }
 
 export function colorize(
@@ -65,61 +65,61 @@ export function colorize(
   // Handle regular colors
   switch (colorName) {
     case "inverse":
-      result = pc.inverse(` ${result} `);
+      result = re.inverse(` ${result} `);
       break;
     case "dim":
-      result = pc.dim(result);
+      result = re.dim(result);
       break;
     case "black":
-      result = pc.black(result);
+      result = re.black(result);
       break;
     case "red":
-      result = pc.red(result);
+      result = re.red(result);
       break;
     case "redBright":
-      result = pc.redBright(result);
+      result = re.redBright(result);
       break;
     case "green":
-      result = pc.green(result);
+      result = re.green(result);
       break;
     case "greenBright":
-      result = pc.greenBright(result);
+      result = re.greenBright(result);
       break;
     case "yellow":
-      result = pc.yellow(result);
+      result = re.yellow(result);
       break;
     case "yellowBright":
-      result = pc.yellowBright(result);
+      result = re.yellowBright(result);
       break;
     case "blue":
-      result = pc.blue(result);
+      result = re.blue(result);
       break;
     case "blueBright":
-      result = pc.blueBright(result);
+      result = re.blueBright(result);
       break;
     case "magenta":
-      result = pc.magenta(result);
+      result = re.magenta(result);
       break;
     case "magentaBright":
-      result = pc.magentaBright(result);
+      result = re.magentaBright(result);
       break;
     case "cyan":
-      result = pc.cyan(result);
+      result = re.cyan(result);
       break;
     case "cyanBright":
-      result = pc.cyanBright(result);
+      result = re.cyanBright(result);
       break;
     case "bgCyan":
-      result = pc.bgCyan(` ${result} `);
+      result = re.bgCyan(` ${result} `);
       break;
     case "bgCyanBright":
-      result = pc.bgCyanBright(` ${result} `);
+      result = re.bgCyanBright(` ${result} `);
       break;
     case "white":
-      result = pc.white(result);
+      result = re.white(result);
       break;
     case "gray":
-      result = pc.gray(result);
+      result = re.gray(result);
       break;
     case "none":
       break;
@@ -132,16 +132,16 @@ export function colorize(
   if (typography) {
     switch (typography) {
       case "bold":
-        result = pc.bold(result);
+        result = re.bold(result);
         break;
       case "strikethrough":
-        result = pc.strikethrough(result);
+        result = re.strikethrough(result);
         break;
       case "underline":
-        result = pc.underline(result);
+        result = re.underline(result);
         break;
       case "italic":
-        result = pc.italic(result);
+        result = re.italic(result);
         break;
       default:
         break;

@@ -1,4 +1,4 @@
-import pc from "picocolors";
+import { re } from "@reliverse/relico";
 
 import { errorHandler, selectPrompt } from "~/main.js";
 
@@ -22,29 +22,29 @@ async function examplesRunner() {
         hint: "experimental",
       },
       {
-        label: pc.dim("Task Example"),
+        label: re.dim("Task Example"),
         value: "task",
-        hint: pc.dim("not finished"),
+        hint: re.dim("not finished"),
       },
       {
-        label: pc.dim("Progressbar Example"),
+        label: re.dim("Progressbar Example"),
         value: "progressbar",
-        hint: pc.dim("not finished"),
+        hint: re.dim("not finished"),
       },
       {
-        label: pc.dim("Simple Example"),
+        label: re.dim("Simple Example"),
         value: "simple",
-        hint: pc.dim("not finished"),
+        hint: re.dim("not finished"),
       },
       {
-        label: pc.dim("with flags 1 Example"),
+        label: re.dim("with flags 1 Example"),
         value: "cmd-a",
-        hint: pc.dim("not finished"),
+        hint: re.dim("not finished"),
       },
       {
-        label: pc.dim("with flags 2 Example"),
+        label: re.dim("with flags 2 Example"),
         value: "cmd-b",
-        hint: pc.dim("not finished"),
+        hint: re.dim("not finished"),
       },
       { label: "🗝️  Exit", value: "exit" },
     ] as const,

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import pc from "picocolors";
+import { re } from "@reliverse/relico";
 
 import figures from "~/figures/index.js";
 import { select } from "~/prompts/index.js";
@@ -66,7 +66,7 @@ async function askNextDemo() {
     ],
     theme: {
       prefix: {
-        done: pc.magenta(figures.play),
+        done: re.magenta(figures.play),
       },
     },
   });

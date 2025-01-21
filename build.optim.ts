@@ -1,11 +1,10 @@
 import fs from "fs-extra";
 import { globby } from "globby";
 import path from "pathe";
-import strip from "strip-comments";
 import { fileURLToPath } from "url";
 
 // Verbose logging
-const debug = false;
+export const verbose = false;
 
 // Parse command-line arguments to check for '--jsr' flag
 const args: string[] = process.argv.slice(2);
@@ -14,7 +13,7 @@ const isJSR: boolean = args.includes("--jsr");
 // Get current directory using import.meta.url
 const currentDir = path.dirname(fileURLToPath(import.meta.url));
 
-// Define directories based on the presence of '--jsr' flag
+// Directories based on the presence of '--jsr' flag
 const sourceDir: string = path.resolve(currentDir, "src");
 const outputDir: string = path.resolve(
   currentDir,
@@ -22,30 +21,18 @@ const outputDir: string = path.resolve(
 );
 
 // Separate patterns for files to delete in different modes
-const npmFilesToDelete: string[] = [
+const arrayFilesToDelete: string[] = [
   "**/*.test.js",
+  "**/*.test.ts",
   "**/*.test.d.ts",
-  "**/*.spec.js",
-  "**/*.spec.d.ts",
   "types/internal.js",
   "types/internal.d.ts",
   "**/*.temp.js",
   "**/*.temp.d.ts",
-  "__snapshots__",
-  "testing",
-];
-
-const jsrFilesToDelete: string[] = [
-  "**/*.test.ts",
-  "**/*.spec.ts",
-  "**/*.temp.ts",
-  "__snapshots__",
 ];
 
 /**
  * Deletes files matching the provided patterns within the base directory.
- * @param patterns - Array of glob patterns to match files for deletion.
- * @param baseDir - The base directory to search for files.
  */
 async function deleteFiles(patterns: string[], baseDir: string): Promise<void> {
   try {
@@ -62,25 +49,27 @@ async function deleteFiles(patterns: string[], baseDir: string): Promise<void> {
     for (const filePath of files) {
       try {
         await fs.remove(filePath);
-        if (debug) {
+        if (verbose) {
           console.log(`Deleted: ${filePath}`);
         }
       } catch (error) {
-        console.error(`Error deleting file ${filePath}:`, error);
+        console.error(
+          `Error deleting file ${filePath}:`,
+          error instanceof Error ? error.message : JSON.stringify(error),
+        );
       }
     }
   } catch (error) {
-    console.error("Error processing deletion patterns:", error);
+    console.error(
+      "Error processing deletion patterns:",
+      error instanceof Error ? error.message : JSON.stringify(error),
+    );
   }
 }
 
 /**
  * Replaces import paths that use '~/' with relative paths.
  * If `isJSR` is true, also replaces '.js' extensions with '.ts'.
- * @param content - The file content.
- * @param fileDir - The directory of the current file.
- * @param rootDir - The root directory to resolve relative paths.
- * @param isJSR - Flag indicating whether to apply JSR-specific transformations.
  * @returns The updated file content with modified import paths.
  */
 function replaceImportPaths(
@@ -98,7 +87,7 @@ function replaceImportPaths(
       importPath: string,
       suffix: string,
     ): string => {
-      const relativePathToRoot: string = path.relative(fileDir, rootDir) || ".";
+      const relativePathToRoot: string = path.relative(fileDir, rootDir);
       // Remove leading '~/' or '~' from importPath
       importPath = importPath.replace(/^~\/?/, "");
       let newPath: string = path.join(relativePathToRoot, importPath);
@@ -117,7 +106,7 @@ function replaceImportPaths(
     // @see https://jsr.io/docs/publishing-packages#relative-imports
     updatedContent = updatedContent.replace(/(\.js)(?=['";])/g, ".ts");
 
-    if (debug) {
+    if (verbose) {
       console.log("Replaced '.js' with '.ts' in import paths.");
     }
   }
@@ -128,31 +117,29 @@ function replaceImportPaths(
 /**
  * Removes comments from the given content string.
  * - Strips block comments using `strip-comments`.
- * @param content - The file content.
- * @param filePath - The path of the file being processed.
  * @returns The content without unwanted comments.
  */
-function removeComments(content: string, filePath: string): string {
+// function removeComments(content: string, filePath: string): string {
+function removeComments(content: string): string {
   // When not in JSR mode, strip all comments using strip-comments
-  const stripped = strip(content, {
-    line: true,
-    block: true,
-    keepProtected: true,
-    preserveNewlines: false,
-  });
+  // const stripped = strip(content, {
+  //   line: true,
+  //   block: true,
+  //   keepProtected: true,
+  //   preserveNewlines: false,
+  // });
 
-  if (debug) {
-    console.log(`\nProcessing file: ${filePath}`);
-    console.log("Stripped all comments.");
-  }
+  // if (debug) {
+  //   console.log(`\nProcessing file: ${filePath}`);
+  //   console.log("Stripped all comments.");
+  // }
 
-  return stripped;
+  return content; // return stripped;
 }
 
 /**
  * Processes all relevant files in the given directory
  * by replacing import paths and removing comments.
- * @param dir - The directory to process.
  */
 async function processFiles(dir: string): Promise<void> {
   const files: string[] = await fs.readdir(dir);
@@ -174,9 +161,10 @@ async function processFiles(dir: string): Promise<void> {
       filePath.endsWith(".mts") ||
       filePath.endsWith(".cts")
     ) {
-      if (debug) {
+      if (verbose) {
         console.log(`\nProcessing file: ${filePath}`);
       }
+
       try {
         const content: string = await fs.readFile(filePath, "utf8");
 
@@ -188,17 +176,21 @@ async function processFiles(dir: string): Promise<void> {
         );
 
         if (!isJSR) {
-          updatedContent = removeComments(updatedContent, filePath);
+          // updatedContent = removeComments(updatedContent, filePath);
+          updatedContent = removeComments(updatedContent);
         }
 
         if (content !== updatedContent) {
           await fs.writeFile(filePath, updatedContent, "utf8");
-          if (debug) {
+          if (verbose) {
             console.log(`Updated file: ${filePath}`);
           }
         }
       } catch (error) {
-        console.error(`Error processing file ${filePath}:`, error);
+        console.error(
+          `Error processing file ${filePath}:`,
+          error instanceof Error ? error.message : JSON.stringify(error),
+        );
       }
     }
   }
@@ -212,12 +204,15 @@ async function removeOutputDirectory(): Promise<void> {
     const exists: boolean = await fs.pathExists(outputDir);
     if (exists) {
       await fs.remove(outputDir);
-      if (debug) {
+      if (verbose) {
         console.log(`Removed existing '${outputDir}' directory.`);
       }
     }
   } catch (error) {
-    console.error(`Error removing '${outputDir}' directory:`, error);
+    console.error(
+      `Error removing '${outputDir}' directory:`,
+      error instanceof Error ? error.message : JSON.stringify(error),
+    );
     throw error;
   }
 }
@@ -231,18 +226,44 @@ async function copySrcToOutput(): Promise<void> {
       overwrite: true,
       errorOnExist: false,
     });
-    if (debug) {
+    if (verbose) {
       console.log(`Copied 'src' to '${outputDir}'`);
     }
   } catch (error) {
-    console.error(`Error copying 'src' to '${outputDir}':`, error);
+    console.error(
+      `Error copying 'src' to '${outputDir}':`,
+      error instanceof Error ? error.message : JSON.stringify(error),
+    );
     throw error;
   }
 }
 
 /**
+ * Renames all .tsx files to -tsx.txt in the specified directory and its subdirectories.
+ */
+async function renameTsxFiles(dir: string): Promise<void> {
+  try {
+    const files = await globby("**/*.tsx", {
+      cwd: dir,
+      absolute: true,
+    });
+
+    for (const filePath of files) {
+      const newPath = filePath.replace(/\.tsx$/, "-tsx.txt");
+      await fs.rename(filePath, newPath);
+      if (verbose) {
+        console.log(`Renamed: ${filePath} -> ${newPath}`);
+      }
+    }
+  } catch (error) {
+    console.error(
+      `Error renaming .tsx files: ${error instanceof Error ? error.message : JSON.stringify(error)}`,
+    );
+  }
+}
+
+/**
  * Optimizes the build for production by processing files and deleting unnecessary ones.
- * @param dir - The directory to optimize.
  */
 async function optimizeBuildForProduction(dir: string): Promise<void> {
   if (isJSR) {
@@ -252,11 +273,13 @@ async function optimizeBuildForProduction(dir: string): Promise<void> {
     await copySrcToOutput();
     console.log("Processing copied files to replace import paths...");
     await processFiles(outputDir); // Process files after copying
+    console.log("Renaming .tsx files to -tsx.txt for JSR compatibility...");
+    await renameTsxFiles(outputDir);
   } else {
     console.log("Creating an optimized production build...");
     await processFiles(dir);
     console.log("Cleaning up unnecessary files...");
-    const filesToDelete: string[] = isJSR ? jsrFilesToDelete : npmFilesToDelete;
+    const filesToDelete: string[] = arrayFilesToDelete;
     await deleteFiles(filesToDelete, dir);
   }
 }
@@ -283,14 +306,14 @@ await optimizeBuildForProduction(outputDir)
   .then(() => {
     getDirectorySize(outputDir)
       .then((size) => {
-        console.log(`Total size of ${outputDir}: ${size} bytes`);
+        console.log(`Total size of ${outputDir}: ${String(size)} bytes`);
       })
-      .catch((error) => {
+      .catch((error: unknown) => {
         console.error(
           `Error calculating directory size for ${outputDir}: ${error instanceof Error ? error.message : "Unknown error"}`,
         );
       });
   })
-  .catch((error: Error) => {
-    console.error(error.message);
+  .catch((error: unknown) => {
+    console.log(error instanceof Error ? error.message : JSON.stringify(error));
   });

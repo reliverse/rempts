@@ -1,4 +1,4 @@
-import pc from "picocolors";
+import { re } from "@reliverse/relico";
 
 import figures from "~/figures/index.js";
 
@@ -8,7 +8,7 @@ import figures from "~/figures/index.js";
  */
 
 export class Separator {
-  readonly separator = pc.dim(Array.from({ length: 15 }).join(figures.line));
+  readonly separator = re.dim(Array.from({ length: 15 }).join(figures.line));
   readonly type = "separator";
 
   constructor(separator?: string) {

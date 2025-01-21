@@ -2,7 +2,7 @@ import type { Key } from "node:readline";
 
 import { Value } from "@sinclair/typebox/value";
 import { stdout } from "node:process";
-import pc from "picocolors";
+import { re } from "@reliverse/relico";
 
 import type { PromptOptions } from "~/types/general.js";
 
@@ -54,12 +54,12 @@ export async function selectPrompt(
       throw new Error("Choices are required for select prompt.");
     }
     resetCursorAndClear(stdout, 0, 0);
-    console.log(pc.cyanBright(pc.bold(coloredTitle)));
+    console.log(re.cyanBright(re.bold(coloredTitle)));
     choices.forEach((choice, index) => {
       const isSelected = index === selectedIndex;
-      const prefix = isSelected ? pc.green(">") : " ";
+      const prefix = isSelected ? re.green(">") : " ";
       const choiceText = isSelected
-        ? pc.bgGreen(pc.black(choice.title))
+        ? re.bgGreen(re.black(choice.title))
         : choice.title;
       console.log(`${prefix} ${choiceText}`);
     });

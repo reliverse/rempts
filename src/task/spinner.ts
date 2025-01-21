@@ -2,7 +2,7 @@ import { msg } from "@reliverse/relinka";
 import { type SpinnerName } from "cli-spinners";
 import process from "node:process";
 import ora from "ora";
-import pc from "picocolors";
+import { re } from "@reliverse/relico";
 import { cursor, erase } from "sisteransi";
 
 type SimpleSpinnerType = "default" | "dottedCircle" | "boxSpinner";
@@ -59,7 +59,7 @@ export async function spinnerTaskPrompt<T extends "simple" | "ora">(
       });
     } catch (error) {
       oraSpinner.stopAndPersist({
-        symbol: pc.red("✖"),
+        symbol: re.red("✖"),
         text: errorMessage,
       });
 
@@ -102,9 +102,9 @@ export async function spinnerTaskPrompt<T extends "simple" | "ora">(
       }
 
       interval = setInterval(() => {
-        const frame = pc.magenta(frames[frameIndex]);
+        const frame = re.magenta(frames[frameIndex]);
         process.stdout.write(
-          `${cursor.move(-999, 0)}${erase.line}${frame} ${pc.cyan(message)}`,
+          `${cursor.move(-999, 0)}${erase.line}${frame} ${re.cyan(message)}`,
         );
         frameIndex = (frameIndex + 1) % frames.length;
       }, delay);
@@ -117,7 +117,7 @@ export async function spinnerTaskPrompt<T extends "simple" | "ora">(
       interval = null;
 
       process.stdout.write(
-        `\r${erase.line}${pc.green("✔")} ${successMessage}\n`,
+        `\r${erase.line}${re.green("✔")} ${successMessage}\n`,
       );
 
       msg({
@@ -131,7 +131,7 @@ export async function spinnerTaskPrompt<T extends "simple" | "ora">(
       }
 
       process.stdout.write(
-        `\r${erase.line}${pc.red("✖")} ${
+        `\r${erase.line}${re.red("✖")} ${
           error instanceof Error ? errorMessage : "An unknown error occurred."
         }\n`,
       );

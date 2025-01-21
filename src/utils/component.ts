@@ -1,5 +1,5 @@
+import { re } from "@reliverse/relico";
 import { isUnicodeSupported } from "@reliverse/relinka";
-import pc from "picocolors";
 import { cursor, erase } from "sisteransi";
 
 import type { State } from "~/types/general.js";
@@ -48,13 +48,13 @@ const symbol = (state: State) => {
   switch (state) {
     case "initial":
     case "active":
-      return pc.cyan(S_STEP_ACTIVE);
+      return re.cyan(S_STEP_ACTIVE);
     case "cancel":
-      return pc.red(S_STEP_CANCEL);
+      return re.red(S_STEP_CANCEL);
     case "error":
-      return pc.yellow(S_STEP_ERROR);
+      return re.yellow(S_STEP_ERROR);
     case "submit":
-      return pc.green(S_STEP_SUBMIT);
+      return re.green(S_STEP_SUBMIT);
   }
 };
 
@@ -97,7 +97,7 @@ const limitOptions = <TOption>(
       const isTopLimit = i === 0 && shouldRenderTopEllipsis;
       const isBottomLimit = i === arr.length - 1 && shouldRenderBottomEllipsis;
       return isTopLimit || isBottomLimit
-        ? pc.dim("...")
+        ? re.dim("...")
         : style(option, i + slidingWindowLocation === cursor);
     });
 };
@@ -116,25 +116,25 @@ export const text = (opts: TextOptions) => {
     defaultValue: opts.defaultValue,
     initialValue: opts.initialValue,
     render() {
-      const title = `${pc.gray(S_BAR)}\n${symbol(this.state)}  ${opts.message}\n`;
+      const title = `${re.gray(S_BAR)}\n${symbol(this.state)}  ${opts.message}\n`;
       const placeholder = opts.placeholder
-        ? pc.inverse(opts.placeholder[0]) + pc.dim(opts.placeholder.slice(1))
-        : pc.inverse(pc.hidden("_"));
+        ? re.inverse(opts.placeholder[0]) + re.dim(opts.placeholder.slice(1))
+        : re.inverse(re.hidden("_"));
       const value = !this.value ? placeholder : this.valueWithCursor;
 
       switch (this.state) {
         case "error":
-          return `${title.trim()}\n${pc.yellow(S_BAR)}  ${value}\n${pc.yellow(
+          return `${title.trim()}\n${re.yellow(S_BAR)}  ${value}\n${re.yellow(
             S_BAR_END,
-          )}  ${pc.yellow(this.error)}\n`;
+          )}  ${re.yellow(this.error)}\n`;
         case "submit":
-          return `${title}${pc.gray(S_BAR)}  ${pc.dim(this.value || opts.placeholder)}`;
+          return `${title}${re.gray(S_BAR)}  ${re.dim(this.value || opts.placeholder)}`;
         case "cancel":
-          return `${title}${pc.gray(S_BAR)}  ${pc.strikethrough(
-            pc.dim(this.value ?? ""),
-          )}${this.value?.trim() ? `\n${pc.gray(S_BAR)}` : ""}`;
+          return `${title}${re.gray(S_BAR)}  ${re.strikethrough(
+            re.dim(this.value ?? ""),
+          )}${this.value?.trim() ? `\n${re.gray(S_BAR)}` : ""}`;
         default:
-          return `${title}${pc.cyan(S_BAR)}  ${value}\n${pc.cyan(S_BAR_END)}\n`;
+          return `${title}${re.cyan(S_BAR)}  ${value}\n${re.cyan(S_BAR_END)}\n`;
       }
     },
   }).prompt();
@@ -154,26 +154,26 @@ export const confirm = (opts: ConfirmOptions) => {
     inactive,
     initialValue: opts.initialValue ?? true,
     render() {
-      const title = `${pc.gray(S_BAR)}\n${symbol(this.state)}  ${opts.message}\n`;
+      const title = `${re.gray(S_BAR)}\n${symbol(this.state)}  ${opts.message}\n`;
       const value = this.value ? active : inactive;
 
       switch (this.state) {
         case "submit":
-          return `${title}${pc.gray(S_BAR)}  ${pc.dim(value)}`;
+          return `${title}${re.gray(S_BAR)}  ${re.dim(value)}`;
         case "cancel":
-          return `${title}${pc.gray(S_BAR)}  ${pc.strikethrough(
-            pc.dim(value),
-          )}\n${pc.gray(S_BAR)}`;
+          return `${title}${re.gray(S_BAR)}  ${re.strikethrough(
+            re.dim(value),
+          )}\n${re.gray(S_BAR)}`;
         default: {
-          return `${title}${pc.cyan(S_BAR)}  ${
+          return `${title}${re.cyan(S_BAR)}  ${
             this.value
-              ? `${pc.green(S_RADIO_ACTIVE)} ${active}`
-              : `${pc.dim(S_RADIO_INACTIVE)} ${pc.dim(active)}`
-          } ${pc.dim("/")} ${
+              ? `${re.green(S_RADIO_ACTIVE)} ${active}`
+              : `${re.dim(S_RADIO_INACTIVE)} ${re.dim(active)}`
+          } ${re.dim("/")} ${
             !this.value
-              ? `${pc.green(S_RADIO_ACTIVE)} ${inactive}`
-              : `${pc.dim(S_RADIO_INACTIVE)} ${pc.dim(inactive)}`
-          }\n${pc.cyan(S_BAR_END)}\n`;
+              ? `${re.green(S_RADIO_ACTIVE)} ${inactive}`
+              : `${re.dim(S_RADIO_INACTIVE)} ${re.dim(inactive)}`
+          }\n${re.cyan(S_BAR_END)}\n`;
         }
       }
     },
@@ -201,15 +201,15 @@ export const select = <Value>(opts: SelectOptions<Value>) => {
     const label = option.label ?? String(option.value);
     switch (state) {
       case "selected":
-        return pc.dim(label);
+        return re.dim(label);
       case "active":
-        return `${pc.green(S_RADIO_ACTIVE)} ${label} ${
-          option.hint ? pc.dim(`(${option.hint})`) : ""
+        return `${re.green(S_RADIO_ACTIVE)} ${label} ${
+          option.hint ? re.dim(`(${option.hint})`) : ""
         }`;
       case "cancelled":
-        return pc.strikethrough(pc.dim(label));
+        return re.strikethrough(re.dim(label));
       default:
-        return `${pc.dim(S_RADIO_INACTIVE)} ${pc.dim(label)}`;
+        return `${re.dim(S_RADIO_INACTIVE)} ${re.dim(label)}`;
     }
   };
 
@@ -217,23 +217,23 @@ export const select = <Value>(opts: SelectOptions<Value>) => {
     options: opts.options,
     initialValue: opts.initialValue,
     render() {
-      const title = `${pc.gray(S_BAR)}\n${symbol(this.state)}  ${opts.message}\n`;
+      const title = `${re.gray(S_BAR)}\n${symbol(this.state)}  ${opts.message}\n`;
 
       switch (this.state) {
         case "submit":
-          return `${title}${pc.gray(S_BAR)}  ${opt(this.options[this.cursor], "selected")}`;
+          return `${title}${re.gray(S_BAR)}  ${opt(this.options[this.cursor], "selected")}`;
         case "cancel":
-          return `${title}${pc.gray(S_BAR)}  ${opt(
+          return `${title}${re.gray(S_BAR)}  ${opt(
             this.options[this.cursor],
             "cancelled",
-          )}\n${pc.gray(S_BAR)}`;
+          )}\n${re.gray(S_BAR)}`;
         default: {
-          return `${title}${pc.cyan(S_BAR)}  ${limitOptions({
+          return `${title}${re.cyan(S_BAR)}  ${limitOptions({
             cursor: this.cursor,
             options: this.options,
             maxItems: opts.maxItems,
             style: (item, active) => opt(item, active ? "active" : "inactive"),
-          }).join(`\n${pc.cyan(S_BAR)}  `)}\n${pc.cyan(S_BAR_END)}\n`;
+          }).join(`\n${re.cyan(S_BAR)}  `)}\n${re.cyan(S_BAR_END)}\n`;
         }
       }
     },
@@ -247,16 +247,16 @@ export const selectKey = <Value extends string>(opts: SelectOptions<Value>) => {
   ) => {
     const label = option.label ?? String(option.value);
     if (state === "selected") {
-      return pc.dim(label);
+      return re.dim(label);
     } else if (state === "cancelled") {
-      return pc.strikethrough(pc.dim(label));
+      return re.strikethrough(re.dim(label));
     } else if (state === "active") {
-      return `${pc.bgCyan(pc.gray(` ${option.value} `))} ${label} ${
-        option.hint ? pc.dim(`(${option.hint})`) : ""
+      return `${re.bgCyan(re.gray(` ${option.value} `))} ${label} ${
+        option.hint ? re.dim(`(${option.hint})`) : ""
       }`;
     }
-    return `${pc.gray(pc.bgWhite(pc.inverse(` ${option.value} `)))} ${label} ${
-      option.hint ? pc.dim(`(${option.hint})`) : ""
+    return `${re.gray(re.bgWhite(re.inverse(` ${option.value} `)))} ${label} ${
+      option.hint ? re.dim(`(${option.hint})`) : ""
     }`;
   };
 
@@ -264,24 +264,24 @@ export const selectKey = <Value extends string>(opts: SelectOptions<Value>) => {
     options: opts.options,
     initialValue: opts.initialValue,
     render() {
-      const title = `${pc.gray(S_BAR)}\n${symbol(this.state)}  ${opts.message}\n`;
+      const title = `${re.gray(S_BAR)}\n${symbol(this.state)}  ${opts.message}\n`;
 
       switch (this.state) {
         case "submit":
-          return `${title}${pc.gray(S_BAR)}  ${opt(
+          return `${title}${re.gray(S_BAR)}  ${opt(
             this.options.find((opt) => opt.value === this.value),
             "selected",
           )}`;
         case "cancel":
-          return `${title}${pc.gray(S_BAR)}  ${opt(this.options[0], "cancelled")}\n${pc.gray(
+          return `${title}${re.gray(S_BAR)}  ${opt(this.options[0], "cancelled")}\n${re.gray(
             S_BAR,
           )}`;
         default: {
-          return `${title}${pc.cyan(S_BAR)}  ${this.options
+          return `${title}${re.cyan(S_BAR)}  ${this.options
             .map((option, i) =>
               opt(option, i === this.cursor ? "active" : "inactive"),
             )
-            .join(`\n${pc.cyan(S_BAR)}  `)}\n${pc.cyan(S_BAR_END)}\n`;
+            .join(`\n${re.cyan(S_BAR)}  `)}\n${re.cyan(S_BAR_END)}\n`;
         }
       }
     },
@@ -309,21 +309,21 @@ export const multiselect = <Value>(opts: MultiSelectOptions<Value>) => {
   ) => {
     const label = option.label ?? String(option.value);
     if (state === "active") {
-      return `${pc.cyan(S_CHECKBOX_ACTIVE)} ${label} ${
-        option.hint ? pc.dim(`(${option.hint})`) : ""
+      return `${re.cyan(S_CHECKBOX_ACTIVE)} ${label} ${
+        option.hint ? re.dim(`(${option.hint})`) : ""
       }`;
     } else if (state === "selected") {
-      return `${pc.green(S_CHECKBOX_SELECTED)} ${pc.dim(label)}`;
+      return `${re.green(S_CHECKBOX_SELECTED)} ${re.dim(label)}`;
     } else if (state === "cancelled") {
-      return pc.strikethrough(pc.dim(label));
+      return re.strikethrough(re.dim(label));
     } else if (state === "active-selected") {
-      return `${pc.green(S_CHECKBOX_SELECTED)} ${label} ${
-        option.hint ? pc.dim(`(${option.hint})`) : ""
+      return `${re.green(S_CHECKBOX_SELECTED)} ${label} ${
+        option.hint ? re.dim(`(${option.hint})`) : ""
       }`;
     } else if (state === "submitted") {
-      return pc.dim(label);
+      return re.dim(label);
     }
-    return `${pc.dim(S_CHECKBOX_INACTIVE)} ${pc.dim(label)}`;
+    return `${re.dim(S_CHECKBOX_INACTIVE)} ${re.dim(label)}`;
   };
 
   return new MultiSelectPrompt({
@@ -332,7 +332,7 @@ export const multiselect = <Value>(opts: MultiSelectOptions<Value>) => {
     required: opts.required ?? true,
     cursorAt: opts.cursorAt,
     render() {
-      const title = `${pc.gray(S_BAR)}\n${symbol(this.state)}  ${opts.message}\n`;
+      const title = `${re.gray(S_BAR)}\n${symbol(this.state)}  ${opts.message}\n`;
 
       const styleOption = (option: Option<Value>, active: boolean) => {
         const selected = this.value.includes(option.value);
@@ -347,20 +347,20 @@ export const multiselect = <Value>(opts: MultiSelectOptions<Value>) => {
 
       switch (this.state) {
         case "submit": {
-          return `${title}${pc.gray(S_BAR)}  ${
+          return `${title}${re.gray(S_BAR)}  ${
             this.options
               .filter(({ value }) => this.value.includes(value))
               .map((option) => opt(option, "submitted"))
-              .join(pc.dim(", ")) || pc.dim("none")
+              .join(re.dim(", ")) || re.dim("none")
           }`;
         }
         case "cancel": {
           const label = this.options
             .filter(({ value }) => this.value.includes(value))
             .map((option) => opt(option, "cancelled"))
-            .join(pc.dim(", "));
-          return `${title}${pc.gray(S_BAR)}  ${
-            label.trim() ? `${label}\n${pc.gray(S_BAR)}` : ""
+            .join(re.dim(", "));
+          return `${title}${re.gray(S_BAR)}  ${
+            label.trim() ? `${label}\n${re.gray(S_BAR)}` : ""
           }`;
         }
         case "error": {
@@ -368,24 +368,24 @@ export const multiselect = <Value>(opts: MultiSelectOptions<Value>) => {
             .split("\n")
             .map((ln, i) =>
               i === 0
-                ? `${pc.yellow(S_BAR_END)}  ${pc.yellow(ln)}`
+                ? `${re.yellow(S_BAR_END)}  ${re.yellow(ln)}`
                 : `   ${ln}`,
             )
             .join("\n");
-          return `${title + pc.yellow(S_BAR)}  ${limitOptions({
+          return `${title + re.yellow(S_BAR)}  ${limitOptions({
             options: this.options,
             cursor: this.cursor,
             maxItems: opts.maxItems,
             style: styleOption,
-          }).join(`\n${pc.yellow(S_BAR)}  `)}\n${footer}\n`;
+          }).join(`\n${re.yellow(S_BAR)}  `)}\n${footer}\n`;
         }
         default: {
-          return `${title}${pc.cyan(S_BAR)}  ${limitOptions({
+          return `${title}${re.cyan(S_BAR)}  ${limitOptions({
             options: this.options,
             cursor: this.cursor,
             maxItems: opts.maxItems,
             style: styleOption,
-          }).join(`\n${pc.cyan(S_BAR)}  `)}\n${pc.cyan(S_BAR_END)}\n`;
+          }).join(`\n${re.cyan(S_BAR)}  `)}\n${re.cyan(S_BAR_END)}\n`;
         }
       }
     },
@@ -423,25 +423,25 @@ export const groupMultiselect = <Value>(
     const prefix = isItem ? `${isLast ? S_BAR_END : S_BAR} ` : "";
 
     if (state === "active") {
-      return `${pc.dim(prefix)}${pc.cyan(S_CHECKBOX_ACTIVE)} ${label} ${
-        option.hint ? pc.dim(`(${option.hint})`) : ""
+      return `${re.dim(prefix)}${re.cyan(S_CHECKBOX_ACTIVE)} ${label} ${
+        option.hint ? re.dim(`(${option.hint})`) : ""
       }`;
     } else if (state === "group-active") {
-      return `${prefix}${pc.cyan(S_CHECKBOX_ACTIVE)} ${pc.dim(label)}`;
+      return `${prefix}${re.cyan(S_CHECKBOX_ACTIVE)} ${re.dim(label)}`;
     } else if (state === "group-active-selected") {
-      return `${prefix}${pc.green(S_CHECKBOX_SELECTED)} ${pc.dim(label)}`;
+      return `${prefix}${re.green(S_CHECKBOX_SELECTED)} ${re.dim(label)}`;
     } else if (state === "selected") {
-      return `${pc.dim(prefix)}${pc.green(S_CHECKBOX_SELECTED)} ${pc.dim(label)}`;
+      return `${re.dim(prefix)}${re.green(S_CHECKBOX_SELECTED)} ${re.dim(label)}`;
     } else if (state === "cancelled") {
-      return pc.strikethrough(pc.dim(label));
+      return re.strikethrough(re.dim(label));
     } else if (state === "active-selected") {
-      return `${pc.dim(prefix)}${pc.green(S_CHECKBOX_SELECTED)} ${label} ${
-        option.hint ? pc.dim(`(${option.hint})`) : ""
+      return `${re.dim(prefix)}${re.green(S_CHECKBOX_SELECTED)} ${label} ${
+        option.hint ? re.dim(`(${option.hint})`) : ""
       }`;
     } else if (state === "submitted") {
-      return pc.dim(label);
+      return re.dim(label);
     }
-    return `${pc.dim(prefix)}${pc.dim(S_CHECKBOX_INACTIVE)} ${pc.dim(label)}`;
+    return `${re.dim(prefix)}${re.dim(S_CHECKBOX_INACTIVE)} ${re.dim(label)}`;
   };
 
   return new GroupMultiSelectPrompt({
@@ -450,22 +450,22 @@ export const groupMultiselect = <Value>(
     required: opts.required ?? true,
     cursorAt: opts.cursorAt,
     render() {
-      const title = `${pc.gray(S_BAR)}\n${symbol(this.state)}  ${opts.message}\n`;
+      const title = `${re.gray(S_BAR)}\n${symbol(this.state)}  ${opts.message}\n`;
 
       switch (this.state) {
         case "submit": {
-          return `${title}${pc.gray(S_BAR)}  ${this.options
+          return `${title}${re.gray(S_BAR)}  ${this.options
             .filter(({ value }) => this.value.includes(value))
             .map((option) => opt(option, "submitted"))
-            .join(pc.dim(", "))}`;
+            .join(re.dim(", "))}`;
         }
         case "cancel": {
           const label = this.options
             .filter(({ value }) => this.value.includes(value))
             .map((option) => opt(option, "cancelled"))
-            .join(pc.dim(", "));
-          return `${title}${pc.gray(S_BAR)}  ${
-            label.trim() ? `${label}\n${pc.gray(S_BAR)}` : ""
+            .join(re.dim(", "));
+          return `${title}${re.gray(S_BAR)}  ${
+            label.trim() ? `${label}\n${re.gray(S_BAR)}` : ""
           }`;
         }
         case "error": {
@@ -473,11 +473,11 @@ export const groupMultiselect = <Value>(
             .split("\n")
             .map((ln, i) =>
               i === 0
-                ? `${pc.yellow(S_BAR_END)}  ${pc.yellow(ln)}`
+                ? `${re.yellow(S_BAR_END)}  ${re.yellow(ln)}`
                 : `   ${ln}`,
             )
             .join("\n");
-          return `${title}${pc.yellow(S_BAR)}  ${this.options
+          return `${title}${re.yellow(S_BAR)}  ${this.options
             .map((option, i, options) => {
               const selected =
                 this.value.includes(option.value) ||
@@ -503,10 +503,10 @@ export const groupMultiselect = <Value>(
               }
               return opt(option, active ? "active" : "inactive", options);
             })
-            .join(`\n${pc.yellow(S_BAR)}  `)}\n${footer}\n`;
+            .join(`\n${re.yellow(S_BAR)}  `)}\n${footer}\n`;
         }
         default: {
-          return `${title}${pc.cyan(S_BAR)}  ${this.options
+          return `${title}${re.cyan(S_BAR)}  ${this.options
             .map((option, i, options) => {
               const selected =
                 this.value.includes(option.value) ||
@@ -532,7 +532,7 @@ export const groupMultiselect = <Value>(
               }
               return opt(option, active ? "active" : "inactive", options);
             })
-            .join(`\n${pc.cyan(S_BAR)}  `)}\n${pc.cyan(S_BAR_END)}\n`;
+            .join(`\n${re.cyan(S_BAR)}  `)}\n${re.cyan(S_BAR_END)}\n`;
         }
       }
     },
@@ -554,29 +554,29 @@ export const note = (message = "", title = "") => {
   const msg = lines
     .map(
       (ln) =>
-        `${pc.gray(S_BAR)}  ${pc.dim(ln)}${" ".repeat(len - strip(ln).length)}${pc.gray(
+        `${re.gray(S_BAR)}  ${re.dim(ln)}${" ".repeat(len - strip(ln).length)}${re.gray(
           S_BAR,
         )}`,
     )
     .join("\n");
   process.stdout.write(
-    `${pc.gray(S_BAR)}\n${pc.green(S_STEP_SUBMIT)}  ${pc.reset(title)} ${pc.gray(
+    `${re.gray(S_BAR)}\n${re.green(S_STEP_SUBMIT)}  ${re.reset(title)} ${re.gray(
       S_BAR_H.repeat(Math.max(len - titleLen - 1, 1)) + S_CORNER_TOP_RIGHT,
-    )}\n${msg}\n${pc.gray(S_CONNECT_LEFT + S_BAR_H.repeat(len + 2) + S_CORNER_BOTTOM_RIGHT)}\n`,
+    )}\n${msg}\n${re.gray(S_CONNECT_LEFT + S_BAR_H.repeat(len + 2) + S_CORNER_BOTTOM_RIGHT)}\n`,
   );
 };
 
 export const cancel = (message = "") => {
-  process.stdout.write(`${pc.gray(S_BAR_END)}  ${pc.red(message)}\n\n`);
+  process.stdout.write(`${re.gray(S_BAR_END)}  ${re.red(message)}\n\n`);
 };
 
 export const intro = (title = "") => {
-  process.stdout.write(`${pc.gray(S_BAR_START)}  ${title}\n`);
+  process.stdout.write(`${re.gray(S_BAR_START)}  ${title}\n`);
 };
 
 export const outro = (message = "") => {
   process.stdout.write(
-    `${pc.gray(S_BAR)}\n${pc.gray(S_BAR_END)}  ${message}\n\n`,
+    `${re.gray(S_BAR)}\n${re.gray(S_BAR_END)}  ${message}\n\n`,
   );
 };
 
@@ -586,36 +586,36 @@ export type LogMessageOptions = {
 export const log = {
   message: (
     message = "",
-    { symbol = pc.gray(S_BAR) }: LogMessageOptions = {},
+    { symbol = re.gray(S_BAR) }: LogMessageOptions = {},
   ) => {
-    const parts = [pc.gray(S_BAR)];
+    const parts = [re.gray(S_BAR)];
     if (message) {
       const [firstLine, ...lines] = message.split("\n");
       parts.push(
         `${symbol}  ${firstLine}`,
-        ...lines.map((ln) => `${pc.gray(S_BAR)}  ${ln}`),
+        ...lines.map((ln) => `${re.gray(S_BAR)}  ${ln}`),
       );
     }
     process.stdout.write(`${parts.join("\n")}\n`);
   },
   info: (message: string) => {
-    log.message(message, { symbol: pc.blue(S_INFO) });
+    log.message(message, { symbol: re.blue(S_INFO) });
   },
   success: (message: string) => {
-    log.message(message, { symbol: pc.green(S_SUCCESS) });
+    log.message(message, { symbol: re.green(S_SUCCESS) });
   },
   step: (message: string) => {
-    log.message(message, { symbol: pc.green(S_STEP_SUBMIT) });
+    log.message(message, { symbol: re.green(S_STEP_SUBMIT) });
   },
   warn: (message: string) => {
-    log.message(message, { symbol: pc.yellow(S_WARN) });
+    log.message(message, { symbol: re.yellow(S_WARN) });
   },
   /** alias for `log.warn()`. */
   warning: (message: string) => {
     log.warn(message);
   },
   error: (message: string) => {
-    log.message(message, { symbol: pc.red(S_ERROR) });
+    log.message(message, { symbol: re.red(S_ERROR) });
   },
 };
 
@@ -665,14 +665,14 @@ export const spinner = () => {
     isSpinnerActive = true;
     unblock = block();
     _message = msg.replace(/\.+$/, "");
-    process.stdout.write(`${pc.gray(S_BAR)}\n`);
+    process.stdout.write(`${re.gray(S_BAR)}\n`);
     let frameIndex = 0;
     let dotsTimer = 0;
     registerHooks();
 
     // @ts-expect-error TODO: fix ts
     loop = setInterval(() => {
-      const frame = pc.magenta(frames[frameIndex]);
+      const frame = re.magenta(frames[frameIndex]);
       const loadingDots = ".".repeat(Math.floor(dotsTimer)).slice(0, 3);
       process.stdout.write(cursor.move(-999, 0));
       process.stdout.write(erase.down(1));
@@ -688,10 +688,10 @@ export const spinner = () => {
     clearInterval(loop);
     const step =
       code === 0
-        ? pc.green(S_STEP_SUBMIT)
+        ? re.green(S_STEP_SUBMIT)
         : code === 1
-          ? pc.red(S_STEP_CANCEL)
-          : pc.red(S_STEP_ERROR);
+          ? re.red(S_STEP_CANCEL)
+          : re.red(S_STEP_ERROR);
     process.stdout.write(cursor.move(-999, 0));
     process.stdout.write(erase.down(1));
     process.stdout.write(`${step}  ${_message}\n`);

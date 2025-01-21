@@ -8,7 +8,7 @@ import type { VariantName } from "@reliverse/relinka";
 import { deleteLastLine, msg } from "@reliverse/relinka";
 import { stdin as input, stdout as output } from "node:process";
 import readline from "node:readline";
-import pc from "picocolors";
+import { re } from "@reliverse/relico";
 
 import { completePrompt } from "~/utils/prompt-end.js";
 
@@ -99,22 +99,22 @@ function renderTogglePrompt<T extends string>(params: {
   if (errorMessage) {
     msg({
       type: "M_NULL",
-      title: pc.redBright(errorMessage),
+      title: re.redBright(errorMessage),
     });
     uiLineCount++;
   } else if (displayInstructions && !isRerender) {
     msg({
       type: "M_NULL",
-      title: pc.yellow(instructions),
+      title: re.yellow(instructions),
     });
     uiLineCount++;
   }
 
   const displayString = options
     .map((option, index) =>
-      index === selectedIndex ? pc.yellow(option) : pc.reset(option),
+      index === selectedIndex ? re.yellow(option) : re.reset(option),
     )
-    .join(pc.dim(pc.reset(" / ")));
+    .join(re.dim(re.reset(" / ")));
 
   msg({ type: "M_NULL", title: displayString });
   uiLineCount++;

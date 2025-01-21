@@ -1,4 +1,4 @@
-import pc from "picocolors";
+import { re } from "@reliverse/relico";
 
 import type { PartialDeep } from "~/types/utils.js";
 
@@ -139,7 +139,7 @@ const expand = createPrompt(
           } else if (value === "") {
             setError("Please input a value");
           } else {
-            setError(`"${pc.red(value)}" isn't an available option`);
+            setError(`"${re.red(value)}" isn't an available option`);
           }
         }
       } else {
@@ -203,7 +203,7 @@ const expand = createPrompt(
         !Separator.isSeparator(choice) && choice.key === value.toLowerCase(),
     );
     if (currentOption) {
-      helpTip = `${pc.cyan(">>")} ${currentOption.name}`;
+      helpTip = `${re.cyan(">>")} ${currentOption.name}`;
     }
 
     let error = "";

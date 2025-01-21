@@ -1,7 +1,7 @@
 import { msg } from "@reliverse/relinka";
 import { detect } from "detect-package-manager";
 import { emojify } from "node-emoji";
-import pc from "picocolors";
+import { re } from "@reliverse/relico";
 
 import { anykeyPrompt, spinnerTaskPrompt } from "~/main.js";
 import { multiselectPrompt } from "~/main.js";
@@ -36,7 +36,7 @@ const pkg = packageJson;
 
 // const pkg = {
 //   name: "@reliverse/prompts",
-//   version: "1.4.7",
+//   version: "1.4.9",
 //   description:
 //     "@reliverse/prompts is a powerful library that enables seamless, typesafe, and resilient prompts for command-line applications. Crafted with simplicity and elegance, it provides developers with an intuitive and robust way to build interactive CLIs.",
 // };
@@ -76,7 +76,7 @@ export async function showAnykeyPrompt(
   username?: string,
 ) {
   const pm = await detect();
-  let notification = pc.bold("[anykeyPrompt] Press any key to continue...");
+  let notification = re.bold("[anykeyPrompt] Press any key to continue...");
   if (kind === "privacy") {
     notification = `Before you continue, please note that you are only testing an example CLI app. None of your responses will be sent anywhere. No actions, such as installing dependencies, will actually take place; this is simply a simulation with a sleep timer and spinner. You can always review the source code to learn more.\n============================\n${notification}`;
   }

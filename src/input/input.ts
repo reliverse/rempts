@@ -1,4 +1,4 @@
-import pc from "picocolors";
+import { re } from "@reliverse/relico";
 
 import type { PromptOptions } from "../prompts/prompt.js";
 
@@ -25,11 +25,11 @@ export default class InputPrompt extends Prompt {
     });
     this.on("value", () => {
       if (this.cursor >= this.value.length) {
-        this.valueWithCursor = `${this.value}${pc.inverse(pc.hidden("_"))}`;
+        this.valueWithCursor = `${this.value}${re.inverse(re.hidden("_"))}`;
       } else {
         const s1 = this.value.slice(0, this.cursor);
         const s2 = this.value.slice(this.cursor);
-        this.valueWithCursor = `${s1}${pc.inverse(s2[0])}${s2.slice(1)}`;
+        this.valueWithCursor = `${s1}${re.inverse(s2[0])}${s2.slice(1)}`;
       }
     });
   }

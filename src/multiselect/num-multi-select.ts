@@ -9,7 +9,7 @@ import {
 import { Value } from "@sinclair/typebox/value";
 import { stdin as input, stdout as output } from "node:process";
 import readline from "node:readline/promises";
-import pc from "picocolors";
+import { re } from "@reliverse/relico";
 
 import type { PromptOptions } from "~/types/general.js";
 
@@ -73,7 +73,7 @@ export async function numMultiSelectPrompt(opts: NumMultiSelectPromptOptions) {
       // Generate choices text with formatted bar
       const choicesText = choices
         .map((choice, index) =>
-          pc.dim(
+          re.dim(
             `${formattedBar}  ${index + 1}) ${choice.title}${
               choice.description ? ` - ${choice.description}` : ""
             }`,
@@ -81,7 +81,7 @@ export async function numMultiSelectPrompt(opts: NumMultiSelectPromptOptions) {
         )
         .join("\n");
 
-      const fullPrompt = `${question}\n${choicesText}\n${formattedBar}  ${pc.bold(pc.blue(`Enter your choices (comma-separated numbers between 1-${choices.length})`))}:\n${formattedBar}  `;
+      const fullPrompt = `${question}\n${choicesText}\n${formattedBar}  ${re.bold(re.blue(`Enter your choices (comma-separated numbers between 1-${choices.length})`))}:\n${formattedBar}  `;
 
       const { text: formattedPrompt } = fmt({
         hintPlaceholderColor,

@@ -1,5 +1,5 @@
 {
-  "version": "0.2",
+  "version": "1.4.9",
   "language": "en",
   "import": ["@cspell/dict-npm/cspell-ext.json"],
   "ignorePaths": ["examples/deprecated", "dist-jsr", "dist-npm"],
@@ -100,7 +100,6 @@
     "outro",
     "pagedown",
     "pageup",
-    "picocolors",
     "polski",
     "printj",
     "rawlist",
@@ -140,7 +139,6 @@
     "unpub",
     "unstub",
     "valign",
-    "valtio",
     "venv",
     "Vous",
     "vsprintf",

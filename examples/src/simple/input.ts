@@ -1,5 +1,5 @@
 import * as url from "node:url";
-import pc from "picocolors";
+import { re } from "@reliverse/relico";
 
 import { input } from "~/prompts/index.js";
 
@@ -21,7 +21,7 @@ const demo = async () => {
     message: "Enter an hex color?",
     // biome-ignore lint/style/useDefaultParameterLast: <explanation>
     transformer(value = "", { isFinal }) {
-      return isFinal ? pc.underline(value) : value;
+      return isFinal ? re.underline(value) : value;
     },
     validate: (value = "") => isHex(value) || "Pass a valid hex value",
   });

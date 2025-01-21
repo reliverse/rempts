@@ -1,4 +1,4 @@
-import pc from "picocolors";
+import { re } from "@reliverse/relico";
 
 import type { ArgsDef, CommandDef } from "./types.js";
 
@@ -98,7 +98,7 @@ export async function renderUsage<T extends ArgsDef = ArgsDef>(
   const version = cmdMeta.version || parentMeta.version;
 
   usageLines.push(
-    pc.gray(
+    re.gray(
       `${cmdMeta.description} (${
         commandName + (version ? ` v${version}` : "")
       })`,
@@ -108,26 +108,26 @@ export async function renderUsage<T extends ArgsDef = ArgsDef>(
 
   const hasOptions = argLines.length > 0 || posLines.length > 0;
   usageLines.push(
-    `${pc.underline(pc.bold("USAGE"))} \`${commandName}${
+    `${re.underline(re.bold("USAGE"))} \`${commandName}${
       hasOptions ? " [OPTIONS]" : ""
     } ${usageLine.join(" ")}\``,
     "",
   );
 
   if (posLines.length > 0) {
-    usageLines.push(pc.underline(pc.bold("ARGUMENTS")), "");
+    usageLines.push(re.underline(re.bold("ARGUMENTS")), "");
     usageLines.push(formatLineColumns(posLines, "  "));
     usageLines.push("");
   }
 
   if (argLines.length > 0) {
-    usageLines.push(pc.underline(pc.bold("OPTIONS")), "");
+    usageLines.push(re.underline(re.bold("OPTIONS")), "");
     usageLines.push(formatLineColumns(argLines, "  "));
     usageLines.push("");
   }
 
   if (commandsLines.length > 0) {
-    usageLines.push(pc.underline(pc.bold("COMMANDS")), "");
+    usageLines.push(re.underline(re.bold("COMMANDS")), "");
     usageLines.push(formatLineColumns(commandsLines, "  "));
     usageLines.push(
       "",

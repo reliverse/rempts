@@ -1,4 +1,4 @@
-import pc from "picocolors";
+import { re } from "@reliverse/relico";
 import { cursor, erase } from "sisteransi";
 
 import type { ProgressBar, ProgressBarOptions } from "./types.js";
@@ -38,7 +38,7 @@ export async function progressTaskPrompt(
     const filled = state.completeChar.repeat(filledLength);
     const empty = state.incompleteChar.repeat(emptyLength);
 
-    return state.colorize ? pc.green(filled) + pc.red(empty) : filled + empty;
+    return state.colorize ? re.green(filled) + re.red(empty) : filled + empty;
   };
 
   const render = async () => {
@@ -52,7 +52,7 @@ export async function progressTaskPrompt(
       .replace(":elapsed", elapsed);
 
     process.stdout.write(cursor.move(-999, 0) + erase.line);
-    process.stdout.write(pc.green("◆") + "  " + output);
+    process.stdout.write(re.green("◆") + "  " + output);
 
     if (state.current >= state.total) {
       process.stdout.write("\n");
