@@ -1,5 +1,6 @@
 import type { ColorName } from "@reliverse/relinka";
 
+import { re } from "@reliverse/relico";
 import {
   deleteLastLine,
   fmt,
@@ -12,7 +13,6 @@ import { Type, type TSchema } from "@sinclair/typebox";
 import { Value } from "@sinclair/typebox/value";
 import { stdin as input, stdout as output } from "node:process";
 import readline from "node:readline/promises";
-import { re } from "@reliverse/relico";
 import {
   buildRegExp,
   digit,

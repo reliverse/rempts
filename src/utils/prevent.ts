@@ -1,9 +1,9 @@
+import { re } from "@reliverse/relico";
 import {
   getExactTerminalWidth,
   getTerminalWidth,
   msg,
 } from "@reliverse/relinka";
-import { re } from "@reliverse/relico";
 import terminalSize from "terminal-size";
 
 export type PreventWrongTerminalSizeOptions = {
@@ -17,7 +17,7 @@ export type PreventWrongTerminalSizeOptions = {
 export async function preventWrongTerminalSize({
   isDev = false,
   shouldExit = true,
-  minWidth = 85,
+  minWidth = 80,
   minHeight = 12,
   sizeErrorDescription = "Please increase the terminal size to run the application",
 }: PreventWrongTerminalSizeOptions) {

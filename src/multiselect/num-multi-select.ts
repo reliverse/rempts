@@ -1,3 +1,4 @@
+import { re } from "@reliverse/relico";
 import {
   bar,
   countLines,
@@ -9,7 +10,6 @@ import {
 import { Value } from "@sinclair/typebox/value";
 import { stdin as input, stdout as output } from "node:process";
 import readline from "node:readline/promises";
-import { re } from "@reliverse/relico";
 
 import type { PromptOptions } from "~/types/general.js";
 

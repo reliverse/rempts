@@ -1,5 +1,5 @@
-import * as url from "node:url";
 import { re } from "@reliverse/relico";
+import * as url from "node:url";
 
 import { input } from "~/prompts/index.js";
 

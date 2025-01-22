@@ -5,11 +5,11 @@ import type {
 } from "@reliverse/relinka";
 import type { VariantName } from "@reliverse/relinka";
 
+import { re } from "@reliverse/relico";
 import { bar, msg } from "@reliverse/relinka";
 import { deleteLastLine } from "@reliverse/relinka";
 import { stdin as input, stdout as output } from "node:process";
 import readline from "node:readline/promises";
-import { re } from "@reliverse/relico";
 
 import { colorize } from "~/main.js";
 import { completePrompt } from "~/utils/prompt-end.js";

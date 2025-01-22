@@ -1,5 +1,6 @@
 import type { BorderColorName, VariantName } from "@reliverse/relinka";
 
+import { re } from "@reliverse/relico";
 import {
   getExactTerminalWidth,
   msg,
@@ -7,7 +8,6 @@ import {
   type ColorName,
   type TypographyName,
 } from "@reliverse/relinka";
-import { re } from "@reliverse/relico";
 
 /**
  * Ends the prompt by optionally displaying an end message and running the action if confirmed.

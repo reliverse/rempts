@@ -1,5 +1,5 @@
-import ansiEscapes from "ansi-escapes";
 import { re } from "@reliverse/relico";
+import ansiEscapes from "ansi-escapes";
 
 import type { PartialDeep } from "~/types/utils.js";
 

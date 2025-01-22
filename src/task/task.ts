@@ -1,11 +1,11 @@
 import type { Options } from "p-map";
 
+import { re } from "@reliverse/relico";
 import { msg } from "@reliverse/relinka";
 import { EventEmitter } from "node:events";
 import process from "node:process";
 import ora from "ora";
 import pMap from "p-map";
-import { re } from "@reliverse/relico";
 import { cursor, erase } from "sisteransi";
 
 import type { ProgressBar } from "~/task/types.js";

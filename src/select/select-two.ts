@@ -1,8 +1,8 @@
 import type { Key } from "node:readline";
 
+import { re } from "@reliverse/relico";
 import { Value } from "@sinclair/typebox/value";
 import { stdout } from "node:process";
-import { re } from "@reliverse/relico";
 
 import type { PromptOptions } from "~/types/general.js";
 

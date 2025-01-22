@@ -9,6 +9,7 @@ import type {
 import type { TSchema } from "@sinclair/typebox";
 import type { Interface } from "node:readline/promises";
 
+import { re } from "@reliverse/relico";
 import {
   bar,
   deleteLastLine,
@@ -18,7 +19,6 @@ import {
 } from "@reliverse/relinka";
 import { Value } from "@sinclair/typebox/value";
 import readline from "node:readline/promises";
-import { re } from "@reliverse/relico";
 
 import type { PromptOptions } from "~/main.js";
 

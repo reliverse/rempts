@@ -1,8 +1,8 @@
+import { re } from "@reliverse/relico";
 import { msg } from "@reliverse/relinka";
 import { type SpinnerName } from "cli-spinners";
 import process from "node:process";
 import ora from "ora";
-import { re } from "@reliverse/relico";
 import { cursor, erase } from "sisteransi";
 
 type SimpleSpinnerType = "default" | "dottedCircle" | "boxSpinner";

@@ -1,10 +1,10 @@
 import type { Writable } from "stream";
 
+import { re } from "@reliverse/relico";
 import Differ from "ansi-diff-stream";
 import esc from "ansi-escapes";
 import ui from "cli-styles";
 import { EventEmitter } from "events";
-import { re } from "@reliverse/relico";
 import precision from "precision";
 import stringWidth from "string-width";
 import windowSize from "window-size";
