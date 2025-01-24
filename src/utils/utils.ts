@@ -1,5 +1,4 @@
 export * from "./box.js";
-export * from "./color.js";
 export {
   stripAnsi,
   centerAlign,

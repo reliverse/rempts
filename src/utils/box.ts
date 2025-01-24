@@ -1,4 +1,5 @@
-import { getColor } from "./color.js";
+import { getColor } from "@reliverse/relico";
+
 import { stripAnsi } from "./string.js";
 
 export type BoxBorderStyle = {

@@ -1,5 +1,5 @@
 import { re } from "@reliverse/relico";
-import { isUnicodeSupported } from "@reliverse/relinka";
+import { isUnicodeSupported } from "@reliverse/runtime";
 import { cursor, erase } from "sisteransi";
 
 import type { State } from "~/types/general.js";

@@ -1,10 +1,10 @@
 import {
-  getCurrentTerminalName,
   getExactTerminalWidth,
   getTerminalHeight,
   getTerminalWidth,
   msg,
 } from "@reliverse/relinka";
+import { getCurrentTerminalName } from "@reliverse/runtime";
 
 import type { PromptOptions } from "~/types/general.js";
 

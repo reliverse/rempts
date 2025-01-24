@@ -10,13 +10,8 @@ import type { TSchema } from "@sinclair/typebox";
 import type { Interface } from "node:readline/promises";
 
 import { re } from "@reliverse/relico";
-import {
-  bar,
-  deleteLastLine,
-  isUnicodeSupported,
-  msg,
-  msgUndoAll,
-} from "@reliverse/relinka";
+import { bar, deleteLastLine, msg, msgUndoAll } from "@reliverse/relinka";
+import { isUnicodeSupported } from "@reliverse/runtime";
 import { Value } from "@sinclair/typebox/value";
 import readline from "node:readline/promises";
 
