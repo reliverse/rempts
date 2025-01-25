@@ -1,5 +1,3 @@
-#!/usr/bin/env node
-
 import { re } from "@reliverse/relico";
 
 import figures from "~/figures/index.js";

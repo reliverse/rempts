@@ -17,6 +17,7 @@ import readline from "node:readline/promises";
 
 import type { PromptOptions } from "~/main.js";
 
+import { streamText } from "~/components/utils/stream-text.js";
 import { completePrompt } from "~/utils/prompt-end.js";
 
 const unicode = isUnicodeSupported();
@@ -60,6 +61,8 @@ export type InputPromptOptions = {
   mask?: string;
   placeholder?: string;
   schema?: TSchema;
+  shouldStream?: boolean;
+  streamDelay?: number;
   symbol?: SymbolName;
   symbolColor?: ColorName;
   title: string;
@@ -100,7 +103,7 @@ type RenderParams = {
  *
  * Prompt the user for input.
  * - If 'mode' is 'password', handle character-by-character masking.
- * - Otherwise, use readline’s .question().
+ * - Otherwise, use readline's .question().
  *
  * @param terminal The readline interface.
  * @param prompt   The text to display before user input.
@@ -192,7 +195,9 @@ async function ask(
  *
  * @param params RenderParams containing display options, user input, etc.
  */
-function renderPromptUI(params: RenderParams): void {
+function renderPromptUI(
+  params: RenderParams & { shouldStream?: boolean; streamDelay?: number },
+): Promise<void> {
   const {
     title,
     hint = "",
@@ -211,10 +216,101 @@ function renderPromptUI(params: RenderParams): void {
     symbol = "step_active",
     customSymbol = "",
     symbolColor = "cyan",
+    shouldStream = false,
+    streamDelay = 30,
   } = params;
 
   // Decide message type based on error state
   const type: MsgType = errorMessage !== "" ? "M_ERROR" : "M_GENERAL";
+
+  if (shouldStream) {
+    return new Promise((resolve) => {
+      // Initial empty message
+      msg({
+        type,
+        title: "",
+        titleColor,
+        titleTypography,
+        titleVariant,
+        content: "",
+        contentColor,
+        contentTypography,
+        contentVariant,
+        borderColor,
+        hint,
+        hintPlaceholderColor,
+        placeholder: userInput === "" ? placeholder : "",
+        errorMessage,
+        symbol,
+        customSymbol,
+        symbolColor,
+      });
+
+      // Stream title first
+      void streamText({
+        text: title,
+        delay: streamDelay,
+        color: titleColor,
+        newline: false,
+      }).then(async () => {
+        // Clear and show intermediate state with title
+        msgUndoAll();
+        msg({
+          type,
+          title,
+          titleColor,
+          titleTypography,
+          titleVariant,
+          content: "",
+          contentColor,
+          contentTypography,
+          contentVariant,
+          borderColor,
+          hint,
+          hintPlaceholderColor,
+          placeholder: userInput === "" ? placeholder : "",
+          errorMessage,
+          symbol,
+          customSymbol,
+          symbolColor,
+        });
+
+        // Then stream content
+        if (content) {
+          await streamText({
+            text: content,
+            delay: streamDelay,
+            color: contentColor,
+            newline: false,
+          });
+        }
+
+        // Finally show complete message
+        msgUndoAll();
+        deleteLastLine();
+        msg({
+          type,
+          title,
+          titleColor,
+          titleTypography,
+          titleVariant,
+          content,
+          contentColor,
+          contentTypography,
+          contentVariant,
+          borderColor,
+          hint,
+          hintPlaceholderColor,
+          placeholder: userInput === "" ? placeholder : "",
+          errorMessage,
+          symbol,
+          customSymbol,
+          symbolColor,
+        });
+        resolve();
+      });
+    });
+  }
 
   msg({
     type,
@@ -240,6 +336,8 @@ function renderPromptUI(params: RenderParams): void {
   if (userInput !== "") {
     msg({ type: "M_MIDDLE", title: `  ${userInput}` });
   }
+
+  return Promise.resolve();
 }
 
 /**
@@ -333,6 +431,8 @@ export async function inputPrompt(
     symbolColor,
     mode = "plain",
     mask,
+    shouldStream = false,
+    streamDelay = 20,
   } = options;
 
   // Create a new readline interface
@@ -384,7 +484,7 @@ export async function inputPrompt(
    */
   async function handleHardcodedInput(): Promise<string> {
     msgUndoAll();
-    renderPromptUI({
+    await renderPromptUI({
       title,
       hint,
       hintPlaceholderColor,
@@ -404,6 +504,8 @@ export async function inputPrompt(
       customSymbol,
       symbolColor,
       mask,
+      shouldStream,
+      streamDelay,
     });
 
     const finalAnswer = currentInput || defaultValue;
@@ -445,7 +547,7 @@ export async function inputPrompt(
       deleteLastLine();
     }
 
-    renderPromptUI({
+    await renderPromptUI({
       title,
       hint,
       hintPlaceholderColor,
@@ -465,6 +567,8 @@ export async function inputPrompt(
       customSymbol,
       symbolColor,
       mask,
+      shouldStream,
+      streamDelay,
     });
 
     if (errorMessage) {

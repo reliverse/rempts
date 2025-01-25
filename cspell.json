@@ -1,14 +1,8 @@
 {
-  "version": "1.4.11",
+  "version": "1.4.12",
   "language": "en",
-  "import": [
-    "@cspell/dict-npm/cspell-ext.json"
-  ],
-  "ignorePaths": [
-    "examples/deprecated",
-    "dist-jsr",
-    "dist-npm"
-  ],
+  "import": ["@cspell/dict-npm/cspell-ext.json"],
+  "ignorePaths": ["examples/deprecated", "dist-jsr", "dist-npm"],
   "words": [
     "alacritty",
     "alcalzone",

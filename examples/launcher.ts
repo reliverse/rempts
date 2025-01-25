@@ -1,4 +1,5 @@
 import { re } from "@reliverse/relico";
+import { isBunRuntime } from "@reliverse/runtime";
 
 import { errorHandler, selectPrompt } from "~/main.js";
 
@@ -9,7 +10,6 @@ async function examplesRunner() {
 
   const exampleToRun = await selectPrompt({
     title: "Choose an example to run",
-    titleColor: "passionGradient",
     options: [
       {
         label: "✨ Full-Featured Example",
@@ -48,6 +48,8 @@ async function examplesRunner() {
       },
       { label: "🗝️  Exit", value: "exit" },
     ] as const,
+    shouldStream: !isBunRuntime(),
+    streamDelay: 20,
     defaultValue: "main",
   });
 

@@ -38,7 +38,6 @@ export async function animateText({
   titleTypography = "none",
   border = true,
   borderColor = "dim",
-  isEndPrompt = false,
   horizontalLineLength = 0,
 }: {
   title: string;
@@ -49,7 +48,6 @@ export async function animateText({
   titleTypography?: TypographyName;
   borderColor?: BorderColorName;
   border?: boolean;
-  isEndPrompt?: boolean;
   horizontalLineLength?: number;
 }) {
   if (horizontalLineLength === 0) {
@@ -76,7 +74,7 @@ export async function animateText({
           title: title,
           titleColor,
           titleTypography,
-          content: isEndPrompt ? "⠀" : "",
+          content: "",
           borderColor,
           border,
           horizontalLineLength,

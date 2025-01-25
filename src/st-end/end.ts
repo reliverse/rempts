@@ -15,8 +15,6 @@ export async function endPrompt({
   borderColor = "dim",
   horizontalLineLength = 0,
 }: PromptOptions): Promise<void> {
-  const isEndPrompt = true;
-
   if (horizontalLineLength === 0) {
     horizontalLineLength = getExactTerminalWidth() - 3;
   }
@@ -31,7 +29,6 @@ export async function endPrompt({
       titleTypography,
       border,
       borderColor,
-      isEndPrompt,
       horizontalLineLength,
     });
   } else {

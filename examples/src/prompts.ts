@@ -1,5 +1,5 @@
-import { re } from "@reliverse/relico";
 import { msg } from "@reliverse/relinka";
+import { isBunRuntime } from "@reliverse/runtime";
 import { detect } from "detect-package-manager";
 import { emojify } from "node-emoji";
 
@@ -36,7 +36,7 @@ const pkg = packageJson;
 
 // const pkg = {
 //   name: "@reliverse/prompts",
-//   version: "1.4.11",
+//   version: "1.4.12",
 //   description:
 //     "@reliverse/prompts is a powerful library that enables seamless, typesafe, and resilient prompts for command-line applications. Crafted with simplicity and elegance, it provides developers with an intuitive and robust way to build interactive CLIs.",
 // };
@@ -76,14 +76,17 @@ export async function showAnykeyPrompt(
   username?: string,
 ) {
   const pm = await detect();
-  let notification = re.bold("[anykeyPrompt] Press any key to continue...");
+  let notification = "[anykeyPrompt] Press any key to continue...";
   if (kind === "privacy") {
     notification = `Before you continue, please note that you are only testing an example CLI app. None of your responses will be sent anywhere. No actions, such as installing dependencies, will actually take place; this is simply a simulation with a sleep timer and spinner. You can always review the source code to learn more.\n============================\n${notification}`;
   }
   if (kind === "pm" && pm === "bun" && username) {
     notification += `\n============================\n${username}, did you know? Bun currently may crash if you press Enter while setTimeout is running. So please avoid doing that in the prompts after this one! 😅`;
   }
-  await anykeyPrompt(notification);
+  await anykeyPrompt(notification, {
+    shouldStream: !isBunRuntime(),
+    streamDelay: 5,
+  });
 }
 
 export async function showInputPrompt() {
@@ -95,24 +98,26 @@ export async function showInputPrompt() {
     ...extendedConfig,
     symbol: "pointer",
     customSymbol: "👋",
-    // hardcoded: { // For testing purposes only
-    //   userInput: "JohnDoe", // Predefined user input
-    //   errorMessage: "", // No error message
-    //   linesRendered: 3, // Number of lines rendered
-    //   showPlaceholder: false, // Do not show placeholder since input is provided
-    // },
-    // validate: (value) => {
-    //   if (!value?.trim()) {
-    //     return "GitHub username is required for deployment";
-    //   }
-    //   if (!/^[a-z\d](?:[a-z\d]|-(?=[a-z\d])){0,38}$/i.test(value)) {
-    //     return "Invalid GitHub username format";
-    //   }
-    //   return true;
-    // },
+    shouldStream: false,
   });
   return username ?? "johnny911";
 }
+
+// hardcoded: { // For testing purposes only
+//   userInput: "JohnDoe", // Predefined user input
+//   errorMessage: "", // No error message
+//   linesRendered: 3, // Number of lines rendered
+//   showPlaceholder: false, // Do not show placeholder since input is provided
+// },
+// validate: (value) => {
+//   if (!value?.trim()) {
+//     return "GitHub username is required for deployment";
+//   }
+//   if (!/^[a-z\d](?:[a-z\d]|-(?=[a-z\d])){0,38}$/i.test(value)) {
+//     return "Invalid GitHub username format";
+//   }
+//   return true;
+// },
 
 export async function askDir(username: string) {
   const dir = await inputPrompt({

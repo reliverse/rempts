@@ -7,6 +7,7 @@ import { stdin as input, stdout as output } from "node:process";
 import readline from "node:readline";
 import terminalSize from "terminal-size";
 
+import { streamText } from "~/components/utils/stream-text.js";
 import { completePrompt } from "~/utils/prompt-end.js";
 
 type SelectOption<T> = {
@@ -47,13 +48,15 @@ type SelectPromptParams<T extends string> = {
   debug?: boolean;
   terminalWidth?: number;
   displayInstructions?: boolean;
+  shouldStream?: boolean;
+  streamDelay?: number;
 };
 
 /**
  * Renders the entire prompt UI by printing each line using `msg()`.
  * Returns the number of interactive UI lines rendered (for clearing during re-renders).
  */
-function renderPromptUI<T extends string>(params: {
+async function renderPromptUI<T extends string>(params: {
   title: string;
   content: string;
   options: (SelectOption<T> | SeparatorOption)[];
@@ -72,7 +75,9 @@ function renderPromptUI<T extends string>(params: {
   titleTypography?: TypographyName;
   terminalWidth?: number;
   isRerender?: boolean;
-}): number {
+  shouldStream?: boolean;
+  streamDelay?: number;
+}): Promise<number> {
   const {
     title,
     content,
@@ -87,7 +92,11 @@ function renderPromptUI<T extends string>(params: {
     contentTypography,
     debug,
     maxItems,
+    titleVariant,
+    titleTypography,
     isRerender = false,
+    shouldStream = false,
+    streamDelay = 20,
   } = params;
 
   const size = terminalSize();
@@ -95,21 +104,64 @@ function renderPromptUI<T extends string>(params: {
 
   // Only render title and content on first render
   if (!isRerender) {
-    // Title
-    msg({
-      type: "M_GENERAL",
-      title,
-      titleColor,
-    });
-
-    // Content
-    if (content) {
-      msg({
-        type: "M_NULL",
-        content,
-        contentColor,
-        contentTypography,
+    if (shouldStream) {
+      // Title with streaming
+      deleteLastLine();
+      msg({ type: "M_BAR", title: "" });
+      await streamText({
+        text: title,
+        delay: streamDelay,
+        color: titleColor,
+        newline: false,
+        clearLine: true,
       });
+      process.stdout.write("\r"); // Reset cursor to start of line
+      msg({
+        type: "M_GENERAL",
+        title,
+        titleColor,
+        titleVariant,
+        titleTypography,
+      });
+
+      // Content with streaming
+      if (content) {
+        msg({
+          type: "M_NULL",
+          content: "",
+          contentColor,
+          contentTypography,
+        });
+        await streamText({
+          text: content,
+          delay: streamDelay,
+          color: contentColor,
+          newline: false,
+        });
+        deleteLastLine();
+        msg({
+          type: "M_NULL",
+          content,
+          contentColor,
+          contentTypography,
+        });
+      }
+    } else {
+      // Regular non-streaming render
+      msg({
+        type: "M_GENERAL",
+        title,
+        titleColor,
+      });
+
+      if (content) {
+        msg({
+          type: "M_NULL",
+          content,
+          contentColor,
+          contentTypography,
+        });
+      }
     }
   }
 
@@ -262,6 +314,8 @@ export async function selectPrompt<T extends string>(
     debug = false,
     terminalWidth: customTerminalWidth = 90,
     displayInstructions = false,
+    shouldStream = false,
+    streamDelay = 20,
   } = params;
 
   let selectedIndex = defaultValue
@@ -305,7 +359,7 @@ export async function selectPrompt<T extends string>(
       }
     }
     // Print new prompt UI and track its line count
-    lastUILineCount = renderPromptUI({
+    void renderPromptUI({
       title,
       content,
       options,
@@ -324,11 +378,15 @@ export async function selectPrompt<T extends string>(
       titleTypography,
       terminalWidth: customTerminalWidth,
       isRerender: true,
+      shouldStream,
+      streamDelay,
+    }).then((count) => {
+      lastUILineCount = count;
     });
   }
 
   // Initial render - render everything
-  lastUILineCount = renderPromptUI({
+  lastUILineCount = await renderPromptUI({
     title,
     content,
     options,
@@ -347,6 +405,8 @@ export async function selectPrompt<T extends string>(
     titleTypography,
     terminalWidth: customTerminalWidth,
     isRerender: false,
+    shouldStream,
+    streamDelay,
   });
 
   return new Promise<T>((resolve) => {

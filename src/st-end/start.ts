@@ -10,9 +10,11 @@ import type { PromptOptions } from "~/types/general.js";
 
 import {
   preventWrongTerminalSize,
+  preventWindowsHomeDirRoot,
   type PreventWrongTerminalSizeOptions,
+  preventUnsupportedTTY,
 } from "~/utils/prevent.js";
-import { pkg, pm, pmv } from "~/utils/system.js";
+import { pm, reliversePrompts } from "~/utils/system.js";
 
 type StartPromptOptions = PromptOptions & {
   clearConsole?: boolean;
@@ -20,9 +22,13 @@ type StartPromptOptions = PromptOptions & {
   horizontalLineLength?: number;
   packageName?: string;
   packageVersion?: string;
-  shouldPreventWrongTerminalSize?: boolean;
   terminalSizeOptions?: PreventWrongTerminalSizeOptions;
   isDev?: boolean;
+  prevent?: {
+    unsupportedTTY?: boolean;
+    wrongTerminalSize?: boolean;
+    windowsHomeDirRoot?: boolean;
+  };
 };
 
 export async function startPrompt({
@@ -34,17 +40,24 @@ export async function startPrompt({
   clearConsole = false,
   horizontalLine = true,
   horizontalLineLength = 0,
-  packageName = pkg.name,
-  packageVersion = pkg.version,
+  packageName = reliversePrompts.name,
+  packageVersion = reliversePrompts.version,
   terminalSizeOptions = {},
-  shouldPreventWrongTerminalSize = true,
   isDev = false,
+  prevent = {
+    unsupportedTTY: true,
+    wrongTerminalSize: true,
+    windowsHomeDirRoot: true,
+  },
 }: StartPromptOptions): Promise<void> {
-  if (clearConsole) {
-    console.clear();
-    console.log("");
-  } else {
-    console.log("");
+  if (prevent.windowsHomeDirRoot) {
+    preventWindowsHomeDirRoot(process.cwd());
+  }
+  if (prevent.unsupportedTTY) {
+    preventUnsupportedTTY({ borderColor });
+  }
+  if (prevent.wrongTerminalSize) {
+    await preventWrongTerminalSize({ ...terminalSizeOptions, isDev });
   }
 
   const terminalWidth = getTerminalWidth();
@@ -54,7 +67,7 @@ export async function startPrompt({
   const formattedTitle =
     title !== ""
       ? title
-      : `${packageName} v${packageVersion} | ${pm} v${pmv} | ${getCurrentTerminalName()}` +
+      : `${packageName} v${packageVersion} | ${pm.packageManager} v${pm.version} | ${getCurrentTerminalName()}` +
         (isDev && terminalWidth > 80
           ? ` | isDev | w${terminalWidth} h${terminalHeight}`
           : "");
@@ -68,8 +81,11 @@ export async function startPrompt({
     horizontalLineLength = Math.max(1, exactTerminalWidth - titleFullLength);
   }
 
-  if (shouldPreventWrongTerminalSize) {
-    await preventWrongTerminalSize({ ...terminalSizeOptions, isDev });
+  if (clearConsole) {
+    console.clear();
+    console.log("");
+  } else {
+    console.log("");
   }
 
   msg({
@@ -82,14 +98,4 @@ export async function startPrompt({
     horizontalLine,
     horizontalLineLength,
   });
-
-  if (!process.stdout.isTTY) {
-    console.error(
-      "│  Your terminal does not support cursor manipulations.\n│  It's recommended to use a terminal which supports TTY.",
-    );
-    msg({
-      type: "M_BAR",
-      borderColor,
-    });
-  }
 }

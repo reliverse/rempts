@@ -1,35 +1,104 @@
-import { fmt, restoreCursor } from "@reliverse/relinka";
+import { fmt, type ColorName } from "@reliverse/relinka";
 import logUpdate from "log-update";
+import { cursor } from "sisteransi";
+
+import { streamText } from "~/components/utils/stream-text.js";
+import { endPrompt } from "~/main.js";
 
 const DEFAULT_MESSAGE = "Press any key to continue...";
 
-type Options = {
-  ctrlC?: number | "reject" | false;
-  preserveLog?: boolean;
-  hideMessage?: boolean;
+const CTRL_C_CODE = 3;
+
+/**
+ * Terminal control utilities
+ */
+const terminal = {
+  /**
+   * Move cursor to start of line
+   */
+  moveToStart: () => process.stdout.write("\r"),
+
+  /**
+   * Clear current line and move cursor up
+   */
+  clearLineAndMoveUp: () => process.stdout.write("\x1b[1A\x1b[2K"),
+
+  /**
+   * Clear multiple lines above current position
+   */
+  clearLines: (count: number) => {
+    terminal.moveToStart();
+    // Clear current line first
+    process.stdout.write("\x1b[2K");
+    // Then clear previous lines
+    for (let i = 0; i < count; i++) {
+      terminal.clearLineAndMoveUp();
+    }
+  },
 };
 
-const CTRL_C_CODE = 3;
+type Options = {
+  ctrlC?: number | false | "reject";
+  preserveLog?: boolean;
+  hideMessage?: boolean;
+  shouldStream?: boolean;
+  streamDelay?: number;
+  color?: ColorName;
+  placeholderColor?: ColorName;
+};
 
 export async function anykeyPrompt(
   message: string = DEFAULT_MESSAGE,
   options: Options = {},
 ): Promise<void> {
-  const { ctrlC = 1, preserveLog = false, hideMessage = false } = options;
+  const {
+    ctrlC = 1,
+    preserveLog = false,
+    hideMessage = false,
+    shouldStream = false,
+    streamDelay = 20,
+    color = "dim",
+    placeholderColor = "gray",
+  } = options;
 
   if (message) {
-    const { text } = fmt({
-      hintPlaceholderColor: "gray",
-      type: "M_GENERAL",
-      title: message,
-      titleColor: "dim",
-      dontRemoveBar: true,
-    });
-    message = text;
+    if (!shouldStream) {
+      const { text } = fmt({
+        hintPlaceholderColor: placeholderColor,
+        type: "M_GENERAL",
+        title: message,
+        titleColor: color,
+        dontRemoveBar: true,
+      });
+      message = text;
+    }
   }
 
   if (message && !hideMessage) {
-    logUpdate(message);
+    if (shouldStream) {
+      await streamText({
+        text: `◆  ${message}`,
+        delay: streamDelay,
+        newline: false,
+        clearLine: true,
+        color: color,
+      });
+      // Clear previous output
+      const lineCount = message.split("\n").length;
+      terminal.clearLines(lineCount);
+
+      const { text } = fmt({
+        hintPlaceholderColor: placeholderColor,
+        type: "M_GENERAL",
+        title: message,
+        titleColor: color,
+        dontRemoveBar: true,
+      });
+      terminal.moveToStart();
+      logUpdate(text);
+    } else {
+      logUpdate(message);
+    }
   }
 
   return new Promise((resolve, reject) => {
@@ -42,20 +111,31 @@ export async function anykeyPrompt(
         process.stdin.setRawMode(false);
       }
       process.stdin.pause();
-      restoreCursor();
+      process.stdout.write(cursor.show);
     };
 
     const handleCtrlC = () => {
       cleanup();
-      if (ctrlC === "reject") {
-        reject(new Error("User pressed CTRL+C"));
-      } else if (ctrlC === false) {
-        resolve();
-      } else if (typeof ctrlC === "number") {
-        process.exit(ctrlC);
-      } else {
-        throw new TypeError("Invalid ctrlC option");
-      }
+      void endPrompt({
+        title: "✋ User pressed Ctrl+C, exiting...",
+        titleAnimation: "pulse",
+        titleColor: "redBright",
+        titleTypography: "bold",
+        endTitleColor: "redBright",
+        titleAnimationDelay: 400,
+      })
+        .then(() => {
+          if (ctrlC === "reject") {
+            reject(new Error("User pressed CTRL+C"));
+          } else if (ctrlC === false) {
+            resolve();
+          } else if (typeof ctrlC === "number") {
+            process.exit(0);
+          } else {
+            throw new TypeError("Invalid ctrlC option");
+          }
+        })
+        .catch(reject);
     };
 
     const handler = (buffer: Buffer) => {
