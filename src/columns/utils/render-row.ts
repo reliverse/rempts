@@ -1,6 +1,7 @@
-import { getTerminalWidth } from "@reliverse/relinka";
 import stringWidth from "string-width";
 import wrapAnsi from "wrap-ansi";
+
+import { getTerminalWidth } from "~/main.js";
 
 import type { Row, InternalColumnMeta } from "../types.js";
 

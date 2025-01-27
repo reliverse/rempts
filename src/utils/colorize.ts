@@ -1,5 +1,3 @@
-import type { ColorName, TypographyName } from "@reliverse/relinka";
-
 import { re } from "@reliverse/relico";
 import gradient, {
   cristal,
@@ -8,6 +6,8 @@ import gradient, {
   rainbow,
   vice,
 } from "gradient-string";
+
+import type { ColorName, TypographyName } from "~/main.js";
 
 // Strip ANSI color codes using @reliverse/relico
 function stripAnsi(text: string): string {

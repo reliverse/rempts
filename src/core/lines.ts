@@ -1,5 +1,4 @@
-import { breakLines } from "@reliverse/relinka";
-
+import { breakLines } from "~/main.js";
 import { type Prettify } from "~/types/index.js";
 
 /** Represents an item that's part of a layout, about to be rendered */

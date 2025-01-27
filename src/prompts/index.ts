@@ -10,6 +10,7 @@ export { colorize } from "~/utils/colorize.js";
 export { errorHandler } from "~/utils/errors.js";
 export { defineCommand } from "~/flags/command.js";
 export { runMain } from "~/flags/main.js";
+export * from "~/msg-fmt/mod.js";
 export { animateText } from "~/visual/animate/animate.js";
 export { createAsciiArt } from "~/visual/ascii-art/ascii-art.js";
 export { startPrompt } from "~/st-end/start.js";

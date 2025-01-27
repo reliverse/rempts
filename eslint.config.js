@@ -36,6 +36,7 @@ const config = tseslint.config(
       "@stylistic": stylistic,
     },
     rules: {
+      "@typescript-eslint/prefer-nullish-coalescing": "off",
       "@typescript-eslint/use-unknown-in-catch-callback-variable": "off",
       "@typescript-eslint/no-base-to-string": "off",
       "@typescript-eslint/no-unused-expressions": "off",
@@ -48,7 +49,6 @@ const config = tseslint.config(
       "@typescript-eslint/no-unsafe-argument": "off",
       "@typescript-eslint/no-unsafe-call": "off",
       "@typescript-eslint/require-await": "off",
-      "@typescript-eslint/prefer-nullish-coalescing": "off",
       "@typescript-eslint/restrict-template-expressions": "off",
       "@typescript-eslint/no-unnecessary-condition": "off",
       "@typescript-eslint/no-unsafe-member-access": "off",

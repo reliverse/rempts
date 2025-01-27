@@ -1,19 +1,53 @@
-import type { BorderColorName, VariantName } from "@reliverse/relinka";
-
 import { re } from "@reliverse/relico";
+
 import {
   getExactTerminalWidth,
   msg,
   symbols,
+  type BorderColorName,
   type ColorName,
   type TypographyName,
-} from "@reliverse/relinka";
+  type VariantName,
+} from "~/main.js";
 
 /**
  * Ends the prompt by optionally displaying an end message and running the action if confirmed.
  * Preserves the last prompt state unless there's an endTitle.
  */
 export async function completePrompt(
+  prompt: "input" | "confirm" | "select" | "multiselect" | "toggle",
+  isCtrlC: boolean,
+  _endTitle = "",
+  _endTitleColor: ColorName = "dim",
+  _titleTypography: TypographyName = "none",
+  _titleVariant: VariantName | undefined = undefined,
+  _border = true,
+  borderColor: BorderColorName = "dim",
+  action?: () => Promise<void>,
+  value?: boolean,
+): Promise<boolean> {
+  if (action && value) {
+    await action();
+  }
+
+  if (prompt === "input") {
+    renderEndLineInput();
+    return value ?? false;
+  }
+
+  if (isCtrlC) {
+    renderEndLine();
+  } else {
+    // For select prompts, don't add extra newline before the bar
+    msg({
+      type: "M_BAR",
+      borderColor,
+    });
+  }
+
+  return value ?? false;
+}
+/* export async function completePrompt(
   prompt: "input" | "confirm" | "select" | "multiselect" | "toggle",
   isCtrlC: boolean,
   _endTitle = "",
@@ -62,7 +96,7 @@ export async function completePrompt(
   }
 
   return value ?? false;
-}
+} */
 
 export function renderEndLine() {
   const lineLength = getExactTerminalWidth() - 2;

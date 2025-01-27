@@ -1,8 +1,8 @@
 // 👉 `bun examples/other/different.ts`
 
 import { showEndPrompt, showStartPrompt } from "@/src/prompts.js";
-import { msg } from "@reliverse/relinka";
 
+import { msg } from "~/main.js";
 import {
   confirmPrompt,
   inputPrompt,

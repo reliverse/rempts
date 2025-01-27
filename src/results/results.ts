@@ -1,8 +1,9 @@
 import type { Static } from "@sinclair/typebox";
 
-import { msg } from "@reliverse/relinka";
 import { Type } from "@sinclair/typebox";
 import { Value } from "@sinclair/typebox/value";
+
+import { msg } from "~/main.js";
 
 const ResultsSchema = Type.Object({
   username: Type.String(),

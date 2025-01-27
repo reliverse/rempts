@@ -1,6 +1,6 @@
-import { getExactTerminalWidth } from "@reliverse/relinka";
-
 import type { Prettify } from "~/types/index.js";
+
+import { getExactTerminalWidth } from "~/main.js";
 
 import { lines, type Layout } from "./lines.js";
 import { finite, infinite } from "./position.js";

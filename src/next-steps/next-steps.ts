@@ -1,7 +1,7 @@
-import type { VariantName } from "@reliverse/relinka";
-import type { TypographyName, ColorName } from "@reliverse/relinka";
+import type { VariantName } from "~/main.js";
+import type { TypographyName, ColorName } from "~/main.js";
 
-import { msg } from "@reliverse/relinka";
+import { msg } from "~/main.js";
 
 type NextStepsPromptOptions = {
   title?: string;

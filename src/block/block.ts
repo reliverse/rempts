@@ -1,8 +1,9 @@
 import type { Key } from "node:readline";
 
-import { removeCursor, restoreCursor } from "@reliverse/relinka";
 import { stdin, stdout } from "node:process";
 import * as readline from "node:readline";
+
+import { removeCursor, restoreCursor } from "~/main.js";
 
 const isWindows = globalThis.process.platform.startsWith("win");
 

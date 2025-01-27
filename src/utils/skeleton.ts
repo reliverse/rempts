@@ -1,6 +1,5 @@
 import type { Writable } from "stream";
 
-import { getTerminalWidth } from "@reliverse/relinka";
 import differ from "ansi-diff-stream";
 import esc from "ansi-escapes";
 import windowSize from "window-size";
@@ -8,6 +7,7 @@ import windowSize from "window-size";
 import type { RangePrompt } from "~/range/range.js";
 import type { Keypress } from "~/types/keypress.js";
 
+import { getTerminalWidth } from "~/main.js";
 import listenForKeys from "~/utils/keypress.js";
 
 /**

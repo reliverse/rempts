@@ -1,13 +1,13 @@
+import { getCurrentTerminalName } from "@reliverse/runtime";
+
+import type { PromptOptions } from "~/types/general.js";
+
 import {
   getExactTerminalWidth,
   getTerminalHeight,
   getTerminalWidth,
   msg,
-} from "@reliverse/relinka";
-import { getCurrentTerminalName } from "@reliverse/runtime";
-
-import type { PromptOptions } from "~/types/general.js";
-
+} from "~/main.js";
 import {
   preventWrongTerminalSize,
   preventWindowsHomeDirRoot,

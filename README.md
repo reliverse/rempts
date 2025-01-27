@@ -2,6 +2,8 @@
 
 > **The CLI prompt library you didn’t realize you’ve been desperate for.**
 
+[Docs](https://docs.reliverse.org/reliverse/prompts/) | [NPM](https://www.npmjs.com/package/@reliverse/prompts) | [JSR](https://jsr.io/@reliverse/prompts) | [GitHub](https://github.com/reliverse/prompts) | [Discord](https://discord.gg/3GawfWfAPe)
+
 It’s blazing-fast, type-safe, and has built-in crash resilience—so your command-line app can look slick without bursting into flames. Forget boilerplate-heavy setups—this library makes CLI development smooth and effortless.
 
 ## Rapid-Fire Overview
@@ -11,17 +13,12 @@ It’s blazing-fast, type-safe, and has built-in crash resilience—so your comm
   <a href="https://npmjs.org/package/@reliverse/prompts"><img src="https://img.shields.io/npm/dm/@reliverse/prompts.svg" alt="downloads" /></a>
 </div>
 
-- **Docs**: [docs.reliverse.org/reliverse/prompts](https://docs.reliverse.org/reliverse/prompts/)  
-- **NPM**: [npmjs.com/package/@reliverse/prompts](https://www.npmjs.com/package/@reliverse/prompts)  
-- **GitHub**: [github.com/reliverse/prompts](https://github.com/reliverse/prompts)  
-- **Discord**: [discord.gg/3GawfWfAPe](https://discord.gg/3GawfWfAPe)
-
 ## Install in 3.2 Seconds
 
 ```bash
 bun add @reliverse/prompts
 # Or npm/pnpm/yarn if that’s your style
-# (deno with jsr support soon™)
+# (deno and full jsr support soon™)
 ```
 
 > **Pro Tip**: Make sure you have [Bun](https://bun.sh), [Node.js](https://nodejs.org), and [Git](https://git-scm.com/downloads) installed.

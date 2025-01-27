@@ -1,4 +1,10 @@
 import { re } from "@reliverse/relico";
+import { Value } from "@sinclair/typebox/value";
+import { stdin as input, stdout as output } from "node:process";
+import readline from "node:readline/promises";
+
+import type { PromptOptions } from "~/types/general.js";
+
 import {
   bar,
   countLines,
@@ -6,12 +12,7 @@ import {
   deleteLastLines,
   fmt,
   msg,
-} from "@reliverse/relinka";
-import { Value } from "@sinclair/typebox/value";
-import { stdin as input, stdout as output } from "node:process";
-import readline from "node:readline/promises";
-
-import type { PromptOptions } from "~/types/general.js";
+} from "~/main.js";
 
 type NumMultiSelectPromptOptions = PromptOptions & {
   defaultValue?: string[];

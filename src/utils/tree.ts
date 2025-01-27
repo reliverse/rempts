@@ -1,4 +1,4 @@
-import type { ColorName } from "@reliverse/relinka";
+import type { ColorName } from "~/main.js";
 
 import { colorize } from "./colorize.js";
 

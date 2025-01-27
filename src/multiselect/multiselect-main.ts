@@ -1,17 +1,17 @@
-import type { BorderColorName, VariantName } from "@reliverse/relinka";
-
 import { re } from "@reliverse/relico";
+import { stdin as input, stdout as output } from "node:process";
+import readline from "node:readline";
+import terminalSize from "terminal-size";
+
+import type { BorderColorName, VariantName } from "~/main.js";
+
 import {
   deleteLastLine,
   msg,
   symbols,
   type ColorName,
   type TypographyName,
-} from "@reliverse/relinka";
-import { stdin as input, stdout as output } from "node:process";
-import readline from "node:readline";
-import terminalSize from "terminal-size";
-
+} from "~/main.js";
 import { completePrompt } from "~/utils/prompt-end.js";
 
 type SelectOption<T> = {

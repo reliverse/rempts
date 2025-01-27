@@ -58,7 +58,7 @@ export async function prompt<T extends TSchema>(
       await nextStepsPrompt({
         ...options,
         content: Array.isArray(options.content)
-          ? options.content
+          ? (options.content as string[])
           : options.content.split("\n"),
       });
       value = null;

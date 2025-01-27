@@ -1,5 +1,4 @@
-import { msg } from "@reliverse/relinka";
-
+import { msg } from "~/main.js";
 import {
   inputPrompt,
   selectPrompt,

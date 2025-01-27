@@ -1,8 +1,8 @@
-import { fmt, type ColorName } from "@reliverse/relinka";
 import logUpdate from "log-update";
 import { cursor } from "sisteransi";
 
 import { streamText } from "~/components/utils/stream-text.js";
+import { fmt, type ColorName } from "~/main.js";
 import { endPrompt } from "~/main.js";
 
 const DEFAULT_MESSAGE = "Press any key to continue...";

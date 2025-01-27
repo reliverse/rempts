@@ -3,6 +3,7 @@ import {
   type Animation,
   type AnimationName,
 } from "@figliolia/chalk-animation";
+
 import {
   deleteLastLine,
   getTerminalWidth,
@@ -10,8 +11,8 @@ import {
   type ColorName,
   type MsgType,
   type TypographyName,
-} from "@reliverse/relinka";
-import { msg } from "@reliverse/relinka";
+} from "~/main.js";
+import { msg } from "~/main.js";
 
 export const animationMap: Record<AnimationName, (text: string) => Animation> =
   {

@@ -1,3 +1,11 @@
+import type { TSchema } from "@sinclair/typebox";
+import type { Interface } from "node:readline/promises";
+
+import { re } from "@reliverse/relico";
+import { isUnicodeSupported } from "@reliverse/runtime";
+import { Value } from "@sinclair/typebox/value";
+import readline from "node:readline/promises";
+
 import type {
   BorderColorName,
   ColorName,
@@ -5,19 +13,11 @@ import type {
   SymbolName,
   TypographyName,
   VariantName,
-} from "@reliverse/relinka";
-import type { TSchema } from "@sinclair/typebox";
-import type { Interface } from "node:readline/promises";
-
-import { re } from "@reliverse/relico";
-import { bar, deleteLastLine, msg, msgUndoAll } from "@reliverse/relinka";
-import { isUnicodeSupported } from "@reliverse/runtime";
-import { Value } from "@sinclair/typebox/value";
-import readline from "node:readline/promises";
-
+} from "~/main.js";
 import type { PromptOptions } from "~/main.js";
 
 import { streamText } from "~/components/utils/stream-text.js";
+import { bar, deleteLastLine, msg, msgUndoAll } from "~/main.js";
 import { completePrompt } from "~/utils/prompt-end.js";
 
 const unicode = isUnicodeSupported();
@@ -191,7 +191,7 @@ async function ask(
  * renderPromptUI()
  *
  * Renders the text prompt UI, including optional hint, placeholder,
- * or error messages. Uses reliverse/relinka's msg() for rendering.
+ * or error messages. Uses msg() for rendering.
  *
  * @param params RenderParams containing display options, user input, etc.
  */

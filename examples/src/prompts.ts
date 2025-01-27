@@ -1,8 +1,8 @@
-import { msg } from "@reliverse/relinka";
 import { isBunRuntime } from "@reliverse/runtime";
 import { detect } from "detect-package-manager";
 import { emojify } from "node-emoji";
 
+import { msg } from "~/main.js";
 import { anykeyPrompt, spinnerTaskPrompt } from "~/main.js";
 import { multiselectPrompt } from "~/main.js";
 import { progressTaskPrompt } from "~/main.js";
@@ -36,7 +36,7 @@ const pkg = packageJson;
 
 // const pkg = {
 //   name: "@reliverse/prompts",
-//   version: "1.4.12",
+//   version: "1.4.16",
 //   description:
 //     "@reliverse/prompts is a powerful library that enables seamless, typesafe, and resilient prompts for command-line applications. Crafted with simplicity and elegance, it provides developers with an intuitive and robust way to build interactive CLIs.",
 // };

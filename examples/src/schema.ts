@@ -1,4 +1,3 @@
-import { colorMap } from "@reliverse/relinka";
 import { Type, type Static } from "@sinclair/typebox";
 import {
   buildRegExp,
@@ -6,6 +5,8 @@ import {
   endOfString,
   startOfString,
 } from "ts-regex-builder";
+
+import { colorMap } from "~/main.js";
 
 // You can define pieces of the schema separately and then use them in the main schema.
 const colorSchema = Type.Enum(

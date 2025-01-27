@@ -1,5 +1,4 @@
-import { msg } from "@reliverse/relinka";
-
+import { msg } from "~/main.js";
 import { endPrompt, inputPrompt, selectPrompt, startPrompt } from "~/main.js";
 import { prompt } from "~/mono/mono.js";
 import { spinnerTaskPrompt } from "~/task/spinner.js";

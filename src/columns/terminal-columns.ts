@@ -1,4 +1,4 @@
-import { getTerminalWidth } from "@reliverse/relinka";
+import { getTerminalWidth } from "~/main.js";
 
 import type { Row, Options, OptionsFunction } from "./types.js";
 

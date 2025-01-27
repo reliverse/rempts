@@ -1,7 +1,6 @@
 import type { Key, ReadLine } from "node:readline";
 import type { Readable, Writable } from "node:stream";
 
-import { getTerminalWidth } from "@reliverse/relinka";
 import { stdin, stdout } from "node:process";
 import readline from "node:readline";
 import { WriteStream } from "node:tty";
@@ -11,6 +10,7 @@ import wrap from "wrap-ansi";
 import type { State } from "~/types/general.js";
 
 import { NonInteractiveError } from "~/core/errors.js";
+import { getTerminalWidth } from "~/main.js";
 
 function diffLines(a: string, b: string): number[] {
   if (a === b) {

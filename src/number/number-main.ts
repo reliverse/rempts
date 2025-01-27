@@ -1,4 +1,8 @@
-import type { BorderColorName, FmtMsgOptions } from "@reliverse/relinka";
+import { Value } from "@sinclair/typebox/value";
+import { stdin as input, stdout as output } from "node:process";
+import readline from "node:readline/promises";
+
+import type { BorderColorName, FmtMsgOptions } from "~/main.js";
 
 import {
   bar,
@@ -7,10 +11,7 @@ import {
   msg,
   type ColorName,
   type TypographyName,
-} from "@reliverse/relinka";
-import { Value } from "@sinclair/typebox/value";
-import { stdin as input, stdout as output } from "node:process";
-import readline from "node:readline/promises";
+} from "~/main.js";
 
 type VariantName = FmtMsgOptions["titleVariant"];
 

@@ -1,11 +1,12 @@
 import type { AnimationName } from "@figliolia/chalk-animation";
+import type { TSchema } from "@sinclair/typebox";
+
 import type {
   BorderColorName,
   ColorName,
   TypographyName,
   VariantName,
-} from "@reliverse/relinka";
-import type { TSchema } from "@sinclair/typebox";
+} from "~/main.js";
 
 export type State = "initial" | "active" | "cancel" | "submit" | "error";
 

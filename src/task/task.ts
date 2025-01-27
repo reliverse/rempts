@@ -1,7 +1,6 @@
 import type { Options } from "p-map";
 
 import { re } from "@reliverse/relico";
-import { msg } from "@reliverse/relinka";
 import { EventEmitter } from "node:events";
 import process from "node:process";
 import ora from "ora";
@@ -9,6 +8,8 @@ import pMap from "p-map";
 import { cursor, erase } from "sisteransi";
 
 import type { ProgressBar } from "~/task/types.js";
+
+import { msg } from "~/main.js";
 
 import { progressTaskPrompt } from "./progress.js";
 
@@ -188,7 +189,7 @@ function registerTask<T>(
 
   task.cancelToken = cancelToken;
 
-  // Replace valtio subscribe with event emitter
+  // Event emitter
   const handleStateChange = () => {
     if (task.state === "loading" && !task.startTime) {
       task.startTime = Date.now();
@@ -321,7 +322,7 @@ function registerTask<T>(
           throw new Error("Task was cancelled before starting");
         }
 
-        // Add automated verification steps
+        // Automated verification steps
         api.setStatus("Checking...");
         await new Promise((resolve) => setTimeout(resolve, initialDelay));
 
@@ -376,10 +377,8 @@ function registerTask<T>(
   };
 }
 
-// Create and export the root task list without valtio proxy
-const rootTaskList: TaskList = [];
+const rootTaskList = [] as TaskList;
 
-// Add a task state manager
 const taskStateManager = new Map<string, boolean>();
 
 function advancedTaskPrompt(taskList: TaskList): Task {
@@ -595,7 +594,6 @@ const createTaskInnerApi = (taskState: TaskObject): TaskInnerAPI => {
   return api;
 };
 
-// Update spinnerTask to use the new SpinnerType
 export async function spinnerTask(options: SpinnerTaskOptions): Promise<void> {
   const {
     initialMessage,
@@ -609,7 +607,6 @@ export async function spinnerTask(options: SpinnerTaskOptions): Promise<void> {
   let interval: NodeJS.Timer | null = null;
   let frameIndex = 0;
 
-  // Use ora for its spinner types
   if (
     spinnerType === "dots" ||
     spinnerType === "bouncingBar" ||
@@ -645,7 +642,6 @@ export async function spinnerTask(options: SpinnerTaskOptions): Promise<void> {
       process.exit(1);
     }
   } else {
-    // Use simple spinners
     const simpleSpinners = {
       default: ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"],
       dottedCircle: ["○", "", "◑", "◕", "●"],
@@ -720,7 +716,6 @@ export async function spinnerTask(options: SpinnerTaskOptions): Promise<void> {
   }
 }
 
-// Export a function to get task statistics
 export function getTaskStats(taskList: TaskList = rootTaskList) {
   const stats = {
     total: 0,

@@ -1,9 +1,10 @@
 import { re } from "@reliverse/relico";
-import { msg, type BorderColorName, type ColorName } from "@reliverse/relinka";
 import { stdout } from "node:process";
 import { cursor } from "sisteransi";
 import terminalSize from "terminal-size";
 import wrapAnsi from "wrap-ansi";
+
+import { msg, type BorderColorName, type ColorName } from "~/main.js";
 
 function getTerminalWidth(): number {
   return terminalSize().columns;

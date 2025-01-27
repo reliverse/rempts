@@ -1,12 +1,13 @@
 import { re } from "@reliverse/relico";
+import { homedir } from "node:os";
+import terminalSize from "terminal-size";
+
 import {
   getExactTerminalWidth,
   getTerminalWidth,
   msg,
   type ColorName,
-} from "@reliverse/relinka";
-import { homedir } from "node:os";
-import terminalSize from "terminal-size";
+} from "~/main.js";
 
 export function preventUnsupportedTTY({
   borderColor = "redBright",
