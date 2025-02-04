@@ -27,7 +27,7 @@ async function main() {
   // Example: Ask a single-choice selection
   const { color } = await enq.askSelect({
     name: "color",
-    message: "Pick a color" + longText,
+    message: `Pick a color${longText}`,
     choices: ["red", "blue", "green"],
     initial: 1,
   });
@@ -36,7 +36,7 @@ async function main() {
   // Example: Ask a multi-choice selection
   const { fruits } = await enq.askMultiSelect({
     name: "fruits",
-    message: "Pick some fruits" + longText,
+    message: `Pick some fruits${longText}`,
     choices: ["apple", "banana", "orange", "mango"],
     initial: [0, 2],
   });

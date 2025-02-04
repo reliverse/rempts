@@ -309,7 +309,7 @@ const checkbox = createPrompt(
 
     const choiceDescription = description
       ? `\n${theme.style.description(description)}`
-      : ``;
+      : "";
 
     let error = "";
     if (errorMsg) {

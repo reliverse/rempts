@@ -2,7 +2,7 @@ import { promises as fs } from "node:fs";
 import path from "node:path";
 import * as url from "node:url";
 
-import { search } from "~/prompts/index.js";
+import { search } from "~/main.js";
 
 async function fileExists(filepath: string) {
   return fs.access(filepath).then(

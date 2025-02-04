@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import { re } from "@reliverse/relico";
 import { isUnicodeSupported } from "@reliverse/runtime";
 import { cursor, erase } from "sisteransi";
@@ -13,9 +14,9 @@ import {
   SelectKeyPrompt,
   SelectPrompt,
   InputPrompt,
-} from "~/prompts/index.js";
+} from "~/main.js";
 
-export { isCancel } from "~/prompts/prompt.js";
+export { isCancel } from "~/deprecated/prompt.js";
 
 const unicode = isUnicodeSupported();
 const s = (c: string, fallback: string) => (unicode ? c : fallback);

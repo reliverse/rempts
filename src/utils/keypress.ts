@@ -33,7 +33,7 @@ const parse = (
   if (Buffer.isBuffer(s)) {
     if (s[0] > 127 && s[1] === undefined) {
       s[0] -= 128;
-      s = Buffer.from("\u001b" + s.toString(enc || "utf-8"));
+      s = Buffer.from(`\u001b${s.toString(enc || "utf-8")}`);
     } else {
       s = s.toString(enc || "utf-8");
     }

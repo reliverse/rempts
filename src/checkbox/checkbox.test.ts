@@ -1,7 +1,8 @@
+/* eslint-disable max-lines */
 import { describe, it, expect } from "vitest";
 
 import { ValidationError } from "~/core/index.js";
-import { checkbox, Separator } from "~/prompts/index.js";
+import { checkbox, Separator } from "~/main.js";
 import { render } from "~/testing/index.js";
 
 const numberedChoices = [
@@ -651,7 +652,7 @@ describe("checkbox prompt", () => {
     });
 
     await expect(answer).rejects.toThrowErrorMatchingInlineSnapshot(
-      `[ValidationError: [checkbox prompt] No selectable choices. All choices are disabled.]`,
+      "[ValidationError: [checkbox prompt] No selectable choices. All choices are disabled.]",
     );
     await expect(answer).rejects.toBeInstanceOf(ValidationError);
   });

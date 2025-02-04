@@ -1,9 +1,9 @@
 import stringWidth from "string-width";
 import wrapAnsi from "wrap-ansi";
 
-import { getTerminalWidth } from "~/main.js";
+import type { Row, InternalColumnMeta } from "~/columns/types.js";
 
-import type { Row, InternalColumnMeta } from "../types.js";
+import { getTerminalWidth } from "~/main.js";
 
 import { getLongestLineWidth } from "./get-longest-line-width.js";
 

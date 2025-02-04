@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import { describe, it, expect, vi, afterEach } from "vitest";
 
 import { ValidationError } from "~/core/index.js";
@@ -450,7 +451,7 @@ describe("select prompt", () => {
     });
 
     await expect(answer).rejects.toThrowErrorMatchingInlineSnapshot(
-      `[ValidationError: [select prompt] No selectable choices. All choices are disabled.]`,
+      "[ValidationError: [select prompt] No selectable choices. All choices are disabled.]",
     );
     await expect(answer).rejects.toBeInstanceOf(ValidationError);
   });

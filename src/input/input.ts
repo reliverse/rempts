@@ -1,8 +1,8 @@
 import { re } from "@reliverse/relico";
 
-import type { PromptOptions } from "../prompts/prompt.js";
+import type { PromptOptions } from "~/deprecated/prompt.js";
 
-import Prompt from "../prompts/prompt.js";
+import Prompt from "~/deprecated/prompt.js";
 
 export type TextOptions = {
   placeholder?: string;

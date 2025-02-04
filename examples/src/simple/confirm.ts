@@ -1,6 +1,6 @@
 import * as url from "node:url";
 
-import { confirm } from "~/prompts/index.js";
+import { confirm } from "~/main.js";
 
 const demo = async () => {
   console.log(

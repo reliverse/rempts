@@ -102,7 +102,7 @@ async function main() {
             const isCorrect = answer2 === "Netscape";
             if (!isCorrect) {
               setError(
-                new Error(`Wrong! Netscape created JavaScript in 1995.`),
+                new Error("Wrong! Netscape created JavaScript in 1995."),
               );
               return false;
             }
@@ -120,7 +120,7 @@ async function main() {
       process.exit(1);
     }
 
-    const message = `Congrats !\n $ 2 , 0 0 0 , 0 0 0`;
+    const message = "Congrats !\n $ 2 , 0 0 0 , 0 0 0";
 
     await createAsciiArt({
       message,

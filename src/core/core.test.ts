@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import type { WriteStream } from "node:tty";
 
 import ansiEscapes from "ansi-escapes";
@@ -763,7 +764,7 @@ describe("Error handling", () => {
     const { answer } = await render(prompt, { message: "Question" });
 
     await expect(answer).rejects.toThrowErrorMatchingInlineSnapshot(
-      `[ValidationError: useEffect return value must be a cleanup function or nothing.]`,
+      "[ValidationError: useEffect return value must be a cleanup function or nothing.]",
     );
     await expect(answer).rejects.toBeInstanceOf(ValidationError);
   });
@@ -772,7 +773,7 @@ describe("Error handling", () => {
     expect(() => {
       useEffect(() => {}, []);
     }).toThrowErrorMatchingInlineSnapshot(
-      `[HookError: [@reliverse/prompts] Hook functions can only be called from within a prompt]`,
+      "[HookError: [@reliverse/prompts] Hook functions can only be called from within a prompt]",
     );
     expect(() => {
       useEffect(() => {}, []);
@@ -783,7 +784,7 @@ describe("Error handling", () => {
     expect(() => {
       useKeypress(() => {});
     }).toThrowErrorMatchingInlineSnapshot(
-      `[HookError: [@reliverse/prompts] Hook functions can only be called from within a prompt]`,
+      "[HookError: [@reliverse/prompts] Hook functions can only be called from within a prompt]",
     );
     expect(() => {
       useKeypress(() => {});

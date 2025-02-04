@@ -164,7 +164,8 @@ export async function togglePrompt<T extends string>(
     input.setRawMode(true);
   }
 
-  const instructions = `Use <←/→> or <h/l> to navigate, <Enter> to select, <Ctrl+C> to exit`;
+  const instructions =
+    "Use <←/→> or <h/l> to navigate, <Enter> to select, <Ctrl+C> to exit";
   let errorMessage = "";
 
   let lastUILineCount = 0;

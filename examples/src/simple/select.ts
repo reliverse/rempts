@@ -1,6 +1,6 @@
 import * as url from "node:url";
 
-import { select, Separator } from "~/prompts/index.js";
+import { select, Separator } from "~/main.js";
 
 const alphabet = [
   { value: "A" },

@@ -256,7 +256,7 @@ const search = createPrompt(
         }
 
         const color = isActive ? theme.style.highlight : (x: string) => x;
-        const cursor = isActive ? theme.icon.cursor : ` `;
+        const cursor = isActive ? theme.icon.cursor : " ";
         return color(`${cursor} ${item.name}`);
       },
       pageSize,
@@ -285,7 +285,7 @@ const search = createPrompt(
     // @ts-expect-error - TODO: fix ts
     const choiceDescription = selectedChoice?.description
       ? `\n${theme.style.description(selectedChoice.description)}`
-      : ``;
+      : "";
 
     return [
       [prefix, message, searchStr].filter(Boolean).join(" "),

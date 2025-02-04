@@ -1,7 +1,7 @@
 import { re } from "@reliverse/relico";
 
 import figures from "~/figures/index.js";
-import { select } from "~/prompts/index.js";
+import { select } from "~/main.js";
 
 import checkboxDemo from "../src/simple/checkbox.js";
 import confirmDemo from "../src/simple/confirm.js";

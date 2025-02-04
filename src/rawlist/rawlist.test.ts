@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 
 import { Separator } from "~/core/Separator.js";
-import { rawlist } from "~/prompts/index.js";
+import { rawlist } from "~/main.js";
 import { render } from "~/testing/index.js";
 
 const numberedChoices = [

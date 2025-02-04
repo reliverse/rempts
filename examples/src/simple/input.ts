@@ -1,7 +1,7 @@
 import { re } from "@reliverse/relico";
 import * as url from "node:url";
 
-import { input } from "~/prompts/index.js";
+import { input } from "~/main.js";
 
 const hexRegEx = /(\d|[a-f])/gim;
 const isHex = (value: string) =>

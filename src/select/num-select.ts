@@ -100,7 +100,7 @@ export async function numSelectPrompt(opts: NumSelectPromptOptions) {
       hintPlaceholderColor,
       type: "M_NULL",
       title: `${question}\n${choicesText}\n${formattedBar}  ${colorize(
-        `Enter your choice:`,
+        "Enter your choice:",
         contentColor,
       )}\n${formattedBar}  `,
     });

@@ -57,7 +57,7 @@ export async function runCommand<T extends ArgsDef = ArgsDef>(
           });
         }
       } else if (!cmd.run) {
-        throw new CLIError(`No command specified.`, "E_NO_COMMAND");
+        throw new CLIError("No command specified.", "E_NO_COMMAND");
       }
     }
 

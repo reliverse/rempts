@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import type { Options } from "p-map";
 
 import { re } from "@reliverse/relico";

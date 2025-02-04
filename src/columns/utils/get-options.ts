@@ -1,6 +1,10 @@
-import { getTerminalWidth } from "~/main.js";
+import type {
+  Options,
+  OptionsFunction,
+  ColumnMetasArray,
+} from "~/columns/types.js";
 
-import type { Options, OptionsFunction, ColumnMetasArray } from "../types.js";
+import { getTerminalWidth } from "~/main.js";
 
 type InternalOptions = {
   columns: ColumnMetasArray;

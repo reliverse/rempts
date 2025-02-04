@@ -82,7 +82,7 @@ function normalizeEncoding(enc?: BufferEncoding | string): BufferEncoding {
     typeof nenc !== "string" &&
     (Buffer.isEncoding === isEncoding || !isEncoding(enc))
   ) {
-    throw new Error("Unknown encoding: " + enc);
+    throw new Error(`Unknown encoding: ${enc}`);
   }
   return nenc || (enc as BufferEncoding);
 }

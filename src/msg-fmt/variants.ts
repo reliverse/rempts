@@ -73,7 +73,7 @@ function createDoubleBox(
 
   const middle = processedLines
     .map((line, index) => {
-      const lineIndentation = index === 0 ? indentation : indentation + "  ";
+      const lineIndentation = index === 0 ? indentation : `${indentation}  `;
       return `${lineIndentation}${borderColor ? colorMap[borderColor]("║") : "║"} ${colorMap[borderColor](line.padEnd(maxLength))} ${borderColor ? colorMap[borderColor]("║") : "║"}`;
     })
     .join("\n");

@@ -343,14 +343,13 @@ export class RangePrompt extends EventEmitter {
       out += esc.eraseLines(2) + esc.cursorTo(0);
     }
 
-    out +=
-      [
-        ui.symbol(this.done, this.aborted),
-        re.bold(this.msg),
-        ui.delimiter(this.done),
-        this.value !== null ? this.value : "",
-        re.gray(this.unit),
-      ].join(" ") + "\n";
+    out += `${[
+      ui.symbol(this.done, this.aborted),
+      re.bold(this.msg),
+      ui.delimiter(this.done),
+      this.value !== null ? this.value : "",
+      re.gray(this.unit),
+    ].join(" ")}\n`;
 
     const size =
       this.size -
@@ -368,14 +367,13 @@ export class RangePrompt extends EventEmitter {
     const leftBar = this.bar.repeat(Math.max(0, Math.floor(left / barWidth)));
     const rightBar = this.bar.repeat(Math.max(0, Math.floor(right / barWidth)));
 
-    out +=
-      [
-        "",
-        this.min,
-        re.gray(leftBar) + this.marker + re.gray(rightBar),
-        this.max,
-        "",
-      ].join(" ") + "\n";
+    out += `${[
+      "",
+      this.min,
+      re.gray(leftBar) + this.marker + re.gray(rightBar),
+      this.max,
+      "",
+    ].join(" ")}\n`;
 
     this.out.write(out);
   }

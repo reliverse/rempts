@@ -67,10 +67,11 @@ export async function startPrompt({
   const formattedTitle =
     title !== ""
       ? title
-      : `${packageName} v${packageVersion} | ${pm.packageManager} v${pm.version} | ${getCurrentTerminalName()}` +
-        (isDev && terminalWidth > 80
-          ? ` | isDev | w${terminalWidth} h${terminalHeight}`
-          : "");
+      : `${packageName} v${packageVersion} | ${pm.packageManager} v${pm.version} | ${getCurrentTerminalName()}${
+          isDev && terminalWidth > 80
+            ? ` | isDev | w${terminalWidth} h${terminalHeight}`
+            : ""
+        }`;
 
   if (horizontalLineLength === 0) {
     const titleFullLength =

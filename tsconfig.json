@@ -37,16 +37,14 @@
     "verbatimModuleSyntax": true
   },
   "include": [
-    "build.optim.ts",
     "build.config.ts",
+    "build.publish.ts",
     "eslint.config.js",
     "vitest.config.ts",
     "src/**/*.ts",
     "addons/**/*.ts",
     "examples/**/*.ts",
-    "build.publish.ts",
-    "bump.config.ts",
-    "publish.ts"
+    "latest.ts"
   ],
   "exclude": ["node_modules", "dist-npm"]
 }

@@ -1,3 +1,5 @@
+// 👉 `bun examples\other\stream.ts`
+
 import * as url from "node:url";
 
 import {

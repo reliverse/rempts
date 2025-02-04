@@ -1,6 +1,6 @@
 import * as url from "node:url";
 
-import { expand } from "~/prompts/index.js";
+import { expand } from "~/main.js";
 
 const demo = async () => {
   let answer;

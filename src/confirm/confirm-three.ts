@@ -1,8 +1,8 @@
 import { cursor } from "sisteransi";
 
-import type { PromptOptions } from "../prompts/prompt.js";
+import type { PromptOptions } from "~/deprecated/prompt.js";
 
-import Prompt from "../prompts/prompt.js";
+import Prompt from "~/deprecated/prompt.js";
 
 type ConfirmOptions = {
   active: string;

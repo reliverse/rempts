@@ -52,7 +52,7 @@ export async function progressTaskPrompt(
       .replace(":elapsed", elapsed);
 
     process.stdout.write(cursor.move(-999, 0) + erase.line);
-    process.stdout.write(re.green("◆") + "  " + output);
+    process.stdout.write(`${re.green("◆")}  ${output}`);
 
     if (state.current >= state.total) {
       process.stdout.write("\n");

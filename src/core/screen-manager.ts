@@ -62,7 +62,7 @@ export default class ScreenManager {
       content += "\n";
     }
 
-    let output = content + (bottomContent ? "\n" + bottomContent : "");
+    let output = content + (bottomContent ? `\n${bottomContent}` : "");
 
     /**
      * Re-adjust the cursor at the correct position.

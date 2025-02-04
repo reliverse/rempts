@@ -2,7 +2,7 @@ import type {
   InternalColumnMeta,
   ColumnMetasArray,
   ColumnWidth,
-} from "../types.js";
+} from "~/columns/types.js";
 
 const isPercentPattern = /^\d+%$/;
 

@@ -317,7 +317,8 @@ export async function multiselectPrompt<T extends string>(
     .filter(isSelectOption)
     .every((option) => option.disabled);
 
-  const instructions = `Use <↑/↓> to navigate, <Space> to toggle, <A> to select/deselect all`;
+  const instructions =
+    "Use <↑/↓> to navigate, <Space> to toggle, <A> to select/deselect all";
 
   function toggleSelectAll() {
     const selectableIndexes = options

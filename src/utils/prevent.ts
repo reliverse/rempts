@@ -38,7 +38,7 @@ export function preventWindowsHomeDirRoot(filePath: string): never | void {
   const home = homedir();
 
   // Check if the path is exactly the home directory or root
-  if (filePath === home || filePath === home + "\\") {
+  if (filePath === home || filePath === `${home}\\`) {
     msg({
       type: "M_ERROR",
       title: re.redBright("Cannot operate in Windows home directory root"),

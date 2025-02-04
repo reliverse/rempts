@@ -1,6 +1,6 @@
 import * as url from "node:url";
 
-import { rawlist, Separator } from "~/prompts/index.js";
+import { rawlist, Separator } from "~/main.js";
 
 const demo = async () => {
   let answer;

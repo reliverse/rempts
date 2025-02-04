@@ -113,7 +113,7 @@ async function main() {
     return;
   }
 
-  const message = `Congrats !\n $ 1 , 0 0 0 , 0 0 0`;
+  const message = "Congrats !\n $ 1 , 0 0 0 , 0 0 0";
 
   await createAsciiArt({
     message,

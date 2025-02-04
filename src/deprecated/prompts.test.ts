@@ -10,7 +10,7 @@ import {
   search,
   select,
   Separator,
-} from "~/prompts/index.js";
+} from "~/main.js";
 
 describe("@reliverse/prompts", () => {
   it("export prompt functions", () => {

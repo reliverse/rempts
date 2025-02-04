@@ -1,19 +1,15 @@
 {
   "name": "@reliverse/prompts",
-  "version": "1.4.16",
   "author": "reliverse",
+  "version": "1.4.18",
   "type": "module",
+  "license": "MIT",
+  "keywords": ["prompts"],
   "description": "@reliverse/prompts is a powerful library that enables seamless, typesafe, and resilient prompts for command-line applications. Crafted with simplicity and elegance, it provides developers with an intuitive and robust way to build interactive CLIs.",
   "scripts": {
-    "dev": "bun examples/launcher.ts --dev",
+    "dev": "bun ples/launcher.ts --dev",
     "check": "bun typecheck && bun lint && bun format",
-    "build:npm": "unbuild && bun build.optim.ts",
-    "build:jsr": "bun build.optim.ts --jsr",
-    "build": "bun build:npm && bun build:jsr",
-    "pub:npm": "bun build.publish.ts",
-    "pub:jsr": "bun build.publish.ts --jsr",
-    "pub:dry": "bun build.publish.ts --dry-run",
-    "pub": "bun publish.ts",
+    "pub": "bun build.publish.ts",
     "typecheck": "tsc --noEmit",
     "lint": "eslint --cache --fix .",
     "lint:i": "eslint --inspect-config",
@@ -22,48 +18,18 @@
     "unpub": "npm unpublish",
     "test": "vitest",
     "knip": "knip",
-    "latest": "bun update --latest"
+    "latest": "bun latest.ts && bun check"
   },
-  "publishConfig": {
-    "access": "public"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/reliverse/prompts.git"
-  },
-  "types": "./dist-npm/main.d.ts",
-  "module": "./dist-npm/main.js",
-  "main": "./dist-npm/main.js",
-  "exports": {
-    "import": "./dist-npm/main.js",
-    "types": "./dist-npm/main.d.ts"
-  },
-  "bugs": {
-    "url": "https://github.com/reliverse/prompts/issues",
-    "email": "blefnk@gmail.com"
-  },
-  "files": [
-    "package.json",
-    "README.md",
-    "LICENSE.md",
-    "dist-npm"
-  ],
-  "homepage": "https://github.com/reliverse/prompts",
-  "keywords": [
-    "cli",
-    "reliverse"
-  ],
-  "license": "MIT",
   "dependencies": {
     "@alcalzone/ansi-tokenize": "^0.1.3",
     "@figliolia/chalk-animation": "^1.0.4",
     "@reliverse/relico": "^1.0.1",
     "@reliverse/runtime": "^1.0.2",
-    "@sinclair/typebox": "^0.34.14",
+    "@sinclair/typebox": "^0.34.15",
     "ansi-diff-stream": "^1.2.1",
     "ansi-escapes": "^7.0.0",
     "auto-bind": "^5.0.1",
-    "bun-types": "^1.2.0",
+    "bun-types": "^1.2.2",
     "cli-boxes": "^4.0.1",
     "cli-resize": "^2.0.8",
     "cli-spinners": "^3.2.0",
@@ -76,7 +42,7 @@
     "defu": "^6.1.4",
     "detect-package-manager": "^3.0.2",
     "enquirer": "^2.4.1",
-    "es-toolkit": "^1.31.0",
+    "es-toolkit": "^1.32.0",
     "external-editor": "^3.1.0",
     "figlet": "^1.8.0",
     "fs-extra": "^11.3.0",
@@ -90,8 +56,8 @@
     "mri": "^1.2.0",
     "mute-stream": "^2.0.0",
     "node-emoji": "^2.2.0",
-    "nypm": "^0.5.0",
-    "ora": "^8.1.1",
+    "nypm": "^0.5.2",
+    "ora": "^8.2.0",
     "p-map": "^7.0.3",
     "patch-console": "^2.0.0",
     "pathe": "^2.0.2",
@@ -116,20 +82,21 @@
   "devDependencies": {
     "@arethetypeswrong/cli": "^0.17.3",
     "@biomejs/biome": "1.9.4",
-    "@cspell/dict-npm": "^5.1.23",
+    "@cspell/dict-npm": "^5.1.24",
     "@eslint/js": "^9.19.0",
     "@eslint/json": "^0.10.0",
     "@eslint/markdown": "^6.2.2",
     "@faker-js/faker": "^9.4.0",
-    "@stylistic/eslint-plugin": "^3.0.0",
+    "@stylistic/eslint-plugin": "^3.0.1",
     "@types/ansi-diff-stream": "^1.2.3",
-    "@types/bun": "^1.2.0",
+    "@types/bun": "^1.2.2",
     "@types/chalk-animation": "^1.6.3",
     "@types/eslint__js": "^8.42.3",
     "@types/figlet": "^1.7.0",
     "@types/fs-extra": "^11.0.4",
     "@types/mute-stream": "^0.0.4",
-    "@types/node": "^22.10.10",
+    "@types/node": "^22.13.0",
+    "@types/semver": "^7.5.8",
     "@types/sentencer": "^0.2.3",
     "@types/signal-exit": "^3.0.4",
     "@types/strip-comments": "^2.0.4",
@@ -137,10 +104,11 @@
     "@types/wrap-ansi": "^8.1.0",
     "delay": "^6.0.0",
     "eslint": "^9.19.0",
+    "eslint-plugin-no-relative-import-paths": "^1.6.1",
     "eslint-plugin-perfectionist": "^4.7.0",
     "execa": "^9.5.2",
     "jiti": "^2.4.2",
-    "knip": "^5.43.3",
+    "knip": "^5.43.6",
     "mock-stdin": "^1.0.0",
     "p-queue": "^8.1.0",
     "printj": "^1.3.1",
@@ -148,8 +116,8 @@
     "strip-comments": "^2.0.1",
     "tsx": "^4.19.2",
     "typescript": "^5.7.3",
-    "typescript-eslint": "^8.21.0",
+    "typescript-eslint": "^8.22.0",
     "unbuild": "^3.3.1",
-    "vitest": "^3.0.4"
+    "vitest": "^3.0.5"
   }
 }

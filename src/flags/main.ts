@@ -1,6 +1,7 @@
+import { NonInteractiveError } from "~/core/errors.js";
+
 import type { ArgsDef, CommandDef } from "./types.js";
 
-import { NonInteractiveError } from "../core/errors.js";
 import { CLIError, resolveValue } from "./_utils.js";
 import { resolveSubCommand, runCommand } from "./command.js";
 import { showUsage as _showUsage } from "./usage.js";

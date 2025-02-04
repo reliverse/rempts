@@ -1,4 +1,4 @@
-import type { Row } from "../types.js";
+import type { Row } from "~/columns/types.js";
 
 import { getLongestLineWidth } from "./get-longest-line-width.js";
 

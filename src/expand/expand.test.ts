@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 
-import { expand, Separator } from "~/prompts/index.js";
+import { expand, Separator } from "~/main.js";
 import { render } from "~/testing/index.js";
 
 const overwriteChoices = [

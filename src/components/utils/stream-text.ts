@@ -1,10 +1,12 @@
 import { re } from "@reliverse/relico";
 import { stdout } from "node:process";
+import ora from "ora";
 import { cursor } from "sisteransi";
 import terminalSize from "terminal-size";
 import wrapAnsi from "wrap-ansi";
 
 import { msg, type BorderColorName, type ColorName } from "~/main.js";
+import { toBaseColor } from "~/msg-fmt/colors.js";
 
 function getTerminalWidth(): number {
   return terminalSize().columns;
@@ -40,6 +42,10 @@ export type StreamTextOptions = {
    * @default false
    */
   clearLine?: boolean;
+  /**
+   * Callback function to update the spinner text
+   */
+  onProgress?: (currentText: string) => void;
 };
 
 let isStartOfLine = true;
@@ -98,6 +104,7 @@ export async function streamText({
   color,
   newline = true,
   clearLine = false,
+  onProgress,
 }: StreamTextOptions): Promise<void> {
   if (!showCursor) {
     stdout.write(cursor.hide);
@@ -141,6 +148,9 @@ export async function streamText({
       await new Promise((resolve) => setTimeout(resolve, delay));
       isStartOfLine = false;
       buffer = "";
+      if (onProgress) {
+        onProgress(output);
+      }
     }
   }
 
@@ -152,6 +162,9 @@ export async function streamText({
         ? re[color as keyof typeof re](buffer)
         : re.dim(buffer);
     stdout.write(output);
+    if (onProgress) {
+      onProgress(output);
+    }
   }
 
   if (newline) {
@@ -200,36 +213,39 @@ export async function streamTextBox({
 }
 
 /**
- * Simulates streaming text output with a loading spinner
+ * Simulates streaming text output with a loading spinner using ora
  */
 export async function streamTextWithSpinner({
   text,
   delay = 50,
-  color,
-  spinnerFrames = ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"],
-  spinnerDelay = 80,
+  color = "cyan",
+  spinnerFrames,
+  spinnerDelay,
 }: StreamTextOptions & {
   spinnerFrames?: string[];
   spinnerDelay?: number;
 }): Promise<void> {
-  stdout.write(cursor.hide);
-  let currentFrame = 0;
-  const spinnerInterval: NodeJS.Timer = setInterval(() => {
-    stdout.write("\r" + spinnerFrames[currentFrame] + " ");
-    currentFrame = (currentFrame + 1) % spinnerFrames.length;
-  }, spinnerDelay);
+  let currentText = "";
+  const spinner = ora({
+    text: currentText,
+    color: toBaseColor(color),
+    spinner: spinnerFrames
+      ? {
+          frames: spinnerFrames,
+          interval: spinnerDelay,
+        }
+      : "dots",
+  }).start();
 
   // Stream text after spinner
-  await streamText({
-    text,
-    delay,
-    showCursor: false,
-    color,
-    newline: true,
-    clearLine: true,
-  });
+  for (const char of text) {
+    currentText += char;
+    spinner.text = color
+      ? re[color as keyof typeof re](currentText)
+      : currentText;
+    await new Promise((resolve) => setTimeout(resolve, delay));
+  }
 
   // Clean up spinner
-  clearInterval(spinnerInterval);
-  stdout.write(cursor.show);
+  spinner.stop();
 }

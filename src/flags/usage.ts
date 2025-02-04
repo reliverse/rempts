@@ -10,7 +10,7 @@ export async function showUsage<T extends ArgsDef = ArgsDef>(
   parent?: CommandDef<T>,
 ) {
   try {
-    console.log((await renderUsage(cmd, parent)) + "\n");
+    console.log(`${await renderUsage(cmd, parent)}\n`);
   } catch (error) {
     console.error(error);
   }
@@ -39,7 +39,7 @@ export async function renderUsage<T extends ArgsDef = ArgsDef>(
       const isRequired = arg.required && arg.default === undefined;
       const defaultHint = arg.default ? `="${arg.default}"` : "";
       posLines.push([
-        "`" + name + defaultHint + "`",
+        `\`${name}${defaultHint}\``,
         arg.description || "",
         arg.valueHint ? `<${arg.valueHint}>` : "",
       ]);
@@ -69,7 +69,7 @@ export async function renderUsage<T extends ArgsDef = ArgsDef>(
         ? arg.negativeDescription || arg.description
         : arg.description;
       argLines.push([
-        "`" + argStr + (isRequired ? " (required)" : "") + "`",
+        `\`${argStr}${isRequired ? " (required)" : ""}\``,
         description || "",
       ]);
       if (isRequired) {

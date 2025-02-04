@@ -237,7 +237,7 @@ const select = createPrompt(
         }
 
         const color = isActive ? theme.style.highlight : (x: string) => x;
-        const cursor = isActive ? theme.icon.cursor : ` `;
+        const cursor = isActive ? theme.icon.cursor : " ";
         return color(`${cursor} ${item.name}`);
       },
       pageSize,
@@ -250,7 +250,7 @@ const select = createPrompt(
 
     const choiceDescription = selectedChoice.description
       ? `\n${theme.style.description(selectedChoice.description)}`
-      : ``;
+      : "";
 
     return `${[prefix, message, helpTipTop].filter(Boolean).join(" ")}\n${page}${helpTipBottom}${choiceDescription}${ansiEscapes.cursorHide}`;
   },

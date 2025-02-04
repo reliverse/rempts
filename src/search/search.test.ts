@@ -1,6 +1,6 @@
 import { describe, it, expect, expectTypeOf } from "vitest";
 
-import { search, Separator } from "~/prompts/index.js";
+import { search, Separator } from "~/main.js";
 import { render } from "~/testing/index.js";
 
 // Array of all countries names as string

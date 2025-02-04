@@ -343,7 +343,8 @@ export async function selectPrompt<T extends string>(
     input.setRawMode(true);
   }
 
-  const instructions = `Use <↑/↓> or <k/j> to navigate, <Enter> to select, <Ctrl+C> to exit`;
+  const instructions =
+    "Use <↑/↓> or <k/j> to navigate, <Enter> to select, <Ctrl+C> to exit";
   let errorMessage = "";
   const allDisabled = options.every(
     (option) => isSelectOption(option) && option.disabled,

@@ -36,7 +36,7 @@ const pkg = packageJson;
 
 // const pkg = {
 //   name: "@reliverse/prompts",
-//   version: "1.4.16",
+//   version: "1.4.18",
 //   description:
 //     "@reliverse/prompts is a powerful library that enables seamless, typesafe, and resilient prompts for command-line applications. Crafted with simplicity and elegance, it provides developers with an intuitive and robust way to build interactive CLIs.",
 // };
@@ -174,7 +174,7 @@ export async function showInputPromptMasked() {
         return true;
       },
     });
-  } catch (error) {
+  } catch (_error) {
     process.exit(0);
     // msg({
     //   type: "M_ERROR",

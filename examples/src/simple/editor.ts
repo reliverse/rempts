@@ -1,6 +1,6 @@
 import * as url from "node:url";
 
-import { editor } from "~/prompts/index.js";
+import { editor } from "~/main.js";
 
 const demo = async () => {
   console.log(
