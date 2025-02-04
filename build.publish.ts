@@ -181,7 +181,7 @@ async function bumpVersions(
             parsed = destr(content);
           } else if (
             filePath.endsWith(".jsonc") ||
-            filePath.endsWith(".reliverse")
+            filePath.endsWith(".reliverse") // TODO: current implementation doesn't work for `.reliverse` (JSONC)
           ) {
             parsed = parseJSONC(content);
           } else if (filePath.endsWith(".json5")) {
@@ -220,6 +220,15 @@ async function bumpVersions(
             new RegExp(`(version\\s*:\\s*["'])${oldVersion}(["'])`, "g"),
             // VERSION = "1.0.0"
             new RegExp(`(VERSION\\s*=\\s*["'])${oldVersion}(["'])`, "g"),
+            // Exported cliVersion
+            new RegExp(
+              `(export\\s+const\\s+cliVersion\\s*=\\s*["'])${oldVersion}(["'])`,
+              "g",
+            ),
+            new RegExp(
+              `(const\\s+cliVersion\\s*=\\s*["'])${oldVersion}(["'])`,
+              "g",
+            ),
           ];
 
           let updated = content;
@@ -234,7 +243,7 @@ async function bumpVersions(
 
           if (hasChanges) {
             await fs.writeFile(filePath, updated, "utf8");
-            logger.verbose(`Updated version in ${filePath}`, true);
+            logger.verbose(`Updated version in ${filePath}`);
             return true;
           }
         }
@@ -547,7 +556,7 @@ async function findFileCaseInsensitive(
 }
 
 async function copyReadmeLicense(outdirRoot: string): Promise<void> {
-  logger.info("Copying README.md and LICENSE files...", false);
+  logger.info("Copying README.md and LICENSE files...", true);
 
   // --- Copy README file (case-insensitive) ---
   const readmeFile = await findFileCaseInsensitive("README.md");
@@ -876,20 +885,22 @@ async function buildJsrDist(): Promise<void> {
     logger.verbose(`unbuild completed with ${fileCount} output file(s).`, true);
   }
 
-  // For any bundler as a post-build step, do the following:
-  await Promise.all([
-    // `dist-jsr`:
-    copyReadmeLicense(outdirRoot),
-    createPackageJSON(outdirRoot, true),
-    createTSConfig(outdirRoot, true),
-    copyJsrFiles(outdirRoot),
+  /**
+   * For any bundler as a post-build step, do the following:
+   */
 
-    // `dist-jsr/bin`:
-    renameTsxFiles(outdirBin),
-    convertJsToTsImports(outdirBin, true),
-    convertSymbolPaths(outdirBin, true),
-    deleteSpecificFiles(outdirBin),
-  ]);
+  // `dist-jsr`:
+  await copyReadmeLicense(outdirRoot);
+  await createPackageJSON(outdirRoot, true);
+  await createTSConfig(outdirRoot, true);
+  await copyJsrFiles(outdirRoot);
+
+  // `dist-jsr/bin`:
+  await renameTsxFiles(outdirBin);
+  await convertJsToTsImports(outdirBin, true);
+  await convertSymbolPaths(outdirBin, true);
+  await deleteSpecificFiles(outdirBin);
+
   const size = await getDirectorySize(outdirRoot);
   logger.success(`Successfully created JSR distribution (${size} bytes)`, true);
 }
@@ -961,16 +972,18 @@ async function buildNpmDist(): Promise<void> {
     }
   }
 
-  // For any bundler as a post-build step, do the following:
-  await Promise.all([
-    // `dist-npm`:
-    copyReadmeLicense(outdirRoot),
-    createPackageJSON(outdirRoot, false),
+  /**
+   * For any bundler as a post-build step, do the following:
+   */
 
-    // `dist-npm/bin`:
-    convertSymbolPaths(outdirBin, false),
-    deleteSpecificFiles(outdirBin),
-  ]);
+  // `dist-npm`:
+  await copyReadmeLicense(outdirRoot);
+  await createPackageJSON(outdirRoot, false);
+
+  // `dist-npm/bin`:
+  await convertSymbolPaths(outdirBin, false);
+  await deleteSpecificFiles(outdirBin);
+
   const size = await getDirectorySize(outdirRoot);
   logger.success(`Successfully created NPM distribution (${size} bytes)`, true);
 }

@@ -177,7 +177,7 @@ const buildConfig =
   // Use defineBuildConfig only if not using the "bun" or "jsr" bundlers.
   selectedBuilder !== "bun" && selectedBuilder !== "jsr"
     ? defineBuildConfig({
-        declaration: true,
+        declaration: false,
         clean: false,
         entries: [
           {
