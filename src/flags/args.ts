@@ -3,7 +3,7 @@ import { kebabCase, camelCase } from "scule";
 import type { Arg, ArgsDef, ParsedArgs } from "./types.js";
 
 import { parseRawArgs } from "./_parser.js";
-import { CLIError, toArray } from "./_utils.js";
+import { toArray } from "./_utils.js";
 
 export function parseArgs<T extends ArgsDef = ArgsDef>(
   rawArgs: string[],
@@ -56,9 +56,8 @@ export function parseArgs<T extends ArgsDef = ArgsDef>(
       if (nextPositionalArgument !== undefined) {
         parsedArgsProxy[arg.name] = nextPositionalArgument;
       } else if (arg.default === undefined && arg.required) {
-        throw new CLIError(
+        throw new Error(
           `Missing required positional argument: ${arg.name.toUpperCase()}`,
-          "EARG",
         );
       } else {
         parsedArgsProxy[arg.name] = arg.default;
@@ -71,9 +70,8 @@ export function parseArgs<T extends ArgsDef = ArgsDef>(
         options.length > 0 &&
         !options.includes(argument)
       ) {
-        throw new CLIError(
+        throw new Error(
           `Invalid value for argument: \`--${arg.name}\` (\`${argument}\`). Expected one of: ${options.map((o) => `\`${o}\``).join(", ")}.`,
-          "EARG",
         );
       }
     } else if (arg.type === "number") {
@@ -82,13 +80,12 @@ export function parseArgs<T extends ArgsDef = ArgsDef>(
         parsedArgsProxy[arg.name] as string,
       );
       if (Number.isNaN(parsedArgsProxy[arg.name])) {
-        throw new CLIError(
+        throw new Error(
           `Invalid value for argument: \`--${arg.name}\` (\`${_originalValue}\`). Expected a number.`,
-          "EARG",
         );
       }
     } else if (arg.required && parsedArgsProxy[arg.name] === undefined) {
-      throw new CLIError(`Missing required argument: --${arg.name}`, "EARG");
+      throw new Error(`Missing required argument: --${arg.name}`);
     }
   }
 

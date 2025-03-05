@@ -1,8 +1,6 @@
-import { NonInteractiveError } from "~/core/errors.js";
-
 import type { ArgsDef, CommandDef } from "./types.js";
 
-import { CLIError, resolveValue } from "./_utils.js";
+import { resolveValue } from "./_utils.js";
 import { resolveSubCommand, runCommand } from "./command.js";
 import { showUsage as _showUsage } from "./usage.js";
 
@@ -59,7 +57,7 @@ export async function runMain<T extends ArgsDef = ArgsDef>(
       } else {
         // Default behavior: print JSON and throw error
         console.log(JSON.stringify(promptsJson, null, 2));
-        throw new NonInteractiveError(
+        throw new Error(
           "Terminal does not support interactivity. A prompts.json file has been generated.",
         );
       }
@@ -72,24 +70,13 @@ export async function runMain<T extends ArgsDef = ArgsDef>(
       const meta =
         typeof cmd.meta === "function" ? await cmd.meta() : await cmd.meta;
       if (!meta?.version) {
-        throw new CLIError("No version specified", "E_NO_VERSION");
+        throw new Error("No version specified");
       }
       console.log(meta.version);
     } else {
       await runCommand(cmd, { rawArgs });
     }
   } catch (error: any) {
-    const isCLIError = error instanceof CLIError;
-    const isNonInteractiveError = error instanceof NonInteractiveError;
-
-    if (!isCLIError && !isNonInteractiveError) {
-      console.error(error, "\n");
-    }
-
-    if (isCLIError) {
-      await showUsage(...(await resolveSubCommand(cmd, rawArgs)));
-    }
-
     console.error(error.message);
     process.exit(1);
   }

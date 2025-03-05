@@ -1,102 +1,62 @@
 # @reliverse/prompts
 
-> **The CLI prompt library you didn’t realize you’ve been desperate for.**
+> **A modern CLI prompt library. Fast, type-safe, and built to last.**
 
-[Docs](https://docs.reliverse.org/reliverse/prompts/) | [NPM](https://www.npmjs.com/package/@reliverse/prompts) | [JSR](https://jsr.io/@reliverse/prompts) | [GitHub](https://github.com/reliverse/prompts) | [Discord](https://discord.gg/3GawfWfAPe)
+[![NPM Version](https://img.shields.io/npm/v/@reliverse/prompts.svg?style=flat-square)](https://npmjs.com/package/@reliverse/prompts)
+[![License](https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square)](#license)
 
-It’s blazing-fast, type-safe, and has built-in crash resilience—so your command-line app can look slick without bursting into flames. Forget boilerplate-heavy setups—this library makes CLI development smooth and effortless.
+**Quick Links:**
 
-## Rapid-Fire Overview
+- **[Docs](https://docs.reliverse.org/reliverse/prompts)**
+- **[NPM](https://npmjs.com/package/@reliverse/prompts)**
+- **[JSR](https://jsr.io/@reliverse/prompts)**
+- **[GitHub](https://github.com/reliverse/prompts)**
+- **[Discord](https://discord.gg/3GawfWfAPe)**
 
-<div align="left">
-  <a href="https://npmjs.org/package/@reliverse/prompts"><img src="https://img.shields.io/npm/v/@reliverse/prompts.svg" alt="version" /></a>
-  <a href="https://npmjs.org/package/@reliverse/prompts"><img src="https://img.shields.io/npm/dm/@reliverse/prompts.svg" alt="downloads" /></a>
-</div>
+## Overview
 
-## Install in 3.2 Seconds
+`@reliverse/prompts` is a **type-safe**, high-performance library for building modern CLI applications. It’s designed to help you focus on creating **great user experiences**, not juggling repetitive CLI logic.
+
+Use `@reliverse/prompts` for everything from quick scripts to full-featured, production-grade tools. With minimal boilerplate, robust error handling, and built-in accessibility features, you’ll be shipping delightful CLI workflows in no time.
+
+## Key Features
+
+- **TypeScript-first**  
+  Get robust type definitions and IntelliSense for a smoother development experience.
+- **Flexible Prompt Types**  
+Includes logger, input (text, password), confirm, select, multiselect, toggle, number, spinner, and more.
+- **Schema-Driven Validation**  
+  Native compatibility with TypeBox, Zod, or any custom validation strategy.
+- **Accessible & Adaptive**  
+  Supports terminal resizing, color contrast preferences, and meets WCAG AA standards.
+- **Crash-Resistant**  
+  Gracefully handles Ctrl+C, unexpected exits, and other edge cases without breaking.
+
+## Installation
 
 ```bash
 bun add @reliverse/prompts
-# Or npm/pnpm/yarn if that’s your style
-# (deno and full jsr support soon™)
+# Or use npm, pnpm, yarn
 ```
 
-> **Pro Tip**: Make sure you have [Bun](https://bun.sh), [Node.js](https://nodejs.org), and [Git](https://git-scm.com/downloads) installed.
+> **Tip:** Make sure [Bun](https://bun.sh), [Node.js](https://nodejs.org), and [Git](https://git-scm.com/downloads) are installed before proceeding.
 
-## The 3-Second Pitch
+## Why Reliverse Prompts?
 
-> This thing is **blazing fast**, **type-safe**, and basically a bulletproof vest for your CLI.  
-> No more spaghetti prompt code. Just shiny, stable, next-gen developer bliss.
+Unlike Inquirer, Clack, or other prompt libraries, `@reliverse/prompts` centers on **developer experience**:
 
-### *“But why not stick with Inquirer or Clack?”*
+- **Enhanced Runtime Typing** – for fewer runtime errors and better IDE hints.
+- **Built-in Error Handling** – robust crash prevention right out of the box.
+- **Customizable Design & Theming** – tailor the look and feel to match your brand.
+- **Zero Guesswork with TypeScript** – strict typing means fewer surprises.
+- **Built-in Argument Parsing** – do more with less code by leveraging built-in typecasting and validation.
 
-1. Better typed validation, bigger ASCII art, more interactive goodies, and next-level color theming.  
-2. Because you deserve better than “just good enough.”
-
-## Key Selling Points
-
-- **TypeScript-first**: So your TypeScript dev heart can flutter in peace. Enjoy IntelliSense and zero guesswork.
-- **Flexible Prompt Types**: Text, confirm, select, multiselect, password, number, spinner, toggle, and many more… you do you.  
-- **Schema-driven Validations**: Easily integrates with TypeBox, Zod, or your own thing. No more “hope it works” solutions.  
-- **Accessibility**: Terminal-size awareness, WCAG AA color contrast, the whole enchilada.
-- **Crash-safe**: Ctrl+C or random cosmic rays? It shrugs them off.  
-
-## Why @reliverse/prompts?
-
-Consider it your brand-new sports car, while your old CLI prompt library was a rusty lawnmower. Also, it’s a feature-packed replacement for Inquirer, Enquirer, Clack, Terkelg, Terminal-Kit, and a bunch more.  
-
-[**Go deeper in the docs →**](https://docs.reliverse.org/reliverse/prompts/)
-
-### Straight-Up GOAT Features
-
-- **Full Cross-Platform ESM**: Seamlessly works with the Node.js and Bun environments.  
-- **Extensible UI**: Because color, typography, animations, and more matter to your terminal fashion sense.
-- **Built for DX**: Minimal dependencies, clean API, full validation baked in, and more.
-- **Mono Component**: Perfect for rapid prototyping. Or if you’re feeling lazy.  
-
-## Speedrun Example
-
-```ts
-import { inputPrompt } from "@reliverse/prompts";
-
-await startPrompt({
-  clearConsole: true,
-  titleColor: "inverse",
-  packageName: "@reliverse/cli",
-  packageVersion: "1.0.0",
-  terminalSizeOptions: {
-    minWidth: 100,
-    minHeight: 16,
-    // 🗴  Oops! Terminal width is too small. Expected >100 | Current: 97
-  },
-});
-
-const username = await inputPrompt({
-  id: "username",
-  title: "Welcome to @reliverse/prompts Demo!",
-  content: "What's your name?",
-});
-
-console.log(`Hey there, ${username}!`);
-```
-
-## Task Management
-
-The library provides a powerful task management system with built-in verification steps, spinners, and error handling:
-
-- **Spinner and progress bars that actually move**: Progress tracking with current/total counts and status messages  
-- **Task priorities (because some stuff is more important)**: Critical, high, normal, low  
-- **Built-in stats, error handling, and cancellation**: Task timing and statistics, built-in error handling and cancellation support  
-- **Customizable spinners to keep your eyes happy**: Customizable spinners and progress indicators  
-- **Nested subtasks and task groups**: Group tasks and subtasks for better organization  
-- **Automatic verification steps with customizable delays**
-- **Simple error handling with proper formatting**
-- **Progress tracking for long-running operations**
-- **Custom validation and business logic support**
-
-Visit [docs](https://docs.reliverse.org/reliverse/prompts/#task-management) to learn more and see examples.
+Benchmarks confirm that `@reliverse/prompts` is one of the fastest and easiest libraries to work with.  
+[See the feature comparison →](https://docs.reliverse.org/reliverse/prompts/#prompts-library-comparison)
 
 ## Playground Mode
+
+Try out examples locally to see how everything works in practice:
 
 ```bash
 git clone https://github.com/reliverse/prompts.git
@@ -105,85 +65,44 @@ bun i
 bun dev
 ```
 
-Check out `examples/launcher.ts` for a smorgasbord of demos (including a quiz). Who says CLIs can’t be fun?
+Then open **`examples/launcher.ts`** to explore various interactive demos or experiment with different prompt types.
 
-## Examples to Copy-Paste
+![example](./examples/main.png)
 
-1. **1-main.ts**: A powerhouse CLI example with all the trimmings, with advanced styling and all prompts.
-2. **2-mono.ts**: A single `prompt()` for multiple components—perfect for CLI where performance doesn't matter.  
-3. **3-simple.ts**: Less code, more speed.  
-4. **4-args-a.ts** + **5-args-b.ts**: Turn sub-commands into a more headless experience.
+## Example Usage
 
-## Custom Config FTW
-
-You don’t want a one-size-fits-all library. We got you:
+Here’s a quick look at how you might use `@reliverse/prompts` in your CLI:
 
 ```ts
-const basicConfig = {
-  titleColor: "cyanBright",
-  titleTypography: "bold",
-  borderColor: "dim",
-} satisfies PromptOptions;
+import {
+  startPrompt, // Initializes the CLI session (clears the console, sets a custom title, etc.)
+  inputPrompt  // Fetches user input with validation and styled UI
+} from "@reliverse/prompts";
 
-const extendedConfig = {
-  ...basicConfig,
-  contentTypography: "italic",
-  contentColor: "dim",
-} satisfies PromptOptions;
+await startPrompt({
+  clearConsole: true,
+  titleColor: "inverse",
+  packageName: "@reliverse/cli",
+  packageVersion: "1.0.0",
+});
 
 const username = await inputPrompt({
   id: "username",
-  title: "Testing out our fancy library!",
-  content: "What's your username?",
-  ...extendedConfig,
+  title: "Welcome!",
+  content: "What's your name?",
 });
+
+console.log(`Hey there, ${username}!`);
 ```
 
-## Mono Component: One Import to Rule Them All
+## Contributing
 
-If you’re lazy (like the rest of us), in a hurry, or just want everything jammed together, the Mono Component wraps up all prompt types in a single import.
-
-```ts
-export const IDs = {
-  start: "start",
-  username: "username",
-  // ...
-};
-```
-
-## Comparison Table
-
-We’re not shy. We lined up **@reliverse/prompts** against Inquirer, Clack, Terminal-Kit, etc. Our goal? **Turn every feature dot green**. [**Check out the epic chart**](https://docs.reliverse.org/reliverse/prompts/#prompts-library-comparison)
-
-## Arguments Support
-
-You can’t build an amazing CLI without argument parsing. We’ve got a built-in fast parser that typecasts your things automatically.
-
-## Wrap It Up
-
-@reliverse/prompts is more than just pretty and fast prompts—it’s a full-blown CLI builder with customizable designs and robust typing. It’s built to slot seamlessly into Reliverse’s ecosystem, but even if you’re rolling your own thing, you’ll appreciate the minimal boilerplate and fancy visuals.
-
-- **CLI builder** with style & resilience  
-- **Customizable** design and color theming  
-- **Zero guesswork** with TypeScript integrations  
-- **Minimal boilerplate** with maximum results
-
-## More Goodies
-
-- [**Reliverse Docs**](https://docs.reliverse.org/reliverse/prompts/)
-
-## Special Thanks
-
-**@inquirer/prompts**, **@terkelg/prompts**, **@clack/prompts**, **@unjs/citty**, and many more other open-source legends. You built the shoulders we stand on.
+Contributions are always welcome! Open a pull request or start a discussion on [GitHub](https://github.com/reliverse/prompts) if you’d like to help. By the way, this project emphasizes functional programming approaches, avoiding traditional OOP classes.
 
 ## License
 
-**MIT** © [Nazarii Korniienko](https://github.com/reliverse/prompts)
+**MIT License** © [Nazarii Korniienko](https://github.com/reliverse/prompts)
 
-## Screenshot Brag
+Feel free to modify and redistribute under the terms of the MIT license. See the [LICENSE](LICENSE) file for more details.
 
-[![CLI Example](./examples/main.png)](./examples/main.png)
-
-> **Stop reading. Start coding.**  
->
-> If you’re serious about CLIs—don’t just build—**Reliverse it** with `@reliverse/prompts`.
+Thanks for checking out `@reliverse/prompts`. If you have any questions, join our [Discord community](https://discord.gg/3GawfWfAPe) or file an issue on GitHub. We look forward to seeing what you build!

@@ -1,6 +1,6 @@
 import type { CommandContext, CommandDef, ArgsDef } from "./types.js";
 
-import { CLIError, resolveValue } from "./_utils.js";
+import { resolveValue } from "./_utils.js";
 import { parseArgs } from "./args.js";
 
 export function defineCommand<T extends ArgsDef = ArgsDef>(
@@ -45,10 +45,7 @@ export async function runCommand<T extends ArgsDef = ArgsDef>(
       const subCommandName = opts.rawArgs[subCommandArgIndex];
       if (subCommandName) {
         if (!subCommands[subCommandName]) {
-          throw new CLIError(
-            `Unknown command \`${subCommandName}\``,
-            "E_UNKNOWN_COMMAND",
-          );
+          throw new Error(`Unknown command \`${subCommandName}\``);
         }
         const subCommand = await resolveValue(subCommands[subCommandName]);
         if (subCommand) {
@@ -57,7 +54,7 @@ export async function runCommand<T extends ArgsDef = ArgsDef>(
           });
         }
       } else if (!cmd.run) {
-        throw new CLIError("No command specified.", "E_NO_COMMAND");
+        throw new Error("No command specified.");
       }
     }
 

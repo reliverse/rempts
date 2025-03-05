@@ -33,11 +33,11 @@ const config = tseslint.config(
     },
     plugins: {
       perfectionist,
-      // @ts-expect-error wrong issue
       "@stylistic": stylistic,
       "no-relative-import-paths": noRelativeImportPaths,
     },
     rules: {
+      "@typescript-eslint/no-unnecessary-boolean-literal-compare": "off",
       "@typescript-eslint/no-deprecated": "off",
       "@typescript-eslint/no-empty-function": "off",
       "@typescript-eslint/require-await": "off",

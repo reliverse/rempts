@@ -3,7 +3,6 @@
 /* eslint dot-notation: ["off"] */
 import process from "node:process";
 
-// Ported from is-unicode-supported
 function isUnicodeSupported() {
   if (process.platform !== "win32") {
     return process.env["TERM"] !== "linux"; // Linux console (kernel)
@@ -302,23 +301,3 @@ export const fallbackSymbols: Record<string, string> = {
 const shouldUseMain = isUnicodeSupported();
 const figures = shouldUseMain ? mainSymbols : fallbackSymbols;
 export default figures;
-
-const replacements = Object.entries(specialMainSymbols);
-
-// On terminals which do not support Unicode symbols, substitute them to other symbols
-export const replaceSymbols = (
-  string: string,
-  { useFallback = !shouldUseMain } = {},
-) => {
-  if (useFallback) {
-    for (const [key, mainSymbol] of replacements) {
-      const fallbackSymbol = fallbackSymbols[key];
-      if (!fallbackSymbol) {
-        throw new Error(`Unable to find fallback for ${key}`);
-      }
-      string = string.replaceAll(mainSymbol, fallbackSymbol);
-    }
-  }
-
-  return string;
-};

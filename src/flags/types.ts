@@ -109,5 +109,4 @@ export type CommandContext<T extends ArgsDef = ArgsDef> = {
 
 // ----- Utils -----
 
-export type Awaitable<T> = () => T | Promise<T>;
 export type Resolvable<T> = T | Promise<T> | (() => T) | (() => Promise<T>);

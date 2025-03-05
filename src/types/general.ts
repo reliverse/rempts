@@ -8,12 +8,6 @@ import type {
   VariantName,
 } from "~/main.js";
 
-export type State = "initial" | "active" | "cancel" | "submit" | "error";
-
-export type OldPromptOptions<T extends TSchema = any> = {
-  PromptOptions: PromptOptions<T>;
-};
-
 export type PromptOptions<T extends TSchema = any> = {
   schema?: T;
   title?: string;

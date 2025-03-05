@@ -1,4 +1,5 @@
-import { defineCommand, createMain } from "~/main.js";
+import { createMain } from "~/flags/main.js";
+import { defineCommand } from "~/main.js";
 
 const command = defineCommand({
   meta: {

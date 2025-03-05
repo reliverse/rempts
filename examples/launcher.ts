@@ -60,15 +60,6 @@ async function examplesRunner() {
     case "spinner":
       await import("./other/spinner.js");
       break;
-    case "task":
-      await import("./other/task.js");
-      break;
-    case "progressbar":
-      await import("./other/progress.js");
-      break;
-    case "simple":
-      await import("./other/simple.js");
-      break;
     case "cmd-a":
       console.clear();
       console.log(
