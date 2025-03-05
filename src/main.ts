@@ -3,7 +3,6 @@ export type { ChoiceOptions } from "~/types/general.js";
 export type { PromptOptions } from "~/types/general.js";
 
 // Helpers
-export { isTerminalInteractive } from "~/core/tty.js";
 export * from "~/helpers/validate.js";
 
 // Flags

@@ -1,11 +1,17 @@
-type ValidationResult = {
-  isValid: boolean;
-  message?: string;
-};
+/**
+ * Checks if the terminal is interactive
+ */
+export function isTerminalInteractive(input = process.stdin): boolean {
+  return Boolean(input.isTTY);
+}
 
 /**
  * Validates a name against allowed characters
  */
+type ValidationResult = {
+  isValid: boolean;
+  message?: string;
+};
 export function isValidName(name: string): ValidationResult {
   if (!/^[a-zA-Z0-9-]+$/.test(name)) {
     return {

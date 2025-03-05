@@ -254,10 +254,19 @@ async function deleteSpecificFiles(outdirBin: string): Promise<void> {
     onlyDirectories: true,
   });
 
+  // Filter out regular .d.ts files that aren't test or temp files
+  const filesToDelete = files.filter((file) => {
+    if (file.endsWith(".d.ts")) {
+      // Only delete .d.ts files that match test or temp patterns
+      return file.includes(".test.d.ts") || file.includes("-temp.d.ts");
+    }
+    return true;
+  });
+
   // Delete individual files
-  if (files.length > 0) {
-    await Promise.all(files.map((file) => fs.remove(file)));
-    logger.verbose(`Deleted files:\n${files.join("\n")}`, true);
+  if (filesToDelete.length > 0) {
+    await Promise.all(filesToDelete.map((file) => fs.remove(file)));
+    logger.verbose(`Deleted files:\n${filesToDelete.join("\n")}`, true);
   }
 
   // Delete snapshot directories
@@ -407,7 +416,7 @@ async function setBumpDisabled(value: boolean): Promise<void> {
     `disableBump: ${value}`,
   );
   await fs.writeFile(configPath, content, "utf-8");
-  logger.success(`Updated disableBump to ${value} in ${configPath}`, true);
+  logger.verbose(`Updated disableBump to ${value} in ${configPath}`, true);
 }
 
 /**
@@ -495,9 +504,11 @@ async function createCommonPackageFields(): Promise<Partial<PackageJson>> {
     // Extract organization name for GitHub URLs
     const repoOwner = author;
     // Remove scope prefix for repo name if it exists
-    const repoName = name.startsWith("@")
-      ? name.split("/").pop() || name
-      : name;
+    const repoName = originalPkg.name
+      ? originalPkg.name.startsWith("@")
+        ? originalPkg.name.split("/").pop() || originalPkg.name
+        : originalPkg.name
+      : "";
 
     Object.assign(commonFields, {
       author,
@@ -1320,9 +1331,11 @@ async function createLibPackageJSON(
     // Extract organization name for GitHub URLs
     const repoOwner = author;
     // Remove scope prefix for repo name if it exists
-    const repoName = originalPkg.name.startsWith("@")
-      ? originalPkg.name.split("/").pop() || originalPkg.name
-      : originalPkg.name;
+    const repoName = originalPkg.name
+      ? originalPkg.name.startsWith("@")
+        ? originalPkg.name.split("/").pop() || originalPkg.name
+        : originalPkg.name
+      : "";
 
     Object.assign(commonPkg, {
       author,
@@ -1367,7 +1380,7 @@ async function createLibPackageJSON(
       },
       bin: pubConfig.isCLI
         ? {
-            [libName.split("/").pop()]: "bin/main.js",
+            [libName.split("/").pop() || ""]: "bin/main.js",
           }
         : undefined,
       files: ["bin", "package.json", "README.md", "LICENSE"],
@@ -1597,11 +1610,12 @@ async function buildPublishLibs(): Promise<void> {
 
   const libsContent = await fs.readFile(libsFile, "utf8");
   const libsJson = parseJSONC(libsContent);
-  const libs = Object.entries(libsJson);
+  const libs = Object.entries(libsJson as Record<string, unknown>);
   const dry = !!pubConfig.dryRun;
 
   for (const [libName, config] of libs) {
-    if (!config.main) {
+    const typedConfig = config as { main?: string };
+    if (!typedConfig.main) {
       logger.warn(
         `Library ${libName} is missing "main" property. Skipping...`,
         true,
@@ -1618,7 +1632,7 @@ async function buildPublishLibs(): Promise<void> {
     const jsrOutDir = path.join(libBaseDir, "jsr");
 
     // Parse the main path to separate file from directory
-    const mainPath = path.parse(config.main);
+    const mainPath = path.parse(typedConfig.main);
     const mainFile = mainPath.base; // File with extension
     const mainDir = mainPath.dir || "."; // Directory path, defaults to '.' if empty
 
