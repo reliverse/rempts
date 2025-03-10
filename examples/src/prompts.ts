@@ -34,26 +34,6 @@ import {
 
 const pkg = packageJson;
 
-// const pkg = {
-//   name: "@reliverse/prompts",
-//   version: "1.5.2",
-//   description:
-//     "@reliverse/prompts is a powerful library that enables seamless, typesafe, and resilient prompts for command-line applications. Crafted with simplicity and elegance, it provides developers with an intuitive and robust way to build interactive CLIs.",
-// };
-
-// const IDs = {
-//   start: "start",
-//   username: "username",
-//   dir: "dir",
-//   spinner: "spinner",
-//   password: "password",
-//   age: "age",
-//   lang: "lang",
-//   color: "color",
-//   birthday: "birthday",
-//   features: "features",
-// };
-
 export async function showStartPrompt() {
   await startPrompt({
     // startPrompt is a special component: if you don't provide
@@ -103,27 +83,10 @@ export async function showInputPrompt() {
   return username ?? "johnny911";
 }
 
-// hardcoded: { // For testing purposes only
-//   userInput: "JohnDoe", // Predefined user input
-//   errorMessage: "", // No error message
-//   linesRendered: 3, // Number of lines rendered
-//   showPlaceholder: false, // Do not show placeholder since input is provided
-// },
-// validate: (value) => {
-//   if (!value?.trim()) {
-//     return "GitHub username is required for deployment";
-//   }
-//   if (!/^[a-z\d](?:[a-z\d]|-(?=[a-z\d])){0,38}$/i.test(value)) {
-//     return "Invalid GitHub username format";
-//   }
-//   return true;
-// },
-
 export async function askDir(username: string) {
   const dir = await inputPrompt({
     title: `[inputPrompt] Great! Nice to meet you, ${username}!`,
     content: "Where should we create your project?",
-    // Schema is required, because it provides a runtime typesafety validation.
     ...extendedConfig,
     titleVariant: "doubleBox",
     hint: "Default: ./prefilled-default-value",
@@ -176,10 +139,6 @@ export async function showInputPromptMasked() {
     });
   } catch (_error) {
     process.exit(0);
-    // msg({
-    //   type: "M_ERROR",
-    //   title: "Password prompt was aborted or something went wrong.",
-    // });
   }
   // We can set default values for missing responses, especially
   // for the cases when we allow the user to cancel the prompt.

@@ -44,7 +44,8 @@ type MultiselectPromptParams<T extends string> = {
   debug?: boolean;
   terminalWidth?: number;
   displayInstructions?: boolean;
-  allowAllUnselected?: boolean;
+  minSelect?: number;
+  maxSelect?: number;
 };
 
 /**
@@ -262,7 +263,8 @@ export async function multiselectPrompt<T extends string>(
     debug = false,
     terminalWidth: customTerminalWidth = 90,
     displayInstructions = false,
-    allowAllUnselected = false,
+    minSelect = 0,
+    maxSelect,
   } = params;
 
   let pointer =
@@ -449,39 +451,49 @@ export async function multiselectPrompt<T extends string>(
     }
 
     async function confirmSelection() {
-      if (allowAllUnselected || selectedOptions.size > 0) {
-        const selectedValues = Array.from(selectedOptions)
-          .filter((idx) => {
-            const opt = options[idx];
-            return opt && isSelectOption(opt) && !opt.disabled;
-          })
-          .map((idx) => {
-            const opt = options[idx];
-            return opt && isSelectOption(opt) ? opt.value : null;
-          })
-          .filter((val): val is T => val !== null && val !== undefined);
+      const selectedCount = selectedOptions.size;
 
-        cleanup();
-        resolve(selectedValues);
-
+      if (selectedCount < minSelect) {
         deleteLastLine();
-        await completePrompt(
-          "multiselect",
-          false,
-          endTitle,
-          endTitleColor,
-          titleTypography,
-          titleVariant ? titleVariant : undefined,
-          border,
-          borderColor,
-          undefined,
-          true,
-        );
-      } else {
-        deleteLastLine();
-        errorMessage = "You must select at least one option.";
+        errorMessage = `You must select at least ${minSelect} option${minSelect !== 1 ? "s" : ""}.`;
         renderOptions();
+        return;
       }
+
+      if (maxSelect !== undefined && selectedCount > maxSelect) {
+        deleteLastLine();
+        errorMessage = `You can select at most ${maxSelect} option${maxSelect !== 1 ? "s" : ""}.`;
+        renderOptions();
+        return;
+      }
+
+      const selectedValues = Array.from(selectedOptions)
+        .filter((idx) => {
+          const opt = options[idx];
+          return opt && isSelectOption(opt) && !opt.disabled;
+        })
+        .map((idx) => {
+          const opt = options[idx];
+          return opt && isSelectOption(opt) ? opt.value : null;
+        })
+        .filter((val): val is T => val !== null && val !== undefined);
+
+      cleanup();
+      resolve(selectedValues);
+
+      deleteLastLine();
+      await completePrompt(
+        "multiselect",
+        false,
+        endTitle,
+        endTitleColor,
+        titleTypography,
+        titleVariant ? titleVariant : undefined,
+        border,
+        borderColor,
+        undefined,
+        true,
+      );
     }
 
     function handleKeypress(_str: string, key: readline.Key): void {

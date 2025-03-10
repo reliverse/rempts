@@ -464,7 +464,7 @@ export async function selectPrompt<T extends string>(
       }
 
       if (required && !option.value) {
-        errorMessage = "You must select an option.";
+        errorMessage = "You must select a valid option.";
         renderOptions();
         return;
       }
