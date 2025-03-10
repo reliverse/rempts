@@ -6,11 +6,12 @@ import { defineBuildConfig } from "unbuild";
  *  COMMON OPTIONS
  * ------------------------------------ */
 
-const pausePublish = false;
-const disableBump = false;
-
 const isCLI = false;
 const declaration = true;
+
+const pausePublish = false;
+const disableBump = false;
+const verbose = false;
 
 /** ------------------------------------
  *  CONFIGURATION
@@ -101,6 +102,19 @@ export type BuildPublishConfig = {
 
   /** Flag indicating if the build is for a CLI package */
   isCLI: boolean;
+
+  /** Configuration for libraries to be built and published */
+  libs?: Record<string, LibConfig>;
+};
+
+/**
+ * Configuration for a library to be built and published.
+ */
+export type LibConfig = {
+  /** The path to the main entry file for the library */
+  main: string;
+  /** Optional description for the library */
+  description?: string;
 };
 
 const ROOT_DIR = dirname(fileURLToPath(import.meta.url));
@@ -139,15 +153,16 @@ export const pubConfig: BuildPublishConfig = {
   allowDirty: true,
   dryRun: false,
 
-  // Helper flags
-  verbose: false,
-
-  // CLI flag
+  // Helpers
+  verbose,
   isCLI,
 
   // Build overrides – do not modify these manually
   lastBuildFor: "npm",
   isJSR: false,
+
+  // Libs config
+  libs: {},
 };
 
 /**

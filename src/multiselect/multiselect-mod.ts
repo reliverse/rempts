@@ -3,7 +3,7 @@ import { stdin as input, stdout as output } from "node:process";
 import readline from "node:readline";
 import terminalSize from "terminal-size";
 
-import type { BorderColorName, VariantName } from "~/main.js";
+import type { BorderColorName, SelectOption, VariantName } from "~/main.js";
 
 import {
   deleteLastLine,
@@ -13,13 +13,6 @@ import {
   type TypographyName,
 } from "~/main.js";
 import { completePrompt } from "~/utils/prompt-end.js";
-
-type SelectOption<T> = {
-  label: string;
-  value: T;
-  hint?: string;
-  disabled?: boolean;
-};
 
 type SeparatorOption = {
   separator: true;

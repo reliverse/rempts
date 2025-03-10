@@ -1,6 +1,5 @@
 import { msg } from "~/main.js";
 import { endPrompt, inputPrompt, selectPrompt, startPrompt } from "~/main.js";
-import { prompt } from "~/mono/mono.js";
 import { spinnerTaskPrompt } from "~/task/spinner.js";
 import { colorize } from "~/utils/colorize.js";
 import { errorHandler } from "~/utils/errors.js";
@@ -96,9 +95,7 @@ async function main() {
     font: "Standard",
   });
 
-  await prompt({
-    type: "end",
-    id: "winner",
+  await endPrompt({
     title: `
     Programming isn't about what you know; 
     it's about making the command line look cool!`,

@@ -61,15 +61,9 @@ export type ChoiceOptionalOptions = {
 
 export type ChoiceOptions = ChoiceRequiredOptions & ChoiceOptionalOptions;
 
-export type PromptType =
-  | "text"
-  | "number"
-  | "confirm"
-  | "numSelect"
-  | "select"
-  | "multiselect"
-  | "password"
-  | "date"
-  | "start"
-  | "nextSteps"
-  | "end";
+export type SelectOption<T> = {
+  value: T;
+  label: string;
+  hint?: string;
+  disabled?: boolean;
+};

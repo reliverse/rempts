@@ -4,18 +4,12 @@ import readline from "node:readline";
 import terminalSize from "terminal-size";
 
 import type { BorderColorName, VariantName } from "~/main.js";
+import type { SelectOption } from "~/types/general.js";
 
 import { streamText } from "~/components/utils/stream-text.js";
 import { deleteLastLine, symbols } from "~/main.js";
 import { msg, type ColorName, type TypographyName } from "~/main.js";
 import { completePrompt } from "~/utils/prompt-end.js";
-
-type SelectOption<T> = {
-  label: string;
-  value: T;
-  hint?: string;
-  disabled?: boolean;
-};
 
 type SeparatorOption = {
   separator: true;
