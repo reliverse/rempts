@@ -3,46 +3,47 @@ import { isBunRuntime } from "@reliverse/runtime";
 
 import { errorHandler, selectPrompt } from "~/main.js";
 
-import { showStartPrompt } from "./src/prompts.js";
+import { showStartPrompt } from "./src/main/prompts.js";
 
 async function examplesRunner() {
   await showStartPrompt();
 
   const exampleToRun = await selectPrompt({
     title: "Choose an example to run",
+    displayInstructions: true,
     options: [
       {
-        label: "✨ Full-Featured Example",
+        label: "✨ Full-Featured",
         value: "main",
         hint: "recommended",
       },
       {
-        label: "Spinner Example",
+        label: re.dim("Spinner"),
         value: "spinner",
-        hint: "experimental",
+        hint: re.dim("not finished"),
       },
       {
-        label: re.dim("Task Example"),
+        label: re.dim("Task"),
         value: "task",
         hint: re.dim("not finished"),
       },
       {
-        label: re.dim("Progressbar Example"),
+        label: re.dim("Progressbar"),
         value: "progressbar",
         hint: re.dim("not finished"),
       },
       {
-        label: re.dim("Simple Example"),
+        label: re.dim("Simple"),
         value: "simple",
         hint: re.dim("not finished"),
       },
       {
-        label: re.dim("with flags 1 Example"),
+        label: re.dim("with flags 1"),
         value: "cmd-a",
         hint: re.dim("not finished"),
       },
       {
-        label: re.dim("with flags 2 Example"),
+        label: re.dim("with flags 2"),
         value: "cmd-b",
         hint: re.dim("not finished"),
       },
@@ -58,7 +59,7 @@ async function examplesRunner() {
       await import("./main.js");
       break;
     case "spinner":
-      await import("./other/spinner.js");
+      await import("./src/other/spinner.js");
       break;
     case "cmd-a":
       console.clear();

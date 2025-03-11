@@ -46,6 +46,7 @@ type MultiselectPromptParams<T extends string> = {
   displayInstructions?: boolean;
   minSelect?: number;
   maxSelect?: number;
+  selectAll?: boolean;
 };
 
 /**
@@ -265,6 +266,7 @@ export async function multiselectPrompt<T extends string>(
     displayInstructions = false,
     minSelect = 0,
     maxSelect,
+    selectAll = false,
   } = params;
 
   let pointer =
@@ -288,17 +290,23 @@ export async function multiselectPrompt<T extends string>(
   }
 
   const selectedOptions = new Set<number>(
-    defaultValue
-      .map((val) =>
-        options.findIndex((o) => o && isSelectOption(o) && o.value === val),
-      )
-      .filter(
-        (i) =>
-          i >= 0 &&
-          options[i] &&
-          isSelectOption(options[i]) &&
-          !options[i].disabled,
-      ),
+    selectAll
+      ? options
+          .map((opt, index) =>
+            opt && isSelectOption(opt) && !opt.disabled ? index : -1,
+          )
+          .filter((i) => i !== -1)
+      : defaultValue
+          .map((val) =>
+            options.findIndex((o) => o && isSelectOption(o) && o.value === val),
+          )
+          .filter(
+            (i) =>
+              i >= 0 &&
+              options[i] &&
+              isSelectOption(options[i]) &&
+              !options[i].disabled,
+          ),
   );
 
   const rl = readline.createInterface({ input, output });
@@ -313,7 +321,7 @@ export async function multiselectPrompt<T extends string>(
     .every((option) => option.disabled);
 
   const instructions =
-    "Use <↑/↓> to navigate, <Space> to toggle, <A> to select/deselect all";
+    "Use <↑/↓> to navigate, <Space> to toggle, <A> to toggle all";
 
   function toggleSelectAll() {
     const selectableIndexes = options

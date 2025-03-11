@@ -1,6 +1,6 @@
-// 👉 `bun examples/other/different.ts`
+// 👉 `bun examples/src/other/different.ts`
 
-import { showEndPrompt, showStartPrompt } from "@/src/prompts.js";
+import { showEndPrompt, showStartPrompt } from "@/src/main/prompts.js";
 
 import { msg } from "~/main.js";
 import {

@@ -5,8 +5,16 @@
     "build.config.ts",
     "build.publish.ts",
     "addons/**/*.ts",
-    "examples/**/*.ts",
-    "src/main.ts"
+    "src/main.ts",
+    "examples/launcher.ts",
+    "examples/src/other/cmds/build.ts",
+    "examples/src/other/cmds/debug.ts",
+    "examples/src/other/cmds/deploy.ts",
+    "examples/src/other/args-a.ts",
+    "examples/src/other/args-b.ts",
+    "examples/src/other/different.ts",
+    "examples/src/other/relinka.ts",
+    "examples/src/other/stream.ts"
   ],
   "project": [
     "eslint.config.js",

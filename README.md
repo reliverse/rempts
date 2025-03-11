@@ -15,9 +15,9 @@
 
 ## Overview
 
-`@reliverse/prompts` is a **type-safe**, high-performance library for building modern CLI applications. It’s designed to help you focus on creating **great user experiences**, not juggling repetitive CLI logic.
+`@reliverse/prompts` is a **type-safe**, high-performance library for building modern CLI applications. It's designed to help you focus on creating **great user experiences**, not juggling repetitive CLI logic.
 
-Use `@reliverse/prompts` for everything from quick scripts to full-featured, production-grade tools. With minimal boilerplate, robust error handling, and built-in accessibility features, you’ll be shipping delightful CLI workflows in no time.
+Use `@reliverse/prompts` for everything from quick scripts to full-featured, production-grade tools. With minimal boilerplate, robust error handling, and built-in accessibility features, you'll be shipping delightful CLI workflows in no time.
 
 ## Key Features
 
@@ -71,7 +71,7 @@ Then open **`examples/launcher.ts`** to explore various interactive demos or exp
 
 ## Example Usage
 
-Here’s a quick look at how you might use `@reliverse/prompts` in your CLI:
+Here's a quick look at how you might use `@reliverse/prompts` in your CLI:
 
 ```ts
 import {
@@ -97,7 +97,7 @@ console.log(`Hey there, ${username}!`);
 
 ## Contributing
 
-Contributions are always welcome! Open a pull request or start a discussion on [GitHub](https://github.com/reliverse/prompts) if you’d like to help. By the way, this project emphasizes functional programming approaches, avoiding traditional OOP classes.
+Contributions are always welcome! Open a pull request or start a discussion on [GitHub](https://github.com/reliverse/prompts) if you'd like to help. By the way, this project emphasizes functional programming approaches, avoiding traditional OOP classes.
 
 ## License
 

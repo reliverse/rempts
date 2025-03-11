@@ -22,8 +22,8 @@ import { promptsDisplayResults } from "~/main.js";
 import { numSelectPrompt } from "~/main.js";
 import { selectPrompt } from "~/main.js";
 
-import packageJson from "../../package.json" with { type: "json" };
-import { basicConfig, extendedConfig } from "./configs.js";
+import packageJson from "../../../package.json" with { type: "json" };
+import { basicConfig, extendedConfig } from "./cfg.js";
 import {
   calculateAge,
   createColorChoices,
@@ -36,8 +36,6 @@ const pkg = packageJson;
 
 export async function showStartPrompt() {
   await startPrompt({
-    // startPrompt is a special component: if you don't provide
-    // a title, it will display the useful technical information
     ...basicConfig,
     isDev: true,
     titleColor: "inverse",
@@ -101,12 +99,8 @@ export async function showNumberPrompt() {
     title: "[numberPrompt] Enter your age",
     content:
       "“It matters not how long we live but how we live.“ – Philip James Bailey",
-    // Adding a hint helps users understand the expected input format.
     hint: "Try: 42 | Default: 36",
     defaultValue: "36",
-    // Define a schema to validate the input.
-    // Errors are automatically handled and displayed based on the type.
-    // Additional validation can be configured using the 'validate' option.
     validate: (value) => {
       const num = Number(value);
       if (num === 42) {
@@ -119,10 +113,7 @@ export async function showNumberPrompt() {
 }
 
 export async function showInputPromptMasked() {
-  // Initialize `passwordResult` to avoid uninitialized variable errors.
   let password = "silverHand2077";
-  // Wrap password prompts with a try-catch block to handle cancellations,
-  // which otherwise would terminate the process with an error.
   try {
     password = await inputPrompt({
       title: "[inputPrompt, mode: password] Imagine a password",
@@ -138,10 +129,9 @@ export async function showInputPromptMasked() {
       },
     });
   } catch (_error) {
-    process.exit(0);
+    console.error("Input prompt masked cancelled. Returning default password.");
+    return "silverHand2077";
   }
-  // We can set default values for missing responses, especially
-  // for the cases when we allow the user to cancel the prompt.
   return password ?? "silverHand2077";
 }
 
@@ -150,45 +140,9 @@ export async function showDatePrompt() {
     dateKind: "birthday",
     dateFormat: "DD.MM.YYYY",
     title: "[datePrompt] Enter your birthday",
-    // You can set a default value for the prompt if desired.
     defaultValue: "16.11.1988",
   });
   return birthdayDate ?? "16.11.1988";
-}
-
-// Experimental alternative to showDatePrompt
-export async function showDatePromptTwo() {
-  const userDate = await datePrompt({
-    title: "Enter your birthday",
-    dateFormat: "DD.MM.YYYY | MM/DD/YYYY | YYYY.MM.DD",
-    dateKind: "birthday",
-    hint: "Please use one of the specified date formats.",
-    validate: async (input: string) => {
-      // Example custom validation: we ensure the year is not before 1900
-      const parts = input.split(/[./-]/);
-      let year: number;
-      if (input.includes(".")) {
-        if (input.split(".").length === 3 && input.includes("/")) {
-          // Handle multiple separators if necessary
-          year = Number(parts[2]);
-        } else {
-          year = Number(parts[2] || parts[3]);
-        }
-      } else if (input.includes("/")) {
-        year = Number(parts[2]);
-      } else {
-        year = Number(parts[0]);
-      }
-
-      if (year && year < 1900) {
-        return "Year must be 1900 or later.";
-      }
-      return true;
-    },
-    defaultValue: "01.01.2000",
-  });
-
-  console.log(`You entered: ${userDate}`);
 }
 
 export async function showSelectPrompt() {
@@ -196,7 +150,7 @@ export async function showSelectPrompt() {
     title: "[selectPrompt] Choose your language",
     displayInstructions: true,
     content:
-      "“You can have brilliant ideas, but if you can’t get them across, your ideas won’t get you anywhere.” – Lee Iacocca",
+      "“You can have brilliant ideas, but if you can't get them across, your ideas won't get you anywhere.” - Lee Iacocca",
     options: [
       { label: "English", value: "en", hint: "Default" },
       { separator: true, width: 20, symbol: "line" },
@@ -216,10 +170,7 @@ export async function showSelectPrompt() {
     ],
     defaultValue: "en",
     ...extendedConfig,
-    // @reliverse/prompts is a very young library, so something might break.
-    // If you encounter any issues, please report them to the GitHub repository.
-    // By using the debug, you can try to manually handle some of your issues.
-    debug: false, // selectPrompt
+    debug: false,
   });
 
   switch (lang) {
@@ -406,16 +357,9 @@ export async function showConfirmPrompt(username: string) {
     title:
       "[confirmPrompt] Do you want to see spinner and progressbar in action?",
     ...extendedConfig,
-    // Intellisense will show you all available colors thanks to the enum.
     titleColor: "red",
     titleVariant: "doubleBox",
-    // Schema is not required for confirm prompts,
-    // because of boolean nature of the value.
-    // @reliverse/prompts includes styled prompts, with the `title` color defaulting
-    // to "cyanBright". Setting the color to "none" removes the default styling.
     content: "Spinners are helpful for long-running tasks.",
-    // Default value can be set both by the `defaultValue` property,
-    // or by returning the value in your own function like this one.
     defaultValue: true,
   });
 
@@ -424,12 +368,8 @@ export async function showConfirmPrompt(username: string) {
     await showProgressbar();
   }
 
-  // A return value is unnecessary for prompts when the result is not needed later.
   return spinner ?? false;
 }
-
-// Prompt ID is not required for the following
-// components, as they don't return any values.
 
 export async function showSpinner() {
   await spinnerTaskPrompt({
@@ -454,43 +394,25 @@ export async function showProgressbar() {
       "[progressbar] [:bar] :percent% | Elapsed: :elapsed s | ETA: :eta s",
     completeChar: "#",
     incompleteChar: "-",
-    colorize: true, // Enable colorization
-    increment: 5, // Increment by 5
-    desiredTotalTime: 2000, // 2 seconds
+    colorize: true,
+    increment: 5,
+    desiredTotalTime: 2000,
   });
 }
 
 export async function showResults(userInput: any) {
   await promptsDisplayResults({
-    // Display all user input values, e.g.:
-    // ┌──────────────────────────────────────┐
-    // │ Here is your input result:     │
-    // │ {                              │
-    // │   "deps": true,                │
-    // │   "username": "GeraltOfRivia", │
-    // │   "password": "21ytrewq",      │
-    // │   "age": 98,                   │
-    // │   "color": "blue",             │
-    // │   "features": [                │
-    // │      "typescript", "eslint"    │
-    // │   ]                            │
-    // │ }                              │
-    // └────────────────────────────────┘
     results: userInput,
     inline: true,
   });
 }
 
 export async function doSomeFunStuff(userInput: any) {
-  // Just for fun, let's create an age calculator
-  // based on the birthday to verify age accuracy.
   const calculatedAge = calculateAge(userInput.birthday);
   validateAge(calculatedAge, userInput.age, userInput.birthday);
 
-  // Hash the password and update the user input object
   userInput.password = hashPassword(userInput.password);
 
-  // Display user registration information
   displayUserInputs(userInput);
 }
 
