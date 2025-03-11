@@ -10,7 +10,7 @@ const ResultsSchema = Type.Object({
 });
 type ResultsType = Static<typeof ResultsSchema>;
 
-export async function promptsDisplayResults({
+export async function resultPrompt({
   results,
   inline = true,
 }: {

@@ -18,7 +18,7 @@ import {
   inputPrompt,
   togglePrompt,
 } from "~/main.js";
-import { promptsDisplayResults } from "~/main.js";
+import { resultPrompt } from "~/main.js";
 import { numSelectPrompt } from "~/main.js";
 import { selectPrompt } from "~/main.js";
 
@@ -401,7 +401,7 @@ export async function showProgressbar() {
 }
 
 export async function showResults(userInput: any) {
-  await promptsDisplayResults({
+  await resultPrompt({
     results: userInput,
     inline: true,
   });

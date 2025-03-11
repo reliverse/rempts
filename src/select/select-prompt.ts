@@ -1,15 +1,14 @@
 import { re } from "@reliverse/relico";
 import { stdin as input, stdout as output } from "node:process";
 import readline from "node:readline";
-import terminalSize from "terminal-size";
 
 import type { BorderColorName, VariantName } from "~/main.js";
 import type { SelectOption } from "~/types/general.js";
 
-import { streamText } from "~/components/utils/stream-text.js";
 import { deleteLastLine, symbols } from "~/main.js";
 import { msg, type ColorName, type TypographyName } from "~/main.js";
 import { completePrompt } from "~/utils/prompt-end.js";
+import { streamText } from "~/utils/stream-text.js";
 
 type SeparatorOption = {
   separator: true;
@@ -38,7 +37,6 @@ type SelectPromptParams<T extends string> = {
   border?: boolean;
   endTitle?: string;
   endTitleColor?: ColorName;
-  maxItems?: number;
   debug?: boolean;
   terminalWidth?: number;
   displayInstructions?: boolean;
@@ -47,8 +45,8 @@ type SelectPromptParams<T extends string> = {
 };
 
 /**
- * Renders the entire prompt UI by printing each line using `msg()`.
- * Returns the number of interactive UI lines rendered (for clearing during re-renders).
+ * Renders the prompt UI by printing
+ * Returns the number of interactive UI lines rendered
  */
 async function renderPromptUI<T extends string>(params: {
   title: string;
@@ -64,7 +62,6 @@ async function renderPromptUI<T extends string>(params: {
   contentColor: ColorName;
   contentTypography: TypographyName;
   debug: boolean;
-  maxItems?: number;
   titleVariant?: VariantName;
   titleTypography?: TypographyName;
   terminalWidth?: number;
@@ -85,7 +82,6 @@ async function renderPromptUI<T extends string>(params: {
     contentColor,
     contentTypography,
     debug,
-    maxItems,
     titleVariant,
     titleTypography,
     isRerender = false,
@@ -93,13 +89,9 @@ async function renderPromptUI<T extends string>(params: {
     streamDelay = 20,
   } = params;
 
-  const size = terminalSize();
-  const effectiveTerminalHeight = size.rows ?? 24;
-
-  // Only render title and content on first render
+  // Only render title and content on the first render.
   if (!isRerender) {
     if (shouldStream) {
-      // Title with streaming
       deleteLastLine();
       msg({ type: "M_BAR", title: "" });
       await streamText({
@@ -109,7 +101,7 @@ async function renderPromptUI<T extends string>(params: {
         newline: false,
         clearLine: true,
       });
-      process.stdout.write("\r"); // Reset cursor to start of line
+      process.stdout.write("\r");
       msg({
         type: "M_GENERAL",
         title,
@@ -117,22 +109,7 @@ async function renderPromptUI<T extends string>(params: {
         titleVariant,
         titleTypography,
       });
-
-      // Content with streaming
       if (content) {
-        msg({
-          type: "M_NULL",
-          content: "",
-          contentColor,
-          contentTypography,
-        });
-        await streamText({
-          text: content,
-          delay: streamDelay,
-          color: contentColor,
-          newline: false,
-        });
-        deleteLastLine();
         msg({
           type: "M_NULL",
           content,
@@ -141,13 +118,7 @@ async function renderPromptUI<T extends string>(params: {
         });
       }
     } else {
-      // Regular non-streaming render
-      msg({
-        type: "M_GENERAL",
-        title,
-        titleColor,
-      });
-
+      msg({ type: "M_GENERAL", title, titleColor });
       if (content) {
         msg({
           type: "M_NULL",
@@ -160,8 +131,6 @@ async function renderPromptUI<T extends string>(params: {
   }
 
   let uiLineCount = 0;
-
-  // Error or instructions
   if (errorMessage) {
     msg({
       type: "M_ERROR",
@@ -169,78 +138,25 @@ async function renderPromptUI<T extends string>(params: {
     });
     uiLineCount++;
   } else if (allDisabled) {
-    msg({
-      type: "M_ERROR",
-      title: re.redBright("All options are disabled."),
-    });
+    msg({ type: "M_ERROR", title: re.redBright("All options are disabled.") });
     uiLineCount++;
   } else if (displayInstructions && !isRerender) {
-    msg({
-      type: "M_NULL",
-      title: re.blue(instructions),
-    });
+    msg({ type: "M_NULL", title: re.blue(instructions) });
     uiLineCount++;
   }
 
-  // Determine how many items to display
-  const effectiveMaxItems = maxItems
-    ? Math.min(maxItems, options.length)
-    : options.length;
-  const minItems = 3;
-  const displayItems = maxItems
-    ? Math.max(effectiveMaxItems, minItems)
-    : options.length;
-
-  // Calculate start/end indexes for "scrolling"
-  let startIdx = 0;
-  let endIdx = options.length - 1;
-
-  if (maxItems && options.length > displayItems) {
-    const half = Math.floor(displayItems / 2);
-    startIdx = selectedIndex - half;
-    endIdx = selectedIndex + (displayItems - half - 1);
-
-    if (startIdx < 0) {
-      startIdx = 0;
-      endIdx = displayItems - 1;
-    } else if (endIdx >= options.length) {
-      endIdx = options.length - 1;
-      startIdx = options.length - displayItems;
-    }
-  }
-
-  const shouldRenderTopEllipsis = Boolean(maxItems && startIdx > 0);
-  const shouldRenderBottomEllipsis = Boolean(
-    maxItems && endIdx < options.length - 1,
-  );
-
-  if (shouldRenderTopEllipsis) {
-    msg({ type: "M_NULL", title: re.dim("...") });
-    uiLineCount++;
-  }
-
-  // Render options
-  for (
-    let index = startIdx;
-    index <= endIdx && index < options.length;
-    index++
-  ) {
+  // Render all options
+  for (let index = 0; index < options.length; index++) {
     const option = options[index];
     if (!option) continue;
-
     if (!isSelectOption(option)) {
-      // Separator
       const width = option.width ?? 20;
       const symbolKey = option.symbol ?? "line";
       const lineSymbol = symbolKey in symbols ? symbols[symbolKey] : "─";
-      msg({
-        type: "M_NULL",
-        title: re.dim(lineSymbol.repeat(width)),
-      });
+      msg({ type: "M_NULL", title: re.dim(lineSymbol.repeat(width)) });
       uiLineCount++;
       continue;
     }
-
     const isSelected = index === selectedIndex;
     const isDisabled = option.disabled;
     const prefix = isSelected ? re.dim(re.reset("> ")) : "  ";
@@ -249,37 +165,18 @@ async function renderPromptUI<T extends string>(params: {
       : isSelected
         ? re.reset(re.yellow(option.label))
         : re.reset(option.label);
-
     const hint = option.hint
       ? re.reset(
           ` (${isDisabled ? re.dim(option.hint) : re.italic(re.dim(option.hint))})`,
         )
       : "";
-
-    msg({
-      type: "M_NULL",
-      title: `${prefix}${labelColor}${hint}`,
-    });
-    uiLineCount++;
-  }
-
-  if (shouldRenderBottomEllipsis) {
-    msg({ type: "M_NULL", title: re.dim("...") });
+    msg({ type: "M_NULL", title: `${prefix}${labelColor}${hint}` });
     uiLineCount++;
   }
 
   if (debug) {
-    console.log({
-      terminalHeight: effectiveTerminalHeight,
-      computedMaxItems: effectiveMaxItems,
-      displayItems,
-      startIdx,
-      endIdx,
-      shouldRenderTopEllipsis,
-      shouldRenderBottomEllipsis,
-    });
+    console.log({ optionsCount: options.length });
   }
-
   return uiLineCount;
 }
 
@@ -304,7 +201,6 @@ export async function selectPrompt<T extends string>(
     border = true,
     endTitle = "",
     endTitleColor = "dim",
-    maxItems,
     debug = false,
     terminalWidth: customTerminalWidth = 90,
     displayInstructions = false,
@@ -320,13 +216,11 @@ export async function selectPrompt<T extends string>(
           !option.disabled,
       )
     : -1;
-
   if (selectedIndex === -1) {
     selectedIndex = options.findIndex(
       (option) => isSelectOption(option) && !option.disabled,
     );
   }
-
   if (selectedIndex === -1) {
     selectedIndex = 0;
   }
@@ -336,24 +230,20 @@ export async function selectPrompt<T extends string>(
   if (typeof input.setRawMode === "function") {
     input.setRawMode(true);
   }
-
   const instructions =
     "Use <↑/↓> or <k/j> to navigate, <Enter> to select, <Ctrl+C> to exit";
   let errorMessage = "";
   const allDisabled = options.every(
     (option) => isSelectOption(option) && option.disabled,
   );
-
   let lastUILineCount = 0;
 
   function renderOptions() {
-    // Clear only the previous UI lines
     if (lastUILineCount > 0) {
       for (let i = 0; i < lastUILineCount; i++) {
         process.stdout.write("\x1b[1A\x1b[2K");
       }
     }
-    // Print new prompt UI and track its line count
     void renderPromptUI({
       title,
       content,
@@ -368,8 +258,7 @@ export async function selectPrompt<T extends string>(
       contentColor,
       contentTypography,
       debug,
-      ...(maxItems ? { maxItems } : {}),
-      ...(titleVariant ? { titleVariant } : {}),
+      titleVariant,
       titleTypography,
       terminalWidth: customTerminalWidth,
       isRerender: true,
@@ -380,7 +269,6 @@ export async function selectPrompt<T extends string>(
     });
   }
 
-  // Initial render - render everything
   lastUILineCount = await renderPromptUI({
     title,
     content,
@@ -395,8 +283,7 @@ export async function selectPrompt<T extends string>(
     contentColor,
     contentTypography,
     debug,
-    ...(maxItems ? { maxItems } : {}),
-    ...(titleVariant ? { titleVariant } : {}),
+    titleVariant,
     titleTypography,
     terminalWidth: customTerminalWidth,
     isRerender: false,
@@ -413,7 +300,6 @@ export async function selectPrompt<T extends string>(
         }
         return;
       }
-
       if (key.name === "up" || key.name === "k") {
         moveSelectionUp();
       } else if (key.name === "down" || key.name === "j") {
@@ -424,31 +310,24 @@ export async function selectPrompt<T extends string>(
         void endPrompt(true);
       }
     }
-
     function moveSelectionUp() {
       const originalPointer = selectedIndex;
       do {
         selectedIndex = (selectedIndex - 1 + options.length) % options.length;
         const option = options[selectedIndex];
-        if (option && isSelectOption(option) && !option.disabled) {
-          break;
-        }
+        if (option && isSelectOption(option) && !option.disabled) break;
       } while (selectedIndex !== originalPointer);
       renderOptions();
     }
-
     function moveSelectionDown() {
       const originalPointer = selectedIndex;
       do {
         selectedIndex = (selectedIndex + 1) % options.length;
         const option = options[selectedIndex];
-        if (option && isSelectOption(option) && !option.disabled) {
-          break;
-        }
+        if (option && isSelectOption(option) && !option.disabled) break;
       } while (selectedIndex !== originalPointer);
       renderOptions();
     }
-
     async function confirmSelection() {
       const option = options[selectedIndex];
       if (!option || !isSelectOption(option)) {
@@ -456,22 +335,18 @@ export async function selectPrompt<T extends string>(
         renderOptions();
         return;
       }
-
       if (option.disabled) {
         errorMessage = "This option is disabled";
         renderOptions();
         return;
       }
-
       if (required && !option.value) {
         errorMessage = "You must select a valid option.";
         renderOptions();
         return;
       }
-
       cleanup();
       resolve(option.value);
-
       deleteLastLine();
       await completePrompt(
         "select",
@@ -486,7 +361,6 @@ export async function selectPrompt<T extends string>(
         true,
       );
     }
-
     async function endPrompt(isCtrlC = false) {
       await completePrompt(
         "select",
@@ -502,7 +376,6 @@ export async function selectPrompt<T extends string>(
       );
       cleanup(isCtrlC);
     }
-
     function cleanup(isCtrlC = false) {
       if (typeof input.setRawMode === "function") {
         input.setRawMode(false);
@@ -513,7 +386,6 @@ export async function selectPrompt<T extends string>(
         process.exit(0);
       }
     }
-
     input.on("keypress", handleKeypress);
   });
 }

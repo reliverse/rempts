@@ -1,4 +1,4 @@
-import { createMain } from "~/flags/flags-mod.js";
+import { createMain } from "~/launcher/flags-mod.js";
 import { defineCommand } from "~/main.js";
 
 const command = defineCommand({

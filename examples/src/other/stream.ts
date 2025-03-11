@@ -6,7 +6,7 @@ import {
   streamText,
   streamTextBox,
   streamTextWithSpinner,
-} from "~/components/utils/stream-text.js";
+} from "~/utils/stream-text.js";
 
 const main = async () => {
   // Basic text streaming

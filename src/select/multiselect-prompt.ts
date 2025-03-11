@@ -1,7 +1,6 @@
 import { re } from "@reliverse/relico";
 import { stdin as input, stdout as output } from "node:process";
 import readline from "node:readline";
-import terminalSize from "terminal-size";
 
 import type { BorderColorName, SelectOption, VariantName } from "~/main.js";
 
@@ -40,7 +39,6 @@ type MultiselectPromptParams<T extends string> = {
   border?: boolean;
   endTitle?: string;
   endTitleColor?: ColorName;
-  maxItems?: number;
   debug?: boolean;
   terminalWidth?: number;
   displayInstructions?: boolean;
@@ -50,8 +48,8 @@ type MultiselectPromptParams<T extends string> = {
 };
 
 /**
- * Renders the UI for the multiselect prompt using `msg()` for each line.
- * Returns the number of interactive UI lines rendered (for clearing during re-renders).
+ * Renders the UI for the multiselect prompt
+ * Returns the number of interactive UI lines rendered
  */
 function renderPromptUI<T extends string>(params: {
   title: string;
@@ -67,7 +65,6 @@ function renderPromptUI<T extends string>(params: {
   contentColor: ColorName;
   contentTypography: TypographyName;
   debug: boolean;
-  maxItems?: number;
   borderColor: ColorName;
   titleVariant?: VariantName;
   titleTypography?: TypographyName;
@@ -89,18 +86,12 @@ function renderPromptUI<T extends string>(params: {
     contentColor,
     contentTypography,
     debug,
-    maxItems,
     titleVariant,
     titleTypography,
     isRerender = false,
   } = params;
 
-  const size = terminalSize();
-  const effectiveTerminalHeight = size.rows ?? 24;
-
-  // Only render title and content on first render
   if (!isRerender) {
-    // Title
     msg({
       type: "M_NULL",
       title,
@@ -108,8 +99,6 @@ function renderPromptUI<T extends string>(params: {
       ...(titleTypography ? { titleTypography } : {}),
       ...(titleVariant ? { titleVariant } : {}),
     });
-
-    // Content
     if (content) {
       msg({
         type: "M_NULL",
@@ -121,7 +110,6 @@ function renderPromptUI<T extends string>(params: {
   }
 
   let uiLineCount = 0;
-
   if (errorMessage) {
     msg({
       type: "M_NULL",
@@ -129,74 +117,25 @@ function renderPromptUI<T extends string>(params: {
     });
     uiLineCount++;
   } else if (allDisabled) {
-    msg({
-      type: "M_NULL",
-      title: re.redBright("All options are disabled."),
-    });
+    msg({ type: "M_NULL", title: re.redBright("All options are disabled.") });
     uiLineCount++;
   } else if (displayInstructions && !isRerender) {
-    msg({
-      type: "M_NULL",
-      title: re.blue(instructions),
-    });
+    msg({ type: "M_NULL", title: re.blue(instructions) });
     uiLineCount++;
   }
 
-  const effectiveMaxItems = maxItems
-    ? Math.min(maxItems, options.length)
-    : options.length;
-  const minItems = 3;
-  const displayItems = maxItems
-    ? Math.max(effectiveMaxItems, minItems)
-    : options.length;
-
-  let startIdx = 0;
-  let endIdx = options.length - 1;
-  if (maxItems && options.length > displayItems) {
-    const half = Math.floor(displayItems / 2);
-    startIdx = pointer - half;
-    endIdx = pointer + (displayItems - half - 1);
-
-    if (startIdx < 0) {
-      startIdx = 0;
-      endIdx = displayItems - 1;
-    } else if (endIdx >= options.length) {
-      endIdx = options.length - 1;
-      startIdx = options.length - displayItems;
-    }
-  }
-
-  const shouldRenderTopEllipsis = Boolean(maxItems && startIdx > 0);
-  const shouldRenderBottomEllipsis = Boolean(
-    maxItems && endIdx < options.length - 1,
-  );
-
-  if (shouldRenderTopEllipsis) {
-    msg({ type: "M_NULL", title: re.dim("...") });
-    uiLineCount++;
-  }
-
-  // Render options
-  for (
-    let index = startIdx;
-    index <= endIdx && index < options.length;
-    index++
-  ) {
+  // Render all options
+  for (let index = 0; index < options.length; index++) {
     const option = options[index];
     if (!option) continue;
-
     if (!isSelectOption(option)) {
       const width = option.width ?? 20;
       const symbolKey = option.symbol ?? "line";
       const lineSymbol = symbolKey in symbols ? symbols[symbolKey] : "─";
-      msg({
-        type: "M_NULL",
-        title: re.dim(lineSymbol.repeat(width)),
-      });
+      msg({ type: "M_NULL", title: re.dim(lineSymbol.repeat(width)) });
       uiLineCount++;
       continue;
     }
-
     const isSelected = selectedOptions.has(index);
     const isHighlighted = index === pointer;
     const isDisabled = option.disabled;
@@ -207,15 +146,12 @@ function renderPromptUI<T extends string>(params: {
       : isHighlighted
         ? re.reset(re.yellow(option.label))
         : re.reset(option.label);
-
     const hint = option.hint
       ? re.reset(
           ` (${isDisabled ? re.dim(option.hint) : re.gray(option.hint)})`,
         )
       : "";
-
     const formattedCheckbox = isHighlighted ? re.yellow(checkbox) : checkbox;
-
     msg({
       type: "M_NULL",
       title: `${prefix}${formattedCheckbox} ${labelColor}${hint}`,
@@ -223,23 +159,9 @@ function renderPromptUI<T extends string>(params: {
     uiLineCount++;
   }
 
-  if (shouldRenderBottomEllipsis) {
-    msg({ type: "M_NULL", title: re.dim("...") });
-    uiLineCount++;
-  }
-
   if (debug) {
-    console.log({
-      terminalHeight: effectiveTerminalHeight,
-      computedMaxItems: effectiveMaxItems,
-      displayItems,
-      startIdx,
-      endIdx,
-      shouldRenderTopEllipsis,
-      shouldRenderBottomEllipsis,
-    });
+    console.log({ optionsCount: options.length });
   }
-
   return uiLineCount;
 }
 
@@ -260,7 +182,6 @@ export async function multiselectPrompt<T extends string>(
     border = true,
     endTitle = "",
     endTitleColor = "dim",
-    maxItems,
     debug = false,
     terminalWidth: customTerminalWidth = 90,
     displayInstructions = false,
@@ -279,7 +200,6 @@ export async function multiselectPrompt<T extends string>(
             !opt.disabled,
         )
       : 0;
-
   if (pointer === -1) {
     pointer = options.findIndex(
       (opt) => opt && isSelectOption(opt) && !opt.disabled,
@@ -288,7 +208,6 @@ export async function multiselectPrompt<T extends string>(
       pointer = 0;
     }
   }
-
   const selectedOptions = new Set<number>(
     selectAll
       ? options
@@ -308,18 +227,15 @@ export async function multiselectPrompt<T extends string>(
               !options[i].disabled,
           ),
   );
-
   const rl = readline.createInterface({ input, output });
   readline.emitKeypressEvents(input, rl);
   if (typeof input.setRawMode === "function") {
     input.setRawMode(true);
   }
-
   let errorMessage = "";
   const allDisabled = options
     .filter(isSelectOption)
     .every((option) => option.disabled);
-
   const instructions =
     "Use <↑/↓> to navigate, <Space> to toggle, <A> to toggle all";
 
@@ -327,7 +243,6 @@ export async function multiselectPrompt<T extends string>(
     const selectableIndexes = options
       .map((opt, i) => (isSelectOption(opt) && !opt.disabled ? i : -1))
       .filter((i) => i !== -1);
-
     const allSelected = selectableIndexes.every((i) => selectedOptions.has(i));
     if (allSelected) {
       for (const i of selectableIndexes) {
@@ -373,15 +288,12 @@ export async function multiselectPrompt<T extends string>(
   }
 
   let lastUILineCount = 0;
-
   function renderOptions() {
-    // Clear only the previous UI lines
     if (lastUILineCount > 0) {
       for (let i = 0; i < lastUILineCount; i++) {
         process.stdout.write("\x1b[1A\x1b[2K");
       }
     }
-    // Render new lines and track their count
     lastUILineCount = renderPromptUI({
       title,
       content,
@@ -396,17 +308,14 @@ export async function multiselectPrompt<T extends string>(
       contentColor,
       contentTypography,
       debug,
-      ...(maxItems ? { maxItems } : {}),
       borderColor,
-      ...(titleVariant ? { titleVariant } : {}),
-      ...(titleTypography ? { titleTypography } : {}),
+      titleVariant,
+      titleTypography,
       terminalWidth: customTerminalWidth,
       resized: false,
       isRerender: true,
     });
   }
-
-  // Initial render - render everything
   lastUILineCount = renderPromptUI({
     title,
     content,
@@ -421,15 +330,13 @@ export async function multiselectPrompt<T extends string>(
     contentColor,
     contentTypography,
     debug,
-    ...(maxItems ? { maxItems } : {}),
     borderColor,
-    ...(titleVariant ? { titleVariant } : {}),
-    ...(titleTypography ? { titleTypography } : {}),
+    titleVariant,
+    titleTypography,
     terminalWidth: customTerminalWidth,
     resized: false,
     isRerender: false,
   });
-
   return new Promise<T[]>((resolve) => {
     function cleanup(isCtrlC = false) {
       if (typeof input.setRawMode === "function") {
@@ -441,7 +348,6 @@ export async function multiselectPrompt<T extends string>(
         process.exit(0);
       }
     }
-
     async function endPrompt(isCtrlC = false) {
       await completePrompt(
         "multiselect",
@@ -457,24 +363,24 @@ export async function multiselectPrompt<T extends string>(
       );
       cleanup(isCtrlC);
     }
-
     async function confirmSelection() {
       const selectedCount = selectedOptions.size;
-
       if (selectedCount < minSelect) {
         deleteLastLine();
-        errorMessage = `You must select at least ${minSelect} option${minSelect !== 1 ? "s" : ""}.`;
+        errorMessage = `You must select at least ${minSelect} option${
+          minSelect !== 1 ? "s" : ""
+        }.`;
         renderOptions();
         return;
       }
-
       if (maxSelect !== undefined && selectedCount > maxSelect) {
         deleteLastLine();
-        errorMessage = `You can select at most ${maxSelect} option${maxSelect !== 1 ? "s" : ""}.`;
+        errorMessage = `You can select at most ${maxSelect} option${
+          maxSelect !== 1 ? "s" : ""
+        }.`;
         renderOptions();
         return;
       }
-
       const selectedValues = Array.from(selectedOptions)
         .filter((idx) => {
           const opt = options[idx];
@@ -485,10 +391,8 @@ export async function multiselectPrompt<T extends string>(
           return opt && isSelectOption(opt) ? opt.value : null;
         })
         .filter((val): val is T => val !== null && val !== undefined);
-
       cleanup();
       resolve(selectedValues);
-
       deleteLastLine();
       await completePrompt(
         "multiselect",
@@ -503,7 +407,6 @@ export async function multiselectPrompt<T extends string>(
         true,
       );
     }
-
     function handleKeypress(_str: string, key: readline.Key): void {
       if (allDisabled) {
         if (key.name === "c" && key.ctrl) {
@@ -512,20 +415,17 @@ export async function multiselectPrompt<T extends string>(
         }
         return;
       }
-
       switch (key.name) {
         case "up":
         case "k":
           movePointerUp();
           renderOptions();
           break;
-
         case "down":
         case "j":
           movePointerDown();
           renderOptions();
           break;
-
         case "space": {
           const currentOption = options[pointer];
           if (
@@ -545,17 +445,14 @@ export async function multiselectPrompt<T extends string>(
           renderOptions();
           break;
         }
-
         case "return":
           void confirmSelection();
           break;
-
         case "c":
           if (key.ctrl) {
             void endPrompt(true);
           }
           break;
-
         case "a":
           toggleSelectAll();
           errorMessage = "";
@@ -563,7 +460,6 @@ export async function multiselectPrompt<T extends string>(
           break;
       }
     }
-
     input.on("keypress", handleKeypress);
   });
 }

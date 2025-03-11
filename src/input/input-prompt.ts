@@ -16,9 +16,9 @@ import type {
 } from "~/main.js";
 import type { PromptOptions } from "~/main.js";
 
-import { streamText } from "~/components/utils/stream-text.js";
 import { bar, deleteLastLine, msg, msgUndoAll } from "~/main.js";
 import { completePrompt } from "~/utils/prompt-end.js";
+import { streamText } from "~/utils/stream-text.js";
 
 const unicode = isUnicodeSupported();
 const S_MASK = unicode ? "▋" : "*";

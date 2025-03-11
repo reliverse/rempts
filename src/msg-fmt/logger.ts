@@ -1,7 +1,4 @@
-import {
-  streamText,
-  streamTextWithSpinner,
-} from "~/components/utils/stream-text.js";
+import { streamText, streamTextWithSpinner } from "~/utils/stream-text.js";
 
 import { toSolidColor } from "./colors.js";
 import { msg } from "./messages.js";
