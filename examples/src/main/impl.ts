@@ -1,3 +1,5 @@
+import type { UserInput } from "@/src/main/schema.js";
+
 import {
   askDir,
   doSomeFunStuff,
@@ -16,7 +18,6 @@ import {
   showTogglePrompt,
   showDatePrompt,
 } from "@/src/main/prompts.js";
-import { type UserInput } from "@/src/main/schema.js";
 
 /**
  * Union type for available example types.

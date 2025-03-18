@@ -21,7 +21,7 @@ type NumberPromptOptions = {
   hintPlaceholderColor?: ColorName;
   validate?: (
     value: number,
-  ) => string | void | boolean | Promise<string | void | boolean>;
+  ) => string | undefined | boolean | Promise<string | undefined | boolean>;
   defaultValue?: string | number;
   schema?: any;
   titleColor?: ColorName;
@@ -186,7 +186,7 @@ export async function numberPrompt(opts: NumberPromptOptions): Promise<number> {
     });
 
     const num = Number(currentInput);
-    if (isNaN(num)) {
+    if (Number.isNaN(num)) {
       throw new Error("Please enter a valid number.");
     }
 
@@ -196,10 +196,9 @@ export async function numberPrompt(opts: NumberPromptOptions): Promise<number> {
       msg({ type: "M_BAR", borderColor });
       rl.close();
       return num;
-    } else {
-      rl.close();
-      throw new Error(validated.errorMessage || "Invalid input.");
     }
+    rl.close();
+    throw new Error(validated.errorMessage || "Invalid input.");
   }
 
   // Interactive loop
@@ -261,7 +260,7 @@ export async function numberPrompt(opts: NumberPromptOptions): Promise<number> {
 
     // Parse number input
     const num = Number(currentInput);
-    if (isNaN(num)) {
+    if (Number.isNaN(num)) {
       errorMessage = "Please enter a valid number.";
       continue;
     }
@@ -275,10 +274,9 @@ export async function numberPrompt(opts: NumberPromptOptions): Promise<number> {
       msg({ type: "M_BAR", borderColor });
       rl.close();
       return num;
-    } else {
-      // Show error and re-render
-      errorMessage = validated.errorMessage;
     }
+    // Show error and re-render
+    errorMessage = validated.errorMessage;
   }
 }
 
@@ -290,7 +288,7 @@ async function validateInput(
   schema?: any,
   validate?: (
     value: number,
-  ) => string | void | boolean | Promise<string | void | boolean>,
+  ) => string | undefined | boolean | Promise<string | undefined | boolean>,
 ): Promise<{ isValid: boolean; errorMessage: string }> {
   let isValid = true;
   let errorMessage = "";

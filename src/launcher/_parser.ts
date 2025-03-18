@@ -15,14 +15,14 @@ export type Argv<T = Default> = T & {
 };
 
 function toArr(any: any) {
-  return any == undefined ? [] : Array.isArray(any) ? any : [any];
+  return any === undefined ? [] : Array.isArray(any) ? any : [any];
 }
 
 function toVal(out, key, val, opts) {
   let x;
   const old = out[key];
   const nxt = ~opts.string.indexOf(key)
-    ? val == undefined || val === true
+    ? val === undefined || val === true
       ? ""
       : String(val)
     : typeof val === "boolean"
@@ -38,7 +38,7 @@ function toVal(out, key, val, opts) {
           ? x
           : val;
   out[key] =
-    old == undefined ? nxt : Array.isArray(old) ? old.concat(nxt) : [old, nxt];
+    old === undefined ? nxt : Array.isArray(old) ? old.concat(nxt) : [old, nxt];
 }
 
 export function parseRawArgs<T = Default>(

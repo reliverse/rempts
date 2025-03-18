@@ -1,5 +1,6 @@
+import type { SpinnerName } from "cli-spinners";
+
 import { re } from "@reliverse/relico";
-import { type SpinnerName } from "cli-spinners";
 import process from "node:process";
 import ora from "ora";
 import { cursor, erase } from "sisteransi";

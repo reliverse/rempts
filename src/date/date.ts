@@ -253,7 +253,7 @@ export async function datePrompt<T extends TSchema>(
         }
 
         if (
-          isNaN(date.getTime()) ||
+          Number.isNaN(date.getTime()) ||
           date.getFullYear() < 1900 ||
           date > new Date()
         ) {

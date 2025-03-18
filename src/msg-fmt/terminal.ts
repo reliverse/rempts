@@ -18,9 +18,11 @@ export function getTerminalWidth(terminalWidth = 0): number {
 
   if (terminalWidth > 150) {
     return terminalWidth - 40;
-  } else if (terminalWidth > 120) {
+  }
+  if (terminalWidth > 120) {
     return terminalWidth - 30;
-  } else if (terminalWidth > 100) {
+  }
+  if (terminalWidth > 100) {
     return terminalWidth - 20;
   }
   return terminalWidth;

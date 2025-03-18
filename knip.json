@@ -1,30 +1,17 @@
 {
   "$schema": "https://unpkg.com/knip@5/schema.json",
-  "entry": [
-    "eslint.config.js",
-    "build.config.ts",
-    "build.publish.ts",
-    "addons/**/*.ts",
-    "src/main.ts",
-    "examples/launcher.ts",
-    "examples/src/other/cmds/build.ts",
-    "examples/src/other/cmds/debug.ts",
-    "examples/src/other/cmds/deploy.ts",
-    "examples/src/other/args-a.ts",
-    "examples/src/other/args-b.ts",
-    "examples/src/other/different.ts",
-    "examples/src/other/relinka.ts",
-    "examples/src/other/stream.ts"
-  ],
   "project": [
-    "eslint.config.js",
-    "build.config.ts",
-    "build.publish.ts",
-    "addons/**/*.ts",
-    "src/**/*.ts",
-    "examples/**/*.ts"
+    "{src,examples}/**/*.{ts,js}",
+    "*.{config,cfg}.{ts,js}",
+    "reliverse.ts"
+  ],
+  "entry": [
+    "src/main.ts",
+    "*.{config,cfg}.{ts,js}",
+    "examples/launcher.ts",
+    "examples/src/other/**/*.ts"
   ],
   "ignoreExportsUsedInFile": true,
-  "ignore": ["tests-runtime/", "dist-jsr/", "dist-npm/", "dist-libs/"],
-  "ignoreDependencies": ["tinyglobby", "confbox", "destr", "pkg-types"]
+  "ignoreBinaries": ["relidler"],
+  "ignoreDependencies": ["@reliverse/relidler-cfg"]
 }

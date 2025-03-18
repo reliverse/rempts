@@ -126,7 +126,7 @@ export async function numSelectPrompt(opts: NumSelectPromptOptions) {
     }
 
     const num = Number(answer);
-    if (isNaN(num) || num < 1 || num > choices.length) {
+    if (Number.isNaN(num) || num < 1 || num > choices.length) {
       errorMessage = `Please enter a number between 1 and ${choices.length}.`;
       continue;
     }
@@ -163,8 +163,6 @@ export async function numSelectPrompt(opts: NumSelectPromptOptions) {
         await selectedChoice.action();
       }
       return selectedValue;
-    } else {
-      // Will re-prompt in the next iteration
     }
   }
 }

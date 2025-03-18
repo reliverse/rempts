@@ -71,7 +71,7 @@ export type InputPromptOptions = {
   titleVariant?: VariantName;
   validate?: (
     value: string,
-  ) => string | boolean | void | Promise<string | boolean | void>;
+  ) => string | boolean | undefined | Promise<string | boolean | undefined>;
   variantOptions?: unknown;
 } & PromptOptions;
 
@@ -357,7 +357,7 @@ async function validateInput(
   schema?: TSchema,
   validate?: (
     value: string,
-  ) => string | boolean | void | Promise<string | boolean | void>,
+  ) => string | boolean | undefined | Promise<string | boolean | undefined>,
 ): Promise<{ isValid: boolean; errorMessage: string }> {
   let isValid = true;
   let errorMessage = "";

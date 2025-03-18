@@ -112,7 +112,7 @@ export async function numMultiSelectPrompt(opts: NumMultiSelectPromptOptions) {
       const selections = answer.split(",").map((s) => s.trim());
       const invalidSelections = selections.filter((s) => {
         const num = Number(s);
-        return isNaN(num) || num < 1 || num > choices.length;
+        return Number.isNaN(num) || num < 1 || num > choices.length;
       });
 
       if (invalidSelections.length > 0) {

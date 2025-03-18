@@ -29,7 +29,7 @@ export function preventUnsupportedTTY({
  * Prevents EISDIR errors when trying to read Windows home directory as a file
  * @param filePath The file path to check
  */
-export function preventWindowsHomeDirRoot(filePath: string): never | void {
+export function preventWindowsHomeDirRoot(filePath: string): never | undefined {
   // Only apply this prevention on Windows
   if (process.platform !== "win32") {
     return;
