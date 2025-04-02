@@ -28,5 +28,5 @@
   },
 
   "include": ["**/*.ts", "reset.d.ts", "eslint.config.js"],
-  "exclude": ["node_modules", "dist-jsr", "temp-testing", "dist-libs"]
+  "exclude": ["node_modules", "dist-npm", "dist-jsr", "dist-libs"]
 }

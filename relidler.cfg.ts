@@ -1,4 +1,3 @@
-// @ts-expect-error coming soon
 import { defineConfig } from "@reliverse/relidler-cfg";
 
 /**
@@ -7,49 +6,64 @@ import { defineConfig } from "@reliverse/relidler-cfg";
  * @see https://github.com/reliverse/relidler
  */
 export default defineConfig({
+  // Bump configuration
+  bumpDisable: false,
+  bumpFilter: ["package.json", "reliverse.ts"],
+  bumpMode: "autoPatch",
+
   // Common configuration
-  entryFile: "main.ts",
-  entrySrcDir: "src",
-  verbose: false,
-  isCLI: false,
+  commonPubPause: true,
+  commonPubRegistry: "npm-jsr",
+  commonVerbose: false,
 
-  // Publishing options
-  registry: "npm-jsr",
-  pausePublish: false,
-  dryRun: false,
-
-  // Versioning options
-  bump: "autoPatch",
-  disableBump: false,
-
-  // NPM-only config
-  npmDistDir: "dist-npm",
-  npmBuilder: "mkdist",
-  npmOutFilesExt: "js",
-  npmDeclarations: true,
+  // Core configuration
+  coreDeclarations: true,
+  coreEntryFile: "main.ts",
+  coreEntrySrcDir: "src",
+  coreIsCLI: false,
 
   // JSR-only config
-  jsrDistDir: "dist-jsr",
-  jsrBuilder: "jsr",
-  jsrSlowTypes: true,
-  jsrAllowDirty: true,
+  distJsrAllowDirty: true,
+  distJsrBuilder: "jsr",
+  distJsrCopyRootFiles: ["README.md", "LICENSE"],
+  distJsrDirName: "dist-jsr",
+  distJsrDryRun: false,
+  distJsrGenTsconfig: false,
+  distJsrOutFilesExt: "ts",
+  distJsrSlowTypes: true,
 
-  // Build optimization
-  shouldMinify: true,
-  splitting: false,
-  sourcemap: "none",
-  esbuild: "es2023",
-  publicPath: "/",
-  target: "node",
-  format: "esm",
+  // NPM-only config
+  distNpmBuilder: "mkdist",
+  distNpmCopyRootFiles: ["README.md", "LICENSE"],
+  distNpmDirName: "dist-npm",
+  distNpmOutFilesExt: "js",
 
-  // Logger options
-  freshLogFile: true,
-  logFile: "relinka.log",
+  // Libraries Relidler Plugin
+  // Publish specific dirs as separate packages
+  // This feature is experimental at the moment
+  // Please commit your changes before using it
+  libsActMode: "main-and-libs",
+  libsDirDist: "dist-libs",
+  libsDirSrc: "src/libs",
+  libsList: {
+    "@reliverse/rempts-core": {
+      libDeclarations: true,
+      libDescription:
+        "@reliverse/prompts is your modern, type-safe toolkit for building delightful CLI experiences. It's fast, flexible, and built with developer joy in mind. Forget the clutter — this is how CLI should feel.",
+      libDirName: "core",
+      libMainFile: "core/core-main.ts",
+      libPkgKeepDeps: true,
+      libTranspileMinify: true,
+    },
+  },
+
+  // Logger setup
+  logsFileName: "relinka.log",
+  logsFreshFile: true,
 
   // Dependency filtering
-  excludeMode: "patterns-and-devdeps",
-  excludedDependencyPatterns: [
+  rmDepsMode: "patterns-and-devdeps",
+  rmDepsPatterns: [
     "@types",
     "biome",
     "eslint",
@@ -59,12 +73,14 @@ export default defineConfig({
     "@reliverse/config",
   ],
 
-  // Libraries Relidler Plugin
-  // Publish specific dirs as separate packages
-  // This feature is experimental at the moment
-  // Please commit your changes before using it
-  buildPublishMode: "main-project-only",
-  libsDistDir: "dist-libs",
-  libsSrcDir: "src/libs",
-  libs: {},
+  // Build setup
+  transpileEsbuild: "es2023",
+  transpileFormat: "esm",
+  transpileMinify: true,
+  transpilePublicPath: "/",
+  transpileSourcemap: "none",
+  transpileSplitting: false,
+  transpileStub: false,
+  transpileTarget: "node",
+  transpileWatch: false,
 });

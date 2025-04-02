@@ -1,9 +1,10 @@
 import { re } from "@reliverse/relico";
 import { isBunRuntime } from "@reliverse/runtime";
 
-import { errorHandler, selectPrompt } from "~/main.js";
+import { selectPrompt } from "~/main.js";
+import { errorHandler } from "~/main.js";
 
-import { showStartPrompt } from "./src/main/prompts.js";
+import { showStartPrompt } from "./e-src/e-main/prompts.js";
 
 async function examplesRunner() {
   await showStartPrompt();
@@ -56,10 +57,10 @@ async function examplesRunner() {
 
   switch (exampleToRun) {
     case "main":
-      await import("./main.js");
+      await import("./e-main.js");
       break;
     case "spinner":
-      await import("./src/other/spinner.js");
+      await import("./e-src/e-other/spinner.js");
       break;
     case "cmd-a":
       console.clear();

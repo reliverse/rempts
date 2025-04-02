@@ -1,17 +1,6 @@
 {
   "$schema": "https://unpkg.com/knip@5/schema.json",
-  "project": [
-    "{src,examples}/**/*.{ts,js}",
-    "*.{config,cfg}.{ts,js}",
-    "reliverse.ts"
-  ],
-  "entry": [
-    "src/main.ts",
-    "*.{config,cfg}.{ts,js}",
-    "examples/launcher.ts",
-    "examples/src/other/**/*.ts"
-  ],
-  "ignoreExportsUsedInFile": true,
-  "ignoreBinaries": ["relidler"],
-  "ignoreDependencies": ["@reliverse/relidler-cfg"]
+  "project": ["**/*.{ts,js}"],
+  "entry": ["*.{config,cfg}.{ts,js}", "src/main.ts", "src/**/*-main.ts"],
+  "ignore": ["node_modules", "dist-jsr", "dist-npm", "dist-libs"]
 }
