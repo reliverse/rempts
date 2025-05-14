@@ -1178,7 +1178,7 @@ if (isDirectRun) {
       // Use _result or destructure with _ if unused
       // Optional: Log status after editor exits when run directly
       // const { _saved, _filename } = result; // Example if needing to use prefix
-      // relinka("info", `Editor closed. Saved: ${_saved}. File: ${_filename || '[None]'}`);
+      // relinka("log", `Editor closed. Saved: ${_saved}. File: ${_filename || '[None]'}`);
     })
     .catch((error) => {
       // Cleanup terminal state even on unexpected errors before exiting

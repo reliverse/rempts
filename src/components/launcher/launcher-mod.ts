@@ -73,11 +73,11 @@ type CommandMeta = {
  * 2) A lazy import function returning a Promise that resolves to
  *    { default: Command<any> } or directly to a Command instance.
  */
-type SubCommandSpec =
+type CommandSpec =
   | string
   | (() => Promise<{ default: Command<any> } | Command<any>>);
 
-export type SubCommandsMap = Record<string, SubCommandSpec>;
+export type CommandsMap = Record<string, CommandSpec>;
 
 type CommandContext<ARGS> = {
   args: ARGS;
@@ -90,18 +90,76 @@ type DefineCommandOptions<A extends ArgDefinitions = EmptyArgs> = {
   meta?: CommandMeta;
   args?: A;
   run?: CommandRun<InferArgTypes<A>>;
-  subCommands?: SubCommandsMap;
+  /**
+   * Object subcommands for this command.
+   */
+  commands?: CommandsMap;
+  /**
+   * @deprecated Use `commands` instead. Will be removed in a future major version.
+   */
+  subCommands?: CommandsMap;
+  /**
+   * Called before the command runs
+   */
+  onCmdStart?: () => void | Promise<void>;
+  /**
+   * Called after the command finishes
+   */
+  onCmdEnd?: () => void | Promise<void>;
+  /**
+   * @deprecated Use onCmdStart instead
+   */
   setup?: () => void | Promise<void>;
+  /**
+   * @deprecated Use onCmdEnd instead
+   */
   cleanup?: () => void | Promise<void>;
+  /**
+   * Called once per CLI process, before any command/run() is executed
+   */
+  onLauncherStart?: () => void | Promise<void>;
+  /**
+   * Called once per CLI process, after all command/run() logic is finished
+   */
+  onLauncherEnd?: () => void | Promise<void>;
 };
 
 export type Command<A extends ArgDefinitions = EmptyArgs> = {
   meta?: CommandMeta;
   args: A;
   run?: CommandRun<InferArgTypes<A>>;
-  subCommands?: SubCommandsMap;
+  /**
+   * Object subcommands for this command.
+   */
+  commands?: CommandsMap;
+  /**
+   * @deprecated Use `commands` instead. Will be removed in a future major version.
+   */
+  subCommands?: CommandsMap;
+  /**
+   * Called before the command runs
+   */
+  onCmdStart?: () => void | Promise<void>;
+  /**
+   * Called after the command finishes
+   */
+  onCmdEnd?: () => void | Promise<void>;
+  /**
+   * @deprecated Use onCmdStart instead
+   */
   setup?: () => void | Promise<void>;
+  /**
+   * @deprecated Use onCmdEnd instead
+   */
   cleanup?: () => void | Promise<void>;
+  /**
+   * Called once per CLI process, before any command/run() is executed
+   */
+  onLauncherStart?: () => void | Promise<void>;
+  /**
+   * Called once per CLI process, after all command/run() logic is finished
+   */
+  onLauncherEnd?: () => void | Promise<void>;
 };
 
 export type InferArgTypes<A extends ArgDefinitions> = {
@@ -206,7 +264,7 @@ const isDebugMode = process.argv.includes("--debug");
 
 function debugLog(...args: any[]) {
   if (isDebugMode) {
-    relinka("info", "[DEBUG]", ...args);
+    relinka("log", "[DEBUG]", ...args);
   }
 }
 
@@ -226,14 +284,42 @@ function isFlag(str: string): boolean {
 export function defineCommand<A extends ArgDefinitions = EmptyArgs>(
   options: DefineCommandOptions<A>,
 ): Command<A> {
-  return {
+  // Prefer new names, but support legacy as fallback
+  // eslint-disable-next-line @typescript-eslint/no-deprecated
+  const onCmdStart = options.onCmdStart || options.setup;
+  // eslint-disable-next-line @typescript-eslint/no-deprecated
+  const onCmdEnd = options.onCmdEnd || options.cleanup;
+  const onLauncherStart = options.onLauncherStart;
+  const onLauncherEnd = options.onLauncherEnd;
+  // Prefer 'commands', fallback to deprecated 'subCommands'
+  let commands = options.commands;
+  if (!commands) {
+    // subCommands is deprecated, fallback for backward compatibility
+    // eslint-disable-next-line @typescript-eslint/no-deprecated
+    commands = options.subCommands;
+  }
+  const cmdObj = {
     meta: options.meta,
     args: options.args || ({} as A),
     run: options.run,
-    subCommands: options.subCommands,
-    setup: options.setup,
-    cleanup: options.cleanup,
+    commands,
+    onCmdStart,
+    onCmdEnd,
+    onLauncherStart,
+    onLauncherEnd,
+    // Backward-compatible aliases
+    setup: onCmdStart,
+    cleanup: onCmdEnd,
   };
+  // Add deprecated subCommands getter
+  Object.defineProperty(cmdObj, "subCommands", {
+    get() {
+      return this.commands;
+    },
+    enumerable: false,
+    configurable: true,
+  });
+  return cmdObj;
 }
 
 // Helper to get the default CLI name and version from package.json (without org scope)
@@ -278,7 +364,7 @@ export async function showUsage<A extends ArgDefinitions>(
     await getDefaultCliNameAndVersion();
   const cliName = command.meta?.name || fallbackName;
   const cliVersion = command.meta?.version || fallbackVersion;
-  relinka("info", `${cliName}${cliVersion ? ` v${cliVersion}` : ""}`);
+  relinka("log", `${cliName}${cliVersion ? ` v${cliVersion}` : ""}`);
 
   if (parserOptions.metaSettings?.showDescriptionOnMain) {
     let description = command.meta?.description;
@@ -343,7 +429,7 @@ export async function showUsage<A extends ArgDefinitions>(
         );
       }
       if (subCommandNames.length > 0) {
-        relinka("info", "Available commands (run with `help` to see more):");
+        relinka("log", "Available commands (run with `help` to see more):");
         subCommandDefs.forEach(({ name, def }) => {
           const desc = def?.meta?.description ?? "";
           relinka("log", `• ${name}${desc ? ` | ${desc}` : ""}`);
@@ -361,11 +447,12 @@ export async function showUsage<A extends ArgDefinitions>(
       debugLog("Error reading file-based commands:", err);
     }
   } else {
-    // Subcommands defined in the command object
+    // Commands defined in the command object
     const subCommandNames: string[] = [];
     const subCommandDefs: { name: string; def: any }[] = [];
-    if (command.subCommands) {
-      for (const [name, spec] of Object.entries(command.subCommands)) {
+    const objectCommands = command.commands;
+    if (objectCommands) {
+      for (const [name, spec] of Object.entries(objectCommands)) {
         try {
           const cmd = await loadSubCommand(spec);
           if (!cmd?.meta?.hidden) {
@@ -376,7 +463,7 @@ export async function showUsage<A extends ArgDefinitions>(
             subCommandDefs.push({ name, def: cmd });
           }
         } catch (err) {
-          debugLog(`Error loading subcommand ${name}:`, err);
+          debugLog(`Error loading command ${name}:`, err);
         }
       }
     }
@@ -401,7 +488,7 @@ export async function showUsage<A extends ArgDefinitions>(
     }
 
     if (subCommandNames.length > 0) {
-      relinka("info", "Available commands (run with `help` to see more):");
+      relinka("log", "Available commands (run with `help` to see more):");
       subCommandDefs.forEach(({ name, def }) => {
         const desc = def?.meta?.description ?? "";
         relinka("log", `• ${name}${desc ? ` | ${desc}` : ""}`);
@@ -412,7 +499,7 @@ export async function showUsage<A extends ArgDefinitions>(
   }
 
   // Common options
-  relinka("info", "Available options:");
+  relinka("log", "Available options:");
   relinka("log", "• -h, --help    | Show help");
   relinka("log", "• -v, --version | Show version");
   relinka("log", "• --debug       | Enable debug mode");
@@ -443,11 +530,11 @@ export async function showUsage<A extends ArgDefinitions>(
 /**
  * Primary entry point to run a command. This function supports:
  *
- * - File-based Subcommands: scanning for subcommands within a given commands root.
- * - SubCommands defined within the command object.
+ * - File-based Commands: scanning for commands within a given commands root.
+ * - Commands defined within the command object.
  * - Standard flags like --help, --version, and --debug.
  *
- * This function passes along remaining arguments to subcommand runners to ensure
+ * This function passes along remaining arguments to command runners to ensure
  * consistent parsing.
  */
 export async function runMain<A extends ArgDefinitions = EmptyArgs>(
@@ -460,180 +547,189 @@ export async function runMain<A extends ArgDefinitions = EmptyArgs>(
     };
   } = {},
 ) {
-  // If fileBasedCmds is not provided and no subCommands, enable file-based commands with default path
-  // If not provided and subCommands exist, do not enable file-based commands
-  if (!parserOptions.fileBasedCmds && !command.subCommands) {
-    // Determine the file where runMain was called from
-    let callerDir = process.cwd();
-    let callerFile: string | undefined;
-    try {
-      const err = new Error();
-      const stack = err.stack?.split("\n");
-      if (stack) {
-        for (const line of stack) {
-          const match =
-            /\((.*):(\d+):(\d+)\)/.exec(line) ||
-            /at (.*):(\d+):(\d+)/.exec(line);
-          if (match?.[1] && !match[1].includes("launcher-mod")) {
-            callerFile = match[1];
-            break;
+  if (typeof command.onLauncherStart === "function")
+    await command.onLauncherStart();
+  try {
+    // - If fileBasedCmds is not provided and no `commands`, enable file-based commands with default path
+    // - If not provided and `commands` exist, do not enable file-based commands
+    if (!parserOptions.fileBasedCmds && !command.commands) {
+      // Determine the file where runMain was called from
+      let callerDir = process.cwd();
+      let callerFile: string | undefined;
+      try {
+        const err = new Error();
+        const stack = err.stack?.split("\n");
+        if (stack) {
+          for (const line of stack) {
+            const match =
+              /\((.*):(\d+):(\d+)\)/.exec(line) ||
+              /at (.*):(\d+):(\d+)/.exec(line);
+            if (match?.[1] && !match[1].includes("launcher-mod")) {
+              callerFile = match[1];
+              break;
+            }
           }
         }
-      }
-      if (callerFile) {
-        callerDir = path.dirname(callerFile);
-        // Prevent runMain in file-based subcommands (e.g., app/<sub>/cmd.ts or cmd.js)
-        const rel = path.relative(process.cwd(), callerFile);
-        if (/app[/][^/]+[/]cmd\.(ts|js)$/.test(rel)) {
-          relinka(
-            "error",
-            `runMain() should not be called from a file-based subcommand: ${rel}\nThis can cause recursion or unexpected behavior.\nMove your runMain() call to your main CLI entry file.`,
-          );
-          process.exit(1);
+        if (callerFile) {
+          callerDir = path.dirname(callerFile);
+          // Prevent runMain in file-based commands (e.g., app/<cmd>/cmd.ts or cmd.js)
+          const rel = path.relative(process.cwd(), callerFile);
+          if (/app[/][^/]+[/]cmd\.(ts|js)$/.test(rel)) {
+            relinka(
+              "error",
+              `runMain() should not be called from a file-based subcommand: ${rel}\nThis can cause recursion or unexpected behavior.\nMove your runMain() call to your main CLI entry file.`,
+            );
+            process.exit(1);
+          }
+          // Prevent runMain in any subcommand file (non-file-based logic)
+          // If the caller file is not the main entry script (process.argv[1]), warn and exit
+          const mainEntry = process.argv[1]
+            ? path.resolve(process.argv[1])
+            : undefined;
+          if (mainEntry && path.resolve(callerFile) !== mainEntry) {
+            relinka(
+              "error",
+              `runMain() should only be called from your main CLI entry file.\nDetected: ${callerFile}\nMain entry: ${mainEntry}\nThis can cause recursion or unexpected behavior.`,
+            );
+            process.exit(1);
+          }
         }
-        // Prevent runMain in any subcommand file (non-file-based logic)
-        // If the caller file is not the main entry script (process.argv[1]), warn and exit
-        const mainEntry = process.argv[1]
-          ? path.resolve(process.argv[1])
-          : undefined;
-        if (mainEntry && path.resolve(callerFile) !== mainEntry) {
-          relinka(
-            "error",
-            `runMain() should only be called from your main CLI entry file.\nDetected: ${callerFile}\nMain entry: ${mainEntry}\nThis can cause recursion or unexpected behavior.`,
-          );
-          process.exit(1);
-        }
+      } catch (_e) {
+        /* empty */
       }
-    } catch (_e) {
-      /* empty */
+      const defaultCmdsRoot = path.resolve(callerDir, "app");
+      parserOptions.fileBasedCmds = {
+        enable: true,
+        cmdsRootPath: defaultCmdsRoot,
+      };
     }
-    const defaultCmdsRoot = path.resolve(callerDir, "app");
-    parserOptions.fileBasedCmds = {
-      enable: true,
-      cmdsRootPath: defaultCmdsRoot,
-    };
-  }
 
-  const rawArgv = process.argv.slice(2);
-  const autoExit = parserOptions.autoExit !== false;
+    const rawArgv = process.argv.slice(2);
+    const autoExit = parserOptions.autoExit !== false;
 
-  // Only throw if fileBasedCmds is not enabled, and there are no subCommands and no run handler
-  if (
-    !(
-      parserOptions.fileBasedCmds?.enable ||
-      (command.subCommands && Object.keys(command.subCommands).length > 0) ||
-      command.run
-    )
-  ) {
-    relinka(
-      "error",
-      "Invalid CLI configuration: No file-based commands, subCommands, or run() handler are defined. This CLI will not do anything.\n" +
-        "│   To fix: add file-based commands (./app), or provide at least one subCommand or a run() handler.",
-    );
-    process.exit(1);
-  }
-
-  // Handle 'help' as a special subcommand (acts like --help)
-  if (rawArgv[0] === "help") {
-    await showUsage(command, parserOptions);
-    if (autoExit) process.exit(0);
-    return;
-  }
-
-  // @reliverse/relinka [1/2]
-  await relinkaConfig;
-
-  if (checkHelp(rawArgv)) {
-    await showUsage(command, parserOptions);
-    if (autoExit) process.exit(0);
-    return;
-  }
-  if (checkVersion(rawArgv)) {
-    if (command.meta?.name) {
+    // Only throw if fileBasedCmds is not enabled, and there are no subCommands and no run handler
+    if (
+      !(
+        parserOptions.fileBasedCmds?.enable ||
+        (command.commands && Object.keys(command.commands).length > 0) ||
+        command.run
+      )
+    ) {
       relinka(
-        "info",
-        `${command.meta?.name} ${command.meta?.version ? `v${command.meta?.version}` : ""}`,
+        "error",
+        "Invalid CLI configuration: No file-based commands, subCommands, or run() handler are defined. This CLI will not do anything.\n" +
+          "│   To fix: add file-based commands (./app), or provide at least one subCommand or a run() handler.",
       );
+      process.exit(1);
     }
-    if (autoExit) process.exit(0);
-    return;
-  }
 
-  const fileBasedEnabled = parserOptions.fileBasedCmds?.enable;
-
-  // Handle file-based subcommand if enabled
-  if (fileBasedEnabled && rawArgv.length > 0 && !isFlag(rawArgv[0])) {
-    const [subName, ...subCmdArgv] = rawArgv;
-    try {
-      if (typeof command.setup === "function") await command.setup();
-      await runFileBasedSubCmd(
-        subName,
-        subCmdArgv,
-        parserOptions.fileBasedCmds,
-        parserOptions,
-        command.cleanup,
-      );
+    // Handle 'help' as a special subcommand (acts like --help)
+    if (rawArgv[0] === "help") {
+      await showUsage(command, parserOptions);
       if (autoExit) process.exit(0);
       return;
-    } catch (err: any) {
-      relinka("error", "Error loading file-based subcommand:", err.message);
-      if (autoExit) process.exit(1);
-      throw err;
     }
-  }
 
-  // Handle command object subcommands
-  if (
-    !fileBasedEnabled &&
-    command.subCommands &&
-    rawArgv.length > 0 &&
-    !isFlag(rawArgv[0])
-  ) {
-    const [maybeSub, ...subCmdArgv] = rawArgv;
-    let subSpec: SubCommandSpec | undefined;
-    for (const [key, spec] of Object.entries(command.subCommands)) {
-      if (key === maybeSub) {
-        subSpec = spec;
-        break;
-      }
-      try {
-        const cmd = await loadSubCommand(spec);
-        if (cmd.meta.aliases?.includes(maybeSub)) {
-          subSpec = spec;
-          break;
-        }
-      } catch (err) {
-        debugLog(`Error checking alias for subcommand ${key}:`, err);
-      }
+    // @reliverse/relinka [1/2]
+    await relinkaConfig;
+
+    if (checkHelp(rawArgv)) {
+      await showUsage(command, parserOptions);
+      if (autoExit) process.exit(0);
+      return;
     }
-    if (subSpec) {
+    if (checkVersion(rawArgv)) {
+      if (command.meta?.name) {
+        relinka(
+          "log",
+          `${command.meta?.name} ${command.meta?.version ? `v${command.meta?.version}` : ""}`,
+        );
+      }
+      if (autoExit) process.exit(0);
+      return;
+    }
+
+    const fileBasedEnabled = parserOptions.fileBasedCmds?.enable;
+
+    // Handle file-based subcommand if enabled
+    if (fileBasedEnabled && rawArgv.length > 0 && !isFlag(rawArgv[0])) {
+      const [subName, ...subCmdArgv] = rawArgv;
       try {
-        if (typeof command.setup === "function") await command.setup();
-        await runSubCommand(
-          subSpec,
+        if (typeof command.onCmdStart === "function")
+          await command.onCmdStart();
+        await runFileBasedSubCmd(
+          subName,
           subCmdArgv,
+          parserOptions.fileBasedCmds,
           parserOptions,
-          command.cleanup,
+          command.onCmdEnd,
         );
         if (autoExit) process.exit(0);
         return;
       } catch (err: any) {
-        relinka("error", "Error running subcommand:", err.message);
+        relinka("error", "Error loading file-based subcommand:", err.message);
         if (autoExit) process.exit(1);
         throw err;
       }
     }
-  }
 
-  if (typeof command.setup === "function") await command.setup();
-  try {
-    await runCommandWithArgs(command, rawArgv, parserOptions);
+    // Handle command object subcommands
+    if (
+      !fileBasedEnabled &&
+      command.commands &&
+      rawArgv.length > 0 &&
+      !isFlag(rawArgv[0])
+    ) {
+      const [maybeSub, ...subCmdArgv] = rawArgv;
+      let subSpec: CommandSpec | undefined;
+      for (const [key, spec] of Object.entries(command.commands)) {
+        if (key === maybeSub) {
+          subSpec = spec;
+          break;
+        }
+        try {
+          const cmd = await loadSubCommand(spec);
+          if (cmd.meta.aliases?.includes(maybeSub)) {
+            subSpec = spec;
+            break;
+          }
+        } catch (err) {
+          debugLog(`Error checking alias for command ${key}:`, err);
+        }
+      }
+      if (subSpec) {
+        try {
+          if (typeof command.onCmdStart === "function")
+            await command.onCmdStart();
+          await runSubCommand(
+            subSpec,
+            subCmdArgv,
+            parserOptions,
+            command.onCmdEnd,
+          );
+          if (autoExit) process.exit(0);
+          return;
+        } catch (err: any) {
+          relinka("error", "Error running subcommand:", err.message);
+          if (autoExit) process.exit(1);
+          throw err;
+        }
+      }
+    }
+
+    // For main run() handler, do NOT call onCmdStart/onCmdEnd
+    try {
+      await runCommandWithArgs(command, rawArgv, parserOptions);
+    } finally {
+      // No onCmdEnd here
+    }
+
+    // @reliverse/relinka [2/2]
+    await relinkaShutdown();
   } finally {
-    if (typeof command.cleanup === "function") await command.cleanup();
+    if (typeof command.onLauncherEnd === "function")
+      await command.onLauncherEnd();
   }
-
-  // @reliverse/relinka [2/2]
-  await relinkaShutdown();
 }
 
 // -------------------------
@@ -651,7 +747,7 @@ function checkVersion(argv: string[]): boolean {
 /**
  * Loads a subcommand given its specification.
  */
-async function loadSubCommand(spec: SubCommandSpec): Promise<Command<any>> {
+async function loadSubCommand(spec: CommandSpec): Promise<Command<any>> {
   if (typeof spec === "string") {
     const mod = await import(spec);
     if (!mod.default) {
@@ -678,7 +774,7 @@ async function runFileBasedSubCmd(
   argv: string[],
   fileCmdOpts: FileBasedCmdsOptions,
   parserOptions: ReliArgParserOptions & { autoExit?: boolean },
-  parentCleanup?: () => void | Promise<void>,
+  parentFinish?: () => void | Promise<void>,
 ) {
   const subPathDir = path.join(fileCmdOpts.cmdsRootPath, subName);
   let importPath: string | undefined;
@@ -736,24 +832,24 @@ async function runFileBasedSubCmd(
   try {
     await runCommandWithArgs(subCommand, argv, parserOptions);
   } finally {
-    if (typeof parentCleanup === "function") await parentCleanup();
+    if (typeof parentFinish === "function") await parentFinish();
   }
 }
 
 /**
- * Runs a subcommand specified by a SubCommandSpec using the provided argv.
+ * Runs a subcommand specified by a CommandSpec using the provided argv.
  */
 async function runSubCommand(
-  spec: SubCommandSpec,
+  spec: CommandSpec,
   argv: string[],
   parserOptions: ReliArgParserOptions & { autoExit?: boolean },
-  parentCleanup?: () => void | Promise<void>,
+  parentFinish?: () => void | Promise<void>,
 ) {
   const subCommand = await loadSubCommand(spec);
   try {
     await runCommandWithArgs(subCommand, argv, parserOptions);
   } finally {
-    if (typeof parentCleanup === "function") await parentCleanup();
+    if (typeof parentFinish === "function") await parentFinish();
   }
 }
 
@@ -876,7 +972,7 @@ async function runCommandWithArgs<A extends ArgDefinitions>(
       // No 'run' function. Check if this is a dispatcher expecting a subcommand.
       const isDispatcher =
         parserOptions.fileBasedCmds?.enable ||
-        (command.subCommands && Object.keys(command.subCommands).length > 0);
+        (command.commands && Object.keys(command.commands).length > 0);
 
       // No subcommand was provided if leftoverPositionals is empty,
       // AND this command itself doesn't define its own positional arguments that might have been consumed.
@@ -966,4 +1062,112 @@ export function defineArgs<A extends ArgDefinitions>(
   args: A & ValidateArrayDefaults<A>,
 ): A {
   return args;
+}
+
+/**
+ * Programmatically run a command's run() handler with parsed arguments.
+ * Does not handle subcommands, file-based commands, or global hooks.
+ * Suitable for use in demos, tests, or programmatic invocation.
+ *
+ * @param command The command definition (from defineCommand)
+ * @param argv The argv array to parse (default: [])
+ * @param parserOptions Optional reliArgParser options
+ */
+export async function runCmd<A extends ArgDefinitions = EmptyArgs>(
+  command: Command<A>,
+  argv: string[] = [],
+  parserOptions: ReliArgParserOptions = {},
+) {
+  // Prepare boolean keys and default values from command argument definitions.
+  const booleanKeys = Object.keys(command.args || {}).filter(
+    (k) => command.args[k].type === "boolean",
+  );
+  const defaultMap: Record<string, any> = {};
+  for (const [argKey, def] of Object.entries(command.args || {})) {
+    if (def.default !== undefined) {
+      if (def.type === "array" && typeof def.default === "string") {
+        defaultMap[argKey] = [def.default];
+      } else {
+        defaultMap[argKey] = def.default;
+      }
+    }
+  }
+
+  const mergedParserOptions: ReliArgParserOptions = {
+    ...parserOptions,
+    boolean: [...(parserOptions.boolean || []), ...booleanKeys],
+    defaults: { ...defaultMap, ...(parserOptions.defaults || {}) },
+  };
+
+  const parsed = reliArgParser(argv, mergedParserOptions);
+  debugLog("Parsed arguments (runCmd):", parsed);
+
+  const finalArgs: Record<string, any> = {};
+
+  const positionalKeys = Object.keys(command.args || {}).filter(
+    (k) => command.args[k].type === "positional",
+  );
+  const leftoverPositionals = [...(parsed._ || [])];
+
+  // Process positional arguments.
+  for (let i = 0; i < positionalKeys.length; i++) {
+    const key = positionalKeys[i];
+    const def = command.args?.[key] as any;
+    const val = leftoverPositionals[i];
+    if (val == null && def.required) {
+      throw new Error(`Missing required positional argument: <${key}>`);
+    }
+    finalArgs[key] = val != null ? castArgValue(def, val, key) : def.default;
+  }
+
+  // Process non-positional arguments.
+  const otherKeys = Object.keys(command.args || {}).filter(
+    (k) => command.args[k].type !== "positional",
+  );
+  for (const key of otherKeys) {
+    const def = command.args?.[key];
+    let rawVal = parsed[key];
+
+    // Ensure array type when needed.
+    if (
+      def.type === "array" &&
+      rawVal !== undefined &&
+      !Array.isArray(rawVal)
+    ) {
+      rawVal = [rawVal];
+    }
+
+    // Check requirement before casting (default might satisfy it)
+    const valueOrDefault = rawVal ?? defaultMap[key];
+    if (valueOrDefault == null && def.required) {
+      throw new Error(`Missing required argument: --${key}`);
+    }
+
+    // Cast the raw value (or let default handle if rawVal is null/undefined)
+    finalArgs[key] = castArgValue(def, rawVal, key);
+
+    // Validate against options if provided and value exists
+    if (def.type === "array" && def.options && finalArgs[key]) {
+      const values = finalArgs[key] as string[];
+      const invalidOptions = values.filter(
+        (v) => def.options && !def.options.includes(v),
+      );
+      if (invalidOptions.length > 0) {
+        throw new Error(
+          `Invalid choice(s) for --${key}: ${invalidOptions.join(", ")}. Allowed options: ${def.options.join(", ")}`,
+        );
+      }
+    }
+  }
+
+  const ctx: CommandContext<InferArgTypes<A>> = {
+    args: finalArgs as InferArgTypes<A>,
+    raw: argv,
+  };
+
+  if (typeof command.run === "function") {
+    await command.run(ctx);
+  } else {
+    throw new Error("Command has no run() handler.");
+  }
 }

@@ -23,7 +23,7 @@ const main = defineCommand({
   cleanup() {
     relinka("success", "Cleanup");
   },
-  subCommands: {
+  commands: {
     build: () => import("./app/build/cmd.js").then((r) => r.default),
     deploy: () => import("./app/deploy/cmd.js").then((r) => r.default),
     debug: () => import("./app/debug/cmd.js").then((r) => r.default),

@@ -135,7 +135,7 @@ function renderPromptUI<T extends string>(params: {
   }
 
   if (debug) {
-    relinka("info", "", { optionsCount: options.length });
+    relinka("log", "", { optionsCount: options.length });
   }
   return uiLineCount;
 }

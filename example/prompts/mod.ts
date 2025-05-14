@@ -5,10 +5,18 @@ import { re } from "@reliverse/relico";
 import { relinka } from "@reliverse/relinka";
 import { isBunRuntime } from "@reliverse/runtime";
 
-import { defineCommand, multiselectPrompt, selectPrompt } from "~/mod.js";
+import { getCmdHooks } from "@/launcher/app/cmds.js";
+import { runCmd } from "~/components/launcher/launcher-mod.js";
+import {
+  defineCommand,
+  multiselectPrompt,
+  runMain,
+  selectPrompt,
+} from "~/mod.js";
 
 import type { UserInput } from "./impl/schema.js";
 
+// import { spinnerCmd } from "../launcher/app/spinner/cmd.js";
 import {
   DEFAULT_USER_INPUT,
   EXAMPLE_OPTIONS,
@@ -23,7 +31,7 @@ import { showAnykeyPrompt, showStartPrompt } from "./impl/prompts.js";
  * Main example function that orchestrates the entire demo.
  * Collects user input and displays various UI components.
  */
-export default defineCommand({
+const main = defineCommand({
   meta: {
     name: "e-prompts",
     version: "1.0.0",
@@ -89,32 +97,33 @@ export default defineCommand({
       case "main":
         await fullFeaturedExample();
         break;
-      case "spinner":
-        await import("example/launcher/app/spinner/cmd.js");
+      case "spinner": {
+        await runCmd(await getCmdHooks(), ["--flag"]);
         break;
+      }
       case "cmd-a":
         relinka("clear", "");
         relinka(
-          "info",
+          "log",
           "`bun example/app/e-other/args-a.ts Alice --friendly --age 22 --adj cool`",
         );
-        relinka("info", "Run without any arguments to see the help message.");
+        relinka("log", "Run without any arguments to see the help message.");
         break;
       case "cmd-b":
         relinka("clear", "");
         relinka(
-          "info",
+          "log",
           "1. [BUILD] `bun example/app/e-other/args-b.ts build ./src --workDir ./src`",
         );
         relinka(
-          "info",
+          "log",
           "2. [DEBUG] `bun example/app/e-other/args-b.ts debug --feature database-query`",
         );
         relinka(
-          "info",
+          "log",
           "3. [DEPLOY] `bun example/app/e-other/args-b.ts deploy --include '*.js' --exclude '*.d.ts'`",
         );
-        relinka("info", "Run without any arguments to see the help message.");
+        relinka("log", "Run without any arguments to see the help message.");
         break;
       case "exit":
       case "task":
@@ -125,6 +134,8 @@ export default defineCommand({
     }
   },
 });
+
+await runMain(main);
 
 async function fullFeaturedExample() {
   await showStartPrompt();

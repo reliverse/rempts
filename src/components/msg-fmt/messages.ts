@@ -35,7 +35,10 @@ export const symbols: Symbols = {
   step_active: u("◆", "♦"),
   step_error: u("🗴", "x"),
   info: u("ℹ", "i"),
+  log: u("│", "|"),
   success: u("✅", "✓"),
+  warn: u("⚠", "!"),
+  error: u("❌", "x"),
 };
 
 /**
@@ -468,8 +471,8 @@ export function msgUndoAll(): void {
 export function printLineBar(text: string, indent = 2) {
   if (text === "") {
     // Just print a single bar
-    relinka("info", re.dim("│"));
+    relinka("log", re.dim("│"));
   } else {
-    relinka("info", `${re.dim("│")}${" ".repeat(indent)}${text}`);
+    relinka("log", `${re.dim("│")}${" ".repeat(indent)}${text}`);
   }
 }

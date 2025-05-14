@@ -370,8 +370,11 @@ export type SymbolName =
   | "corner_top_right"
   | "step_active"
   | "step_error"
+  | "log"
+  | "success"
   | "info"
-  | "success";
+  | "warn"
+  | "error";
 
 export type Symbols = Record<SymbolName, string>;
 

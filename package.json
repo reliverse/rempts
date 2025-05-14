@@ -1,7 +1,7 @@
 {
   "name": "@reliverse/rempts",
   "author": "reliverse",
-  "version": "1.7.0",
+  "version": "1.7.2",
   "type": "module",
   "license": "MIT",
   "keywords": [
@@ -30,8 +30,8 @@
   "dependencies": {
     "@figliolia/chalk-animation": "^1.0.4",
     "@reliverse/reliarg": "^1.0.3",
-    "@reliverse/relico": "^1.1.1",
-    "@reliverse/relinka": "^1.4.3",
+    "@reliverse/relico": "^1.1.2",
+    "@reliverse/relinka": "^1.4.5",
     "@reliverse/runtime": "^1.0.3",
     "ansi-escapes": "^7.0.0",
     "c12": "^3.0.3",
@@ -61,14 +61,14 @@
     "@types/bun": "^1.2.13",
     "@types/figlet": "^1.7.0",
     "@types/fs-extra": "^11.0.4",
-    "@types/node": "^22.15.17",
+    "@types/node": "^22.15.18",
     "@types/terminal-kit": "^2.5.7",
     "@types/wrap-ansi": "^8.1.0",
     "eslint": "^9.26.0",
     "eslint-plugin-no-relative-import-paths": "^1.6.1",
     "eslint-plugin-perfectionist": "^4.13.0",
     "jiti": "^2.4.2",
-    "knip": "^5.55.1",
+    "knip": "^5.56.0",
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.32.1",
     "vitest": "^3.1.3"

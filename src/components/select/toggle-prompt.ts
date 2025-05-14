@@ -104,7 +104,7 @@ function renderTogglePrompt<T extends string>(params: {
   uiLineCount++;
 
   if (debug) {
-    relinka("info", "", {
+    relinka("log", "", {
       selectedIndex,
       displayOptions: options,
     });

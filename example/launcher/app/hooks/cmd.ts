@@ -1,11 +1,9 @@
-import { relinka } from "@reliverse/relinka";
-
+import { useSpinner } from "~/hooks/spinner/spinner-mod.js";
 import {
   defineCommand,
   colorize,
   createAsciiArt,
   msg,
-  spinnerTaskPrompt,
   endPrompt,
   inputPrompt,
   selectPrompt,
@@ -14,14 +12,12 @@ import {
 
 export default defineCommand({
   meta: {
-    name: "spinner",
-    description: "spinner example",
+    name: "hooks",
+    description: "hooks example",
   },
   async run() {
-    relinka("clear", "");
-
     await startPrompt({
-      title: "Spinner Component Example",
+      title: "Hooks Example",
       titleColor: "passionGradient",
       titleTypography: "bold",
     });
@@ -59,21 +55,30 @@ export default defineCommand({
       ],
     });
 
-    await spinnerTaskPrompt({
-      initialMessage: "Checking your answer...",
-      successMessage: `Nice work ${playerName}. That's a legit answer!`,
-      errorMessage: `🫠  Game over, ${playerName}! You lose!`,
-      delay: 100,
-      spinnerSolution: "ora",
-      spinnerType: "arc",
-      action: async (updateMessage) => {
-        const isCorrect = answer === "Dec 4th, 1995";
-        if (!isCorrect) {
-          updateMessage(`🫠  Game over, ${playerName}! You lose!`);
-          process.exit(1);
-        }
-      },
-    });
+    // --- Spinner demo using useSpinner ---
+    const spinner = useSpinner({ text: "Checking your answer..." }).start();
+    await new Promise((resolve) => setTimeout(resolve, 1200));
+    const isCorrect = answer === "Dec 4th, 1995";
+    if (isCorrect) {
+      spinner.setText(`Nice work ${playerName}. That's a legit answer!`);
+      await new Promise((resolve) => setTimeout(resolve, 600));
+      spinner.stop();
+      msg({
+        type: "M_INFO",
+        title: `Nice work ${playerName}. That's a legit answer!`,
+        titleColor: "cyan",
+      });
+    } else {
+      spinner.setText(`🫠  Game over, ${playerName}! You lose!`);
+      await new Promise((resolve) => setTimeout(resolve, 600));
+      spinner.stop();
+      msg({
+        type: "M_ERROR",
+        title: `🫠  Game over, ${playerName}! You lose!`,
+        titleColor: "red",
+      });
+      process.exit(1);
+    }
 
     const companyAnswer = await selectPrompt({
       title: "Which company created JavaScript?",
@@ -85,21 +90,32 @@ export default defineCommand({
       ],
     });
 
-    await spinnerTaskPrompt({
-      initialMessage: "Which company created JavaScript?",
-      successMessage: "Correct! Netscape created JavaScript.",
-      errorMessage: "Wrong! Netscape created JavaScript.",
-      delay: 100,
-      spinnerSolution: "ora",
-      spinnerType: "arc",
-      action: async (updateMessage) => {
-        const isCorrect = companyAnswer === "Netscape";
-        if (!isCorrect) {
-          updateMessage("Wrong answer!");
-          process.exit(1);
-        }
-      },
-    });
+    // --- Spinner demo using useSpinner for company question ---
+    const spinner2 = useSpinner({
+      text: "Which company created JavaScript?",
+    }).start();
+    await new Promise((resolve) => setTimeout(resolve, 1200));
+    const isCompanyCorrect = companyAnswer === "Netscape";
+    if (isCompanyCorrect) {
+      spinner2.setText("Correct! Netscape created JavaScript.");
+      await new Promise((resolve) => setTimeout(resolve, 600));
+      spinner2.stop();
+      msg({
+        type: "M_INFO",
+        title: "Correct! Netscape created JavaScript.",
+        titleColor: "cyan",
+      });
+    } else {
+      spinner2.setText("Wrong! Netscape created JavaScript.");
+      await new Promise((resolve) => setTimeout(resolve, 600));
+      spinner2.stop();
+      msg({
+        type: "M_ERROR",
+        title: "Wrong! Netscape created JavaScript.",
+        titleColor: "red",
+      });
+      process.exit(1);
+    }
 
     const message = "Congrats !\n $ 2 , 0 0 0 , 0 0 0";
 

@@ -7,14 +7,14 @@ import { defineCommand, startEditor } from "~/mod.js";
 
 export default defineCommand({
   run: async () => {
-    relinka("info", "Opening editor for config...");
+    relinka("log", "Opening editor for config...");
     const configPath = "./rempts.config";
     let initialContent = "";
     try {
       initialContent = await fs.readFile(configPath, "utf-8");
     } catch (readError: any) {
       if (readError?.code === "ENOENT") {
-        relinka("info", "Config file not found, creating new one.");
+        relinka("log", "Config file not found, creating new one.");
       } else {
         relinka(
           "warn",
@@ -40,7 +40,7 @@ export default defineCommand({
           try {
             JSON.parse(content);
             relinka(
-              "info",
+              "log",
               `\n${filename || "Buffer"} is valid JSON. Saving...`,
             );
             // Return true or content unmodified to proceed with save
@@ -66,7 +66,7 @@ export default defineCommand({
           filename: string | null,
         ) {
           relinka(
-            "info",
+            "log",
             `\nEditor closed for ${filename || "buffer"}. Saved: ${saved}`,
           );
         },
@@ -74,14 +74,14 @@ export default defineCommand({
 
       // startEditor resolves when the editor exits
       // Access properties from the typed 'result' object
-      relinka("info", `\nEditor finished. Saved status: ${result.saved}`);
+      relinka("log", `\nEditor finished. Saved status: ${result.saved}`);
       if (result.saved && result.content !== null) {
         // Check content is not null
-        relinka("info", "Config updated successfully.");
+        relinka("log", "Config updated successfully.");
         // You could use result.content directly here if needed
-        // relinka("info", "New content:", result.content);
+        // relinka("log", "New content:", result.content);
       } else if (!result.saved) {
-        relinka("info", "Changes were discarded.");
+        relinka("log", "Changes were discarded.");
       }
     } catch (error: unknown) {
       const errorMessage =

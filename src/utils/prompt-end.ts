@@ -100,15 +100,15 @@ export async function completePrompt(
 } */
 
 export function renderEndLine() {
-  const lineLength = getExactTerminalWidth() - 2;
-  relinka("info", re.dim(symbols.middle));
-  relinka("info", re.dim(`${symbols.end}${symbols.line.repeat(lineLength)}⊱`));
-  relinka("info", "");
+  const lineLength = getExactTerminalWidth() - 6;
+  relinka("null", re.dim(symbols.middle));
+  relinka("null", re.dim(`${symbols.end}${symbols.line.repeat(lineLength)}⊱`));
+  relinka("null", "");
 }
 
 export function renderEndLineInput() {
-  const lineLength = getExactTerminalWidth() - 2;
-  relinka("info", "");
-  relinka("info", re.dim(`${symbols.end}${symbols.line.repeat(lineLength)}⊱`));
-  relinka("info", "");
+  const lineLength = getExactTerminalWidth() - 6;
+  relinka("null", "");
+  relinka("null", re.dim(`${symbols.end}${symbols.line.repeat(lineLength)}⊱`));
+  relinka("null", "");
 }

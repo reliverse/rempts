@@ -15,5 +15,5 @@ export async function createAsciiArt({
   }
 
   const asciiArt = figlet.textSync(message, { font });
-  relinka("info", asciiArt);
+  relinka("log", asciiArt);
 }

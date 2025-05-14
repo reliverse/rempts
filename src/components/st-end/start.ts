@@ -87,9 +87,9 @@ export async function startPrompt({
 
   if (clearConsole) {
     relinka("clear", "");
-    relinka("info", "");
+    relinka("log", "");
   } else {
-    relinka("info", "");
+    relinka("log", "");
   }
 
   msg({

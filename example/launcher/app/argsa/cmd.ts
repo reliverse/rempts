@@ -30,7 +30,7 @@ export default defineCommand({
     },
   }),
   run({ args }) {
-    relinka("info", "", args);
+    relinka("log", "", args);
     const msg = [
       args.friendly ? "Hi" : "Greetings",
       args.adj || "",
@@ -40,6 +40,6 @@ export default defineCommand({
       .filter(Boolean)
       .join(" ");
 
-    relinka("info", msg);
+    relinka("log", msg);
   },
 });

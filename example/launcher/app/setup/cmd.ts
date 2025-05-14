@@ -118,7 +118,7 @@ export default defineCommand({
     }
 
     // Log all gathered input details.
-    relinka("info", "You have selected:", {
+    relinka("log", "You have selected:", {
       projectName,
       frameworks: selectedFrameworks,
       inputFile: args.inputFile,

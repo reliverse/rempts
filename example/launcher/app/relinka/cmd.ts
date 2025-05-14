@@ -8,7 +8,7 @@ export default defineCommand({
   run: async () => {
     // 1. Just title with spinner
     await relinkaAsyncByRemptsDeprecated(
-      "info",
+      "log",
       "Starting demo...",
       undefined,
       undefined,
@@ -78,7 +78,7 @@ export default defineCommand({
     await new Promise((resolve) => setTimeout(resolve, 500));
 
     // 7. Title only without animation
-    await relinkaAsyncByRemptsDeprecated("info", "Static Message");
+    await relinkaAsyncByRemptsDeprecated("log", "Static Message");
     await new Promise((resolve) => setTimeout(resolve, 500));
 
     // 8. Title and content without animation

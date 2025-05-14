@@ -12,7 +12,7 @@ export async function showUsage<T extends ArgsDef = ArgsDef>(
 ) {
   try {
     // biome-ignore lint/style/useTemplate: <explanation>
-    relinka("info", (await renderUsage(cmd, parent)) + "\n");
+    relinka("log", (await renderUsage(cmd, parent)) + "\n");
   } catch (error) {
     relinka("error", String(error));
   }

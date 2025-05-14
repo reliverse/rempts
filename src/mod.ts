@@ -10,7 +10,7 @@ export { inputPrompt } from "./components/input/input-prompt.js";
 export type {
   ArgDefinition,
   ArgDefinitions,
-  SubCommandsMap,
+  CommandsMap,
   Command,
   InferArgTypes,
   FileBasedCmdsOptions,
