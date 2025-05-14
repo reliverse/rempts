@@ -1,10 +1,6 @@
 node_modules
 .eslintcache
 .DS_Store
-.venv
-.env
-dist-libs
-dist-npm
-dist-jsr
-*.log
-logs/
+/*txt
+dist*
+logs

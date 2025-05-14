@@ -52,7 +52,7 @@ export type ColorName =
   | "retroGradient"
   | "none";
 
-export type AnimationName =
+type AnimationName =
   | "rainbow"
   | "pulse"
   | "glitch"
@@ -111,12 +111,12 @@ export type PromptOptions = {
   customSymbol?: string;
 };
 
-export type ChoiceRequiredOptions = {
+type ChoiceRequiredOptions = {
   id: string;
   title: string;
 };
 
-export type ChoiceOptionalOptions = {
+type ChoiceOptionalOptions = {
   description?: string;
   titleTypography?: TypographyName;
   action?: () => Promise<void>;
@@ -156,186 +156,10 @@ export type EditorExitResult = {
   filename: string | null;
 };
 
-// ----- Args -----
-
-export type ArgType =
-  | "boolean"
-  | "string"
-  | "number"
-  | "enum"
-  | "positional"
-  | undefined;
-
-// Args: Definition
-
-export type _ArgDef<T extends ArgType, VT extends boolean | number | string> = {
-  type?: T;
-  description?: string;
-  valueHint?: string;
-  alias?: string | string[];
-  default?: VT;
-  required?: boolean;
-  options?: (string | number)[];
-};
-
-export type BooleanArgDef = Omit<_ArgDef<"boolean", boolean>, "options"> & {
-  negativeDescription?: string;
-};
-export type StringArgDef = Omit<_ArgDef<"string", string>, "options">;
-export type NumberArgDef = Omit<_ArgDef<"number", number>, "options">;
-export type EnumArgDef = _ArgDef<"enum", string>;
-export type PositionalArgDef = Omit<
-  _ArgDef<"positional", string>,
-  "alias" | "options"
->;
-
-export type ArgDef =
-  | BooleanArgDef
-  | StringArgDef
-  | NumberArgDef
-  | PositionalArgDef
-  | EnumArgDef;
-
-export type ArgsDef = Record<string, ArgDef>;
-
-export type Arg = ArgDef & { name: string; alias: string[] };
-
-// Args: Parsed
-
-export type Dict<T> = Record<string, T>;
-export type Arrayable<T> = T | T[];
-export type Default = Dict<any>;
-
-export type ParserOptions = {
-  boolean?: Arrayable<string>;
-  string?: Arrayable<string>;
-  alias?: Dict<Arrayable<string>>;
-  default?: Dict<any>;
-  unknown?(flag: string): void;
-};
-
-export type ParserArgv<T = Default> = T & {
-  _: string[];
-};
-
-type ResolveParsedArgType<T extends ArgDef, VT> = T extends {
-  default?: any;
-  required?: boolean;
-}
-  ? T["default"] extends NonNullable<VT>
-    ? VT
-    : T["required"] extends true
-      ? VT
-      : VT | undefined
-  : VT | undefined;
-
-type ParsedPositionalArg<T extends ArgDef> = T extends { type: "positional" }
-  ? ResolveParsedArgType<T, string>
-  : never;
-
-type ParsedStringArg<T extends ArgDef> = T extends { type: "string" }
-  ? ResolveParsedArgType<T, string>
-  : never;
-
-type ParsedNumberArg<T extends ArgDef> = T extends { type: "number" }
-  ? ResolveParsedArgType<T, number>
-  : never;
-
-type ParsedBooleanArg<T extends ArgDef> = T extends { type: "boolean" }
-  ? ResolveParsedArgType<T, boolean>
-  : never;
-
-type ParsedEnumArg<T extends ArgDef> = T extends {
-  type: "enum";
-  options: infer U;
-}
-  ? U extends any[]
-    ? ResolveParsedArgType<T, U[number]>
-    : never
-  : never;
-
-type RawArgs = {
-  _: string[];
-};
-
-// prettier-ignore
-type ParsedArg<T extends ArgDef> = T["type"] extends "positional"
-  ? ParsedPositionalArg<T>
-  : T["type"] extends "boolean"
-    ? ParsedBooleanArg<T>
-    : T["type"] extends "string"
-      ? ParsedStringArg<T>
-      : T["type"] extends "number"
-        ? ParsedNumberArg<T>
-        : T["type"] extends "enum"
-          ? ParsedEnumArg<T>
-          : never;
-
-// prettier-ignore
-export type ParsedArgs<T extends ArgsDef = ArgsDef> = RawArgs & {
-  [K in keyof T]: ParsedArg<T[K]>;
-} & {
-  [K in keyof T as T[K] extends { alias: string }
-    ? T[K]["alias"]
-    : never]: ParsedArg<T[K]>;
-} & {
-  [K in keyof T as T[K] extends { alias: string[] }
-    ? T[K]["alias"][number]
-    : never]: ParsedArg<T[K]>;
-} & Record<string, string | number | boolean | string[]>;
-
-// ----- Command -----
-
-// Command: Run Command
-
-export type RunCommandOptions = {
-  rawArgs: string[];
-  data?: any;
-  showUsage?: boolean;
-};
-
-// Command: Shared
-
-export type CommandMeta = {
-  name?: string;
-  version?: string;
-  description?: string;
-  hidden?: boolean;
-};
-
-// Command: Definition
-
-export type SubCommandsDef = Record<string, Resolvable<CommandDef<any>>>;
-
-export type CommandDef<T extends ArgsDef = ArgsDef> = {
-  meta?: Resolvable<CommandMeta>;
-  args?: Resolvable<T>;
-  subCommands?: Resolvable<SubCommandsDef>;
-  // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
-  setup?: (context: CommandContext<T>) => any | Promise<any>;
-  // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
-  cleanup?: (context: CommandContext<T>) => any | Promise<any>;
-  // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
-  run?: (context: CommandContext<T>) => any | Promise<any>;
-};
-
-export type CommandContext<T extends ArgsDef = ArgsDef> = {
-  rawArgs: string[];
-  args: ParsedArgs<T>;
-  cmd: CommandDef<T>;
-  subCommand?: CommandDef<T>;
-  data?: any;
-};
-
-// ----- Utils -----
-
-export type Awaitable<T> = () => T | Promise<T>;
-export type Resolvable<T> = T | Promise<T> | (() => T) | (() => Promise<T>);
-
 // --- Logger ---
 
 export type MessageKind = "log" | "info" | "warn" | "error" | "success";
-export type VerboseKind = `${MessageKind}-verbose`;
+type VerboseKind = `${MessageKind}-verbose`;
 export type AllKinds = MessageKind | VerboseKind;
 export type MessageConfig = {
   type: "M_INFO" | "M_ERROR";
@@ -440,7 +264,7 @@ export type StreamTextOptions = {
    */
   color?: ColorName;
   /**
-   * Whether to add a newline at the end
+   * Whether to inject a newline at the end
    * @default true
    */
   newline?: boolean;

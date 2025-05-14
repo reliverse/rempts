@@ -27,6 +27,6 @@
     "strictNullChecks": false
   },
 
-  "include": ["**/*.ts", "reset.d.ts", "eslint.config.js"],
+  "include": [".config/*.ts", "**/*.ts", "reset.d.ts", "eslint.config.js"],
   "exclude": ["node_modules", "dist-npm", "dist-jsr", "dist-libs"]
 }
