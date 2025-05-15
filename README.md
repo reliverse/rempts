@@ -1,4 +1,4 @@
-# rempts • powerful js/ts cli builder
+# 📃 rempts • powerful js/ts cli builder
 
 > @reliverse/rempts is a modern, type-safe toolkit for building delightful cli experiences. it's fast, flexible, and made for developer happiness. file-based commands keep things simple—no clutter, just clean and easy workflows. this is how cli should feel.
 
@@ -6,20 +6,25 @@
 
 ## Features
 
-- 🫂 Rempts prevents you from fighting with your CLI tool
-- ✨ Rempts is your end-to-end CLI UI + command framework
-- 💪 Made for DX precision and high-context terminal UX
-- 📂 File-based commands (app router style by default)
-- 🏎️ Prompt engine that *feels* modern, actually is
-- 🧠 Type-safe from args to prompts
-- ⚡ Blazing-fast, no runtime baggage
-- 🧩 Router + argument parser built-in
-- 🎨 Customizable themes, styled output
-- 🚨 Crash-safe (Ctrl+C, SIGINT, errors)
-- 🪄 Minimal API surface, max expressiveness
-- 🧪 Scriptable for testing, stable for production
-- 🆕 Automatic commands creation (via `dler rempts init --cmd my-cool-cmd`)
-- 🏞️ No more hacking together `inquirer`, `citty`, `commander`, `chalk`
+- 🫂 rempts keeps you from fighting with your CLI tool
+- ✨ rempts is your end-to-end CLI UI + command framework
+- 🌿 multi-level file-based subcommands (sibling + nested)
+- 💪 built for DX precision and high-context terminal UX
+- 🏎️ prompt engine that *feels* modern — and actually is
+- 📂 file-based commands (app-router style by default)
+- 🎭 looks great in plain scripts or full CLI apps
+- 🧠 type-safe from args to prompts
+- ⚡ blazing-fast, zero runtime baggage
+- 🧩 router + argument parser built-in
+- 🎨 customizable themes and styled output
+- 📦 built-in output formatter and logger
+- 🚨 crash-safe (Ctrl+C, SIGINT, errors)
+- 📐 smart layout for small terminals
+- 🎛️ override styles via prompt options
+- 🪄 minimal API surface, maximum expressiveness
+- 🧪 scriptable for testing, stable for production
+- 🏞️ no more hacking together `inquirer`/`citty`/`commander`/`chalk`
+- 🆕 automatic command creation (`bun dler rempts init --cmd my-cmd`)
 
 ## Installation
 
@@ -30,9 +35,9 @@ bun add @reliverse/rempts
 **Coming soon**:
 
 ```bash
-bun i -g @reliverse/dler
-dler rempts init --cmd my-cmd-1
-dler rempts init --cmds
+bun add -D @reliverse/dler
+bun dler rempts init --cmd my-cmd-1
+bun dler rempts init --cmds
 ```
 
 ## Usage Examples
@@ -217,14 +222,15 @@ export default defineCommand({
 - `arg-cmdName.{ts,js}`,
 - `cmdName/index.{ts,js}`,
 - `cmdName/cmdName-mod.{ts,js}`,
+- **Multi-level subcommands:** `foo/bar/baz/cmd.ts` → `my-cli foo bar baz`
 - And more — with automatic usage output.
 
 **Hint**:
 
 - Install `bun add -D @reliverse/dler`
-- Use `dler rempts init --cmd cmd1 cmd2` to init commands for rempts launcher's automatically
+- Use `bun dler rempts init --cmd cmd1 cmd2` to init commands for rempts launcher's automatically
 
-### Advanced Minimal API
+### Advanced Launcher Usage
 
 ```ts
 defineCommand({
@@ -247,21 +253,31 @@ defineCommand({
 - Default values, validations, descriptions
 - Full help rendering from metadata
 
-### Theming + Customization
+**By the way! Multi-level subcommands!**
 
-- Built-in output formatter and logger
-- Override styles via prompt options
-- Smart layout for small terminals
-- Looks great in plain scripts or full CLI apps
-
-### Playground
+You can also nest subcommands arbitrarily deep:
 
 ```bash
-bun i -g @reliverse/rempts-cli
-rempts examples # supported options: name
+app/
+  foo/
+    bar/
+      baz/
+        cmd.ts
 ```
 
-OR:
+Invoke with:
+
+```bash
+my-cli foo bar baz --some-flag
+```
+
+The launcher will recursively traverse subfolders for each non-flag argument, loading the deepest `cmd.ts`/`cmd.js` it finds, and passing the remaining arguments to it.
+
+See [example/launcher/app/nested](./example/launcher/app/nested/) and [example/launcher/app/sibling](./example/launcher/app/sibling/) folders to learn more.
+
+When playing with the example, you can run e.g. `bun dev:modern nested foo bar baz` to see the result in action.
+
+### Playground
 
 ```bash
 git clone https://github.com/reliverse/rempts
@@ -270,8 +286,9 @@ bun i
 bun dev # supported options: name
 ```
 
-- Both `rempts examples` from @reliverse/rempts and `bun dev` (which is the same thing) are themselves examples of `launcher` functionality.
-- This launcher will show you a `multiselectPrompt()` where you can choose which CLI prompts you want to play with.
+- `bun dev:prompts`: This example will show you a `multiselectPrompt()` where you can choose which CLI prompts you want to play with.
+- `bun dev:modern`: This example will show you a modern CLI launcher usage with file-based commands.
+- `bun dev:classic`: This example will show you a classic CLI launcher usage with programmatic commands.
 
 ### Launcher Usage Examples
 
@@ -288,7 +305,7 @@ await runMain(defineCommand({}));
 **2 Run the following:**
 
 ```bash
-bun add -D @reliverse/dler # or: bun i -g @reliverse/dler
+bun add -D @reliverse/dler
 bun dler rempts init --cmd my-cmd-1 # or: dler rempts init my-cmd-1 my-cmd-2 --main src/mod.ts
 # * `--main` is optional, default is `./src/mod.ts`
 # * you can specify multiple commands at once

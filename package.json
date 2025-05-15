@@ -1,7 +1,7 @@
 {
   "name": "@reliverse/rempts",
   "author": "reliverse",
-  "version": "1.7.4",
+  "version": "1.7.5",
   "type": "module",
   "license": "MIT",
   "keywords": [
@@ -25,7 +25,7 @@
     "check": "tsc --noEmit && eslint --cache --fix . && biome check --fix --unsafe . && knip",
     "agg": "dler tools --tool agg --input src/libs/core/core-impl --out src/libs/core/core-main.ts --recursive --named --strip src/libs/core",
     "vi": "vitest",
-    "pub": "dler"
+    "pub": "dler pub"
   },
   "dependencies": {
     "@figliolia/chalk-animation": "^1.0.4",

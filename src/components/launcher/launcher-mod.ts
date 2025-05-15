@@ -779,8 +779,8 @@ async function loadSubCommand(spec: CommandSpec): Promise<Command<any>> {
 }
 
 /**
- * Runs a file-based subcommand from a given subcommand name.
- * Accepts the remaining argv and the file-based commands options.
+ * Runs a file-based subcommand, supporting multi-level subcommands (e.g., app/foo/bar/cmd.ts).
+ * Recursively traverses argv, descending into subfolders for each non-flag argument.
  */
 async function runFileBasedSubCmd(
   subName: string,
@@ -789,63 +789,80 @@ async function runFileBasedSubCmd(
   parserOptions: ReliArgParserOptions & { autoExit?: boolean },
   parentFinish?: (ctx: CommandContext<any>) => void | Promise<void>,
 ) {
-  const subPathDir = path.join(fileCmdOpts.cmdsRootPath, subName);
-  let importPath: string | undefined;
-
-  const possibleFiles = [
-    // Only allow cmd.{ts,js} inside the subcommand directory
-    path.join(subPathDir, "cmd.js"),
-    path.join(subPathDir, "cmd.ts"),
-  ];
-
-  const dirExists = await fs.pathExists(subPathDir);
-  let isDirCommand = false;
-  if (dirExists) {
-    const stats = await fs.stat(subPathDir);
-    isDirCommand = stats.isDirectory();
-  }
-
-  if (isDirCommand) {
-    for (const pattern of possibleFiles) {
-      if (await fs.pathExists(pattern)) {
-        importPath = pattern;
-        break;
+  // Helper to recursively resolve the deepest subcommand path
+  async function resolveCmdPath(
+    baseDir: string,
+    args: string[],
+  ): Promise<{ importPath: string; leftoverArgv: string[] }> {
+    if (args.length === 0 || isFlag(args[0])) {
+      // Try to load cmd.ts/cmd.js in current dir
+      const possibleFiles = [
+        path.join(baseDir, "cmd.js"),
+        path.join(baseDir, "cmd.ts"),
+      ];
+      for (const file of possibleFiles) {
+        if (await fs.pathExists(file)) {
+          return { importPath: file, leftoverArgv: args };
+        }
+      }
+      throw new Error(
+        `Unknown command or arguments: ${args.join(" ")}\n\nInfo for this CLI's developer: No valid command file found in ${baseDir}`,
+      );
+    }
+    // Check if next arg is a subfolder
+    const nextDir = path.join(baseDir, args[0]);
+    if (
+      (await fs.pathExists(nextDir)) &&
+      (await fs.stat(nextDir)).isDirectory()
+    ) {
+      // Recurse into subfolder
+      return resolveCmdPath(nextDir, args.slice(1));
+    }
+    // No subfolder, try to load cmd.ts/cmd.js in current dir
+    const possibleFiles = [
+      path.join(baseDir, "cmd.js"),
+      path.join(baseDir, "cmd.ts"),
+    ];
+    for (const file of possibleFiles) {
+      if (await fs.pathExists(file)) {
+        return { importPath: file, leftoverArgv: args };
       }
     }
-    if (!importPath) {
-      const attempted = [subName, ...argv].join(" ");
-      const expectedPath = path.relative(
-        process.cwd(),
-        path.join(fileCmdOpts.cmdsRootPath, subName, "cmd.{ts,js}"),
-      );
-      throw new Error(
-        `Unknown command or arguments: ${attempted}\n\nInfo for this CLI's developer: No valid command directory found, expected: ${expectedPath}`,
-      );
-    }
-  } else {
-    // No longer support file-based commands as a file in the root directory
+    throw new Error(
+      `Unknown command or arguments: ${args.join(" ")}\n\nInfo for this CLI's developer: No valid command file found in ${baseDir}`,
+    );
+  }
+
+  // Start recursive resolution from cmdsRootPath/subName
+  const startDir = path.join(fileCmdOpts.cmdsRootPath, subName);
+  if (
+    !(await fs.pathExists(startDir)) ||
+    !(await fs.stat(startDir)).isDirectory()
+  ) {
     const attempted = [subName, ...argv].join(" ");
-    const expectedPath2 = path.relative(
+    const expectedPath = path.relative(
       process.cwd(),
       path.join(fileCmdOpts.cmdsRootPath, subName, "cmd.{ts,js}"),
     );
     throw new Error(
-      `Unknown command or arguments: ${attempted}\n\nInfo for this CLI's developer: No valid command directory found, expected: ${expectedPath2}`,
+      `Unknown command or arguments: ${attempted}\n\nInfo for this CLI's developer: No valid command directory found, expected: ${expectedPath}`,
     );
   }
 
+  // Recursively resolve the deepest command file and leftover argv
+  const { importPath, leftoverArgv } = await resolveCmdPath(startDir, argv);
   const imported = await import(path.resolve(importPath));
   const subCommand = imported.default;
   if (!subCommand) {
     throw new Error(
-      `File-based subcommand "${subName}" has no default export or is invalid.`,
+      `File-based subcommand has no default export or is invalid: ${importPath}`,
     );
   }
 
   try {
     const subCtx = await runCommandWithArgs(
       subCommand,
-      argv,
+      leftoverArgv,
       parserOptions,
       true,
     );
