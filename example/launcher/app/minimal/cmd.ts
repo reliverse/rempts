@@ -11,6 +11,7 @@ export default defineCommand({
     name: {
       type: "string",
       description: "your name",
+      allowed: ["John", "Jane", "Jim"],
       required: true,
     },
   }),

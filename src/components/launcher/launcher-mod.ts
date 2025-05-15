@@ -16,6 +16,7 @@ type EmptyArgs = Record<string, never>;
 type BaseArgProps = {
   description?: string;
   required?: boolean;
+  allowed?: string[];
 };
 
 type PositionalArgDefinition = {
@@ -26,6 +27,7 @@ type PositionalArgDefinition = {
 type BooleanArgDefinition = {
   type: "boolean";
   default?: boolean;
+  allowed?: boolean[];
 } & BaseArgProps;
 
 type StringArgDefinition = {
@@ -36,6 +38,7 @@ type StringArgDefinition = {
 type NumberArgDefinition = {
   type: "number";
   default?: number;
+  allowed?: number[];
 } & BaseArgProps;
 
 type ArrayArgDefinition = {
@@ -1083,25 +1086,60 @@ function castArgValue(def: ArgDefinition, rawVal: any, argName: string): any {
     return def.default ?? undefined;
   }
 
+  let castedValue: any;
+
   switch (def.type) {
     case "boolean":
       if (typeof rawVal === "string") {
         const lower = rawVal.toLowerCase();
-        if (lower === "true") return true;
-        if (lower === "false") return false;
+        if (lower === "true") castedValue = true;
+        else if (lower === "false") castedValue = false;
+        else castedValue = Boolean(rawVal);
+      } else {
+        castedValue = Boolean(rawVal);
       }
-      return Boolean(rawVal);
+      // Validate against allowed boolean values if specified
+      if (def.allowed && !def.allowed.includes(castedValue)) {
+        throw new Error(
+          `Invalid value for --${argName}: ${rawVal}. Allowed values are: ${def.allowed.join(", ")}`,
+        );
+      }
+      return castedValue;
+
     case "string":
-      return typeof rawVal === "string" ? rawVal : String(rawVal);
+      castedValue = typeof rawVal === "string" ? rawVal : String(rawVal);
+      // Validate against allowed string values if specified
+      if (def.allowed && !def.allowed.includes(castedValue)) {
+        throw new Error(
+          `Invalid value for --${argName}: ${rawVal}. Allowed values are: ${def.allowed.join(", ")}`,
+        );
+      }
+      return castedValue;
+
     case "number": {
       const n = Number(rawVal);
       if (Number.isNaN(n)) {
         throw new Error(`Invalid number provided for --${argName}: ${rawVal}`);
       }
+      // Validate against allowed number values if specified
+      if (def.allowed && !def.allowed.includes(n)) {
+        throw new Error(
+          `Invalid value for --${argName}: ${rawVal}. Allowed values are: ${def.allowed.join(", ")}`,
+        );
+      }
       return n;
     }
+
     case "positional":
-      return String(rawVal);
+      castedValue = String(rawVal);
+      // Validate against allowed positional values if specified
+      if (def.allowed && !def.allowed.includes(castedValue)) {
+        throw new Error(
+          `Invalid value for <${argName}>: ${rawVal}. Allowed values are: ${def.allowed.join(", ")}`,
+        );
+      }
+      return castedValue;
+
     case "array": {
       // Accept: --tags foo --tags bar --tags [baz,qux] --tags quux --tags bar,bar2,bar3 --tags "bar4, bar5" --tags '[bar6, bar7]'
       const arrVal = Array.isArray(rawVal) ? rawVal : [String(rawVal)];
@@ -1146,6 +1184,12 @@ function castArgValue(def: ArgDefinition, rawVal: any, argName: string): any {
           ) {
             throw new Error(
               `Array argument --${argName}: Quoted values are not supported due to shell parsing limitations. Please avoid using single or double quotes around array elements.`,
+            );
+          }
+          // Validate each array element against allowed values if specified
+          if (def.allowed && !def.allowed.includes(p)) {
+            throw new Error(
+              `Invalid value in array --${argName}: ${p}. Allowed values are: ${def.allowed.join(", ")}`,
             );
           }
         });

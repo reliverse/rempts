@@ -910,7 +910,7 @@ $ bun example/launcher/modern.ts build --entry "[foo.ts," "bar.ts]"
 ⚠   If you intended to pass a bracketed list, quote the whole value like: --entry "[a, b, c]"
 ```
 
-#### 6. All together
+#### 7. All together
 
 ```bash
 mycli input.txt --verbose --name Alice --count 3 --tags foo --tags bar
@@ -922,6 +922,66 @@ mycli input.txt --verbose --name Alice --count 3 --tags foo --tags bar
 #     tags: ["foo", "bar"]
 #   }
 ```
+
+#### 8. Value Validation with `allowed`
+
+All argument types support an optional `allowed` property that restricts which values can be passed:
+
+```ts
+const main = defineCommand({
+  args: {
+    // Only allow specific string values
+    mode: {
+      type: "string",
+      allowed: ["development", "production", "test"],
+      description: "The mode to run in"
+    },
+    
+    // Only allow specific boolean values (e.g. if you only want true)
+    force: {
+      type: "boolean",
+      allowed: [true],
+      description: "Force the operation"
+    },
+    
+    // Only allow specific numbers
+    level: {
+      type: "number",
+      allowed: [1, 2, 3],
+      description: "The level to use"
+    },
+    
+    // Only allow specific values in an array
+    tags: {
+      type: "array",
+      allowed: ["web", "api", "mobile"],
+      description: "Tags to apply"
+    },
+    
+    // Only allow specific positional values
+    action: {
+      type: "positional",
+      allowed: ["build", "serve", "test"],
+      description: "The action to perform"
+    }
+  }
+});
+```
+
+If someone tries to pass a value that's not in the `allowed` list, they'll get a helpful error message:
+
+```bash
+mycli --mode staging
+# Error: Invalid value for --mode: staging. Allowed values are: development, production, test
+
+mycli --level 4
+# Error: Invalid value for --level: 4. Allowed values are: 1, 2, 3
+
+mycli --tags desktop
+# Error: Invalid value in array --tags: desktop. Allowed values are: web, api, mobile
+```
+
+The validation happens after type casting, so for example with numbers, the input will first be converted to a number and then checked against the allowed list.
 
 ## Contributing
 
@@ -960,7 +1020,7 @@ All APIs are fully typed. See [`src/types.ts`](./src/types.ts) for advanced cust
 ## Related
 
 - [`@reliverse/cli`](https://npmjs.com/package/@reliverse/cli) – CLI-first toolkit for fullstack workflows
-- [`@reliverse/reliarg`](https://npmjs.com/package/@reliverse/reliarg) – Tiny, strict, zero-dep argument parser
+- [`@reliverse/reliarg`](https://npmjs.com/package/@reliverse/reliarg) – Tiny, strict, zero-dep argument parser with value validation support (`allowed` property for restricting argument values)
 - [`@reliverse/reglob`](https://npmjs.com/package/@reliverse/reglob) – Fast, minimal file matcher
 - [`@reliverse/relinka`](https://npmjs.com/package/@reliverse/relinka) – Styled CLI logs, steps, and symbols
 
