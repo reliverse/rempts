@@ -14,7 +14,6 @@ const main = defineCommand({
     name: {
       type: "positional",
       description: "Your name",
-      required: true,
     },
   }),
   setup() {
@@ -29,7 +28,11 @@ const main = defineCommand({
     debug: () => import("./app/debug/cmd.js").then((r) => r.default),
   },
   run({ args }) {
-    relinka("success", `Hello ${args.name}`);
+    if (args.name) {
+      relinka("success", `Hello ${args.name}`);
+    } else {
+      relinka("error", "Hello, Reliverse!");
+    }
   },
 });
 

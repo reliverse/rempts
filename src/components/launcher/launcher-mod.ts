@@ -349,6 +349,34 @@ async function getDefaultCliNameAndVersion(): Promise<{
 }
 
 /**
+ * Find direct subcommands (folders with cmd.ts/cmd.js) under a given directory.
+ * Returns an array of { name: string, def: any }.
+ */
+async function findDirectFileBasedSubcommands(currentDir) {
+  const results = [];
+  const items = await fs.readdir(currentDir, { withFileTypes: true });
+  for (const dirent of items) {
+    if (dirent.isDirectory()) {
+      for (const fname of ["cmd.ts", "cmd.js"]) {
+        const fpath = path.join(currentDir, dirent.name, fname);
+        if (await fs.pathExists(fpath)) {
+          try {
+            const imported = await import(path.resolve(fpath));
+            if (imported.default && !imported.default.meta?.hidden) {
+              results.push({ name: dirent.name, def: imported.default });
+            }
+          } catch (err) {
+            debugLog(`Skipping file-based subcommand in ${fpath}:`, err);
+          }
+          break;
+        }
+      }
+    }
+  }
+  return results;
+}
+
+/**
  * Show usage for a given command.
  */
 export async function showUsage<A extends ArgDefinitions>(
@@ -359,14 +387,16 @@ export async function showUsage<A extends ArgDefinitions>(
     metaSettings?: {
       showDescriptionOnMain?: boolean;
     };
+    _fileBasedCurrentDir?: string;
+    _fileBasedPathSegments?: string[];
+    _isSubcommand?: boolean;
   } = {},
-  displayNotFoundMessage?: boolean,
 ) {
   const { name: fallbackName, version: fallbackVersion } =
     await getDefaultCliNameAndVersion();
   const cliName = command.meta?.name || fallbackName;
   const cliVersion = command.meta?.version || fallbackVersion;
-  relinka("log", `${cliName}${cliVersion ? ` v${cliVersion}` : ""}`);
+  relinka("info", `${cliName}${cliVersion ? ` v${cliVersion}` : ""}`);
 
   if (parserOptions.metaSettings?.showDescriptionOnMain) {
     let description = command.meta?.description;
@@ -383,70 +413,50 @@ export async function showUsage<A extends ArgDefinitions>(
     }
   }
 
+  // Get package name for Usage line
+  const { name: pkgName } = await getDefaultCliNameAndVersion();
+
   // File-based Commands
   const fileCmds = parserOptions.fileBasedCmds;
   if (fileCmds?.enable) {
-    const usageLine = `Usage: ${cliName} <command> [command's options]`;
-    relinka("log", usageLine);
+    const commandsDir = path.resolve(fileCmds.cmdsRootPath);
+    const currentDir = parserOptions._fileBasedCurrentDir || commandsDir;
+    const pathSegments = parserOptions._fileBasedPathSegments || [];
 
-    // --- Dynamic usage example for file-based subcommands ---
-    try {
-      const commandsDir = path.resolve(fileCmds.cmdsRootPath);
-      const items = await fs.readdir(commandsDir, {
-        withFileTypes: true,
-      });
-      const subCommandNames: string[] = [];
-      const subCommandDefs: { name: string; def: any }[] = [];
-      for (const dirent of items) {
-        if (dirent.isDirectory()) {
-          const name = dirent.name;
-          const cmdTs = path.join(commandsDir, name, "cmd.ts");
-          const cmdJs = path.join(commandsDir, name, "cmd.js");
-          let imported;
-          try {
-            if (await fs.pathExists(cmdTs)) {
-              imported = await import(path.resolve(cmdTs));
-            } else if (await fs.pathExists(cmdJs)) {
-              imported = await import(path.resolve(cmdJs));
-            } else {
-              continue; // No valid cmd file, skip
-            }
-            if (imported.default && !imported.default.meta?.hidden) {
-              subCommandNames.push(name);
-              subCommandDefs.push({ name, def: imported.default });
-            }
-          } catch (err) {
-            debugLog(`Skipping file-based subcommand in ${name}:`, err);
-          }
-        }
-      }
-      // Generate and print a usage example
-      if (subCommandDefs.length > 0) {
-        const randomIdx = Math.floor(Math.random() * subCommandDefs.length);
-        const { name: exampleCmd, def: exampleDef } = subCommandDefs[randomIdx];
-        const exampleArgs = buildExampleArgs(exampleDef.args || {});
+    // Build usage line starting with package name, then path segments
+    let usageLine = [pkgName, ...pathSegments].join(" ");
+
+    // If this command has subcommands, add <command> [command's options]
+    const directSubs = await findDirectFileBasedSubcommands(currentDir);
+    if (directSubs.length > 0) {
+      usageLine += " <command> [command's options]";
+    } else {
+      usageLine += " [command's options]";
+      const pos = renderPositional(command.args);
+      if (pos) usageLine += ` ${pos}`;
+    }
+    relinka("log", `Usage: ${usageLine}`);
+
+    // Only show Example if this command has subcommands
+    if (directSubs.length > 0) {
+      // Pick a plausible example from direct subcommands
+      const randomIdx = Math.floor(Math.random() * directSubs.length);
+      const { name: exampleCmd, def: exampleDef } = directSubs[randomIdx];
+      const exampleArgs = buildExampleArgs(exampleDef.args || {});
+      relinka(
+        "log",
+        `Example: ${pkgName} ${[...pathSegments, exampleCmd].join(" ")}${exampleArgs ? ` ${exampleArgs}` : ""}`,
+      );
+    }
+    if (directSubs.length > 0) {
+      relinka("info", "Available commands (run with `help` to see more):");
+      directSubs.forEach(({ name, def }) => {
+        const desc = def?.meta?.description ?? "";
         relinka(
           "log",
-          `Example: ${cliName} ${exampleCmd}${exampleArgs ? ` ${exampleArgs}` : ""}`,
+          `• ${[...pathSegments, name].join(" ")}${desc ? ` | ${desc}` : ""}`,
         );
-      }
-      if (subCommandNames.length > 0) {
-        relinka("info", "Available commands (run with `help` to see more):");
-        subCommandDefs.forEach(({ name, def }) => {
-          const desc = def?.meta?.description ?? "";
-          relinka("log", `• ${name}${desc ? ` | ${desc}` : ""}`);
-          // const version = def?.meta?.version ? ` | ${def.meta.version}` : "";
-          // relinka("log", `• ${name}${desc ? ` | ${desc}` : ""}${version}`);
-        });
-      }
-    } catch (err) {
-      if (displayNotFoundMessage) {
-        relinka(
-          "warn",
-          `No file-based subcommands found in ${fileCmds.cmdsRootPath}`,
-        );
-      }
-      debugLog("Error reading file-based commands:", err);
+      });
     }
   } else {
     // Commands defined in the command object
@@ -470,7 +480,13 @@ export async function showUsage<A extends ArgDefinitions>(
       }
     }
 
-    let usageLine = cliName;
+    // For root command or programmatic subcommands
+    let usageLine = pkgName;
+    if (parserOptions._isSubcommand) {
+      // If this is a subcommand, include its name
+      usageLine += ` ${cliName}`;
+    }
+
     if (subCommandNames.length > 0) {
       usageLine += " <command> [command's options]";
     } else {
@@ -485,7 +501,7 @@ export async function showUsage<A extends ArgDefinitions>(
       const exampleArgs = buildExampleArgs(exampleDef.args || {});
       relinka(
         "log",
-        `Example: ${cliName} ${exampleCmd}${exampleArgs ? ` ${exampleArgs}` : ""}`,
+        `Example: ${pkgName}${parserOptions._isSubcommand ? ` ${cliName}` : ""} ${exampleCmd}${exampleArgs ? ` ${exampleArgs}` : ""}`,
       );
     }
 
@@ -625,35 +641,36 @@ export async function runMain<A extends ArgDefinitions = EmptyArgs>(
       process.exit(1);
     }
 
-    // Handle 'help' as a special subcommand (acts like --help)
-    if (rawArgv[0] === "help") {
-      await showUsage(command, parserOptions);
-      if (autoExit) process.exit(0);
-      return;
-    }
-
-    // @reliverse/relinka [1/2]
-    await relinkaConfig;
-
-    if (checkHelp(rawArgv)) {
-      await showUsage(command, parserOptions);
-      if (autoExit) process.exit(0);
-      return;
-    }
-    if (checkVersion(rawArgv)) {
-      if (command.meta?.name) {
-        relinka(
-          "log",
-          `${command.meta?.name} ${command.meta?.version ? `v${command.meta?.version}` : ""}`,
+    // --- Unified help handling for file-based commands ---
+    if (parserOptions.fileBasedCmds?.enable && rawArgv.length > 0) {
+      // Find the deepest command and leftover argv
+      const commandsDir = path.resolve(
+        parserOptions.fileBasedCmds.cmdsRootPath,
+      );
+      const resolved = await resolveFileBasedCommandPath(commandsDir, rawArgv);
+      if (resolved) {
+        const { def: subCommand, leftoverArgv, path: pathSegments } = resolved;
+        // If last arg is 'help' or '--help' or '-h', show help for this command
+        const helpIdx = leftoverArgv.findIndex(
+          (arg) => arg === "help" || arg === "--help" || arg === "-h",
         );
+        if (helpIdx !== -1) {
+          await showUsage(subCommand, {
+            ...parserOptions,
+            _fileBasedCurrentDir: pathSegments.length
+              ? path.join(commandsDir, ...pathSegments)
+              : commandsDir,
+            _fileBasedPathSegments: pathSegments,
+          });
+          if (autoExit) process.exit(0);
+          return;
+        }
       }
-      if (autoExit) process.exit(0);
-      return;
     }
 
     const fileBasedEnabled = parserOptions.fileBasedCmds?.enable;
 
-    // Handle file-based subcommand if enabled
+    // Handle file-based subcommand execution (if not already handled by help)
     if (fileBasedEnabled && rawArgv.length > 0 && !isFlag(rawArgv[0])) {
       const [subName, ...subCmdArgv] = rawArgv;
       try {
@@ -681,7 +698,7 @@ export async function runMain<A extends ArgDefinitions = EmptyArgs>(
       }
     }
 
-    // Handle command object subcommands
+    // Handle command object subcommands (programmatic) - including their specific help
     if (
       !fileBasedEnabled &&
       command.commands &&
@@ -706,6 +723,20 @@ export async function runMain<A extends ArgDefinitions = EmptyArgs>(
         }
       }
       if (subSpec) {
+        // --- Show help for subcommand if help is present in argv ---
+        const helpIdx = subCmdArgv.findIndex(
+          (arg) => arg === "help" || arg === "--help" || arg === "-h",
+        );
+        if (helpIdx !== -1) {
+          const subCommandDef = await loadSubCommand(subSpec);
+          await showUsage(subCommandDef, {
+            ...parserOptions,
+            _isSubcommand: true,
+          });
+          if (autoExit) process.exit(0);
+          return;
+        }
+
         try {
           const ctx = getParsedContext(command, rawArgv, parserOptions);
           if (typeof command.onCmdInit === "function")
@@ -713,7 +744,7 @@ export async function runMain<A extends ArgDefinitions = EmptyArgs>(
           await runSubCommand(
             subSpec,
             subCmdArgv,
-            parserOptions,
+            { ...parserOptions, _isSubcommand: true },
             command.onCmdExit
               ? async (_subCtx) => {
                   await command.onCmdExit?.(ctx);
@@ -728,6 +759,27 @@ export async function runMain<A extends ArgDefinitions = EmptyArgs>(
           throw err;
         }
       }
+    }
+
+    // @reliverse/relinka [1/2]
+    await relinkaConfig;
+
+    // Only handle global help if no command was found
+    if (rawArgv[0] === "help" || checkHelp(rawArgv)) {
+      await showUsage(command, parserOptions);
+      if (autoExit) process.exit(0);
+      return;
+    }
+
+    if (checkVersion(rawArgv)) {
+      if (command.meta?.name) {
+        relinka(
+          "info",
+          `${command.meta?.name} ${command.meta?.version ? `v${command.meta?.version}` : ""}`,
+        );
+      }
+      if (autoExit) process.exit(0);
+      return;
     }
 
     // For main run() handler, do NOT call onCmdInit/onCmdExit
@@ -879,11 +931,24 @@ async function runFileBasedSubCmd(
 async function runSubCommand(
   spec: CommandSpec,
   argv: string[],
-  parserOptions: ReliArgParserOptions & { autoExit?: boolean },
+  parserOptions: ReliArgParserOptions & {
+    autoExit?: boolean;
+    _isSubcommand?: boolean;
+  },
   parentFinish?: (ctx: CommandContext<any>) => void | Promise<void>,
 ) {
   const subCommand = await loadSubCommand(spec);
   try {
+    // Check for help before running the subcommand
+    const helpIdx = argv.findIndex(
+      (arg) => arg === "help" || arg === "--help" || arg === "-h",
+    );
+    if (helpIdx !== -1) {
+      await showUsage(subCommand, { ...parserOptions, _isSubcommand: true });
+      if (parserOptions.autoExit !== false) process.exit(0);
+      return;
+    }
+
     const subCtx = await runCommandWithArgs(
       subCommand,
       argv,
@@ -906,6 +971,7 @@ async function runCommandWithArgs<A extends ArgDefinitions>(
   parserOptions: ReliArgParserOptions & {
     fileBasedCmds?: FileBasedCmdsOptions;
     autoExit?: boolean;
+    _isSubcommand?: boolean;
   },
   returnCtx?: boolean,
 ): Promise<CommandContext<InferArgTypes<A>> | undefined> {
@@ -1034,7 +1100,7 @@ async function runCommandWithArgs<A extends ArgDefinitions>(
 
       if (isDispatcher && noSubcommandArgInCurrentCall) {
         relinka("warn", "Please specify a command");
-        await showUsage(command, parserOptions, true);
+        await showUsage(command, parserOptions);
         if (autoExit) process.exit(0);
         return;
       }
@@ -1295,4 +1361,39 @@ function getParsedContext<A extends ArgDefinitions>(
     }
   }
   return { args: finalArgs as InferArgTypes<A>, raw: argv };
+}
+
+// Recursively resolve the deepest file-based command and leftover argv
+async function resolveFileBasedCommandPath(cmdsRoot, argv) {
+  let currentDir = cmdsRoot;
+  const pathSegments = [];
+  let leftover = [...argv];
+  while (leftover.length > 0 && !isFlag(leftover[0])) {
+    const nextDir = path.join(currentDir, leftover[0]);
+    if (
+      (await fs.pathExists(nextDir)) &&
+      (await fs.stat(nextDir)).isDirectory()
+    ) {
+      currentDir = nextDir;
+      pathSegments.push(leftover[0]);
+      leftover = leftover.slice(1);
+    } else {
+      break;
+    }
+  }
+  // Try to load cmd.ts/cmd.js in currentDir
+  for (const fname of ["cmd.ts", "cmd.js"]) {
+    const fpath = path.join(currentDir, fname);
+    if (await fs.pathExists(fpath)) {
+      const imported = await import(path.resolve(fpath));
+      if (imported.default) {
+        return {
+          def: imported.default,
+          path: pathSegments,
+          leftoverArgv: leftover,
+        };
+      }
+    }
+  }
+  return null;
 }
