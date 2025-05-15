@@ -18,7 +18,7 @@
 - 🚨 Crash-safe (Ctrl+C, SIGINT, errors)
 - 🪄 Minimal API surface, max expressiveness
 - 🧪 Scriptable for testing, stable for production
-- 🆕 Automatic commands creation (via `dler init --cmd my-cool-cmd`)
+- 🆕 Automatic commands creation (via `dler rempts init --cmd my-cool-cmd`)
 - 🏞️ No more hacking together `inquirer`, `citty`, `commander`, `chalk`
 
 ## Installation
@@ -94,7 +94,7 @@ import {
 
 ### Notices
 
-- `setup`/`cleanup` are now `onCmdStart`/`onCmdEnd` (old names still work for now).
+- `setup`/`cleanup` are now `onCmdInit`/`onCmdExit` (old names still work for now).
 
 ### Prompts Usage Example
 
@@ -145,6 +145,8 @@ await main();
 
 #### Launcher Usage Example
 
+**Important**: Ensure your commands don't have `await main();`, `await runMain();`, or something like that — to prevent any unexpected behavior. Only main command should have it.
+
 ```ts
 import { relinka } from "@reliverse/relinka";
 
@@ -156,10 +158,10 @@ const main = defineCommand({
     version: "1.0.0",
     description: "Rempts Launcher Playground CLI",
   },
-  onCmdStart() {
+  onCmdInit() {
     relinka("success", "Setup");
   },
-  onCmdEnd() {
+  onCmdExit() {
     relinka("success", "Cleanup");
   },
   commands: {
@@ -220,7 +222,7 @@ export default defineCommand({
 **Hint**:
 
 - Install `bun add -D @reliverse/dler`
-- Use `dler init --cmd cmd1 cmd2` to init commands for rempts launcher's automatically
+- Use `dler rempts init --cmd cmd1 cmd2` to init commands for rempts launcher's automatically
 
 ### Advanced Minimal API
 
@@ -287,7 +289,7 @@ await runMain(defineCommand({}));
 
 ```bash
 bun add -D @reliverse/dler # or: bun i -g @reliverse/dler
-bun dler init --cmd my-cmd-1 # or: dler init my-cmd-1 my-cmd-2 --main src/mod.ts
+bun dler rempts init --cmd my-cmd-1 # or: dler rempts init my-cmd-1 my-cmd-2 --main src/mod.ts
 # * `--main` is optional, default is `./src/mod.ts`
 # * you can specify multiple commands at once
 ```
@@ -545,18 +547,18 @@ Finally, a full-featured CLI launcher without the ceremony. `@reliverse/rempts`'
 - **Lifecycle Hooks:**
   You can define optional lifecycle hooks in your main command:
   - `onLauncherStart` and `onLauncherEnd` (global, called once per CLI process)
-  - `onCmdStart` and `onCmdEnd` (per-command, called before/after each command, but NOT for the main `run()` handler)
+  - `onCmdInit` and `onCmdExit` (per-command, called before/after each command, but NOT for the main `run()` handler)
 
   **Global Hooks:**
   - `onLauncherStart`: Called once, before any command/run() is executed.
   - `onLauncherEnd`: Called once, after all command/run() logic is finished (even if an error occurs).
 
   **Per-Command Hooks:**
-  - `onCmdStart`: Called before each command (not for main `run()`).
-  - `onCmdEnd`: Called after each command (not for main `run()`).
+  - `onCmdInit`: Called before each command (not for main `run()`).
+  - `onCmdExit`: Called after each command (not for main `run()`).
 
   This means:
-  - If your CLI has multiple commands, `onCmdStart` and `onCmdEnd` will be called for each command invocation, not just once for the whole CLI process.
+  - If your CLI has multiple commands, `onCmdInit` and `onCmdExit` will be called for each command invocation, not just once for the whole CLI process.
   - If your main command has a `run()` handler (and no command is invoked), these hooks are **not** called; use the `run()` handler itself or the global hooks for such logic.
   - This allows you to perform setup/teardown logic specific to each command execution.
   - If you want logic to run only once for the entire CLI process, use `onLauncherStart` and `onLauncherEnd`.
@@ -567,18 +569,18 @@ Finally, a full-featured CLI launcher without the ceremony. `@reliverse/rempts`'
   const main = defineCommand({
     onLauncherStart() { relinka('info', 'Global setup (once per process)'); },
     onLauncherEnd() { relinka('info', 'Global cleanup (once per process)'); },
-    onCmdStart() { relinka('info', 'Setup for each command'); },
-    onCmdEnd() { relinka('info', 'Cleanup for each command'); },
+    onCmdInit() { relinka('info', 'Setup for each command'); },
+    onCmdExit() { relinka('info', 'Cleanup for each command'); },
     commands: { ... },
     run() { relinka('info', 'Main run handler (no command)'); },
   });
   // onLauncherStart/onLauncherEnd are called once per process
-  // onCmdStart/onCmdEnd are called for every command (not for main run())
+  // onCmdInit/onCmdExit are called for every command (not for main run())
   // If you want per-run() logic, use the run() handler or global hooks
   ```
 
 - **Deprecation Notice**
-  - The legacy `setup` and `cleanup` names are still supported as aliases for per-command hooks, but will be removed in a future major version. Prefer `onCmdStart` and `onCmdEnd` going forward.
+  - The legacy `setup` and `cleanup` names are still supported as aliases for per-command hooks, but will be removed in a future major version. Prefer `onCmdInit` and `onCmdExit` going forward.
   - The `subCommands` property is deprecated as well. Please use `commands` instead. `subCommands` will be removed in a future major version.
 
 - **Dynamic Usage Examples:**

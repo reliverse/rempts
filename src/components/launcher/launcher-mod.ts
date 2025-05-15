@@ -86,6 +86,8 @@ type CommandContext<ARGS> = {
 
 type CommandRun<ARGS> = (ctx: CommandContext<ARGS>) => void | Promise<void>;
 
+type CommandHook<ARGS> = (ctx: CommandContext<ARGS>) => void | Promise<void>;
+
 type DefineCommandOptions<A extends ArgDefinitions = EmptyArgs> = {
   meta?: CommandMeta;
   args?: A;
@@ -99,21 +101,21 @@ type DefineCommandOptions<A extends ArgDefinitions = EmptyArgs> = {
    */
   subCommands?: CommandsMap;
   /**
-   * Called before the command runs
+   * Called before the command runs. Receives `{ args, raw }` (parsed args and raw argv).
    */
-  onCmdStart?: () => void | Promise<void>;
+  onCmdInit?: CommandHook<InferArgTypes<A>>;
   /**
-   * Called after the command finishes
+   * Called after the command finishes. Receives `{ args, raw }` (parsed args and raw argv).
    */
-  onCmdEnd?: () => void | Promise<void>;
+  onCmdExit?: CommandHook<InferArgTypes<A>>;
   /**
-   * @deprecated Use onCmdStart instead
+   * @deprecated Use onCmdInit instead
    */
-  setup?: () => void | Promise<void>;
+  setup?: CommandHook<InferArgTypes<A>>;
   /**
-   * @deprecated Use onCmdEnd instead
+   * @deprecated Use onCmdExit instead
    */
-  cleanup?: () => void | Promise<void>;
+  cleanup?: CommandHook<InferArgTypes<A>>;
   /**
    * Called once per CLI process, before any command/run() is executed
    */
@@ -137,21 +139,21 @@ export type Command<A extends ArgDefinitions = EmptyArgs> = {
    */
   subCommands?: CommandsMap;
   /**
-   * Called before the command runs
+   * Called before the command runs. Receives `{ args, raw }` (parsed args and raw argv).
    */
-  onCmdStart?: () => void | Promise<void>;
+  onCmdInit?: CommandHook<InferArgTypes<A>>;
   /**
-   * Called after the command finishes
+   * Called after the command finishes. Receives `{ args, raw }` (parsed args and raw argv).
    */
-  onCmdEnd?: () => void | Promise<void>;
+  onCmdExit?: CommandHook<InferArgTypes<A>>;
   /**
-   * @deprecated Use onCmdStart instead
+   * @deprecated Use onCmdInit instead
    */
-  setup?: () => void | Promise<void>;
+  setup?: CommandHook<InferArgTypes<A>>;
   /**
-   * @deprecated Use onCmdEnd instead
+   * @deprecated Use onCmdExit instead
    */
-  cleanup?: () => void | Promise<void>;
+  cleanup?: CommandHook<InferArgTypes<A>>;
   /**
    * Called once per CLI process, before any command/run() is executed
    */
@@ -286,9 +288,9 @@ export function defineCommand<A extends ArgDefinitions = EmptyArgs>(
 ): Command<A> {
   // Prefer new names, but support legacy as fallback
   // eslint-disable-next-line @typescript-eslint/no-deprecated
-  const onCmdStart = options.onCmdStart || options.setup;
+  const onCmdInit = options.onCmdInit || options.setup;
   // eslint-disable-next-line @typescript-eslint/no-deprecated
-  const onCmdEnd = options.onCmdEnd || options.cleanup;
+  const onCmdExit = options.onCmdExit || options.cleanup;
   const onLauncherStart = options.onLauncherStart;
   const onLauncherEnd = options.onLauncherEnd;
   // Prefer 'commands', fallback to deprecated 'subCommands'
@@ -303,13 +305,13 @@ export function defineCommand<A extends ArgDefinitions = EmptyArgs>(
     args: options.args || ({} as A),
     run: options.run,
     commands,
-    onCmdStart,
-    onCmdEnd,
+    onCmdInit,
+    onCmdExit,
     onLauncherStart,
     onLauncherEnd,
     // Backward-compatible aliases
-    setup: onCmdStart,
-    cleanup: onCmdEnd,
+    setup: onCmdInit,
+    cleanup: onCmdExit,
   };
   // Add deprecated subCommands getter
   Object.defineProperty(cmdObj, "subCommands", {
@@ -429,7 +431,7 @@ export async function showUsage<A extends ArgDefinitions>(
         );
       }
       if (subCommandNames.length > 0) {
-        relinka("log", "Available commands (run with `help` to see more):");
+        relinka("info", "Available commands (run with `help` to see more):");
         subCommandDefs.forEach(({ name, def }) => {
           const desc = def?.meta?.description ?? "";
           relinka("log", `• ${name}${desc ? ` | ${desc}` : ""}`);
@@ -488,7 +490,7 @@ export async function showUsage<A extends ArgDefinitions>(
     }
 
     if (subCommandNames.length > 0) {
-      relinka("log", "Available commands (run with `help` to see more):");
+      relinka("info", "Available commands (run with `help` to see more):");
       subCommandDefs.forEach(({ name, def }) => {
         const desc = def?.meta?.description ?? "";
         relinka("log", `• ${name}${desc ? ` | ${desc}` : ""}`);
@@ -499,7 +501,7 @@ export async function showUsage<A extends ArgDefinitions>(
   }
 
   // Common options
-  relinka("log", "Available options:");
+  relinka("info", "Available options:");
   relinka("log", "• -h, --help    | Show help");
   relinka("log", "• -v, --version | Show version");
   relinka("log", "• --debug       | Enable debug mode");
@@ -655,14 +657,20 @@ export async function runMain<A extends ArgDefinitions = EmptyArgs>(
     if (fileBasedEnabled && rawArgv.length > 0 && !isFlag(rawArgv[0])) {
       const [subName, ...subCmdArgv] = rawArgv;
       try {
-        if (typeof command.onCmdStart === "function")
-          await command.onCmdStart();
+        const ctx = getParsedContext(command, rawArgv, parserOptions);
+        if (typeof command.onCmdInit === "function")
+          await command.onCmdInit(ctx);
         await runFileBasedSubCmd(
           subName,
           subCmdArgv,
           parserOptions.fileBasedCmds,
           parserOptions,
-          command.onCmdEnd,
+          command.onCmdExit
+            ? async (_subCtx) => {
+                // subCtx is context for subcommand, but pass main context for main's onCmdExit
+                await command.onCmdExit?.(ctx);
+              }
+            : undefined,
         );
         if (autoExit) process.exit(0);
         return;
@@ -699,13 +707,18 @@ export async function runMain<A extends ArgDefinitions = EmptyArgs>(
       }
       if (subSpec) {
         try {
-          if (typeof command.onCmdStart === "function")
-            await command.onCmdStart();
+          const ctx = getParsedContext(command, rawArgv, parserOptions);
+          if (typeof command.onCmdInit === "function")
+            await command.onCmdInit(ctx);
           await runSubCommand(
             subSpec,
             subCmdArgv,
             parserOptions,
-            command.onCmdEnd,
+            command.onCmdExit
+              ? async (_subCtx) => {
+                  await command.onCmdExit?.(ctx);
+                }
+              : undefined,
           );
           if (autoExit) process.exit(0);
           return;
@@ -717,11 +730,11 @@ export async function runMain<A extends ArgDefinitions = EmptyArgs>(
       }
     }
 
-    // For main run() handler, do NOT call onCmdStart/onCmdEnd
+    // For main run() handler, do NOT call onCmdInit/onCmdExit
     try {
       await runCommandWithArgs(command, rawArgv, parserOptions);
     } finally {
-      // No onCmdEnd here
+      // No onCmdExit here
     }
 
     // @reliverse/relinka [2/2]
@@ -774,7 +787,7 @@ async function runFileBasedSubCmd(
   argv: string[],
   fileCmdOpts: FileBasedCmdsOptions,
   parserOptions: ReliArgParserOptions & { autoExit?: boolean },
-  parentFinish?: () => void | Promise<void>,
+  parentFinish?: (ctx: CommandContext<any>) => void | Promise<void>,
 ) {
   const subPathDir = path.join(fileCmdOpts.cmdsRootPath, subName);
   let importPath: string | undefined;
@@ -830,9 +843,16 @@ async function runFileBasedSubCmd(
   }
 
   try {
-    await runCommandWithArgs(subCommand, argv, parserOptions);
+    const subCtx = await runCommandWithArgs(
+      subCommand,
+      argv,
+      parserOptions,
+      true,
+    );
+    if (typeof parentFinish === "function" && subCtx)
+      await parentFinish(subCtx);
   } finally {
-    if (typeof parentFinish === "function") await parentFinish();
+    // ...
   }
 }
 
@@ -843,13 +863,20 @@ async function runSubCommand(
   spec: CommandSpec,
   argv: string[],
   parserOptions: ReliArgParserOptions & { autoExit?: boolean },
-  parentFinish?: () => void | Promise<void>,
+  parentFinish?: (ctx: CommandContext<any>) => void | Promise<void>,
 ) {
   const subCommand = await loadSubCommand(spec);
   try {
-    await runCommandWithArgs(subCommand, argv, parserOptions);
+    const subCtx = await runCommandWithArgs(
+      subCommand,
+      argv,
+      parserOptions,
+      true,
+    );
+    if (typeof parentFinish === "function" && subCtx)
+      await parentFinish(subCtx);
   } finally {
-    if (typeof parentFinish === "function") await parentFinish();
+    // ...
   }
 }
 
@@ -863,7 +890,8 @@ async function runCommandWithArgs<A extends ArgDefinitions>(
     fileBasedCmds?: FileBasedCmdsOptions;
     autoExit?: boolean;
   },
-) {
+  returnCtx?: boolean,
+): Promise<CommandContext<InferArgTypes<A>> | undefined> {
   const autoExit = parserOptions.autoExit !== false;
 
   // Prepare boolean keys and default values from command argument definitions.
@@ -872,7 +900,10 @@ async function runCommandWithArgs<A extends ArgDefinitions>(
   );
   const defaultMap: Record<string, any> = {};
   for (const [argKey, def] of Object.entries(command.args || {})) {
-    if (def.default !== undefined) {
+    if (def.type === "boolean") {
+      // Always default to false if not specified
+      defaultMap[argKey] = def.default !== undefined ? def.default : false;
+    } else if (def.default !== undefined) {
       if (def.type === "array" && typeof def.default === "string") {
         defaultMap[argKey] = [def.default];
       } else {
@@ -938,8 +969,14 @@ async function runCommandWithArgs<A extends ArgDefinitions>(
     }
 
     try {
-      // Cast the raw value (or let default handle if rawVal is null/undefined)
-      finalArgs[key] = castArgValue(def, rawVal, key);
+      if (def.type === "boolean") {
+        // Always default to false if not specified
+        finalArgs[key] =
+          rawVal !== undefined ? castArgValue(def, rawVal, key) : false;
+      } else {
+        // Cast the raw value (or let default handle if rawVal is null/undefined)
+        finalArgs[key] = castArgValue(def, rawVal, key);
+      }
 
       // Validate against options if provided and value exists
       if (def.type === "array" && def.options && finalArgs[key]) {
@@ -999,6 +1036,8 @@ async function runCommandWithArgs<A extends ArgDefinitions>(
     if (autoExit) process.exit(1);
     else throw err;
   }
+  if (returnCtx) return ctx;
+  return undefined;
 }
 
 /**
@@ -1084,7 +1123,10 @@ export async function runCmd<A extends ArgDefinitions = EmptyArgs>(
   );
   const defaultMap: Record<string, any> = {};
   for (const [argKey, def] of Object.entries(command.args || {})) {
-    if (def.default !== undefined) {
+    if (def.type === "boolean") {
+      // Always default to false if not specified
+      defaultMap[argKey] = def.default !== undefined ? def.default : false;
+    } else if (def.default !== undefined) {
       if (def.type === "array" && typeof def.default === "string") {
         defaultMap[argKey] = [def.default];
       } else {
@@ -1170,4 +1212,70 @@ export async function runCmd<A extends ArgDefinitions = EmptyArgs>(
   } else {
     throw new Error("Command has no run() handler.");
   }
+}
+
+/**
+ * Helper to parse args for a command and argv
+ */
+function getParsedContext<A extends ArgDefinitions>(
+  command: Command<A>,
+  argv: string[],
+  parserOptions: ReliArgParserOptions,
+): CommandContext<InferArgTypes<A>> {
+  // Prepare boolean keys and default values from command argument definitions.
+  const booleanKeys = Object.keys(command.args || {}).filter(
+    (k) => command.args[k].type === "boolean",
+  );
+  const defaultMap: Record<string, any> = {};
+  for (const [argKey, def] of Object.entries(command.args || {})) {
+    if (def.type === "boolean") {
+      // Always default to false if not specified
+      defaultMap[argKey] = def.default !== undefined ? def.default : false;
+    } else if (def.default !== undefined) {
+      if (def.type === "array" && typeof def.default === "string") {
+        defaultMap[argKey] = [def.default];
+      } else {
+        defaultMap[argKey] = def.default;
+      }
+    }
+  }
+  const mergedParserOptions: ReliArgParserOptions = {
+    ...parserOptions,
+    boolean: [...(parserOptions.boolean || []), ...booleanKeys],
+    defaults: { ...defaultMap, ...(parserOptions.defaults || {}) },
+  };
+  const parsed = reliArgParser(argv, mergedParserOptions);
+  const finalArgs: Record<string, any> = {};
+  const positionalKeys = Object.keys(command.args || {}).filter(
+    (k) => command.args[k].type === "positional",
+  );
+  const leftoverPositionals = [...(parsed._ || [])];
+  for (let i = 0; i < positionalKeys.length; i++) {
+    const key = positionalKeys[i];
+    const def = command.args?.[key] as any;
+    const val = leftoverPositionals[i];
+    finalArgs[key] = val != null ? castArgValue(def, val, key) : def.default;
+  }
+  const otherKeys = Object.keys(command.args || {}).filter(
+    (k) => command.args[k].type !== "positional",
+  );
+  for (const key of otherKeys) {
+    const def = command.args?.[key];
+    let rawVal = parsed[key];
+    if (
+      def.type === "array" &&
+      rawVal !== undefined &&
+      !Array.isArray(rawVal)
+    ) {
+      rawVal = [rawVal];
+    }
+    if (def.type === "boolean") {
+      // Always default to false if not specified
+      finalArgs[key] =
+        rawVal !== undefined ? castArgValue(def, rawVal, key) : false;
+    } else {
+      finalArgs[key] = castArgValue(def, rawVal, key);
+    }
+  }
+  return { args: finalArgs as InferArgTypes<A>, raw: argv };
 }
