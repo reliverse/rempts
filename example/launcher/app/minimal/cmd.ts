@@ -1,3 +1,5 @@
+import { relinka } from "@reliverse/relinka";
+
 import { defineArgs, defineCommand } from "~/mod.js";
 
 export default defineCommand({
@@ -9,9 +11,10 @@ export default defineCommand({
     name: {
       type: "string",
       description: "your name",
+      required: true,
     },
   }),
   run({ args }) {
-    console.log(`Hello, ${args.name}!`);
+    relinka("success", `👋 Hello, ${args.name}!`);
   },
 });

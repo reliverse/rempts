@@ -155,7 +155,7 @@ await main();
 ```ts
 import { relinka } from "@reliverse/relinka";
 
-import { defineCommand, runMain } from "~/mod.js";
+import { defineCommand, runMain } from "@reliverse/rempts";
 
 const main = defineCommand({
   meta: {
@@ -238,7 +238,7 @@ defineCommand({
   args: {
     name: { type: "string", required: true },
     verbose: { type: "boolean", default: false },
-    animals: { type: "array", options: ["cat","dog"] },
+    animals: { type: "array", default: ["cat","dog"] },
   },
   async run({ args, raw }) { // or `async run(ctx)`
     relinka("log", args.name, args.verbose, args.animals); // or `relinka("log", ctx.args.name, ...);`
@@ -283,7 +283,7 @@ When playing with the example, you can run e.g. `bun dev:modern nested foo bar b
 git clone https://github.com/reliverse/rempts
 cd rempts
 bun i
-bun dev # supported options: name
+bun dev
 ```
 
 - `bun dev:prompts`: This example will show you a `multiselectPrompt()` where you can choose which CLI prompts you want to play with.
@@ -563,12 +563,12 @@ Finally, a full-featured CLI launcher without the ceremony. `@reliverse/rempts`'
 
 - **Lifecycle Hooks:**
   You can define optional lifecycle hooks in your main command:
-  - `onLauncherStart` and `onLauncherEnd` (global, called once per CLI process)
+  - `onLauncherInit` and `onLauncherExit` (global, called once per CLI process)
   - `onCmdInit` and `onCmdExit` (per-command, called before/after each command, but NOT for the main `run()` handler)
 
   **Global Hooks:**
-  - `onLauncherStart`: Called once, before any command/run() is executed.
-  - `onLauncherEnd`: Called once, after all command/run() logic is finished (even if an error occurs).
+  - `onLauncherInit`: Called once, before any command/run() is executed.
+  - `onLauncherExit`: Called once, after all command/run() logic is finished (even if an error occurs).
 
   **Per-Command Hooks:**
   - `onCmdInit`: Called before each command (not for main `run()`).
@@ -578,20 +578,20 @@ Finally, a full-featured CLI launcher without the ceremony. `@reliverse/rempts`'
   - If your CLI has multiple commands, `onCmdInit` and `onCmdExit` will be called for each command invocation, not just once for the whole CLI process.
   - If your main command has a `run()` handler (and no command is invoked), these hooks are **not** called; use the `run()` handler itself or the global hooks for such logic.
   - This allows you to perform setup/teardown logic specific to each command execution.
-  - If you want logic to run only once for the entire CLI process, use `onLauncherStart` and `onLauncherEnd`.
+  - If you want logic to run only once for the entire CLI process, use `onLauncherInit` and `onLauncherExit`.
 
   **Example:**
 
   ```ts
   const main = defineCommand({
-    onLauncherStart() { relinka('info', 'Global setup (once per process)'); },
-    onLauncherEnd() { relinka('info', 'Global cleanup (once per process)'); },
+    onLauncherInit() { relinka('info', 'Global setup (once per process)'); },
+    onLauncherExit() { relinka('info', 'Global cleanup (once per process)'); },
     onCmdInit() { relinka('info', 'Setup for each command'); },
     onCmdExit() { relinka('info', 'Cleanup for each command'); },
     commands: { ... },
     run() { relinka('info', 'Main run handler (no command)'); },
   });
-  // onLauncherStart/onLauncherEnd are called once per process
+  // onLauncherInit/onLauncherExit are called once per process
   // onCmdInit/onCmdExit are called for every command (not for main run())
   // If you want per-run() logic, use the run() handler or global hooks
   ```
@@ -627,7 +627,63 @@ Finally, a full-featured CLI launcher without the ceremony. `@reliverse/rempts`'
 
 ### Launcher Programmatic Execution
 
-For larger CLIs or when you want to programmatically run commands (e.g.: [prompt demo](./example/prompts/mod.ts), tests, etc), you can organize your commands in a `cmds.ts` file and use the `runCmd` utility.
+For larger CLIs or when you want to programmatically run commands (e.g.: [prompt demo](./example/prompts/mod.ts), tests, etc), you can organize your commands in a `cmds.ts` file and use the `runCmd` utility. Example:
+
+```ts
+// example/launcher/app/runcmd/cmd.ts
+
+import { relinka } from "@reliverse/relinka";
+import { defineArgs, defineCommand, runCmd } from "@reliverse/rempts";
+import { cmdMinimal } from "../cmds.js";
+
+export default defineCommand({
+  meta: {
+    name: "runcmd",
+    description:
+      "Demonstrate how to use runCmd() to invoke another command programmatically.",
+  },
+  args: defineArgs({
+    name: {
+      type: "string",
+      description: "your name",
+    },
+  }),
+  async run({ args }) {
+    // const username = args.name ?? "Alice";
+    const username = args.name; // intentionally missing fallback
+    relinka(
+      "info",
+      `Running the 'minimal' command using runCmd() with name='${username}'`,
+    );
+    await runCmd(await cmdMinimal(), ["--name", username]);
+    relinka("log", "Done running 'minimal' via runCmd().");
+  },
+});
+```
+
+```ts
+// example/launcher/app/minimal/cmd.ts
+
+import { relinka } from "@reliverse/relinka";
+import { defineArgs, defineCommand } from "@reliverse/rempts";
+
+export default defineCommand({
+  meta: {
+    name: "minimal",
+    description: "hello world",
+  },
+  args: defineArgs({
+    name: {
+      type: "string",
+      description: "your name",
+      required: true,
+    },
+  }),
+  run({ args }) {
+    relinka("success", `👋 Hello, ${args.name}!`);
+  },
+});
+```
 
 **Pro Tips & Best Practices**:
 
@@ -641,7 +697,7 @@ For larger CLIs or when you want to programmatically run commands (e.g.: [prompt
 ```ts
 // example/launcher/app/cmds.ts
 
-export async function getCmdHooks() {
+export async function cmdHooks() {
   return (await import("./hooks/cmd.js")).default;
 }
 
@@ -657,12 +713,12 @@ Usage:
 ```ts
 // example/prompts/mod.ts
 
-import { getCmdHooks } from "@/launcher/app/cmds.js";
+import { cmdHooks } from "@/launcher/app/cmds.js";
 import { runCmd } from "@reliverse/rempts";
 
-await runCmd(await getCmdHooks(), ["--flag"]);
+await runCmd(await cmdHooks(), ["--flag"]);
 // OR:
-// const hooksCmd = await getCmdHooks();
+// const hooksCmd = await cmdHooks();
 // await runCmd(hooksCmd, ["--flag"]);
 ```
 
@@ -698,7 +754,7 @@ await runCmd(hooksCmd, ["--flag"]); // argv as array of strings
 Or with lazy loading:
 
 ```ts
-const hooksCmd = await getCmdHooks();
+const hooksCmd = await cmdHooks();
 await runCmd(hooksCmd, ["--flag"]);
 ```
 
@@ -710,6 +766,162 @@ await runCmd(hooksCmd, ["--flag"]);
 - Lazy loading (`async function`) loads each command only when needed, improving startup time and memory usage.
 
 Choose the pattern that best fits your CLI's size and usage!
+
+## Argument Types: Usage Comparison
+
+Below is a demonstration of how to define and use all supported argument types in rempts: positional, boolean, string, number, and array. This includes example CLI invocations and the resulting parsed output.
+
+```ts
+import { defineCommand, runMain } from "@reliverse/rempts";
+
+const main = defineCommand({
+  meta: {
+    name: "mycli",
+    version: "1.0.0",
+    description: "Demo of all argument types",
+  },
+  args: {
+    // Positional argument (required)
+    input: {
+      type: "positional",
+      required: true,
+      description: "Input file path",
+    },
+    // Boolean flag (default: false)
+    verbose: {
+      type: "boolean",
+      default: false,
+      description: "Enable verbose output",
+    },
+    // String option (optional)
+    name: {
+      type: "string",
+      description: "Your name",
+    },
+    // Number option (optional, with default)
+    count: {
+      type: "number",
+      default: 1,
+      description: "How many times to run",
+    },
+    // Array option (can be repeated, accepts any value)
+    tags: {
+      type: "array",
+      default: ["demo"],
+      description: "Tags for this run (repeatable)",
+    },
+  },
+  run({ args }) {
+    console.log("Parsed args:", args);
+  },
+});
+
+await runMain(main);
+```
+
+### Example CLI Invocations
+
+#### 1. Positional argument
+
+```bash
+mycli input.txt
+# → args.input = "input.txt"
+```
+
+#### 2. Boolean flag
+
+```bash
+mycli input.txt --verbose
+# → args.verbose = true
+mycli input.txt --no-verbose
+# → args.verbose = false
+```
+
+#### 3. String option
+
+```bash
+mycli input.txt --name Alice
+# → args.name = "Alice"
+mycli input.txt
+# → args.name = undefined
+```
+
+#### 4. Number option
+
+```bash
+mycli input.txt --count 5
+# → args.count = 5
+mycli input.txt
+# → args.count = 1 (default)
+```
+
+#### 5. Array option (repeatable, accepts any value)
+
+You can provide array values using any of the following syntaxes (mix and match as needed):
+
+- Repeated flags:
+
+  ```bash
+  mycli input.txt --tags foo --tags bar --tags baz
+  # → args.tags = ["foo", "bar", "baz"]
+  ```
+
+- Comma-separated values (with or without spaces):
+
+  ```bash
+  mycli input.txt --tags foo,bar,baz
+  mycli input.txt --tags foo, bar, baz
+  # → args.tags = ["foo", "bar", "baz"]
+  ```
+
+- Bracketed values (must be passed as a single argument!):
+
+  ```bash
+  mycli input.txt --tags "[foo,bar,baz]"
+  # → args.tags = ["foo", "bar", "baz"]
+  ```
+
+- Mix and match:
+
+  ```bash
+  mycli input.txt --tags foo --tags "[bar,bar2,bar3]" --tags baz
+  # → args.tags = ["foo", "bar", "bar2", "bar3", "baz"]
+  ```
+
+> **Important:**
+>
+> - **Quoted values (single or double quotes around elements) are NOT supported and will throw an error.**
+>   - Example: `--tags 'foo'` or `--tags "[\"bar\",'baz']"` will throw an error.
+> - **Bracketed or comma-separated lists must be passed as a single argument.**
+>   - Example: `--tags "[foo,bar]"` (quotes around the whole value, not around elements)
+>   - If you split a bracketed value across arguments, you will get a warning or incorrect parsing.
+> - **Shells remove quotes before passing arguments to the CLI.** If you want to pass a value with commas or brackets, always quote the whole value.
+> - **Troubleshooting:**
+>   - If you see a warning about possible shell splitting, try quoting the whole value: `--tags "[a,b,c]"`
+>   - If you see an error about quoted values, remove quotes around individual elements.
+
+**Example error:**
+
+```bash
+$ bun example/launcher/modern.ts build --entry "[foo.ts," "bar.ts]"
+✖   Don't use quotes around array elements.
+✖   Also — don't use spaces — unless you wrap the whole array in quotes.
+⚠   Array argument --entry: Detected possible shell splitting of bracketed value ('[foo.ts,').
+⚠   If you intended to pass a bracketed list, quote the whole value like: --entry "[a, b, c]"
+```
+
+#### 6. All together
+
+```bash
+mycli input.txt --verbose --name Alice --count 3 --tags foo --tags bar
+# → args = {
+#     input: "input.txt",
+#     verbose: true,
+#     name: "Alice",
+#     count: 3,
+#     tags: ["foo", "bar"]
+#   }
+```
 
 ## Contributing
 

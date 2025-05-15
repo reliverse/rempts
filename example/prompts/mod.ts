@@ -5,7 +5,7 @@ import { re } from "@reliverse/relico";
 import { relinka } from "@reliverse/relinka";
 import { isBunRuntime } from "@reliverse/runtime";
 
-import { getCmdHooks } from "@/launcher/app/cmds.js";
+import { cmdHooks } from "@/launcher/app/cmds.js";
 import { runCmd } from "~/components/launcher/launcher-mod.js";
 import {
   defineCommand,
@@ -98,7 +98,7 @@ const main = defineCommand({
         await fullFeaturedExample();
         break;
       case "spinner": {
-        await runCmd(await getCmdHooks(), ["--flag"]);
+        await runCmd(await cmdHooks(), ["--flag"]);
         break;
       }
       case "cmd-a":

@@ -20,6 +20,7 @@ export {
   defineArgs,
   showUsage,
   runMain,
+  runCmd,
 } from "./components/launcher/launcher-mod.js";
 export { toBaseColor, toSolidColor } from "./components/msg-fmt/colors.js";
 export {

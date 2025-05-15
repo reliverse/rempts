@@ -11,12 +11,6 @@ import { readPackageJSON } from "pkg-types";
 //   Type Definitions
 // -------------------------
 
-// Helper type for compile-time validation error
-type InvalidDefaultError<O extends readonly string[]> = {
-  __error__: "Default value(s) must be a subset of options";
-  options: O;
-};
-
 type EmptyArgs = Record<string, never>;
 
 type BaseArgProps = {
@@ -47,7 +41,6 @@ type NumberArgDefinition = {
 type ArrayArgDefinition = {
   type: "array";
   default?: string | readonly string[];
-  options: readonly string[];
 } & BaseArgProps;
 
 export type ArgDefinition =
@@ -119,11 +112,11 @@ type DefineCommandOptions<A extends ArgDefinitions = EmptyArgs> = {
   /**
    * Called once per CLI process, before any command/run() is executed
    */
-  onLauncherStart?: () => void | Promise<void>;
+  onLauncherInit?: () => void | Promise<void>;
   /**
    * Called once per CLI process, after all command/run() logic is finished
    */
-  onLauncherEnd?: () => void | Promise<void>;
+  onLauncherExit?: () => void | Promise<void>;
 };
 
 export type Command<A extends ArgDefinitions = EmptyArgs> = {
@@ -157,11 +150,11 @@ export type Command<A extends ArgDefinitions = EmptyArgs> = {
   /**
    * Called once per CLI process, before any command/run() is executed
    */
-  onLauncherStart?: () => void | Promise<void>;
+  onLauncherInit?: () => void | Promise<void>;
   /**
    * Called once per CLI process, after all command/run() logic is finished
    */
-  onLauncherEnd?: () => void | Promise<void>;
+  onLauncherExit?: () => void | Promise<void>;
 };
 
 export type InferArgTypes<A extends ArgDefinitions> = {
@@ -173,32 +166,9 @@ export type InferArgTypes<A extends ArgDefinitions> = {
         ? string
         : A[K] extends NumberArgDefinition
           ? number
-          : A[K] extends {
-                type: "array";
-                options: infer O extends readonly string[];
-              }
-            ? O[number][]
+          : A[K] extends { type: "array" }
+            ? string[]
             : never;
-};
-
-// Helper mapped type to validate defaults for array args
-// (restored after accidental removal)
-type ValidateArrayDefaults<A extends ArgDefinitions> = {
-  [K in keyof A]: A[K] extends {
-    type: "array";
-    options: infer O extends readonly string[];
-    default?: infer D;
-  }
-    ? D extends undefined // If default is not provided, it's fine
-      ? A[K]
-      : D extends O[number] // If default is a single string, check if it's in options
-        ? A[K]
-        : D extends readonly (infer E)[] // If default is an array
-          ? E extends O[number] // Check if ALL elements E are in O
-            ? A[K]
-            : Omit<A[K], "default"> & { default: InvalidDefaultError<O> } // Error: Not all elements are valid
-          : Omit<A[K], "default"> & { default: InvalidDefaultError<O> } // Error: Default is neither undefined, single valid, nor array of valid
-    : A[K]; // Keep other arg types as they are
 };
 
 // Helper to build a plausible example CLI argument string from ArgDefinitions
@@ -237,11 +207,7 @@ function buildExampleArgs(args: ArgDefinitions): string {
           parts.push(`--${key}=${String(def.default ?? 42)}`);
           break;
         case "array":
-          if (def.options && def.options.length > 0) {
-            parts.push(`--${key}=${String(def.options[0])}`);
-          } else {
-            parts.push(`--${key}=${String(key)}`);
-          }
+          parts.push(`--${key}=${String(def.default ?? key)}`);
           break;
       }
     }
@@ -291,8 +257,8 @@ export function defineCommand<A extends ArgDefinitions = EmptyArgs>(
   const onCmdInit = options.onCmdInit || options.setup;
   // eslint-disable-next-line @typescript-eslint/no-deprecated
   const onCmdExit = options.onCmdExit || options.cleanup;
-  const onLauncherStart = options.onLauncherStart;
-  const onLauncherEnd = options.onLauncherEnd;
+  const onLauncherInit = options.onLauncherInit;
+  const onLauncherExit = options.onLauncherExit;
   // Prefer 'commands', fallback to deprecated 'subCommands'
   let commands = options.commands;
   if (!commands) {
@@ -307,8 +273,8 @@ export function defineCommand<A extends ArgDefinitions = EmptyArgs>(
     commands,
     onCmdInit,
     onCmdExit,
-    onLauncherStart,
-    onLauncherEnd,
+    onLauncherInit,
+    onLauncherExit,
     // Backward-compatible aliases
     setup: onCmdInit,
     cleanup: onCmdExit,
@@ -510,8 +476,6 @@ export async function showUsage<A extends ArgDefinitions>(
       subCommandDefs.forEach(({ name, def }) => {
         const desc = def?.meta?.description ?? "";
         relinka("log", `• ${name}${desc ? ` | ${desc}` : ""}`);
-        // const version = def?.meta?.version ? ` | ${def.meta.version}` : "";
-        // relinka("log", `• ${name}${desc ? ` | ${desc}` : ""}${version}`);
       });
     }
   }
@@ -538,8 +502,6 @@ export async function showUsage<A extends ArgDefinitions>(
       if (def.default !== undefined)
         parts.push(`default=${JSON.stringify(def.default)}`);
       if (def.required) parts.push("required");
-      if (def.type === "array" && def.options)
-        parts.push(`options: ${def.options.join(", ")}`);
       relinka("log", parts.filter(Boolean).join(" | "));
     }
   }
@@ -565,8 +527,8 @@ export async function runMain<A extends ArgDefinitions = EmptyArgs>(
     };
   } = {},
 ) {
-  if (typeof command.onLauncherStart === "function")
-    await command.onLauncherStart();
+  if (typeof command.onLauncherInit === "function")
+    await command.onLauncherInit();
   try {
     // - If fileBasedCmds is not provided and no `commands`, enable file-based commands with default path
     // - If not provided and `commands` exist, do not enable file-based commands
@@ -792,8 +754,8 @@ export async function runMain<A extends ArgDefinitions = EmptyArgs>(
     // @reliverse/relinka [2/2]
     await relinkaShutdown();
   } finally {
-    if (typeof command.onLauncherEnd === "function")
-      await command.onLauncherEnd();
+    if (typeof command.onLauncherExit === "function")
+      await command.onLauncherExit();
   }
 }
 
@@ -1017,8 +979,8 @@ async function runCommandWithArgs<A extends ArgDefinitions>(
     const def = command.args?.[key] as PositionalArgDefinition;
     const val = leftoverPositionals[i];
     if (val == null && def.required) {
-      relinka("error", `Missing required positional argument: <${key}>`);
       await showUsage(command, parserOptions);
+      relinka("error", `Missing required positional argument: <${key}>`);
       if (autoExit) process.exit(1);
       else throw new Error(`Missing required positional argument: <${key}>`);
     }
@@ -1045,8 +1007,8 @@ async function runCommandWithArgs<A extends ArgDefinitions>(
     // Check requirement before casting (default might satisfy it)
     const valueOrDefault = rawVal ?? defaultMap[key];
     if (valueOrDefault == null && def.required) {
-      relinka("error", `Missing required argument: --${key}`);
       await showUsage(command, parserOptions);
+      relinka("error", `Missing required argument: --${key}`);
       if (autoExit) process.exit(1);
       else throw new Error(`Missing required argument: --${key}`);
     }
@@ -1059,19 +1021,6 @@ async function runCommandWithArgs<A extends ArgDefinitions>(
       } else {
         // Cast the raw value (or let default handle if rawVal is null/undefined)
         finalArgs[key] = castArgValue(def, rawVal, key);
-      }
-
-      // Validate against options if provided and value exists
-      if (def.type === "array" && def.options && finalArgs[key]) {
-        const values = finalArgs[key] as string[]; // castArgValue ensures it's an array or undefined
-        const invalidOptions = values.filter(
-          (v) => def.options && !def.options.includes(v),
-        ); // Check def.options exists
-        if (invalidOptions.length > 0) {
-          throw new Error(
-            `Invalid choice(s) for --${key}: ${invalidOptions.join(", ")}. Allowed options: ${def.options.join(", ")}`,
-          );
-        }
       }
     } catch (err) {
       relinka("error", String(err));
@@ -1106,8 +1055,8 @@ async function runCommandWithArgs<A extends ArgDefinitions>(
       }
       const cmdName = command.meta?.name || "unknown";
       const attempted = argv.length > 0 ? argv.join(" ") : "(no arguments)";
-      relinka("error", `Unknown command or arguments: ${attempted}`);
       await showUsage(command, parserOptions); // Show usage for context
+      relinka("error", `Unknown command or arguments: ${attempted}`);
       if (autoExit) {
         process.exit(1);
       } else {
@@ -1154,9 +1103,55 @@ function castArgValue(def: ArgDefinition, rawVal: any, argName: string): any {
     case "positional":
       return String(rawVal);
     case "array": {
-      // Ensure the result is always an array, even if input was single value
+      // Accept: --tags foo --tags bar --tags [baz,qux] --tags quux --tags bar,bar2,bar3 --tags "bar4, bar5" --tags '[bar6, bar7]'
       const arrVal = Array.isArray(rawVal) ? rawVal : [String(rawVal)];
-      return arrVal.map(String); // Ensure all elements are strings
+      const result: string[] = [];
+      // Convert all values to string for type safety
+      const arrValStr: string[] = arrVal.map(String);
+      // Track if we've warned for this argument
+      let warned = false;
+      for (let v of arrValStr) {
+        // Warn if value looks like a split bracketed array
+        if (
+          !warned &&
+          ((v.startsWith("[") && !v.endsWith("]")) ||
+            (!v.startsWith("[") && v.endsWith("]")))
+        ) {
+          relinka("error", `Don't use quotes around array elements.`);
+          relinka(
+            "error",
+            `Also — don't use spaces — unless you wrap the whole array in quotes.`,
+          );
+          relinka(
+            "warn",
+            `Array argument --${argName}: Detected possible shell splitting of bracketed value ('${v}').`,
+          );
+          relinka(
+            "warn",
+            `If you intended to pass a bracketed list, quote the whole value like: --${argName} "[a, b, c]"`,
+          );
+        }
+        warned = true;
+        // Remove brackets if present
+        if (v.startsWith("[") && v.endsWith("]")) {
+          v = v.slice(1, -1);
+        }
+        // Split by comma (with or without spaces)
+        const parts = v.split(/\s*,\s*/).filter(Boolean);
+        // For each part, throw error if quoted
+        parts.forEach((p) => {
+          if (
+            (p.startsWith('"') && p.endsWith('"')) ||
+            (p.startsWith("'") && p.endsWith("'"))
+          ) {
+            throw new Error(
+              `Array argument --${argName}: Quoted values are not supported due to shell parsing limitations. Please avoid using single or double quotes around array elements.`,
+            );
+          }
+        });
+        result.push(...parts);
+      }
+      return result;
     }
     default:
       return rawVal;
@@ -1176,13 +1171,8 @@ function renderPositional(args: ArgDefinitions) {
 /**
  * Helper to define argument definitions with improved type inference
  * for IntelliSense and validation for array defaults against options.
- *
- * **Note:** For array types, use `as const` on the `options` array to enable
- * precise default value validation (e.g., `options: ["a", "b"] as const`).
  */
-export function defineArgs<A extends ArgDefinitions>(
-  args: A & ValidateArrayDefaults<A>,
-): A {
+export function defineArgs<A extends ArgDefinitions>(args: A): A {
   return args;
 }
 
@@ -1268,20 +1258,18 @@ export async function runCmd<A extends ArgDefinitions = EmptyArgs>(
       throw new Error(`Missing required argument: --${key}`);
     }
 
-    // Cast the raw value (or let default handle if rawVal is null/undefined)
-    finalArgs[key] = castArgValue(def, rawVal, key);
-
-    // Validate against options if provided and value exists
-    if (def.type === "array" && def.options && finalArgs[key]) {
-      const values = finalArgs[key] as string[];
-      const invalidOptions = values.filter(
-        (v) => def.options && !def.options.includes(v),
-      );
-      if (invalidOptions.length > 0) {
-        throw new Error(
-          `Invalid choice(s) for --${key}: ${invalidOptions.join(", ")}. Allowed options: ${def.options.join(", ")}`,
-        );
+    try {
+      if (def.type === "boolean") {
+        // Always default to false if not specified
+        finalArgs[key] =
+          rawVal !== undefined ? castArgValue(def, rawVal, key) : false;
+      } else {
+        // Cast the raw value (or let default handle if rawVal is null/undefined)
+        finalArgs[key] = castArgValue(def, rawVal, key);
       }
+    } catch (err) {
+      relinka("error", String(err));
+      throw err;
     }
   }
 
