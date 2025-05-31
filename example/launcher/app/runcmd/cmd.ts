@@ -2,7 +2,7 @@ import { relinka } from "@reliverse/relinka";
 
 import { defineArgs, defineCommand, runCmd } from "~/mod.js";
 
-import { cmdMinimal } from "../cmds.js";
+import { getCmdMinimal } from "../cmds.js";
 
 export default defineCommand({
   meta: {
@@ -23,7 +23,7 @@ export default defineCommand({
       "info",
       `Running the 'minimal' command using runCmd() with name='${username}'`,
     );
-    await runCmd(await cmdMinimal(), ["--name", username]);
+    await runCmd(await getCmdMinimal(), ["--name", username]);
     relinka("log", "Done running 'minimal' via runCmd().");
   },
 });

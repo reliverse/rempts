@@ -31,7 +31,7 @@ const main = defineCommand({
     if (args.name) {
       relinka("success", `Hello ${args.name}`);
     } else {
-      relinka("error", "Hello, Reliverse!");
+      relinka("error", "Hello, Reliverse :)");
     }
   },
 });

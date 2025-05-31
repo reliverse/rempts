@@ -6,25 +6,27 @@
 
 ## Features
 
+- 😘 drop-in alternative to `citty` + built-in prompts
+- 📂 file-based commands (app-router style by default)
 - 🫂 rempts keeps you from fighting with your CLI tool
+- 🏎️ prompt engine that *feels* modern — and actually is
 - ✨ rempts is your end-to-end CLI UI + command framework
 - 🌿 multi-level file-based subcommands (sibling + nested)
 - 💪 built for DX precision and high-context terminal UX
-- 🏎️ prompt engine that *feels* modern — and actually is
-- 📂 file-based commands (app-router style by default)
 - 🎭 looks great in plain scripts or full CLI apps
-- 🧠 type-safe from args to prompts
-- ⚡ blazing-fast, zero runtime baggage
-- 🧩 router + argument parser built-in
 - 🎨 customizable themes and styled output
 - 📦 built-in output formatter and logger
 - 🚨 crash-safe (Ctrl+C, SIGINT, errors)
+- ⚡ blazing-fast, zero runtime baggage
+- 🧩 router + argument parser built-in
+- 🧠 type-safe from args to prompts
 - 📐 smart layout for small terminals
 - 🎛️ override styles via prompt options
 - 🪄 minimal API surface, maximum expressiveness
 - 🧪 scriptable for testing, stable for production
 - 🏞️ no more hacking together `inquirer`/`citty`/`commander`/`chalk`
-- 🆕 automatic command creation (`bun dler rempts init --cmd my-cmd`)
+- 🆕 automatic command creation (`bun dler rempts --init cmd1 cmd2`)
+- 🐦‍🔥 automatic creation of `src/app/cmds.ts` file (`bun dler rempts`)
 
 ## Installation
 
@@ -36,8 +38,8 @@ bun add @reliverse/rempts
 
 ```bash
 bun add -D @reliverse/dler
-bun dler rempts init --cmd my-cmd-1
-bun dler rempts init --cmds
+bun dler rempts --init cmd1 cmd2 # creates `src/app/cmd1/cmd.ts` and `src/app/cmd2/cmd.ts` files
+bun dler rempts # creates `src/app/cmds.ts` file
 ```
 
 ## Usage Examples
@@ -228,7 +230,7 @@ export default defineCommand({
 **Hint**:
 
 - Install `bun add -D @reliverse/dler`
-- Use `bun dler rempts init --cmd cmd1 cmd2` to init commands for rempts launcher's automatically
+- Use `bun dler rempts --init cmd1 cmd2` to init commands for rempts launcher's automatically
 
 ### Advanced Launcher Usage
 
@@ -306,7 +308,7 @@ await runMain(defineCommand({}));
 
 ```bash
 bun add -D @reliverse/dler
-bun dler rempts init --cmd my-cmd-1 # or: dler rempts init my-cmd-1 my-cmd-2 --main src/mod.ts
+bun dler rempts --init my-cmd-1 # or: dler rempts --init my-cmd-1 my-cmd-2 --main src/mod.ts
 # * `--main` is optional, default is `./src/mod.ts`
 # * you can specify multiple commands at once
 ```
@@ -661,6 +663,71 @@ export default defineCommand({
 });
 ```
 
+### Loading Commands with `loadCommand`
+
+The `loadCommand` utility helps you load command files from your filesystem. It automatically handles:
+
+- Relative paths (both `./build` and `build` work the same)
+- Automatic detection of `cmd.{ts,js}` files
+- Clear error messages when files are not found
+
+```ts
+import { loadCommand } from "@reliverse/rempts";
+
+// These are equivalent:
+const cmd1 = await loadCommand("./build");     // Looks for build/cmd.ts or build/cmd.js
+const cmd2 = await loadCommand("build");       // Same as above
+const cmd3 = await loadCommand("./build/cmd"); // Explicit path to cmd file
+
+// You can then use the loaded command with runCmd:
+await runCmd(cmd1, ["--some-flag"]);
+```
+
+```ts
+// src/app/cmds.ts
+export const getBuildCmd = async (): Promise<Command> => loadCommand("./build");
+
+// src/cli.ts
+import { runCmd } from "@reliverse/rempts";
+import { getBuildCmd } from "./app/cmds";
+await runCmd(await getBuildCmd(), ["--prod"]);
+```
+
+**Error Handling:**
+If the command file is not found, you'll get a clear error message:
+
+```bash
+No command file found in /path/to/build. Expected to find either:
+  - /path/to/build/cmd.ts
+  - /path/to/build/cmd.js
+Please ensure one of these files exists and exports a default command.
+```
+
+**Best Practices:**
+
+- Use `loadCommand` when you need to load commands from the filesystem
+- Use `runCmd` to execute the loaded command with arguments
+- Keep your command files in a consistent location (e.g., `src/app/yourCmdName/cmd.ts`)
+- Export commands from a central file like `src/app/cmds.ts` for better organization
+
+```ts
+// example/launcher/app/cmds.ts
+import { loadCommand } from "@reliverse/rempts";
+
+export async function getBuildCmd() {
+  return loadCommand("./build");
+}
+
+export async function getDeployCmd() {
+  return loadCommand("./deploy");
+}
+
+// Usage:
+import { getBuildCmd } from "./cmds";
+const buildCmd = await getBuildCmd();
+await runCmd(buildCmd, ["--prod"]);
+```
+
 ```ts
 // example/launcher/app/minimal/cmd.ts
 
@@ -684,88 +751,6 @@ export default defineCommand({
   },
 });
 ```
-
-**Pro Tips & Best Practices**:
-
-- Install `dler` globally and run `dler rempts init --cmds` to generate a `src/app/cmds.ts` (custom path is supported) file in your project.
-- You can use any name for the `cmds.ts` file and store it anywhere, but `src/app/cmds.ts` is a good convention you can follow.
-- Use the async function pattern for lazy loading if you have many commands or care about startup performance.
-- Use eager loading (const) for small CLIs or demos where simplicity is preferred.
-
-**Lazy Loading (Recommended for Most CLIs)**:
-
-```ts
-// example/launcher/app/cmds.ts
-
-export async function cmdHooks() {
-  return (await import("./hooks/cmd.js")).default;
-}
-
-export async function getCmdFoo() {
-  return (await import("./foo/cmd.js")).default;
-}
-
-// ...more commands
-```
-
-Usage:
-
-```ts
-// example/prompts/mod.ts
-
-import { cmdHooks } from "@/launcher/app/cmds.js";
-import { runCmd } from "@reliverse/rempts";
-
-await runCmd(await cmdHooks(), ["--flag"]);
-// OR:
-// const hooksCmd = await cmdHooks();
-// await runCmd(hooksCmd, ["--flag"]);
-```
-
-**Alternative: Eager Loading (All Commands Loaded at Startup)**:
-
-```ts
-// example/launcher/app/cmds.ts
-export const hooksCmd = (await import("./hooks/cmd.js")).default;
-export const fooCmd = (await import("./foo/cmd.js")).default;
-// ...more commands
-```
-
-Usage:
-
-```ts
-import { hooksCmd } from "./cmds.js";
-import { runCmd } from "@reliverse/rempts";
-
-await runCmd(hooksCmd, ["--flag"]);
-```
-
-**Programmatic Command Execution with `runCmd`**:
-
-The `runCmd` utility lets you run a command's `run()` handler with parsed arguments, outside of the full launcher context. This is useful for demos, tests, or custom flows:
-
-```ts
-import { runCmd } from "@reliverse/rempts";
-import { hooksCmd } from "./cmds.js";
-
-await runCmd(hooksCmd, ["--flag"]); // argv as array of strings
-```
-
-Or with lazy loading:
-
-```ts
-const hooksCmd = await cmdHooks();
-await runCmd(hooksCmd, ["--flag"]);
-```
-
-**Note:** `runCmd` only runs the command's `run()` handler and does not handle subcommands, file-based commands, or global hooks. For full CLI behavior, use `runMain`.
-
-**Performance Note:**
-
-- Eager loading (`const`) loads all commands at startup, which may impact performance for large CLIs.
-- Lazy loading (`async function`) loads each command only when needed, improving startup time and memory usage.
-
-Choose the pattern that best fits your CLI's size and usage!
 
 ## Argument Types: Usage Comparison
 

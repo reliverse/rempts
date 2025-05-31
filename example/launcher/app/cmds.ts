@@ -1,9 +1,9 @@
 // 👉 `dler rempts init --cmds`
 
-export async function cmdHooks() {
-  return (await import("./hooks/cmd.js")).default;
-}
+import { loadCommand, type Command } from "~/mod.js";
 
-export async function cmdMinimal() {
-  return (await import("./minimal/cmd.js")).default;
-}
+export const getCmdHooks = async (): Promise<Command> =>
+  loadCommand("./hooks/cmd");
+
+export const getCmdMinimal = async (): Promise<Command> =>
+  loadCommand("./minimal/cmd");

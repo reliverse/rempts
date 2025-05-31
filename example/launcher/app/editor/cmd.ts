@@ -1,5 +1,5 @@
+import fs from "@reliverse/relifso";
 import { relinka } from "@reliverse/relinka";
-import fs from "fs-extra";
 
 import type { EditorExitResult } from "~/types.js";
 

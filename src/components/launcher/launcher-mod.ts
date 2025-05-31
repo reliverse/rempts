@@ -1,178 +1,25 @@
 import type { ReliArgParserOptions } from "@reliverse/reliarg";
 
+import path from "@reliverse/pathkit";
 import { reliArgParser } from "@reliverse/reliarg";
+import { re } from "@reliverse/relico";
+import fs from "@reliverse/relifso";
 import { relinka, relinkaConfig, relinkaShutdown } from "@reliverse/relinka";
-import fs from "fs-extra";
 import process from "node:process";
-import path from "pathe";
 import { readPackageJSON } from "pkg-types";
 
-// -------------------------
-//   Type Definitions
-// -------------------------
-
-type EmptyArgs = Record<string, never>;
-
-type BaseArgProps = {
-  description?: string;
-  required?: boolean;
-  allowed?: string[];
-};
-
-type PositionalArgDefinition = {
-  type: "positional";
-  default?: string;
-} & BaseArgProps;
-
-type BooleanArgDefinition = {
-  type: "boolean";
-  default?: boolean;
-  allowed?: boolean[];
-} & BaseArgProps;
-
-type StringArgDefinition = {
-  type: "string";
-  default?: string;
-} & BaseArgProps;
-
-type NumberArgDefinition = {
-  type: "number";
-  default?: number;
-  allowed?: number[];
-} & BaseArgProps;
-
-type ArrayArgDefinition = {
-  type: "array";
-  default?: string | readonly string[];
-} & BaseArgProps;
-
-export type ArgDefinition =
-  | PositionalArgDefinition
-  | BooleanArgDefinition
-  | StringArgDefinition
-  | NumberArgDefinition
-  | ArrayArgDefinition;
-
-export type ArgDefinitions = Record<string, ArgDefinition>;
-
-type CommandMeta = {
-  name: string;
-  version?: string;
-  description?: string;
-  hidden?: boolean;
-  aliases?: string[];
-};
-
-/**
- * A subcommand can be either:
- * 1) A string path to a module with a default export of type Command.
- * 2) A lazy import function returning a Promise that resolves to
- *    { default: Command<any> } or directly to a Command instance.
- */
-type CommandSpec =
-  | string
-  | (() => Promise<{ default: Command<any> } | Command<any>>);
-
-export type CommandsMap = Record<string, CommandSpec>;
-
-type CommandContext<ARGS> = {
-  args: ARGS;
-  raw: string[];
-};
-
-type CommandRun<ARGS> = (ctx: CommandContext<ARGS>) => void | Promise<void>;
-
-type CommandHook<ARGS> = (ctx: CommandContext<ARGS>) => void | Promise<void>;
-
-type DefineCommandOptions<A extends ArgDefinitions = EmptyArgs> = {
-  meta?: CommandMeta;
-  args?: A;
-  run?: CommandRun<InferArgTypes<A>>;
-  /**
-   * Object subcommands for this command.
-   */
-  commands?: CommandsMap;
-  /**
-   * @deprecated Use `commands` instead. Will be removed in a future major version.
-   */
-  subCommands?: CommandsMap;
-  /**
-   * Called before the command runs. Receives `{ args, raw }` (parsed args and raw argv).
-   */
-  onCmdInit?: CommandHook<InferArgTypes<A>>;
-  /**
-   * Called after the command finishes. Receives `{ args, raw }` (parsed args and raw argv).
-   */
-  onCmdExit?: CommandHook<InferArgTypes<A>>;
-  /**
-   * @deprecated Use onCmdInit instead
-   */
-  setup?: CommandHook<InferArgTypes<A>>;
-  /**
-   * @deprecated Use onCmdExit instead
-   */
-  cleanup?: CommandHook<InferArgTypes<A>>;
-  /**
-   * Called once per CLI process, before any command/run() is executed
-   */
-  onLauncherInit?: () => void | Promise<void>;
-  /**
-   * Called once per CLI process, after all command/run() logic is finished
-   */
-  onLauncherExit?: () => void | Promise<void>;
-};
-
-export type Command<A extends ArgDefinitions = EmptyArgs> = {
-  meta?: CommandMeta;
-  args: A;
-  run?: CommandRun<InferArgTypes<A>>;
-  /**
-   * Object subcommands for this command.
-   */
-  commands?: CommandsMap;
-  /**
-   * @deprecated Use `commands` instead. Will be removed in a future major version.
-   */
-  subCommands?: CommandsMap;
-  /**
-   * Called before the command runs. Receives `{ args, raw }` (parsed args and raw argv).
-   */
-  onCmdInit?: CommandHook<InferArgTypes<A>>;
-  /**
-   * Called after the command finishes. Receives `{ args, raw }` (parsed args and raw argv).
-   */
-  onCmdExit?: CommandHook<InferArgTypes<A>>;
-  /**
-   * @deprecated Use onCmdInit instead
-   */
-  setup?: CommandHook<InferArgTypes<A>>;
-  /**
-   * @deprecated Use onCmdExit instead
-   */
-  cleanup?: CommandHook<InferArgTypes<A>>;
-  /**
-   * Called once per CLI process, before any command/run() is executed
-   */
-  onLauncherInit?: () => void | Promise<void>;
-  /**
-   * Called once per CLI process, after all command/run() logic is finished
-   */
-  onLauncherExit?: () => void | Promise<void>;
-};
-
-export type InferArgTypes<A extends ArgDefinitions> = {
-  [K in keyof A]: A[K] extends PositionalArgDefinition
-    ? string
-    : A[K] extends BooleanArgDefinition
-      ? boolean
-      : A[K] extends StringArgDefinition
-        ? string
-        : A[K] extends NumberArgDefinition
-          ? number
-          : A[K] extends { type: "array" }
-            ? string[]
-            : never;
-};
+import type {
+  ArgDefinition,
+  ArgDefinitions,
+  Command,
+  CommandContext,
+  CommandSpec,
+  DefineCommandOptions,
+  EmptyArgs,
+  FileBasedCmdsOptions,
+  InferArgTypes,
+  PositionalArgDefinition,
+} from "./launcher-types.js";
 
 // Helper to build a plausible example CLI argument string from ArgDefinitions
 function buildExampleArgs(args: ArgDefinitions): string {
@@ -219,15 +66,6 @@ function buildExampleArgs(args: ArgDefinitions): string {
 }
 
 // -------------------------
-//   File-based Commands Config
-// -------------------------
-
-export type FileBasedCmdsOptions = {
-  enable: boolean;
-  cmdsRootPath: string;
-};
-
-// -------------------------
 //   Debug Mode
 // -------------------------
 
@@ -239,14 +77,14 @@ function debugLog(...args: any[]) {
   }
 }
 
+// -------------------------
+//   Public API
+// -------------------------
+
 // Helper to check if a string is a flag (starts with - or --)
 function isFlag(str: string): boolean {
   return str.startsWith("-");
 }
-
-// -------------------------
-//   Public API
-// -------------------------
 
 /**
  * Defines a command with metadata, argument definitions,
@@ -318,31 +156,72 @@ async function getDefaultCliNameAndVersion(): Promise<{
 }
 
 /**
- * Find direct subcommands (folders with cmd.ts/cmd.js) under a given directory.
- * Returns an array of { name: string, def: any }.
+ * Recursively find commands in a directory and its subdirectories.
+ * Returns an array of { name: string, def: any, path: string[] }.
  */
-async function findDirectFileBasedSubcommands(currentDir) {
+async function findRecursiveFileBasedCommands(
+  baseDir: string,
+  currentPath: string[] = [],
+): Promise<{ name: string; def: any; path: string[] }[]> {
   const results = [];
-  const items = await fs.readdir(currentDir, { withFileTypes: true });
+  const items = await fs.readdir(path.join(baseDir, ...currentPath), {
+    withFileTypes: true,
+  });
+
   for (const dirent of items) {
     if (dirent.isDirectory()) {
+      const newPath = [...currentPath, dirent.name];
+      // First check for cmd.ts/cmd.js in this directory
       for (const fname of ["cmd.ts", "cmd.js"]) {
-        const fpath = path.join(currentDir, dirent.name, fname);
+        const fpath = path.join(baseDir, ...newPath, fname);
         if (await fs.pathExists(fpath)) {
           try {
             const imported = await import(path.resolve(fpath));
             if (imported.default && !imported.default.meta?.hidden) {
-              results.push({ name: dirent.name, def: imported.default });
+              results.push({
+                name: dirent.name,
+                def: imported.default,
+                path: newPath,
+              });
             }
           } catch (err) {
-            debugLog(`Skipping file-based subcommand in ${fpath}:`, err);
+            debugLog(`Skipping file-based command in ${fpath}:`, err);
           }
           break;
         }
       }
+      // Then recursively check subdirectories
+      const subResults = await findRecursiveFileBasedCommands(baseDir, newPath);
+      results.push(...subResults);
     }
   }
   return results;
+}
+
+/**
+ * Calculate padding for table alignment
+ */
+function calculatePadding(
+  items: { text: string; desc?: string }[],
+  minPad = 2,
+): number {
+  const maxLength = items.reduce(
+    (max, item) => Math.max(max, item.text.length),
+    0,
+  );
+  return maxLength + minPad;
+}
+
+/**
+ * Format a table row with dynamic padding
+ */
+function formatTableRow(
+  text: string,
+  desc: string | undefined,
+  padding: number,
+): string {
+  const spaces = " ".repeat(Math.max(0, padding - text.length));
+  return `${text}${spaces}| ${desc || ""}`;
 }
 
 /**
@@ -389,43 +268,84 @@ export async function showUsage<A extends ArgDefinitions>(
   const fileCmds = parserOptions.fileBasedCmds;
   if (fileCmds?.enable) {
     const commandsDir = path.resolve(fileCmds.cmdsRootPath);
-    const currentDir = parserOptions._fileBasedCurrentDir || commandsDir;
     const pathSegments = parserOptions._fileBasedPathSegments || [];
 
     // Build usage line starting with package name, then path segments
     let usageLine = [pkgName, ...pathSegments].join(" ");
 
+    // Find all commands recursively
+    const allCommands = await findRecursiveFileBasedCommands(
+      commandsDir,
+      pathSegments,
+    );
+    const directCommands = allCommands.filter(
+      (cmd) => cmd.path.length === pathSegments.length + 1,
+    );
+
     // If this command has subcommands, add <command> [command's options]
-    const directSubs = await findDirectFileBasedSubcommands(currentDir);
-    if (directSubs.length > 0) {
+    if (directCommands.length > 0) {
       usageLine += " <command> [command's options]";
     } else {
       usageLine += " [command's options]";
       const pos = renderPositional(command.args);
       if (pos) usageLine += ` ${pos}`;
     }
-    relinka("log", `Usage: ${usageLine}`);
+    relinka("log", re.cyan(`Usage: ${usageLine}`));
 
     // Only show Example if this command has subcommands
-    if (directSubs.length > 0) {
-      // Pick a plausible example from direct subcommands
-      const randomIdx = Math.floor(Math.random() * directSubs.length);
-      const { name: exampleCmd, def: exampleDef } = directSubs[randomIdx];
+    if (directCommands.length > 0) {
+      // Pick a plausible example from all commands (including nested)
+      const randomIdx = Math.floor(Math.random() * allCommands.length);
+      const { path, def: exampleDef } = allCommands[randomIdx];
       const exampleArgs = buildExampleArgs(exampleDef.args || {});
       relinka(
         "log",
-        `Example: ${pkgName} ${[...pathSegments, exampleCmd].join(" ")}${exampleArgs ? ` ${exampleArgs}` : ""}`,
+        re.cyan(
+          `Example: ${pkgName} ${path.join(" ")}${exampleArgs ? ` ${exampleArgs}` : ""}`,
+        ),
       );
     }
-    if (directSubs.length > 0) {
+
+    if (allCommands.length > 0) {
       relinka("info", "Available commands (run with `help` to see more):");
-      directSubs.forEach(({ name, def }) => {
-        const desc = def?.meta?.description ?? "";
-        relinka(
-          "log",
-          `• ${[...pathSegments, name].join(" ")}${desc ? ` | ${desc}` : ""}`,
-        );
-      });
+
+      // Group commands by their depth/path
+      const commandsByPath = new Map<
+        string,
+        { name: string; def: any; path: string[] }[]
+      >();
+
+      for (const cmd of allCommands) {
+        const parentPath = cmd.path.slice(0, -1).join("/") || "/";
+        if (!commandsByPath.has(parentPath)) {
+          commandsByPath.set(parentPath, []);
+        }
+        commandsByPath.get(parentPath).push(cmd);
+      }
+
+      // Calculate maximum command length for each group
+      const groupPaddings = new Map<string, number>();
+      for (const [parentPath, cmds] of commandsByPath) {
+        const items = cmds.map(({ path, def }) => ({
+          text: `${parentPath === "/" ? "" : "  "}• ${path.join(" ")}`,
+          desc: def?.meta?.description,
+        }));
+        groupPaddings.set(parentPath, calculatePadding(items));
+      }
+
+      // Display commands hierarchically
+      for (const [parentPath, cmds] of commandsByPath) {
+        if (parentPath !== "/") {
+          relinka("log", re.cyanPastel(`Sub-commands in ${parentPath}:`));
+        }
+        const padding = groupPaddings.get(parentPath);
+        for (const { def, path } of cmds) {
+          const desc = def?.meta?.description ?? "";
+          const indent = parentPath === "/" ? "" : "  ";
+          const text = `${indent}• ${path.join(" ")}`;
+          relinka("log", formatTableRow(text, desc, padding));
+        }
+      }
     }
   } else {
     // Commands defined in the command object
@@ -461,7 +381,7 @@ export async function showUsage<A extends ArgDefinitions>(
     } else {
       usageLine += ` [command's options] ${renderPositional(command.args)}`;
     }
-    relinka("log", `Usage: ${usageLine}`);
+    relinka("log", re.cyan(`Usage: ${usageLine}`));
 
     // --- Dynamic usage example for object subcommands ---
     if (subCommandDefs.length > 0) {
@@ -470,43 +390,66 @@ export async function showUsage<A extends ArgDefinitions>(
       const exampleArgs = buildExampleArgs(exampleDef.args || {});
       relinka(
         "log",
-        `Example: ${pkgName}${parserOptions._isSubcommand ? ` ${cliName}` : ""} ${exampleCmd}${exampleArgs ? ` ${exampleArgs}` : ""}`,
+        re.cyan(
+          `Example: ${pkgName}${parserOptions._isSubcommand ? ` ${cliName}` : ""} ${exampleCmd}${exampleArgs ? ` ${exampleArgs}` : ""}`,
+        ),
       );
     }
 
     if (subCommandNames.length > 0) {
       relinka("info", "Available commands (run with `help` to see more):");
-      subCommandDefs.forEach(({ name, def }) => {
-        const desc = def?.meta?.description ?? "";
-        relinka("log", `• ${name}${desc ? ` | ${desc}` : ""}`);
-      });
+
+      // Calculate padding for programmatic commands
+      const commandItems = subCommandDefs.map(({ name, def }) => ({
+        text: `• ${name}`,
+        desc: def?.meta?.description,
+      }));
+      const padding = calculatePadding(commandItems);
+
+      // Display commands with consistent padding
+      for (const { text, desc } of commandItems) {
+        relinka("log", formatTableRow(text, desc, padding));
+      }
     }
   }
 
   // Common options
   relinka("info", "Available options:");
-  relinka("log", "• -h, --help    | Show help");
-  relinka("log", "• -v, --version | Show version");
-  relinka("log", "• --debug       | Enable debug mode");
 
-  // Show argument definitions
+  // Prepare all option items for padding calculation
+  const optionItems = [
+    { text: "• -h, --help", desc: "Show help" },
+    { text: "• -v, --version", desc: "Show version" },
+    { text: "• --debug", desc: "Enable debug mode" },
+  ];
+
+  // Add argument definitions to items
   for (const [key, def] of Object.entries(command.args || {})) {
     if (def.type === "positional") {
-      relinka(
-        "log",
-        `• <${key}>   | ${def.description ?? ""}${def.required ? " | required" : ""}`,
-      );
+      optionItems.push({
+        text: `• <${key}>`,
+        desc: `${def.description ?? ""}${def.required ? " | required" : ""}`,
+      });
     } else {
+      const text = `• --${key}${"alias" in def && def.alias ? `, -${def.alias}` : ""}`;
       const parts = [
-        `• --${key}${"alias" in def && def.alias ? `, -${def.alias}` : ""}`,
         def.description ?? "",
         `type=${def.type}`,
-      ];
-      if (def.default !== undefined)
-        parts.push(`default=${JSON.stringify(def.default)}`);
-      if (def.required) parts.push("required");
-      relinka("log", parts.filter(Boolean).join(" | "));
+        def.default !== undefined
+          ? `default=${JSON.stringify(def.default)}`
+          : null,
+        def.required ? "required" : null,
+      ].filter(Boolean);
+      optionItems.push({ text, desc: parts.join(" | ") });
     }
+  }
+
+  // Calculate padding for all options
+  const optionsPadding = calculatePadding(optionItems);
+
+  // Display options with consistent padding
+  for (const { text, desc } of optionItems) {
+    relinka("log", formatTableRow(text, desc, optionsPadding));
   }
 }
 
@@ -823,7 +766,7 @@ async function runFileBasedSubCmd(
         }
       }
       throw new Error(
-        `Unknown command or arguments: ${args.join(" ")}\n\nInfo for this CLI's developer: No valid command file found in ${baseDir}`,
+        `\nUnknown command or arguments: ${args.join(" ")}\n\nInfo for this CLI's developer: No valid command file found in ${baseDir}`,
       );
     }
     // Check if next arg is a subfolder
@@ -846,7 +789,7 @@ async function runFileBasedSubCmd(
       }
     }
     throw new Error(
-      `Unknown command or arguments: ${args.join(" ")}\n\nInfo for this CLI's developer: No valid command file found in ${baseDir}`,
+      `\nUnknown command or arguments: ${args.join(" ")}\n\nInfo for this CLI's developer: No valid command file found in ${baseDir}`,
     );
   }
 
@@ -861,8 +804,30 @@ async function runFileBasedSubCmd(
       process.cwd(),
       path.join(fileCmdOpts.cmdsRootPath, subName, "cmd.{ts,js}"),
     );
+
+    // Find all available commands to suggest alternatives
+    const allCommands = await findRecursiveFileBasedCommands(
+      fileCmdOpts.cmdsRootPath,
+    );
+    const commandNames = allCommands.map((cmd) => cmd.path.join(" "));
+
+    // Find the closest match using Levenshtein distance
+    let closestMatch = "";
+    let minDistance = Number.POSITIVE_INFINITY;
+    for (const cmd of commandNames) {
+      const distance = levenshteinDistance(subName, cmd.split(" ")[0]);
+      if (distance < minDistance) {
+        minDistance = distance;
+        closestMatch = cmd;
+      }
+    }
+
+    // Only suggest if we found a reasonably close match
+    const suggestion =
+      minDistance <= 3 ? ` (Did you mean: \`${closestMatch}\`?)` : "";
+
     throw new Error(
-      `Unknown command or arguments: ${attempted}\n\nInfo for this CLI's developer: No valid command directory found, expected: ${expectedPath}`,
+      `\nUnknown command or arguments: ${attempted}${suggestion}\n\nInfo for this CLI's developer: No valid command directory found, expected: ${expectedPath}`,
     );
   }
 
@@ -1428,4 +1393,37 @@ async function resolveFileBasedCommandPath(cmdsRoot, argv) {
     }
   }
   return null;
+}
+
+// Add Levenshtein distance function at the end of the file
+function levenshteinDistance(a: string, b: string): number {
+  if (a.length === 0) return b.length;
+  if (b.length === 0) return a.length;
+
+  const matrix = [];
+
+  // Initialize matrix
+  for (let i = 0; i <= b.length; i++) {
+    matrix[i] = [i];
+  }
+  for (let j = 0; j <= a.length; j++) {
+    matrix[0][j] = j;
+  }
+
+  // Fill matrix
+  for (let i = 1; i <= b.length; i++) {
+    for (let j = 1; j <= a.length; j++) {
+      if (b.charAt(i - 1) === a.charAt(j - 1)) {
+        matrix[i][j] = matrix[i - 1][j - 1];
+      } else {
+        matrix[i][j] = Math.min(
+          matrix[i - 1][j - 1] + 1, // substitution
+          matrix[i][j - 1] + 1, // insertion
+          matrix[i - 1][j] + 1, // deletion
+        );
+      }
+    }
+  }
+
+  return matrix[b.length][a.length];
 }

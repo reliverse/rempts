@@ -1,9 +1,9 @@
-import { useSpinner } from "~/hooks/spinner/spinner-mod.js";
 import {
   defineCommand,
   colorize,
   createAsciiArt,
   msg,
+  useSpinner,
   endPrompt,
   inputPrompt,
   selectPrompt,
@@ -17,7 +17,7 @@ export default defineCommand({
   },
   async run() {
     await startPrompt({
-      title: "Hooks Example",
+      title: "Hooks Examples",
       titleColor: "passionGradient",
       titleTypography: "bold",
     });
@@ -55,28 +55,22 @@ export default defineCommand({
       ],
     });
 
-    // --- Spinner demo using useSpinner ---
-    const spinner = useSpinner({ text: "Checking your answer..." }).start();
-    await new Promise((resolve) => setTimeout(resolve, 1200));
+    // Example 1: Basic spinner with success/fail states
+    const spinner = useSpinner({
+      text: "Checking your answer...",
+      color: "cyan",
+      spinner: "dots",
+      successText: `Nice work ${playerName}. That's a legit answer!`,
+      failText: `🫠  Game over, ${playerName}! You lose!`,
+    }).start();
+
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
     const isCorrect = answer === "Dec 4th, 1995";
     if (isCorrect) {
-      spinner.setText(`Nice work ${playerName}. That's a legit answer!`);
-      await new Promise((resolve) => setTimeout(resolve, 600));
-      spinner.stop();
-      msg({
-        type: "M_INFO",
-        title: `Nice work ${playerName}. That's a legit answer!`,
-        titleColor: "cyan",
-      });
+      spinner.succeed();
     } else {
-      spinner.setText(`🫠  Game over, ${playerName}! You lose!`);
-      await new Promise((resolve) => setTimeout(resolve, 600));
-      spinner.stop();
-      msg({
-        type: "M_ERROR",
-        title: `🫠  Game over, ${playerName}! You lose!`,
-        titleColor: "red",
-      });
+      spinner.fail();
       process.exit(1);
     }
 
@@ -90,32 +84,41 @@ export default defineCommand({
       ],
     });
 
-    // --- Spinner demo using useSpinner for company question ---
-    const spinner2 = useSpinner({
-      text: "Which company created JavaScript?",
-    }).start();
-    await new Promise((resolve) => setTimeout(resolve, 1200));
-    const isCompanyCorrect = companyAnswer === "Netscape";
-    if (isCompanyCorrect) {
-      spinner2.setText("Correct! Netscape created JavaScript.");
-      await new Promise((resolve) => setTimeout(resolve, 600));
-      spinner2.stop();
-      msg({
-        type: "M_INFO",
-        title: "Correct! Netscape created JavaScript.",
-        titleColor: "cyan",
-      });
-    } else {
-      spinner2.setText("Wrong! Netscape created JavaScript.");
-      await new Promise((resolve) => setTimeout(resolve, 600));
-      spinner2.stop();
-      msg({
-        type: "M_ERROR",
-        title: "Wrong! Netscape created JavaScript.",
-        titleColor: "red",
-      });
+    // Example 2: Using the promise wrapper
+    try {
+      await useSpinner.promise(
+        async () => {
+          await new Promise((resolve) => setTimeout(resolve, 1000));
+          const isCompanyCorrect = companyAnswer === "Netscape";
+          if (!isCompanyCorrect) {
+            throw new Error("Wrong answer!");
+          }
+        },
+        {
+          text: "Verifying your answer...",
+          color: "yellow",
+          spinner: "arc",
+          successText: "Correct! Netscape created JavaScript.",
+          failText: "Wrong! Netscape created JavaScript.",
+        },
+      );
+    } catch {
       process.exit(1);
     }
+
+    // Example 3: Demonstrating different states
+    const demoSpinner = useSpinner({
+      text: "Preparing your prize...",
+      color: "magenta",
+      spinner: "bouncingBar",
+    }).start();
+
+    await new Promise((resolve) => setTimeout(resolve, 800));
+    demoSpinner.warn("This might take a moment...");
+    await new Promise((resolve) => setTimeout(resolve, 800));
+    demoSpinner.info("Almost there...");
+    await new Promise((resolve) => setTimeout(resolve, 800));
+    demoSpinner.succeed("Done!");
 
     const message = "Congrats !\n $ 2 , 0 0 0 , 0 0 0";
 

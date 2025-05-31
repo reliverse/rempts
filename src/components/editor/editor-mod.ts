@@ -1,8 +1,8 @@
+import path from "@reliverse/pathkit";
 import { re } from "@reliverse/relico";
+import fs from "@reliverse/relifso";
 import { relinka } from "@reliverse/relinka";
 import { loadConfig } from "c12";
-import fs from "fs-extra";
-import path from "pathe";
 import termkit from "terminal-kit";
 
 import type { EditorExitResult } from "~/types.js";

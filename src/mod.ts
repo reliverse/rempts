@@ -7,14 +7,7 @@ export {
 } from "./components/figures/figures-mod.js";
 export { confirmPrompt } from "./components/input/confirm-prompt.js";
 export { inputPrompt } from "./components/input/input-prompt.js";
-export type {
-  ArgDefinition,
-  ArgDefinitions,
-  CommandsMap,
-  Command,
-  InferArgTypes,
-  FileBasedCmdsOptions,
-} from "./components/launcher/launcher-mod.js";
+export * from "./components/launcher/launcher-types.js";
 export {
   defineCommand,
   defineArgs,
@@ -22,6 +15,7 @@ export {
   runMain,
   runCmd,
 } from "./components/launcher/launcher-mod.js";
+export { loadCommand } from "./components/launcher/run-command.js";
 export { toBaseColor, toSolidColor } from "./components/msg-fmt/colors.js";
 export {
   relinkaByRemptsDeprecated,

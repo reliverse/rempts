@@ -5,18 +5,17 @@ import { re } from "@reliverse/relico";
 import { relinka } from "@reliverse/relinka";
 import { isBunRuntime } from "@reliverse/runtime";
 
-import { cmdHooks } from "@/launcher/app/cmds.js";
-import { runCmd } from "~/components/launcher/launcher-mod.js";
+import { getCmdHooks } from "@/launcher/app/cmds.js";
 import {
   defineCommand,
   multiselectPrompt,
+  runCmd,
   runMain,
   selectPrompt,
 } from "~/mod.js";
 
 import type { UserInput } from "./impl/schema.js";
 
-// import { spinnerCmd } from "../launcher/app/spinner/cmd.js";
 import {
   DEFAULT_USER_INPUT,
   EXAMPLE_OPTIONS,
@@ -98,7 +97,7 @@ const main = defineCommand({
         await fullFeaturedExample();
         break;
       case "spinner": {
-        await runCmd(await cmdHooks(), ["--flag"]);
+        await runCmd(await getCmdHooks(), ["--flag"]);
         break;
       }
       case "cmd-a":

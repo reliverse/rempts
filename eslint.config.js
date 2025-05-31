@@ -1,11 +1,11 @@
 // @ts-check
 
 import eslint from "@eslint/js";
+import path from "@reliverse/pathkit";
 import stylistic from "@stylistic/eslint-plugin";
 import noRelativeImportPaths from "eslint-plugin-no-relative-import-paths";
 import perfectionist from "eslint-plugin-perfectionist";
 import { fileURLToPath } from "node:url";
-import path from "pathe";
 import tseslint from "typescript-eslint";
 
 /** @type {import("typescript-eslint").Config} */

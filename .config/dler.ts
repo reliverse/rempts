@@ -1,4 +1,4 @@
-import { defineConfig } from "@reliverse/relidler-cfg";
+import { defineConfig } from "@reliverse/dler";
 
 /**
  * Reliverse Bundler Configuration
@@ -8,9 +8,8 @@ import { defineConfig } from "@reliverse/relidler-cfg";
 export default defineConfig({
   // Bump configuration
   bumpDisable: false,
-  // @ts-expect-error temporary ✅
   bumpFilter: ["package.json", ".config/rse.ts"],
-  bumpMode: "autoPatch",
+  bumpMode: "patch",
 
   // Common configuration
   commonPubPause: false,
@@ -21,7 +20,8 @@ export default defineConfig({
   coreDeclarations: true,
   coreEntryFile: "mod.ts",
   coreEntrySrcDir: "src",
-  coreIsCLI: false,
+  coreBuildOutDir: "bin",
+  coreIsCLI: { enabled: false, scripts: {} },
 
   // JSR-only config
   distJsrAllowDirty: true,
@@ -54,16 +54,21 @@ export default defineConfig({
   logsFreshFile: true,
 
   // Dependency filtering
-  rmDepsMode: "patterns-and-devdeps",
-  rmDepsPatterns: [
-    "@types",
-    "biome",
-    "eslint",
-    "knip",
-    "prettier",
-    "typescript",
-    "@reliverse/config",
-  ],
+  // Global is always applied
+  removeDepsPatterns: {
+    global: [
+      "@types",
+      "biome",
+      "eslint",
+      "knip",
+      "prettier",
+      "typescript",
+      "@reliverse/dler",
+    ],
+    "dist-npm": ["bun"],
+    "dist-jsr": [],
+    "dist-libs": {},
+  },
 
   // Build setup
   transpileEsbuild: "es2023",
