@@ -439,6 +439,9 @@ export async function showUsage<A extends ArgDefinitions>(
           ? `default=${JSON.stringify(def.default)}`
           : null,
         def.required ? "required" : null,
+        def.dependencies
+          ? `depends on: ${def.dependencies.map((r) => `--${r}`).join(", ")}`
+          : null,
       ].filter(Boolean);
       optionItems.push({ text, desc: parts.join(" | ") });
     }
@@ -981,6 +984,25 @@ async function runCommandWithArgs<A extends ArgDefinitions>(
       else throw new Error(`Missing required argument: --${key}`);
     }
 
+    // Check for required dependencies
+    if (def.dependencies && Array.isArray(def.dependencies)) {
+      for (const dependency of def.dependencies) {
+        const dependencyValue = parsed[dependency] ?? defaultMap[dependency];
+        if (!dependencyValue) {
+          await showUsage(command, parserOptions);
+          relinka(
+            "error",
+            `Argument --${key} requires --${dependency} to be set`,
+          );
+          if (autoExit) process.exit(1);
+          else
+            throw new Error(
+              `Argument --${key} requires --${dependency} to be set`,
+            );
+        }
+      }
+    }
+
     try {
       if (def.type === "boolean") {
         // Always default to false if not specified
@@ -1265,6 +1287,18 @@ export async function runCmd<A extends ArgDefinitions = EmptyArgs>(
     const valueOrDefault = rawVal ?? defaultMap[key];
     if (valueOrDefault == null && def.required) {
       throw new Error(`Missing required argument: --${key}`);
+    }
+
+    // Check for required dependencies
+    if (def.dependencies && Array.isArray(def.dependencies)) {
+      for (const dependency of def.dependencies) {
+        const dependencyValue = parsed[dependency] ?? defaultMap[dependency];
+        if (!dependencyValue) {
+          throw new Error(
+            `Argument --${key} requires --${dependency} to be set`,
+          );
+        }
+      }
     }
 
     try {

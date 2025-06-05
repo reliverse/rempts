@@ -65,7 +65,7 @@ export default defineConfig({
       "typescript",
       "@reliverse/dler",
     ],
-    "dist-npm": ["bun"],
+    "dist-npm": [],
     "dist-jsr": [],
     "dist-libs": {},
   },

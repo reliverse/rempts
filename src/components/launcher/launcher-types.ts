@@ -10,32 +10,45 @@ export type BaseArgProps = {
   allowed?: string[];
 };
 
-export type PositionalArgDefinition = {
+export type BaseArgDefinition = {
+  type: string;
+  description?: string;
+  required?: boolean;
+  default?: any;
+  allowed?: any[];
+  dependencies?: string[];
+};
+
+export type PositionalArgDefinition = BaseArgDefinition & {
   type: "positional";
   default?: string;
-} & BaseArgProps;
+};
 
-export type BooleanArgDefinition = {
+export type BooleanArgDefinition = BaseArgDefinition & {
   type: "boolean";
   default?: boolean;
   allowed?: boolean[];
-} & BaseArgProps;
+  alias?: string;
+};
 
-export type StringArgDefinition = {
+export type StringArgDefinition = BaseArgDefinition & {
   type: "string";
   default?: string;
-} & BaseArgProps;
+  alias?: string;
+};
 
-export type NumberArgDefinition = {
+export type NumberArgDefinition = BaseArgDefinition & {
   type: "number";
   default?: number;
   allowed?: number[];
-} & BaseArgProps;
+  alias?: string;
+};
 
-export type ArrayArgDefinition = {
+export type ArrayArgDefinition = BaseArgDefinition & {
   type: "array";
   default?: string | readonly string[];
-} & BaseArgProps;
+  alias?: string;
+};
 
 export type ArgDefinition =
   | PositionalArgDefinition
