@@ -1,7 +1,6 @@
-// @ts-expect-error TODO: temp
-import { defineConfig } from "@reliverse/rse";
+import { defineConfigRse } from "@reliverse/cfg";
 
-export default defineConfig({
+export default defineConfigRse({
   // RELIVERSE CONFIG (https://docs.reliverse.org/cli)
   // Restart the CLI to apply your config changes
   $schema: "./schema.json",
@@ -11,7 +10,7 @@ export default defineConfig({
   projectAuthor: "reliverse",
   projectDescription:
     "@reliverse/rempts is a modern, type-safe toolkit for building delightful cli experiences. it's fast, flexible, and made for developer happiness. file-based commands keep things simple.",
-  version: "1.7.18",
+  version: "1.7.28",
   projectLicense: "MIT",
   projectState: "creating",
   projectRepository: "https://github.com/reliverse/rempts",

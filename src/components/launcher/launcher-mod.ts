@@ -476,60 +476,36 @@ export async function runMain<A extends ArgDefinitions = EmptyArgs>(
     };
   } = {},
 ) {
-  if (typeof command.onLauncherInit === "function")
-    await command.onLauncherInit();
+  // Call onLauncherInit before any other operations
+  if (typeof command.onLauncherInit === "function") {
+    try {
+      await command.onLauncherInit();
+    } catch (err) {
+      relinka("error", "Error in onLauncherInit:", err);
+      if (parserOptions.autoExit !== false) process.exit(1);
+      throw err;
+    }
+  }
+
   try {
     // - If fileBasedCmds is not provided and no `commands`, enable file-based commands with default path
     // - If not provided and `commands` exist, do not enable file-based commands
     if (!parserOptions.fileBasedCmds && !command.commands) {
-      // Determine the file where runMain was called from
-      let callerDir = process.cwd();
-      let callerFile: string | undefined;
-      try {
-        const err = new Error();
-        const stack = err.stack?.split("\n");
-        if (stack) {
-          for (const line of stack) {
-            const match =
-              /\((.*):(\d+):(\d+)\)/.exec(line) ||
-              /at (.*):(\d+):(\d+)/.exec(line);
-            if (match?.[1] && !match[1].includes("launcher-mod")) {
-              callerFile = match[1];
-              break;
-            }
-          }
-        }
-        if (callerFile) {
-          callerDir = path.dirname(callerFile);
-          // Prevent runMain in file-based commands (e.g., app/<cmd>/cmd.ts or cmd.js)
-          const rel = path.relative(process.cwd(), callerFile);
-          if (/app[/][^/]+[/]cmd\.(ts|js)$/.test(rel)) {
-            relinka(
-              "error",
-              `runMain() should not be called from a file-based subcommand: ${rel}\nThis can cause recursion or unexpected behavior.\nMove your runMain() call to your main CLI entry file.`,
-            );
-            process.exit(1);
-          }
-          // Prevent runMain in any subcommand file (non-file-based logic)
-          // If the caller file is not the main entry script (process.argv[1]), warn and exit
-          const mainEntry = process.argv[1]
-            ? path.resolve(process.argv[1])
-            : undefined;
-          if (mainEntry && path.resolve(callerFile) !== mainEntry) {
-            relinka(
-              "error",
-              `runMain() should only be called from your main CLI entry file.\nDetected: ${callerFile}\nMain entry: ${mainEntry}\nThis can cause recursion or unexpected behavior.`,
-            );
-            process.exit(1);
-          }
-        }
-      } catch (_e) {
-        /* empty */
-      }
-      const defaultCmdsRoot = path.resolve(callerDir, "app");
+      // Get the directory of the main entry file
+      const mainEntry = process.argv[1]
+        ? path.dirname(path.resolve(process.argv[1]))
+        : process.cwd();
+      const defaultCmdsRoot = path.join(mainEntry, "src", "app");
+
+      // Check if the default path exists, if not try the original path
+      const exists = await fs.pathExists(defaultCmdsRoot);
+      const finalCmdsRoot = exists
+        ? defaultCmdsRoot
+        : path.join(mainEntry, "app");
+
       parserOptions.fileBasedCmds = {
         enable: true,
-        cmdsRootPath: defaultCmdsRoot,
+        cmdsRootPath: finalCmdsRoot,
       };
     }
 
@@ -920,11 +896,10 @@ async function runCommandWithArgs<A extends ArgDefinitions>(
       // Always default to false if not specified
       defaultMap[argKey] = def.default !== undefined ? def.default : false;
     } else if (def.default !== undefined) {
-      if (def.type === "array" && typeof def.default === "string") {
-        defaultMap[argKey] = [def.default];
-      } else {
-        defaultMap[argKey] = def.default;
-      }
+      defaultMap[argKey] =
+        def.type === "array" && typeof def.default === "string"
+          ? [def.default]
+          : def.default;
     }
   }
 
@@ -939,12 +914,12 @@ async function runCommandWithArgs<A extends ArgDefinitions>(
 
   const finalArgs: Record<string, any> = {};
 
+  // Process positional arguments.
   const positionalKeys = Object.keys(command.args || {}).filter(
     (k) => command.args[k].type === "positional",
   );
   const leftoverPositionals = [...(parsed._ || [])];
 
-  // Process positional arguments.
   for (let i = 0; i < positionalKeys.length; i++) {
     const key = positionalKeys[i];
     const def = command.args?.[key] as PositionalArgDefinition;
@@ -962,11 +937,12 @@ async function runCommandWithArgs<A extends ArgDefinitions>(
   const otherKeys = Object.keys(command.args || {}).filter(
     (k) => command.args[k].type !== "positional",
   );
+
   for (const key of otherKeys) {
     const def = command.args?.[key];
     let rawVal = parsed[key];
 
-    // Ensure array type when needed.
+    // Ensure array type when needed
     if (
       def.type === "array" &&
       rawVal !== undefined &&
@@ -975,52 +951,47 @@ async function runCommandWithArgs<A extends ArgDefinitions>(
       rawVal = [rawVal];
     }
 
-    // Check requirement before casting (default might satisfy it)
-    const valueOrDefault = rawVal ?? defaultMap[key];
-    if (valueOrDefault == null && def.required) {
+    /** Cast the *caller-supplied* value first (if any) so we can tell whether
+        a boolean flag evaluates to true/false. */
+    const casted =
+      rawVal !== undefined ? castArgValue(def, rawVal, key) : def.default;
+
+    /** The option is considered "used" only when the user actually passed it.
+        For booleans that means they passed the flag *and* it's truthy. */
+    const argUsed =
+      rawVal !== undefined && (def.type === "boolean" ? casted === true : true);
+
+    // Missing‐required check (unchanged logic)
+    if (casted == null && def.required) {
       await showUsage(command, parserOptions);
       relinka("error", `Missing required argument: --${key}`);
       if (autoExit) process.exit(1);
       else throw new Error(`Missing required argument: --${key}`);
     }
 
-    // Check for required dependencies
-    if (def.dependencies && Array.isArray(def.dependencies)) {
-      for (const dependency of def.dependencies) {
-        const dependencyValue = parsed[dependency] ?? defaultMap[dependency];
-        if (!dependencyValue) {
-          await showUsage(command, parserOptions);
-          relinka(
-            "error",
-            `Argument --${key} requires --${dependency} to be set`,
-          );
-          if (autoExit) process.exit(1);
-          else
-            throw new Error(
-              `Argument --${key} requires --${dependency} to be set`,
-            );
-        }
+    // Updated dependency enforcement —
+    // only if the option is actively used ↑
+    if (argUsed && def.dependencies?.length) {
+      const missingDeps = def.dependencies.filter((d) => {
+        const depVal = parsed[d] ?? defaultMap[d];
+        return !depVal;
+      });
+      if (missingDeps.length > 0) {
+        const depsList = missingDeps.map((d) => `--${d}`).join(", ");
+        throw new Error(
+          `Argument --${key} can only be used when ${depsList} ${
+            missingDeps.length === 1 ? "is" : "are"
+          } set`,
+        );
       }
     }
 
-    try {
-      if (def.type === "boolean") {
-        // Always default to false if not specified
-        finalArgs[key] =
-          rawVal !== undefined ? castArgValue(def, rawVal, key) : false;
-      } else {
-        // Cast the raw value (or let default handle if rawVal is null/undefined)
-        finalArgs[key] = castArgValue(def, rawVal, key);
-      }
-    } catch (err) {
-      relinka("error", String(err));
-      if (autoExit) process.exit(1);
-      else throw err;
-    }
+    // Store the final value
+    finalArgs[key] = def.type === "boolean" ? Boolean(casted) : casted;
   }
 
   const ctx: CommandContext<InferArgTypes<A>> = {
-    args: finalArgs as InferArgTypes<A>,
+    args: finalArgs as any,
     raw: argv,
   };
 
@@ -1231,11 +1202,10 @@ export async function runCmd<A extends ArgDefinitions = EmptyArgs>(
       // Always default to false if not specified
       defaultMap[argKey] = def.default !== undefined ? def.default : false;
     } else if (def.default !== undefined) {
-      if (def.type === "array" && typeof def.default === "string") {
-        defaultMap[argKey] = [def.default];
-      } else {
-        defaultMap[argKey] = def.default;
-      }
+      defaultMap[argKey] =
+        def.type === "array" && typeof def.default === "string"
+          ? [def.default]
+          : def.default;
     }
   }
 
@@ -1270,11 +1240,11 @@ export async function runCmd<A extends ArgDefinitions = EmptyArgs>(
   const otherKeys = Object.keys(command.args || {}).filter(
     (k) => command.args[k].type !== "positional",
   );
+
   for (const key of otherKeys) {
     const def = command.args?.[key];
     let rawVal = parsed[key];
 
-    // Ensure array type when needed.
     if (
       def.type === "array" &&
       rawVal !== undefined &&
@@ -1283,37 +1253,32 @@ export async function runCmd<A extends ArgDefinitions = EmptyArgs>(
       rawVal = [rawVal];
     }
 
-    // Check requirement before casting (default might satisfy it)
-    const valueOrDefault = rawVal ?? defaultMap[key];
-    if (valueOrDefault == null && def.required) {
+    const casted =
+      rawVal !== undefined ? castArgValue(def, rawVal, key) : def.default;
+
+    const argUsed =
+      rawVal !== undefined && (def.type === "boolean" ? casted === true : true);
+
+    if (casted == null && def.required) {
       throw new Error(`Missing required argument: --${key}`);
     }
 
-    // Check for required dependencies
-    if (def.dependencies && Array.isArray(def.dependencies)) {
-      for (const dependency of def.dependencies) {
-        const dependencyValue = parsed[dependency] ?? defaultMap[dependency];
-        if (!dependencyValue) {
-          throw new Error(
-            `Argument --${key} requires --${dependency} to be set`,
-          );
-        }
+    if (argUsed && def.dependencies?.length) {
+      const missingDeps = def.dependencies.filter((d) => {
+        const depVal = parsed[d] ?? defaultMap[d];
+        return !depVal;
+      });
+      if (missingDeps.length) {
+        const depsList = missingDeps.map((d) => `--${d}`).join(", ");
+        throw new Error(
+          `Argument --${key} can only be used when ${depsList} ${
+            missingDeps.length === 1 ? "is" : "are"
+          } set`,
+        );
       }
     }
 
-    try {
-      if (def.type === "boolean") {
-        // Always default to false if not specified
-        finalArgs[key] =
-          rawVal !== undefined ? castArgValue(def, rawVal, key) : false;
-      } else {
-        // Cast the raw value (or let default handle if rawVal is null/undefined)
-        finalArgs[key] = castArgValue(def, rawVal, key);
-      }
-    } catch (err) {
-      relinka("error", String(err));
-      throw err;
-    }
+    finalArgs[key] = def.type === "boolean" ? Boolean(casted) : casted;
   }
 
   const ctx: CommandContext<InferArgTypes<A>> = {
@@ -1346,11 +1311,10 @@ function getParsedContext<A extends ArgDefinitions>(
       // Always default to false if not specified
       defaultMap[argKey] = def.default !== undefined ? def.default : false;
     } else if (def.default !== undefined) {
-      if (def.type === "array" && typeof def.default === "string") {
-        defaultMap[argKey] = [def.default];
-      } else {
-        defaultMap[argKey] = def.default;
-      }
+      defaultMap[argKey] =
+        def.type === "array" && typeof def.default === "string"
+          ? [def.default]
+          : def.default;
     }
   }
   const mergedParserOptions: ReliArgParserOptions = {

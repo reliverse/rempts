@@ -1,11 +1,11 @@
-import { defineConfig } from "@reliverse/dler";
+import { defineConfigDler } from "@reliverse/cfg";
 
 /**
  * Reliverse Bundler Configuration
  * Hover over a field to see more details
  * @see https://github.com/reliverse/dler
  */
-export default defineConfig({
+export default defineConfigDler({
   // Bump configuration
   bumpDisable: false,
   bumpFilter: ["package.json", ".config/rse.ts"],
