@@ -1,4 +1,4 @@
-import { vi, it, expect, afterAll } from "vitest";
+import { it, expect, afterAll } from "bun:test";
 
 afterAll(() => {
   vi.unstubAllEnvs();

@@ -299,5 +299,4 @@ export const fallbackSymbols: Record<string, string> = {
 };
 
 const shouldUseMain = isUnicodeSupported();
-const figures = shouldUseMain ? mainSymbols : fallbackSymbols;
-export default figures;
+export const figures = shouldUseMain ? mainSymbols : fallbackSymbols;

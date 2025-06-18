@@ -18,30 +18,29 @@ import type {
   EmptyArgs,
   FileBasedCmdsOptions,
   InferArgTypes,
-  PositionalArgDefinition,
 } from "./launcher-types.js";
 
 // Helper to build a plausible example CLI argument string from ArgDefinitions
 function buildExampleArgs(args: ArgDefinitions): string {
   const parts: string[] = [];
   // Positional args in order
-  const positionalKeys = Object.keys(args).filter(
-    (k) => args[k].type === "positional",
+  const positionalKeys = Object.keys(args || {}).filter(
+    (k) => args?.[k]?.type === "positional",
   );
   positionalKeys.forEach((key) => {
-    const def = args[key];
-    if (def.required || Math.random() > 0.5) {
+    const def = args?.[key];
+    if (def && (def.required || Math.random() > 0.5)) {
       // Use default if available, else placeholder
       parts.push(String(def.default ?? `<${key}>`));
     }
   });
   // Non-positional args: include required and a few random optionals
-  const otherKeys = Object.keys(args).filter(
-    (k) => args[k].type !== "positional",
+  const otherKeys = Object.keys(args || {}).filter(
+    (k) => args?.[k]?.type !== "positional",
   );
   for (const key of otherKeys) {
-    const def = args[key];
-    if (def.required || Math.random() > 0.7) {
+    const def = args?.[key];
+    if (def && (def.required || Math.random() > 0.7)) {
       switch (def.type) {
         case "boolean":
           if (def.default === true) {
@@ -120,7 +119,7 @@ export function defineCommand<A extends ArgDefinitions = EmptyArgs>(
     setup: onCmdInit,
     cleanup: onCmdExit,
   };
-  // Add deprecated subCommands getter
+  // Deprecated subCommands getter
   Object.defineProperty(cmdObj, "subCommands", {
     get() {
       return this.commands;
@@ -293,17 +292,20 @@ export async function showUsage<A extends ArgDefinitions>(
     relinka("log", re.cyan(`Usage: ${usageLine}`));
 
     // Only show Example if this command has subcommands
-    if (directCommands.length > 0) {
+    if (directCommands.length > 0 && allCommands.length > 0) {
       // Pick a plausible example from all commands (including nested)
       const randomIdx = Math.floor(Math.random() * allCommands.length);
-      const { path, def: exampleDef } = allCommands[randomIdx];
-      const exampleArgs = buildExampleArgs(exampleDef.args || {});
-      relinka(
-        "log",
-        re.cyan(
-          `Example: ${pkgName} ${path.join(" ")}${exampleArgs ? ` ${exampleArgs}` : ""}`,
-        ),
-      );
+      const exampleCmd = allCommands[randomIdx];
+      if (exampleCmd) {
+        const { path, def: exampleDef } = exampleCmd;
+        const exampleArgs = buildExampleArgs(exampleDef.args || {});
+        relinka(
+          "log",
+          re.cyan(
+            `Example: ${pkgName} ${path.join(" ")}${exampleArgs ? ` ${exampleArgs}` : ""}`,
+          ),
+        );
+      }
     }
 
     if (allCommands.length > 0) {
@@ -320,7 +322,10 @@ export async function showUsage<A extends ArgDefinitions>(
         if (!commandsByPath.has(parentPath)) {
           commandsByPath.set(parentPath, []);
         }
-        commandsByPath.get(parentPath).push(cmd);
+        const group = commandsByPath.get(parentPath);
+        if (group) {
+          group.push(cmd);
+        }
       }
 
       // Calculate maximum command length for each group
@@ -338,7 +343,7 @@ export async function showUsage<A extends ArgDefinitions>(
         if (parentPath !== "/") {
           relinka("log", re.cyanPastel(`Sub-commands in ${parentPath}:`));
         }
-        const padding = groupPaddings.get(parentPath);
+        const padding = groupPaddings.get(parentPath) || 0;
         for (const { def, path } of cmds) {
           const desc = def?.meta?.description ?? "";
           const indent = parentPath === "/" ? "" : "  ";
@@ -357,7 +362,7 @@ export async function showUsage<A extends ArgDefinitions>(
         try {
           const cmd = await loadSubCommand(spec);
           if (!cmd?.meta?.hidden) {
-            const aliasDisplay = cmd.meta.aliases
+            const aliasDisplay = cmd.meta?.aliases
               ? ` (aliases: ${cmd.meta.aliases.join(", ")})`
               : "";
             subCommandNames.push(`${name}${aliasDisplay}`);
@@ -386,14 +391,17 @@ export async function showUsage<A extends ArgDefinitions>(
     // --- Dynamic usage example for object subcommands ---
     if (subCommandDefs.length > 0) {
       const randomIdx = Math.floor(Math.random() * subCommandDefs.length);
-      const { name: exampleCmd, def: exampleDef } = subCommandDefs[randomIdx];
-      const exampleArgs = buildExampleArgs(exampleDef.args || {});
-      relinka(
-        "log",
-        re.cyan(
-          `Example: ${pkgName}${parserOptions._isSubcommand ? ` ${cliName}` : ""} ${exampleCmd}${exampleArgs ? ` ${exampleArgs}` : ""}`,
-        ),
-      );
+      const exampleCmd = subCommandDefs[randomIdx];
+      if (exampleCmd) {
+        const { name: exampleCmdName, def: exampleDef } = exampleCmd;
+        const exampleArgs = buildExampleArgs(exampleDef.args || {});
+        relinka(
+          "log",
+          re.cyan(
+            `Example: ${pkgName}${parserOptions._isSubcommand ? ` ${cliName}` : ""} ${exampleCmdName}${exampleArgs ? ` ${exampleArgs}` : ""}`,
+          ),
+        );
+      }
     }
 
     if (subCommandNames.length > 0) {
@@ -423,7 +431,7 @@ export async function showUsage<A extends ArgDefinitions>(
     { text: "• --debug", desc: "Enable debug mode" },
   ];
 
-  // Add argument definitions to items
+  // Argument definitions
   for (const [key, def] of Object.entries(command.args || {})) {
     if (def.type === "positional") {
       optionItems.push({
@@ -558,7 +566,12 @@ export async function runMain<A extends ArgDefinitions = EmptyArgs>(
     const fileBasedEnabled = parserOptions.fileBasedCmds?.enable;
 
     // Handle file-based subcommand execution (if not already handled by help)
-    if (fileBasedEnabled && rawArgv.length > 0 && !isFlag(rawArgv[0])) {
+    if (
+      fileBasedEnabled &&
+      rawArgv.length > 0 &&
+      rawArgv[0] &&
+      !isFlag(rawArgv[0])
+    ) {
       const [subName, ...subCmdArgv] = rawArgv;
       try {
         const ctx = getParsedContext(command, rawArgv, parserOptions);
@@ -567,7 +580,7 @@ export async function runMain<A extends ArgDefinitions = EmptyArgs>(
         await runFileBasedSubCmd(
           subName,
           subCmdArgv,
-          parserOptions.fileBasedCmds,
+          parserOptions.fileBasedCmds!,
           parserOptions,
           command.onCmdExit
             ? async (_subCtx) => {
@@ -590,6 +603,7 @@ export async function runMain<A extends ArgDefinitions = EmptyArgs>(
       !fileBasedEnabled &&
       command.commands &&
       rawArgv.length > 0 &&
+      rawArgv[0] &&
       !isFlag(rawArgv[0])
     ) {
       const [maybeSub, ...subCmdArgv] = rawArgv;
@@ -601,7 +615,7 @@ export async function runMain<A extends ArgDefinitions = EmptyArgs>(
         }
         try {
           const cmd = await loadSubCommand(spec);
-          if (cmd.meta.aliases?.includes(maybeSub)) {
+          if (cmd.meta?.aliases?.includes(maybeSub)) {
             subSpec = spec;
             break;
           }
@@ -733,7 +747,7 @@ async function runFileBasedSubCmd(
     baseDir: string,
     args: string[],
   ): Promise<{ importPath: string; leftoverArgv: string[] }> {
-    if (args.length === 0 || isFlag(args[0])) {
+    if (args.length === 0 || (args[0] && isFlag(args[0]))) {
       // Try to load cmd.ts/cmd.js in current dir
       const possibleFiles = [
         path.join(baseDir, "cmd.js"),
@@ -749,7 +763,7 @@ async function runFileBasedSubCmd(
       );
     }
     // Check if next arg is a subfolder
-    const nextDir = path.join(baseDir, args[0]);
+    const nextDir = path.join(baseDir, args[0] || "");
     if (
       (await fs.pathExists(nextDir)) &&
       (await fs.stat(nextDir)).isDirectory()
@@ -794,7 +808,7 @@ async function runFileBasedSubCmd(
     let closestMatch = "";
     let minDistance = Number.POSITIVE_INFINITY;
     for (const cmd of commandNames) {
-      const distance = levenshteinDistance(subName, cmd.split(" ")[0]);
+      const distance = levenshteinDistance(subName, cmd.split(" ")[0] || "");
       if (distance < minDistance) {
         minDistance = distance;
         closestMatch = cmd;
@@ -888,7 +902,7 @@ async function runCommandWithArgs<A extends ArgDefinitions>(
 
   // Prepare boolean keys and default values from command argument definitions.
   const booleanKeys = Object.keys(command.args || {}).filter(
-    (k) => command.args[k].type === "boolean",
+    (k) => command.args?.[k]?.type === "boolean",
   );
   const defaultMap: Record<string, any> = {};
   for (const [argKey, def] of Object.entries(command.args || {})) {
@@ -916,33 +930,31 @@ async function runCommandWithArgs<A extends ArgDefinitions>(
 
   // Process positional arguments.
   const positionalKeys = Object.keys(command.args || {}).filter(
-    (k) => command.args[k].type === "positional",
+    (k) => command.args?.[k]?.type === "positional",
   );
   const leftoverPositionals = [...(parsed._ || [])];
 
   for (let i = 0; i < positionalKeys.length; i++) {
     const key = positionalKeys[i];
-    const def = command.args?.[key] as PositionalArgDefinition;
+    if (!key || !command.args) continue;
+
+    const def = command.args[key] as any;
     const val = leftoverPositionals[i];
-    if (val == null && def.required) {
-      await showUsage(command, parserOptions);
-      relinka("error", `Missing required positional argument: <${key}>`);
-      if (autoExit) process.exit(1);
-      else throw new Error(`Missing required positional argument: <${key}>`);
-    }
-    finalArgs[key] = val != null ? castArgValue(def, val, key) : def.default;
+    finalArgs[key] =
+      val != null && def ? castArgValue(def, val, key) : def?.default;
   }
 
   // Process non-positional arguments.
   const otherKeys = Object.keys(command.args || {}).filter(
-    (k) => command.args[k].type !== "positional",
+    (k) => command.args?.[k]?.type !== "positional",
   );
 
   for (const key of otherKeys) {
     const def = command.args?.[key];
-    let rawVal = parsed[key];
+    if (!def) continue;
 
-    // Ensure array type when needed
+    let rawVal = (parsed as Record<string, any>)[key];
+
     if (
       def.type === "array" &&
       rawVal !== undefined &&
@@ -951,17 +963,12 @@ async function runCommandWithArgs<A extends ArgDefinitions>(
       rawVal = [rawVal];
     }
 
-    /** Cast the *caller-supplied* value first (if any) so we can tell whether
-        a boolean flag evaluates to true/false. */
     const casted =
       rawVal !== undefined ? castArgValue(def, rawVal, key) : def.default;
 
-    /** The option is considered "used" only when the user actually passed it.
-        For booleans that means they passed the flag *and* it's truthy. */
     const argUsed =
       rawVal !== undefined && (def.type === "boolean" ? casted === true : true);
 
-    // Missing‐required check (unchanged logic)
     if (casted == null && def.required) {
       await showUsage(command, parserOptions);
       relinka("error", `Missing required argument: --${key}`);
@@ -969,11 +976,9 @@ async function runCommandWithArgs<A extends ArgDefinitions>(
       else throw new Error(`Missing required argument: --${key}`);
     }
 
-    // Updated dependency enforcement —
-    // only if the option is actively used ↑
     if (argUsed && def.dependencies?.length) {
       const missingDeps = def.dependencies.filter((d) => {
-        const depVal = parsed[d] ?? defaultMap[d];
+        const depVal = (parsed as Record<string, any>)[d] ?? defaultMap[d];
         return !depVal;
       });
       if (missingDeps.length > 0) {
@@ -986,7 +991,6 @@ async function runCommandWithArgs<A extends ArgDefinitions>(
       }
     }
 
-    // Store the final value
     finalArgs[key] = def.type === "boolean" ? Boolean(casted) : casted;
   }
 
@@ -1165,7 +1169,7 @@ function castArgValue(def: ArgDefinition, rawVal: any, argName: string): any {
  */
 function renderPositional(args: ArgDefinitions) {
   const positionalKeys = Object.keys(args || {}).filter(
-    (k) => args[k].type === "positional",
+    (k) => args?.[k]?.type === "positional",
   );
   return positionalKeys.map((k) => `<${k}>`).join(" ");
 }
@@ -1194,7 +1198,7 @@ export async function runCmd<A extends ArgDefinitions = EmptyArgs>(
 ) {
   // Prepare boolean keys and default values from command argument definitions.
   const booleanKeys = Object.keys(command.args || {}).filter(
-    (k) => command.args[k].type === "boolean",
+    (k) => command.args?.[k]?.type === "boolean",
   );
   const defaultMap: Record<string, any> = {};
   for (const [argKey, def] of Object.entries(command.args || {})) {
@@ -1221,28 +1225,30 @@ export async function runCmd<A extends ArgDefinitions = EmptyArgs>(
   const finalArgs: Record<string, any> = {};
 
   const positionalKeys = Object.keys(command.args || {}).filter(
-    (k) => command.args[k].type === "positional",
+    (k) => command.args?.[k]?.type === "positional",
   );
   const leftoverPositionals = [...(parsed._ || [])];
 
   // Process positional arguments.
   for (let i = 0; i < positionalKeys.length; i++) {
     const key = positionalKeys[i];
-    const def = command.args?.[key] as any;
+    if (!key || !command.args) continue;
+
+    const def = command.args[key] as any;
     const val = leftoverPositionals[i];
-    if (val == null && def.required) {
-      throw new Error(`Missing required positional argument: <${key}>`);
-    }
-    finalArgs[key] = val != null ? castArgValue(def, val, key) : def.default;
+    finalArgs[key] =
+      val != null && def ? castArgValue(def, val, key) : def?.default;
   }
 
   // Process non-positional arguments.
   const otherKeys = Object.keys(command.args || {}).filter(
-    (k) => command.args[k].type !== "positional",
+    (k) => command.args?.[k]?.type !== "positional",
   );
 
   for (const key of otherKeys) {
     const def = command.args?.[key];
+    if (!def) continue;
+
     let rawVal = parsed[key];
 
     if (
@@ -1303,7 +1309,7 @@ function getParsedContext<A extends ArgDefinitions>(
 ): CommandContext<InferArgTypes<A>> {
   // Prepare boolean keys and default values from command argument definitions.
   const booleanKeys = Object.keys(command.args || {}).filter(
-    (k) => command.args[k].type === "boolean",
+    (k) => command.args?.[k]?.type === "boolean",
   );
   const defaultMap: Record<string, any> = {};
   for (const [argKey, def] of Object.entries(command.args || {})) {
@@ -1325,20 +1331,25 @@ function getParsedContext<A extends ArgDefinitions>(
   const parsed = reliArgParser(argv, mergedParserOptions);
   const finalArgs: Record<string, any> = {};
   const positionalKeys = Object.keys(command.args || {}).filter(
-    (k) => command.args[k].type === "positional",
+    (k) => command.args?.[k]?.type === "positional",
   );
   const leftoverPositionals = [...(parsed._ || [])];
   for (let i = 0; i < positionalKeys.length; i++) {
     const key = positionalKeys[i];
-    const def = command.args?.[key] as any;
+    if (!key || !command.args) continue;
+
+    const def = command.args[key] as any;
     const val = leftoverPositionals[i];
-    finalArgs[key] = val != null ? castArgValue(def, val, key) : def.default;
+    finalArgs[key] =
+      val != null && def ? castArgValue(def, val, key) : def?.default;
   }
   const otherKeys = Object.keys(command.args || {}).filter(
-    (k) => command.args[k].type !== "positional",
+    (k) => command.args?.[k]?.type !== "positional",
   );
   for (const key of otherKeys) {
     const def = command.args?.[key];
+    if (!def) continue;
+
     let rawVal = parsed[key];
     if (
       def.type === "array" &&
@@ -1359,11 +1370,14 @@ function getParsedContext<A extends ArgDefinitions>(
 }
 
 // Recursively resolve the deepest file-based command and leftover argv
-async function resolveFileBasedCommandPath(cmdsRoot, argv) {
+async function resolveFileBasedCommandPath(
+  cmdsRoot: string,
+  argv: string[],
+): Promise<{ def: any; path: string[]; leftoverArgv: string[] } | null> {
   let currentDir = cmdsRoot;
-  const pathSegments = [];
+  const pathSegments: string[] = [];
   let leftover = [...argv];
-  while (leftover.length > 0 && !isFlag(leftover[0])) {
+  while (leftover.length > 0 && leftover[0] && !isFlag(leftover[0])) {
     const nextDir = path.join(currentDir, leftover[0]);
     if (
       (await fs.pathExists(nextDir)) &&
@@ -1393,35 +1407,34 @@ async function resolveFileBasedCommandPath(cmdsRoot, argv) {
   return null;
 }
 
-// Add Levenshtein distance function at the end of the file
 function levenshteinDistance(a: string, b: string): number {
   if (a.length === 0) return b.length;
   if (b.length === 0) return a.length;
 
-  const matrix = [];
+  const matrix: number[][] = [];
 
   // Initialize matrix
   for (let i = 0; i <= b.length; i++) {
     matrix[i] = [i];
   }
   for (let j = 0; j <= a.length; j++) {
-    matrix[0][j] = j;
+    matrix[0]![j] = j;
   }
 
   // Fill matrix
   for (let i = 1; i <= b.length; i++) {
     for (let j = 1; j <= a.length; j++) {
       if (b.charAt(i - 1) === a.charAt(j - 1)) {
-        matrix[i][j] = matrix[i - 1][j - 1];
+        matrix[i]![j] = matrix[i - 1]![j - 1]!;
       } else {
-        matrix[i][j] = Math.min(
-          matrix[i - 1][j - 1] + 1, // substitution
-          matrix[i][j - 1] + 1, // insertion
-          matrix[i - 1][j] + 1, // deletion
+        matrix[i]![j] = Math.min(
+          matrix[i - 1]![j - 1]! + 1, // substitution
+          matrix[i]![j - 1]! + 1, // insertion
+          matrix[i - 1]![j]! + 1, // deletion
         );
       }
     }
   }
 
-  return matrix[b.length][a.length];
+  return matrix[b.length]![a.length]!;
 }

@@ -12,6 +12,20 @@
     "dist-jsr",
     "dist-npm",
     "dist-libs",
-    "src/types.ts"
+    "src/types.ts",
+    ".tests/**/trpc-orpc-cli/**",
+    ".tests/figures.test.ts"
+  ],
+  "includeEntryExports": false,
+  "ignoreDependencies": [
+    "@orpc/contract",
+    "@valibot/to-json-schema",
+    "effect",
+    "eslint-plugin-codegen",
+    "eslint-plugin-mmkal",
+    "expect-type",
+    "fs-syncer",
+    "picocolors",
+    "strip-ansi"
   ]
 }

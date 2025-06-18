@@ -1,3 +1,5 @@
+import type { Fonts } from "figlet";
+
 import { relinka } from "@reliverse/relinka";
 import { getCurrentTerminalName } from "@reliverse/runtime";
 
@@ -6,6 +8,7 @@ import type {
   PromptOptions,
 } from "~/types.js";
 
+import { createAsciiArt } from "~/components/ascii-art/ascii-art.js";
 import { msg } from "~/components/msg-fmt/messages.js";
 import {
   getExactTerminalWidth,
@@ -32,27 +35,42 @@ type StartPromptOptions = PromptOptions & {
     wrongTerminalSize?: boolean;
     windowsHomeDirRoot?: boolean;
   };
+  variant?: "header" | "ascii-art";
+  asciiArtFont?: Fonts;
 };
 
-export async function startPrompt({
-  title = "",
-  titleColor = "inverse",
-  titleTypography = "none",
-  titleVariant,
-  borderColor = "dim",
-  clearConsole = false,
-  horizontalLine = true,
-  horizontalLineLength = 0,
-  packageName = reliversePrompts.name,
-  packageVersion = reliversePrompts.version,
-  terminalSizeOptions = {},
-  isDev = false,
-  prevent = {
-    unsupportedTTY: true,
-    wrongTerminalSize: true,
-    windowsHomeDirRoot: true,
-  },
-}: StartPromptOptions): Promise<void> {
+export async function introPrompt(
+  optionsOrTitle: StartPromptOptions | string,
+): Promise<void> {
+  const options =
+    typeof optionsOrTitle === "string"
+      ? { title: optionsOrTitle }
+      : optionsOrTitle;
+
+  const {
+    title = "",
+    titleColor = "inverse",
+    titleTypography = "none",
+    titleVariant,
+    borderColor = "dim",
+    clearConsole = false,
+    horizontalLine = true,
+    horizontalLineLength: initialHorizontalLineLength = 0,
+    packageName = reliversePrompts.name,
+    packageVersion = reliversePrompts.version,
+    terminalSizeOptions = {},
+    isDev = false,
+    prevent = {
+      unsupportedTTY: true,
+      wrongTerminalSize: true,
+      windowsHomeDirRoot: true,
+    },
+    variant = "header",
+    asciiArtFont,
+  } = options;
+
+  let horizontalLineLength = initialHorizontalLineLength;
+
   if (prevent.windowsHomeDirRoot) {
     preventWindowsHomeDirRoot(process.cwd());
   }
@@ -75,6 +93,15 @@ export async function startPrompt({
             ? ` | isDev | w${terminalWidth} h${terminalHeight}`
             : ""
         }`;
+
+  if (variant === "ascii-art") {
+    await createAsciiArt({
+      message: formattedTitle,
+      font: asciiArtFont,
+      clearConsole,
+    });
+    return;
+  }
 
   if (horizontalLineLength === 0) {
     const titleFullLength =

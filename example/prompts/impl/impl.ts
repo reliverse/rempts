@@ -26,12 +26,12 @@ import {
 /**
  * Defines a prompt option for the example selector.
  */
-type ExampleOption = {
+interface ExampleOption {
   label: string;
   value: PromptType;
   hint: string;
   description?: string;
-};
+}
 
 /**
  * Available example options for the demo.
@@ -147,7 +147,7 @@ export const INPUT_EXAMPLES: PromptType[] = [
 /**
  * Default user input values when examples are skipped.
  */
-export const DEFAULT_USER_INPUT: Partial<UserInput> = {
+export const DEFAULT_USER_INPUT: UserInput = {
   username: "johnny911",
   dir: "./prefilled-default-value",
   lang: "en",

@@ -11,7 +11,7 @@ type SimpleSpinnerType = "default" | "dottedCircle" | "boxSpinner";
 type OraSpinnerType = Extract<SpinnerName, OraAllowedSpinners>;
 type OraAllowedSpinners = "dots" | "bouncingBar" | "arc";
 
-type TaskOptions<T extends "simple" | "ora"> = {
+interface TaskOptions<T extends "simple" | "ora"> {
   initialMessage: string;
   successMessage?: string;
   errorMessage?: string;
@@ -19,9 +19,9 @@ type TaskOptions<T extends "simple" | "ora"> = {
   spinnerSolution: T;
   spinnerType?: T extends "simple" ? SimpleSpinnerType : OraSpinnerType;
   action: (updateMessage: (message: string) => void) => Promise<void>;
-};
+}
 
-export async function spinnerTaskPrompt<T extends "simple" | "ora">(
+export async function taskSpinPrompt<T extends "simple" | "ora">(
   options: TaskOptions<T>,
 ): Promise<void> {
   const {
@@ -104,7 +104,7 @@ export async function spinnerTaskPrompt<T extends "simple" | "ora">(
       }
 
       interval = setInterval(() => {
-        const frame = re.magenta(frames[frameIndex]);
+        const frame = re.magenta(frames[frameIndex] ?? "");
         process.stdout.write(
           `${cursor.move(-999, 0)}${erase.line}${frame} ${re.cyan(message)}`,
         );

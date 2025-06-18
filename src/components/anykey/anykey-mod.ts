@@ -4,7 +4,7 @@ import { cursor } from "sisteransi";
 import type { ColorName } from "~/types.js";
 
 import { fmt } from "~/components/msg-fmt/messages.js";
-import { endPrompt } from "~/components/st-end/end.js";
+import { outroPrompt } from "~/components/outro/outro-end.js";
 import { streamText } from "~/utils/stream-text.js";
 
 const DEFAULT_MESSAGE = "Press any key to continue...";
@@ -39,7 +39,7 @@ const terminal = {
   },
 };
 
-type Options = {
+interface Options {
   ctrlC?: number | false | "reject";
   preserveLog?: boolean;
   hideMessage?: boolean;
@@ -47,7 +47,7 @@ type Options = {
   streamDelay?: number;
   color?: ColorName;
   placeholderColor?: ColorName;
-};
+}
 
 export async function anykeyPrompt(
   message: string = DEFAULT_MESSAGE,
@@ -118,7 +118,7 @@ export async function anykeyPrompt(
 
     const handleCtrlC = () => {
       cleanup();
-      void endPrompt({
+      void outroPrompt({
         title: "✋ User pressed Ctrl+C, exiting...",
         titleAnimation: "pulse",
         titleColor: "redBright",

@@ -8,10 +8,10 @@ export function isTerminalInteractive(input = process.stdin): boolean {
 /**
  * Validates a name against allowed characters
  */
-type ValidationResult = {
+interface ValidationResult {
   isValid: boolean;
   message?: string;
-};
+}
 export function isValidName(name: string): ValidationResult {
   if (!/^[a-zA-Z0-9-]+$/.test(name)) {
     return {

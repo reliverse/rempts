@@ -16,11 +16,11 @@ import { deleteLastLine } from "~/components/msg-fmt/terminal.js";
 import { completePrompt } from "~/utils/prompt-end.js";
 import { streamText } from "~/utils/stream-text.js";
 
-type SeparatorOption = {
+interface SeparatorOption {
   separator: true;
   width?: number;
   symbol?: keyof typeof symbols;
-};
+}
 
 function isSelectOption<T>(
   option: SelectOption<T> | SeparatorOption,
@@ -28,8 +28,9 @@ function isSelectOption<T>(
   return !("separator" in option);
 }
 
-type SelectPromptParams<T extends string> = {
-  title: string;
+interface SelectPromptParams<T extends string> {
+  title?: string;
+  message?: string;
   content?: string;
   options: (SelectOption<T> | SeparatorOption)[];
   defaultValue?: T;
@@ -48,7 +49,7 @@ type SelectPromptParams<T extends string> = {
   displayInstructions?: boolean;
   shouldStream?: boolean;
   streamDelay?: number;
-};
+}
 
 /**
  * Renders the prompt UI by printing
@@ -194,6 +195,7 @@ export async function selectPrompt<T extends string>(
 ): Promise<T> {
   const {
     title = "",
+    message = "",
     content = "",
     options,
     defaultValue,
@@ -213,6 +215,8 @@ export async function selectPrompt<T extends string>(
     shouldStream = false,
     streamDelay = 20,
   } = params;
+
+  const finalTitle = message || title;
 
   let selectedIndex = defaultValue
     ? options.findIndex(
@@ -251,7 +255,7 @@ export async function selectPrompt<T extends string>(
       }
     }
     void renderPromptUI({
-      title,
+      title: finalTitle,
       content,
       options,
       selectedIndex,
@@ -276,7 +280,7 @@ export async function selectPrompt<T extends string>(
   }
 
   lastUILineCount = await renderPromptUI({
-    title,
+    title: finalTitle,
     content,
     options,
     selectedIndex,

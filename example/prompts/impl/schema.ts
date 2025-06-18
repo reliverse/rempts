@@ -80,7 +80,7 @@ export const schema = {
 };
 
 // Define a TypeScript interface for user input.
-export type UserInput = {
+export interface UserInput {
   username: string;
   dir: string;
   spinner: boolean;
@@ -91,7 +91,7 @@ export type UserInput = {
   birthday: string;
   langs: string[];
   toggle: boolean;
-};
+}
 
 /* ======== Alternative schema definition when using validator like TypeBox ============ */
 

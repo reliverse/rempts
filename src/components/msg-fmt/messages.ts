@@ -107,7 +107,9 @@ function applyStyles(
  */
 export const bar = ({
   borderColor = "dim",
-}: { borderColor?: ColorName } = {}): string => {
+}: {
+  borderColor?: ColorName;
+} = {}): string => {
   if (borderColor.endsWith("Gradient")) {
     relinka(
       "error",

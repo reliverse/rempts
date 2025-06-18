@@ -5,7 +5,7 @@ import {
   colorize,
   createAsciiArt,
   msg,
-  spinnerTaskPrompt,
+  taskSpinPrompt,
   endPrompt,
   inputPrompt,
   selectPrompt,
@@ -59,7 +59,7 @@ export default defineCommand({
       ],
     });
 
-    await spinnerTaskPrompt({
+    await taskSpinPrompt({
       initialMessage: "Checking your answer...",
       successMessage: `Nice work ${playerName}. That's a legit answer!`,
       errorMessage: `🫠  Game over, ${playerName}! You lose!`,
@@ -85,7 +85,7 @@ export default defineCommand({
       ],
     });
 
-    await spinnerTaskPrompt({
+    await taskSpinPrompt({
       initialMessage: "Which company created JavaScript?",
       successMessage: "Correct! Netscape created JavaScript.",
       errorMessage: "Wrong! Netscape created JavaScript.",

@@ -6,7 +6,8 @@
 
 ## Features
 
-- 😘 drop-in alternative to `citty` + built-in prompts
+- 😘 drop-in to libraries like `unjs/citty` and `@clack/prompts`
+- 📝 includes comprehensive set of built-in cli prompts
 - 📂 file-based commands (app-router style by default)
 - 🫂 rempts keeps you from fighting with your CLI tool
 - 🏎️ prompt engine that *feels* modern — and actually is
@@ -60,7 +61,7 @@ import {
   // ...prompts
   defineCommand, runMain, defineArgs,
   inputPrompt, selectPrompt, multiselectPrompt, numberPrompt,
-  confirmPrompt, togglePrompt, spinnerTaskPrompt, progressTaskPrompt,
+  confirmPrompt, togglePrompt, taskSpinPrompt, taskProgressPrompt,
   startPrompt, endPrompt, resultPrompt, nextStepsPrompt,
   // ...hooks
   useSpinner,
@@ -79,25 +80,32 @@ import {
 
 | Prompt                    | Description                                               |
 |---------------------------|-----------------------------------------------------------|
+| `useSpinner`              | Start/stop spinner |
 | `inputPrompt`             | Single-line input (with mask support, e.g. for passwords) |
 | `selectPrompt`            | Single-choice radio menu                                  |
 | `multiselectPrompt`       | Multi-choice checkbox menu                                |
 | `numberPrompt`            | Type-safe number input                                    |
 | `confirmPrompt`           | Yes/No toggle                                             |
 | `togglePrompt`            | Custom on/off toggles                                     |
-| `progressTaskPrompt`      | Progress bar for async tasks                              |
+| `taskProgressPrompt`      | Progress bar for async tasks                              |
 | `resultPrompt`            | Show results in a styled box                              |
 | `nextStepsPrompt`         | Show next steps in a styled list                          |
 | `startPrompt`/`endPrompt` | Makes CLI start/end flows look nice                       |
-| `spinnerTaskPrompt`       | Async loader with spinner (possibly will be deprecated)   |
+| `taskSpinPrompt`       | Async loader with spinner (possibly will be deprecated)   |
 | `datePrompt`              | Date input with format validation                         |
 | `anykeyPrompt`            | Wait for any keypress                                     |
 
-### Hooks
+### Aliases
 
-| Hook         | Description        |
-|--------------|--------------------|
-| `useSpinner` | Start/stop spinner |
+To help you migrate from the different CLI frameworks, `@reliverse/rempts` has some aliases for the most popular prompts.
+
+| Prompt                | Aliases         |
+|-----------------------|-----------------|
+| `useSpinner`          | `spinner`       |
+| `selectPrompt`        | `select`        |
+| `multiselectPrompt`   | `multiselect`   |
+| `inputPrompt`         | `text`, `input` |
+| `@reliverse/relinka`  | `log`           |
 
 ### Notices
 
@@ -124,6 +132,23 @@ async function main() {
     defaultValue: "my-cool-project",
   });
 
+  const spinner = useSpinner({
+    text: "Loading...",
+    indicator: "timer", // or "dots"
+    frames: ["◒", "◐", "◓", "◑"], // custom frames
+    delay: 80, // custom delay
+    onCancel: () => {
+      console.log("Operation cancelled");
+    },
+    cancelMessage: "Operation cancelled by user",
+    errorMessage: "Operation failed",
+    signal: abortController.signal,
+  }).start();
+
+  // The spinner will show:
+  // ◒  Loading... [5s]
+  // With animated frames and timer
+
   const framework = await selectPrompt({
     title: "Pick your framework",
     options: [
@@ -139,6 +164,57 @@ async function main() {
 
 await main();
 ```
+
+**Available spinner options:**
+
+| Option | Description |
+|--------|-------------|
+| `cancelMessage` | The message to display when the spinner is cancelled |
+| `color` | The color of the spinner |
+| `delay` | The delay between frames |
+| `errorMessage` | The message to display when the spinner fails |
+| `failText` | The text to display when the spinner fails |
+| `frames` | The frames to use for the spinner |
+| `hideCursor` | Whether to hide the cursor |
+| `indicator` | The indicator to use for the spinner |
+| `onCancel` | The function to call when the spinner is cancelled |
+| `prefixText` | The text to display before the spinner |
+| `signal` | The signal to use for the spinner |
+| `silent` | Whether to hide the spinner |
+| `spinner` | The spinner to use for the spinner |
+| `successText` | The text to display when the spinner succeeds |
+| `text` | The text to display next to the spinner |
+
+**Available indicator options:**
+
+| Option | Description |
+|--------|-------------|
+| `timer` | The timer indicator |
+| `dots` | The dots indicator |
+
+**Available signal options:**
+
+| Option | Description |
+|--------|-------------|
+| `abortController.signal` | The signal to use for the spinner |
+
+**Available frames options:**
+
+| Option | Description |
+|--------|-------------|
+| `["◒", "◐", "◓", "◑"]` | The frames to use for the spinner |
+
+**Available delay options:**
+
+| Option | Description |
+|--------|-------------|
+| `80` | The delay between frames |
+
+**Available onCancel options:**
+
+| Option | Description |
+|--------|-------------|
+| `() => { console.log("Operation cancelled"); }` | The function to call when the spinner is cancelled |
 
 ## Launcher
 

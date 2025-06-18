@@ -62,16 +62,16 @@ type AnimationName =
 
 export type VariantName = "doubleBox" | "none";
 
-export type MsgConfig = {
+export interface MsgConfig {
   symbol: string;
   prefix?: string;
   color?: (text: string) => string;
   newLineBefore?: boolean;
   newLineAfter?: boolean;
   suffix?: string;
-};
+}
 
-export type PromptOptions = {
+export interface PromptOptions {
   schema?: any;
   title?: string;
   titleColor?: ColorName;
@@ -109,27 +109,27 @@ export type PromptOptions = {
   horizontalLineLength?: number;
   symbol?: string;
   customSymbol?: string;
-};
+}
 
-type ChoiceRequiredOptions = {
+interface ChoiceRequiredOptions {
   id: string;
   title: string;
-};
+}
 
-type ChoiceOptionalOptions = {
+interface ChoiceOptionalOptions {
   description?: string;
   titleTypography?: TypographyName;
   action?: () => Promise<void>;
-};
+}
 
 export type ChoiceOptions = ChoiceRequiredOptions & ChoiceOptionalOptions;
 
-export type SelectOption<T> = {
+export interface SelectOption<T> {
   value: T;
   label: string;
   hint?: string;
   disabled?: boolean;
-};
+}
 
 /**
  * Standard terminal colors supported by most terminals
@@ -150,35 +150,35 @@ export type StandardColor =
  */
 export type OutputColor = StandardColor | "dim";
 
-export type EditorExitResult = {
+export interface EditorExitResult {
   saved: boolean;
   content: string | null;
   filename: string | null;
-};
+}
 
 // --- Logger ---
 
 export type MessageKind = "log" | "info" | "warn" | "error" | "success";
 type VerboseKind = `${MessageKind}-verbose`;
 export type AllKinds = MessageKind | VerboseKind;
-export type MessageConfig = {
+export interface MessageConfig {
   type: "M_INFO" | "M_ERROR";
   titleColor?: "retroGradient" | "viceGradient" | "yellowBright";
   titleTypography?: "bold";
   contentColor?: "dim";
   contentTypography?: "italic";
-};
+}
 
-export type StreamOptions = {
+export interface StreamOptions {
   delay?: number;
   useSpinner?: boolean;
   spinnerFrames?: string[];
   spinnerDelay?: number;
-};
+}
 
 // --- Progress ---
 
-export type ProgressBarOptions = {
+export interface ProgressBarOptions {
   total: number;
   width?: number;
   completeChar?: string;
@@ -187,13 +187,13 @@ export type ProgressBarOptions = {
   colorize?: boolean;
   increment?: number;
   desiredTotalTime?: number;
-};
+}
 
-export type ProgressBar = {
+export interface ProgressBar {
   update: (value: number) => Promise<void>;
   increment: (amount?: number) => Promise<void>;
   render: () => Promise<void>;
-};
+}
 
 // --- Prompt ---
 
@@ -219,7 +219,7 @@ export type PromptType =
 
 // --- Confirm Prompt ---
 
-export type ConfirmPromptOptions = {
+export interface ConfirmPromptOptions {
   title: string;
   defaultValue?: boolean;
   content?: string;
@@ -239,11 +239,11 @@ export type ConfirmPromptOptions = {
   endTitleColor?: ColorName;
   border?: boolean;
   terminalWidth?: number;
-};
+}
 
 // --- Stream Text ---
 
-export type StreamTextOptions = {
+export interface StreamTextOptions {
   /**
    * Text to stream
    */
@@ -277,17 +277,17 @@ export type StreamTextOptions = {
    * Callback function to update the spinner text
    */
   onProgress?: (currentText: string) => void;
-};
+}
 
 // --- Prevent ---
 
-export type PreventWrongTerminalSizeOptions = {
+export interface PreventWrongTerminalSizeOptions {
   isDev?: boolean;
   shouldExit?: boolean;
   minWidth?: number;
   minHeight?: number;
   sizeErrorDescription?: string;
-};
+}
 
 // --- Input ---
 
@@ -333,7 +333,7 @@ export type InputPromptOptions = {
   variantOptions?: unknown;
 } & PromptOptions;
 
-export type RenderParams = {
+export interface RenderParams {
   border: boolean;
   borderColor?: BorderColorName;
   content?: string;
@@ -354,7 +354,7 @@ export type RenderParams = {
   titleVariant?: VariantName;
   userInput: string;
   isRerender?: boolean;
-};
+}
 
 // --- Messages ---
 
@@ -378,7 +378,7 @@ export type SymbolName =
 
 export type Symbols = Record<SymbolName, string>;
 
-export type FmtMsgOptions = {
+export interface FmtMsgOptions {
   type: MsgType;
   title?: string;
   titleAfterAnim?: string;
@@ -414,11 +414,11 @@ export type FmtMsgOptions = {
   customSymbol?: string;
   symbolColor?: ColorName;
   noNewLine?: boolean;
-};
+}
 
 // --- Toggle Prompt ---
 
-export type TogglePromptParams<T extends string> = {
+export interface TogglePromptParams<T extends string> {
   title: string;
   content?: string;
   options?: [T, T];
@@ -434,17 +434,17 @@ export type TogglePromptParams<T extends string> = {
   endTitleColor?: ColorName;
   displayInstructions?: boolean;
   debug?: boolean;
-};
+}
 
 // --- Multiselect Prompt ---
 
-export type SeparatorOption = {
+export interface SeparatorOption {
   separator: true;
   width?: number;
   symbol?: SymbolName;
-};
+}
 
-export type MultiselectPromptParams<T extends string> = {
+export interface MultiselectPromptParams<T extends string> {
   title: string;
   content?: string;
   options: (SelectOption<T> | SeparatorOption)[];
@@ -464,7 +464,7 @@ export type MultiselectPromptParams<T extends string> = {
   minSelect?: number;
   maxSelect?: number;
   selectAll?: boolean;
-};
+}
 
 // --- Date Prompt ---
 

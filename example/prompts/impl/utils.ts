@@ -6,7 +6,9 @@ import type { UserInput } from "./schema.js";
 
 export function createColorChoices(): ChoiceOptions[] {
   return Object.keys(colorMap).map((key) => ({
-    title: colorMap[key](key.charAt(0).toUpperCase() + key.slice(1)),
+    title: colorMap[key as ColorName](
+      key.charAt(0).toUpperCase() + key.slice(1),
+    ),
     id: key,
   }));
 }
@@ -15,7 +17,7 @@ export function calculateAge(birthday: string): number {
   // Parse the user's birthday and calculate their age
   const today = new Date();
   const [day, month, year] = birthday.split(".").map(Number);
-  const birthDate = new Date(year, month - 1, day);
+  const birthDate = new Date(year!, month! - 1, day);
 
   let age = today.getFullYear() - birthDate.getFullYear();
   const hasHadBirthdayThisYear =

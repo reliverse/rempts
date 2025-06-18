@@ -16,7 +16,7 @@ import {
 
 type VariantName = FmtMsgOptions["titleVariant"];
 
-type NumberPromptOptions = {
+interface NumberPromptOptions {
   title: string;
   hint?: string;
   hintPlaceholderColor?: ColorName;
@@ -41,9 +41,9 @@ type NumberPromptOptions = {
     userInput?: string;
     errorMessage?: string;
   };
-};
+}
 
-type RenderParams = {
+interface RenderParams {
   title: string;
   userInput: string;
   errorMessage: string;
@@ -58,7 +58,7 @@ type RenderParams = {
   titleTypography: TypographyName | undefined;
   titleVariant: VariantName | undefined;
   borderColor: ColorName | undefined;
-};
+}
 
 /**
  * Renders the prompt UI.

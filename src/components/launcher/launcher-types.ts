@@ -4,20 +4,20 @@
 
 export type EmptyArgs = Record<string, never>;
 
-export type BaseArgProps = {
+export interface BaseArgProps {
   description?: string;
   required?: boolean;
   allowed?: string[];
-};
+}
 
-export type BaseArgDefinition = {
+export interface BaseArgDefinition {
   type: string;
   description?: string;
   required?: boolean;
   default?: any;
   allowed?: any[];
   dependencies?: string[];
-};
+}
 
 export type PositionalArgDefinition = BaseArgDefinition & {
   type: "positional";
@@ -59,13 +59,13 @@ export type ArgDefinition =
 
 export type ArgDefinitions = Record<string, ArgDefinition>;
 
-export type CommandMeta = {
+export interface CommandMeta {
   name: string;
   version?: string;
   description?: string;
   hidden?: boolean;
   aliases?: string[];
-};
+}
 
 /**
  * A subcommand can be either:
@@ -79,10 +79,10 @@ export type CommandSpec =
 
 export type CommandsMap = Record<string, CommandSpec>;
 
-export type CommandContext<ARGS> = {
+export interface CommandContext<ARGS> {
   args: ARGS;
   raw: string[];
-};
+}
 
 export type CommandRun<ARGS> = (
   ctx: CommandContext<ARGS>,
@@ -92,7 +92,7 @@ export type CommandHook<ARGS> = (
   ctx: CommandContext<ARGS>,
 ) => void | Promise<void>;
 
-export type DefineCommandOptions<A extends ArgDefinitions = EmptyArgs> = {
+export interface DefineCommandOptions<A extends ArgDefinitions = EmptyArgs> {
   meta?: CommandMeta;
   args?: A;
   run?: CommandRun<InferArgTypes<A>>;
@@ -128,9 +128,9 @@ export type DefineCommandOptions<A extends ArgDefinitions = EmptyArgs> = {
    * Called once per CLI process, after all command/run() logic is finished
    */
   onLauncherExit?: () => void | Promise<void>;
-};
+}
 
-export type Command<A extends ArgDefinitions = EmptyArgs> = {
+export interface Command<A extends ArgDefinitions = EmptyArgs> {
   meta?: CommandMeta;
   args: A;
   run?: CommandRun<InferArgTypes<A>>;
@@ -166,7 +166,7 @@ export type Command<A extends ArgDefinitions = EmptyArgs> = {
    * Called once per CLI process, after all command/run() logic is finished
    */
   onLauncherExit?: () => void | Promise<void>;
-};
+}
 
 export type InferArgTypes<A extends ArgDefinitions> = {
   [K in keyof A]: A[K] extends PositionalArgDefinition
@@ -182,7 +182,7 @@ export type InferArgTypes<A extends ArgDefinitions> = {
             : never;
 };
 
-export type FileBasedCmdsOptions = {
+export interface FileBasedCmdsOptions {
   enable: boolean;
   cmdsRootPath: string;
-};
+}

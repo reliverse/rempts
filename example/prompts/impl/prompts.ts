@@ -7,9 +7,9 @@ import type { ColorName } from "~/types.js";
 
 import packageJson from "~/../package.json" with { type: "json" };
 import { msg } from "~/mod.js";
-import { anykeyPrompt, spinnerTaskPrompt } from "~/mod.js";
+import { anykeyPrompt, taskSpinPrompt } from "~/mod.js";
 import { multiselectPrompt } from "~/mod.js";
-import { progressTaskPrompt } from "~/mod.js";
+import { taskProgressPrompt } from "~/mod.js";
 import {
   animateText,
   confirmPrompt,
@@ -378,7 +378,7 @@ export async function showConfirmPrompt(username: string) {
 }
 
 async function showSpinner() {
-  await spinnerTaskPrompt({
+  await taskSpinPrompt({
     initialMessage: "Some long-running task is in progress...",
     successMessage: "Hooray! The long-running task was a success!",
     errorMessage: "An error occurred while the long-running task!",
@@ -393,7 +393,7 @@ async function showSpinner() {
 }
 
 async function showProgressbar() {
-  await progressTaskPrompt({
+  await taskProgressPrompt({
     total: 100,
     width: 10,
     format:

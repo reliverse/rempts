@@ -10,15 +10,15 @@ import type { EditorExitResult } from "~/types.js";
 const { terminal: term } = termkit;
 
 // --- Interfaces ---
-type EditorTheme = {
+interface EditorTheme {
   text: (str: string) => string;
   statusBarBg: (str: string) => string;
   statusBarText: (str: string) => string;
   highlight: (str: string) => string;
   lineNumber: (str: string) => string;
-};
+}
 
-type EditorConfig = {
+interface EditorConfig {
   syntaxHighlighting?: boolean;
   theme?: "auto" | "light" | "dark";
   defaultAllowSaveAs?: boolean;
@@ -27,9 +27,9 @@ type EditorConfig = {
   defaultReturnContentOnSave?: boolean;
   // Allow other properties potentially loaded
   [key: string]: any;
-};
+}
 
-type EditorOptions = {
+interface EditorOptions {
   filename?: string | null;
   initialContent?: string | null;
   onSave?: (
@@ -48,9 +48,9 @@ type EditorOptions = {
   returnContentOnSave?: boolean;
   mode?: string;
   cwd?: string;
-};
+}
 
-type EditorState = {
+interface EditorState {
   lines: string[];
   cursorX: number;
   cursorY: number;
@@ -84,7 +84,7 @@ type EditorState = {
   syntaxHighlightToggle: boolean;
   exitResolver: ((value: EditorExitResult) => void) | null;
   exitRejecter: ((reason?: any) => void) | null;
-};
+}
 
 // --- Editor State ---
 let state: EditorState = {
@@ -294,13 +294,13 @@ function renderEditor() {
       term(state.theme.lineNumber(`${lineNum} `)); // Line number
 
       const line = state.lines[fileLineIndex];
-      const displayLine = line.substring(
+      const displayLine = line?.substring(
         state.leftCol,
         state.leftCol + displayWidth,
       );
 
       // Apply syntax highlighting here before printing
-      const highlightedDisplayLine = applySyntaxHighlighting(displayLine);
+      const highlightedDisplayLine = applySyntaxHighlighting(displayLine ?? "");
 
       term(highlightedDisplayLine);
       term.eraseLineAfter(); // Clear rest of the terminal line
@@ -350,8 +350,8 @@ function deleteCharBackward() {
     const currentLine = state.lines.splice(state.cursorY, 1)[0];
     state.cursorY--;
     const prevLine = state.lines[state.cursorY];
-    state.cursorX = prevLine.length;
-    state.lines[state.cursorY] = prevLine + currentLine;
+    state.cursorX = prevLine?.length ?? 0;
+    state.lines[state.cursorY] = prevLine + (currentLine ?? "");
     updateModifiedStatus();
   }
 }
@@ -516,7 +516,7 @@ async function confirmAction(
       no: ["n", "N", "ENTER"],
     }).promise;
     term.moveTo(1, term.height).eraseLine();
-    return confirm;
+    return confirm ?? false;
   } catch (_error) {
     // Use _error as it's intentionally unused
     term.moveTo(1, term.height).eraseLine();
@@ -738,7 +738,7 @@ async function findText(): Promise<void> {
     const line = state.lines[y];
     // Start searching after cursor pos on the current line, otherwise from start
     const startIdx = y === state.cursorY ? state.cursorX + 1 : 0;
-    const matchIndex = line.indexOf(termToUse, startIdx);
+    const matchIndex = line?.indexOf(termToUse, startIdx) ?? -1;
     if (matchIndex !== -1) {
       state.cursorY = y;
       state.cursorX = matchIndex;
@@ -753,8 +753,9 @@ async function findText(): Promise<void> {
     for (let y = 0; y <= state.cursorY; y++) {
       const line = state.lines[y];
       // On the cursor line search only up to the original cursor pos
-      const endIdx = y === state.cursorY ? state.cursorX + 1 : line.length; // Search whole line if wrapping
-      const matchIndex = line.substring(0, endIdx).indexOf(termToUse);
+      const endIdx =
+        y === state.cursorY ? state.cursorX + 1 : (line?.length ?? 0); // Search whole line if wrapping
+      const matchIndex = line?.substring(0, endIdx).indexOf(termToUse) ?? -1;
       if (matchIndex !== -1) {
         state.cursorY = y;
         state.cursorX = matchIndex;

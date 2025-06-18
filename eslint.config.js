@@ -10,7 +10,13 @@ import tseslint from "typescript-eslint";
 
 /** @type {import("typescript-eslint").Config} */
 const config = tseslint.config(
-  { ignores: ["**/{node_modules,dist-jsr,dist-npm,dist-libs,tests-runtime}/"] },
+  {
+    ignores: [
+      "**/{node_modules,dist-jsr,dist-npm,dist-libs,tests-runtime}/",
+      ".tests/**/trpc-orpc-cli", // temp
+      ".tests/figures.test.ts", // temp
+    ],
+  },
   eslint.configs.recommended,
   ...tseslint.configs.strictTypeChecked,
   ...tseslint.configs.stylisticTypeChecked,
@@ -33,6 +39,10 @@ const config = tseslint.config(
       "no-relative-import-paths": noRelativeImportPaths,
     },
     rules: {
+      "@typescript-eslint/no-redundant-type-constituents": "off",
+      "@typescript-eslint/no-unnecessary-type-parameters": "off",
+      "@typescript-eslint/no-empty-function": "off",
+      "@typescript-eslint/no-empty-object-type": "off",
       "@typescript-eslint/unbound-method": "off",
       "@typescript-eslint/restrict-plus-operands": "off",
       "@typescript-eslint/no-invalid-void-type": "off",
@@ -53,11 +63,10 @@ const config = tseslint.config(
       "@typescript-eslint/no-unsafe-call": "off",
       "@typescript-eslint/no-unsafe-return": "off",
       "@typescript-eslint/no-unsafe-argument": "off",
-      "@typescript-eslint/consistent-type-definitions": ["error", "type"],
       "@typescript-eslint/consistent-type-imports": [
         "warn",
         {
-          disallowTypeAnnotations: true,
+          disallowTypeAnnotations: false,
           fixStyle: "separate-type-imports",
           prefer: "type-imports",
         },

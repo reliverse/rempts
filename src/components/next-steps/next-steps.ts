@@ -3,7 +3,7 @@ import type { VariantName } from "~/types.js";
 
 import { msg } from "~/components/msg-fmt/messages.js";
 
-type NextStepsPromptOptions = {
+interface NextStepsPromptOptions {
   title?: string;
   titleColor?: ColorName;
   titleVariant?: VariantName;
@@ -12,7 +12,7 @@ type NextStepsPromptOptions = {
   contentColor?: ColorName;
   contentVariant?: VariantName;
   contentTypography?: TypographyName;
-};
+}
 
 export async function nextStepsPrompt(
   options: NextStepsPromptOptions,

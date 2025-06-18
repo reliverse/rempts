@@ -3,7 +3,7 @@ import { cursor, erase } from "sisteransi";
 
 import type { ProgressBar, ProgressBarOptions } from "~/types.js";
 
-export async function progressTaskPrompt(
+export async function taskProgressPrompt(
   options: ProgressBarOptions,
 ): Promise<ProgressBar> {
   if (options.total <= 0) {

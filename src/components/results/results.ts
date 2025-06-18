@@ -1,8 +1,8 @@
 import { msg } from "~/components/msg-fmt/messages.js";
 
-export type ResultsType = {
+export interface ResultsType {
   username: string;
-};
+}
 
 export async function resultPrompt({
   results,
