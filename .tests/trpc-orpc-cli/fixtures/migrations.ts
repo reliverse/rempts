@@ -1,7 +1,7 @@
 import type * as trpcCompat from "~/mod.js";
 
 import { trpcServer } from "~/components/launcher/trpc-orpc-support/index.js";
-import { createCli, type TrpcCliMeta, z } from "~/mod.js";
+import { createRpcCli, type TrpcCliMeta, z } from "~/mod.js";
 
 const trpc = trpcServer.initTRPC.meta<TrpcCliMeta>().create();
 
@@ -109,7 +109,7 @@ export const router = trpc.router({
   }),
 }) satisfies trpcCompat.Trpc11RouterLike;
 
-const cli = createCli({
+const cli = createRpcCli({
   router,
   name: "migrations",
   version: "1.0.0",

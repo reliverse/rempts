@@ -8,8 +8,8 @@ import type { InputPromptOptions, MsgType, RenderParams } from "~/types.js";
 
 import { bar, msg, msgUndoAll } from "~/components/msg-fmt/messages.js";
 import { deleteLastLine } from "~/components/msg-fmt/terminal.js";
-import { completePrompt } from "~/utils/prompt-end.js";
-import { streamText } from "~/utils/stream-text.js";
+import { completePrompt } from "~/components/utils/prompt-end.js";
+import { streamText } from "~/components/utils/stream-text.js";
 
 const unicode = isUnicodeSupported();
 const S_MASK = unicode ? "▋" : "*";

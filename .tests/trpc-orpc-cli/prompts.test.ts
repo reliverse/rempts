@@ -3,7 +3,7 @@ import { expect, expectTypeOf, test, vi } from "bun:test";
 import { describe } from "bun:test";
 import {
   type AnyRouter,
-  createCli,
+  createRpcCli,
   type TrpcCliParams,
   type TrpcCliRunParams,
   trpcServer,
@@ -18,22 +18,22 @@ describe("types", () => {
 
   test("clack types", async () => {
     const prompts = await import("@clack/prompts");
-    expectTypeOf(createCli({ router }).run).toBeCallableWith({ prompts });
+    expectTypeOf(createRpcCli({ router }).run).toBeCallableWith({ prompts });
   });
 
   test("inquirer types", async () => {
     const prompts = await import("@inquirer/prompts");
-    expectTypeOf(createCli({ router }).run).toBeCallableWith({ prompts });
+    expectTypeOf(createRpcCli({ router }).run).toBeCallableWith({ prompts });
   });
 
   test("enquirer types", async () => {
     const prompts = await import("enquirer");
-    expectTypeOf(createCli({ router }).run).toBeCallableWith({ prompts });
+    expectTypeOf(createRpcCli({ router }).run).toBeCallableWith({ prompts });
   });
 
   test("prompts types", async () => {
     const prompts = await import("prompts");
-    expectTypeOf(createCli({ router }).run).toBeCallableWith({ prompts });
+    expectTypeOf(createRpcCli({ router }).run).toBeCallableWith({ prompts });
   });
 });
 
@@ -204,7 +204,7 @@ async function runWith<R extends AnyRouter>(
   argv: string[],
   runParams: Omit<TrpcCliRunParams, "argv"> = {},
 ): Promise<string> {
-  const cli = createCli(params);
+  const cli = createRpcCli(params);
   const logs = [] as unknown[][];
   const addLogs = (...args: unknown[]) => logs.push(args);
   const result: string = await cli

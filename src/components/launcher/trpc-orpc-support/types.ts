@@ -27,7 +27,7 @@ export interface TrpcCliParams<R extends AnyRouter> extends Dependencies {
   trpcServer?: TrpcServerModuleLike | Promise<TrpcServerModuleLike>;
 }
 
-/** Rough shape of the `@trpc/server` (v10) module. Needed to pass in to `createCli` when using trpc v10. */
+/** Rough shape of the `@trpc/server` (v10) module. Needed to pass in to `createRpcCli` when using trpc v10. */
 export interface TrpcServerModuleLike {
   initTRPC: {
     create: () => { createCallerFactory: CreateCallerFactoryLike<{}> };
@@ -103,9 +103,9 @@ export interface Logger {
  *
  * ```ts
  * import omelette from 'omelette'
- * import {createCli} from '@reliverse/rempts'
+ * import {createRpcCli} from '@reliverse/rempts'
  *
- * const cli = createCli({
+ * const cli = createRpcCli({
  *   router: myRouter,
  *   completion: omelette('myprogram'),
  * })
@@ -114,9 +114,9 @@ export interface Logger {
  * Or it also accepts an async function that resolves to an `omelette` instance, so you can use dynamic import:
  *
  * ```ts
- * import {createCli} from '@reliverse/rempts'
+ * import {createRpcCli} from '@reliverse/rempts'
  *
- * const cli = await createCli({
+ * const cli = await createRpcCli({
  *   router: myRouter,
  *   completion: () => import('omelette').then(omelette => omelette.default('myprogram')),
  * })

@@ -1,6 +1,6 @@
 import { expect, test } from "bun:test";
 
-import { createCli, trpcServer, z } from "../src";
+import { createRpcCli, trpcServer, z } from "../src";
 import { router } from "./fixtures/migrations";
 
 expect.addSnapshotSerializer({
@@ -22,7 +22,11 @@ test("simple toJSON", async () => {
       .mutation(({ input }) => `hello, ${input.firstName}`),
   });
 
-  const cli = createCli({ router: myRouter, name: "mycli", version: "1.2.3" });
+  const cli = createRpcCli({
+    router: myRouter,
+    name: "mycli",
+    version: "1.2.3",
+  });
   expect(cli.toJSON()).toMatchInlineSnapshot(
     `
       {
@@ -83,7 +87,7 @@ test("simple toJSON", async () => {
 });
 
 test("migrations toJSON", async () => {
-  const json = createCli({ router }).toJSON();
+  const json = createRpcCli({ router }).toJSON();
   expect(json).toMatchInlineSnapshot(`
     {
       "description": "Available subcommands: up, create, list, search",

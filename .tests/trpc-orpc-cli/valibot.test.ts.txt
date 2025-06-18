@@ -3,7 +3,7 @@ import { inspect } from "util";
 import * as v from "valibot";
 
 import { trpcServer } from "~/components/launcher/trpc-orpc-support";
-import { createCli, type TrpcCliMeta } from "~/mod.js";
+import { createRpcCli, type TrpcCliMeta } from "~/mod.js";
 
 import { run, snapshotSerializer } from "./test-run";
 
@@ -356,7 +356,7 @@ test("validation", async () => {
       .input(v.tuple([v.string(), v.record(v.string(), v.string())])) //
       .query(() => "ok"),
   });
-  const cli = createCli({ router });
+  const cli = createRpcCli({ router });
   expect(cli).toBeDefined();
 });
 

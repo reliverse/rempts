@@ -3,7 +3,7 @@ import * as path from "node:path";
 
 import type { Trpc11RouterLike } from "~/components/launcher/trpc-orpc-support/trpc-compat";
 
-import { createCli } from "~/components/launcher/trpc-orpc-support";
+import { createRpcCli } from "~/components/launcher/trpc-orpc-support";
 
 const program = new Command("rempts");
 
@@ -100,7 +100,7 @@ program.action(async () => {
     router = routerExports[0]!;
   }
 
-  const cli = createCli({ router });
+  const cli = createRpcCli({ router });
   await cli.run({ argv });
 });
 

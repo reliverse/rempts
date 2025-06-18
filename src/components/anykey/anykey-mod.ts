@@ -4,8 +4,8 @@ import { cursor } from "sisteransi";
 import type { ColorName } from "~/types.js";
 
 import { fmt } from "~/components/msg-fmt/messages.js";
-import { outroPrompt } from "~/components/outro/outro-end.js";
-import { streamText } from "~/utils/stream-text.js";
+import { outroPrompt } from "~/components/outro/outro-mod.js";
+import { streamText } from "~/components/utils/stream-text.js";
 
 const DEFAULT_MESSAGE = "Press any key to continue...";
 

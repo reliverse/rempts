@@ -182,7 +182,7 @@ export type InferArgTypes<A extends ArgDefinitions> = {
             : never;
 };
 
-export interface FileBasedCmdsOptions {
+export interface FileBasedOptions {
   enable: boolean;
   cmdsRootPath: string;
 }

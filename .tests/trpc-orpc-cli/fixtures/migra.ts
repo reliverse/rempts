@@ -1,5 +1,5 @@
 import { trpcServer } from "~/components/launcher/trpc-orpc-support/index.js";
-import { createCli, type TrpcCliMeta, z } from "~/mod.js";
+import { createRpcCli, type TrpcCliMeta, z } from "~/mod.js";
 
 const trpc = trpcServer.initTRPC.meta<TrpcCliMeta>().create();
 
@@ -31,5 +31,5 @@ const router = trpc.router({
     }),
 });
 
-const cli = createCli({ router });
+const cli = createRpcCli({ router });
 void cli.run();

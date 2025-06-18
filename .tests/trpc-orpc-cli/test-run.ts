@@ -1,6 +1,6 @@
 import type { expect } from "bun:test";
 
-import { type AnyRouter, type TrpcCliParams, createCli } from "~/mod.js";
+import { type AnyRouter, type TrpcCliParams, createRpcCli } from "~/mod.js";
 import { looksLikeInstanceof } from "~/mod.js";
 
 export const run = <R extends AnyRouter>(
@@ -15,7 +15,7 @@ export const runWith = async <R extends AnyRouter>(
   argv: string[],
   { expectJsonInput = false } = {},
 ): Promise<string> => {
-  const cli = createCli(params);
+  const cli = createRpcCli(params);
   const logs = [] as unknown[][];
   const addLogs = (...args: unknown[]) => logs.push(args);
   const result: string = await cli

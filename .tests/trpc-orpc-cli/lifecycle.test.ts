@@ -1,7 +1,7 @@
 import { initTRPC } from "@trpc/server";
 import type { Command } from "commander";
 import { expect, test, vi } from "bun:test";
-import { createCli, type TrpcCliMeta, z } from "../src";
+import { createRpcCli, type TrpcCliMeta, z } from "../src";
 import { FailedToExitError } from "../src/errors";
 
 const t = initTRPC.meta<TrpcCliMeta>().create();
@@ -15,7 +15,7 @@ test("override of process.exit happy path", async () => {
       .query(({ input }) => JSON.stringify(input)),
   });
 
-  const cli = createCli({ router });
+  const cli = createRpcCli({ router });
 
   const exit = vi.fn() as any;
   const log = vi.fn();
@@ -41,7 +41,7 @@ test("override of process.exit and pass in bad option", async () => {
       .query(({ input }) => Object.entries(input).join(", ")),
   });
 
-  const cli = createCli({ router });
+  const cli = createRpcCli({ router });
 
   const result = await cli
     .run({
@@ -75,7 +75,7 @@ test("override of process.exit with parse error", async () => {
       .query(({ input }) => Object.entries(input).join(", ")),
   });
 
-  const cli = createCli({ router });
+  const cli = createRpcCli({ router });
 
   const result = await cli
     .run({
@@ -106,7 +106,7 @@ const calculatorRouter = t.router({
 });
 
 const run = async (argv: string[]) => {
-  const cli = createCli({ router: calculatorRouter });
+  const cli = createRpcCli({ router: calculatorRouter });
   return cli
     .run({
       argv,
@@ -137,7 +137,7 @@ test("make sure parsing works correctly", async () => {
 });
 
 test("modify commander program manually", async () => {
-  const cli = createCli({ router: calculatorRouter });
+  const cli = createRpcCli({ router: calculatorRouter });
   const program = cli.buildProgram() as Command;
   program.usage("Here is how to use: `calculator add 1 1`");
   program.addHelpText("afterAll", "Good luck have fun");

@@ -4,7 +4,7 @@ import { inspect } from "node:util";
 import { initTRPC } from "trpcserver11";
 import { expect, test } from "bun:test";
 
-import { createCli, type TrpcCliMeta } from "~/mod.js";
+import { createRpcCli, type TrpcCliMeta } from "~/mod.js";
 
 import { run, snapshotSerializer } from "./test-run";
 
@@ -349,7 +349,7 @@ test("validation", async () => {
       .input(type([type("string"), type("Record<string, string>")])) //
       .query(() => "ok"),
   });
-  const cli = createCli({ router });
+  const cli = createRpcCli({ router });
   expect(cli).toBeDefined();
 });
 

@@ -1,5 +1,5 @@
 import { trpcServer } from "~/components/launcher/trpc-orpc-support/index.js";
-import { createCli, type TrpcCliMeta, z } from "~/mod.js";
+import { createRpcCli, type TrpcCliMeta, z } from "~/mod.js";
 
 const trpc = trpcServer.initTRPC.meta<TrpcCliMeta>().create();
 
@@ -74,4 +74,4 @@ function getFakeFileSystem(): Record<string, string> {
   };
 }
 
-void createCli({ router }).run();
+void createRpcCli({ router }).run();

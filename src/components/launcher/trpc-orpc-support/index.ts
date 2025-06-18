@@ -241,7 +241,7 @@ interface ProcedureInfo {
  * @param trpcServer The trpc server module to use. Only needed if using trpc v10.
  * @returns A CLI object with a `run` method that can be called to run the CLI. The `run` method will parse the command line arguments, call the appropriate trpc procedure, log the result and exit the process. On error, it will log the error and exit with a non-zero exit code.
  */
-export function createCli<R extends AnyRouter>({
+export function createRpcCli<R extends AnyRouter>({
   router,
   ...params
 }: TrpcCliParams<R>): TrpcCli {
@@ -611,7 +611,7 @@ export function createCli<R extends AnyRouter>({
           "createCallerFactory",
         ) as CreateCallerFactoryLike | undefined;
         if (deprecatedCreateCaller) {
-          const message = `Using deprecated \`createCallerFactory\` option. Use \`trpcServer\` instead. e.g. \`createCli({router: myRouter, trpcServer: import('@trpc/server')})\``;
+          const message = `Using deprecated \`createCallerFactory\` option. Use \`trpcServer\` instead. e.g. \`createRpcCli({router: myRouter, trpcServer: import('@trpc/server')})\``;
           logger.error?.(message);
           caller = deprecatedCreateCaller(router)(params.context);
         } else if (isOrpcRouter(router)) {
@@ -821,7 +821,7 @@ function transformError(err: unknown, command: TrpcCommand) {
     err.message.includes("This is a client-only function")
   ) {
     return new Error(
-      "Failed to create trpc caller. If using trpc v10, either upgrade to v11 or pass in the `@trpc/server` module to `createCli` explicitly",
+      "Failed to create trpc caller. If using trpc v10, either upgrade to v11 or pass in the `@trpc/server` module to `createRpcCli` explicitly",
     );
   }
 

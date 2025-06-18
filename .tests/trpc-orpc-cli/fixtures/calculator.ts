@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 import { trpcServer } from "~/components/launcher/trpc-orpc-support/index.js";
-import { createCli, type TrpcCliMeta } from "~/mod.js";
+import { createRpcCli, type TrpcCliMeta } from "~/mod.js";
 
 const trpc = trpcServer.initTRPC.meta<TrpcCliMeta>().create();
 
@@ -56,4 +56,4 @@ const router = trpc.router({
     }),
 });
 
-void createCli({ router, name: "calculator", version: "1.0.0" }).run();
+void createRpcCli({ router, name: "calculator", version: "1.0.0" }).run();

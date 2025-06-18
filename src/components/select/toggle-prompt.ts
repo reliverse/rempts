@@ -12,7 +12,7 @@ import type {
 
 import { msg } from "~/components/msg-fmt/messages.js";
 import { deleteLastLine } from "~/components/msg-fmt/terminal.js";
-import { completePrompt } from "~/utils/prompt-end.js";
+import { completePrompt } from "~/components/utils/prompt-end.js";
 
 /**
  * Renders the toggle prompt using msg() calls.

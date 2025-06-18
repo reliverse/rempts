@@ -59,14 +59,13 @@ All main prompts APIs are available from the package root:
 ```ts
 import {
   // ...prompts
-  defineCommand, runMain, defineArgs,
   inputPrompt, selectPrompt, multiselectPrompt, numberPrompt,
   confirmPrompt, togglePrompt, taskSpinPrompt, taskProgressPrompt,
   startPrompt, endPrompt, resultPrompt, nextStepsPrompt,
   // ...hooks
   useSpinner,
   // ...launcher
-  runMain, defineCommand, defineArgs,
+  createCli, defineCommand, defineArgs,
   // ...types
   // ...more
 } from "@reliverse/rempts";
@@ -218,6 +217,8 @@ await main();
 
 ## Launcher
 
+> **Note**: `runMain` is now an alias for `createCli` and is still supported for backward compatibility. The new `createCli` API provides a more intuitive object-based configuration format.
+
 ### Terminology
 
 - **Launcher/Router**: The main entry point for your CLI. Visit [CLI Launcher (Router)](#cli-launcher-router) section to learn more.
@@ -228,12 +229,12 @@ await main();
 
 #### Launcher Usage Example
 
-**Important**: Ensure your commands don't have `await main();`, `await runMain();`, or something like that — to prevent any unexpected behavior. Only main command should have it.
+**Important**: Ensure your commands don't have `await main();`, `await createCli();`, or something like that — to prevent any unexpected behavior. Only main command should have it.
 
 ```ts
 import { relinka } from "@reliverse/relinka";
 
-import { defineCommand, runMain } from "@reliverse/rempts";
+import { defineCommand, createCli } from "@reliverse/rempts";
 
 const main = defineCommand({
   meta: {
@@ -254,12 +255,20 @@ const main = defineCommand({
   },
 });
 
-await runMain(main);
-```
+// New object format (recommended)
+await createCli({
+  mainCommand: main,
+  fileBased: {
+    enable: true,
+    cmdsRootPath: "my-cmds", // default is `./app`
+  },
+  // Optionally disable auto-exit to handle errors manually:
+  autoExit: false,
+});
 
-```ts
-await runMain(myCommand, {
-  fileBasedCmds: {
+// Legacy format (still supported)
+await createCli(main, {
+  fileBased: {
     enable: true,
     cmdsRootPath: "my-cmds", // default is `./app`
   },
@@ -375,9 +384,15 @@ bun dev
 **1 Create a `src/mod.ts` file:**
 
 ```ts
-import { runMain, defineCommand } from "@reliverse/rempts";
+import { createCli, defineCommand } from "@reliverse/rempts";
 
-await runMain(defineCommand({}));
+// New object format (recommended)
+await createCli({
+  mainCommand: defineCommand({}),
+});
+
+// Legacy format (still supported)
+await createCli(defineCommand({}));
 ```
 
 **2 Run the following:**
@@ -406,7 +421,7 @@ bun src/mod.ts
 #### Medium Usage Example
 
 ```ts
-import { defineCommand, runMain } from "@reliverse/rempts";
+import { defineCommand, createCli } from "@reliverse/rempts";
 
 const main = defineCommand({
   meta: {
@@ -417,7 +432,13 @@ const main = defineCommand({
   },
 });
 
-await runMain(main);
+// New object format (recommended)
+await createCli({
+  mainCommand: main,
+});
+
+// Legacy format (still supported)
+await createCli(main);
 ```
 
 #### Classic Usage Example
@@ -430,7 +451,7 @@ import {
   inputPrompt,
   selectPrompt,
   defineCommand,
-  runMain
+  createCli
 } from "@reliverse/rempts";
 
 const main = defineCommand({
@@ -469,7 +490,13 @@ const main = defineCommand({
   },
 });
 
-await runMain(main);
+// New object format (recommended)
+await createCli({
+  mainCommand: main,
+});
+
+// Legacy format (still supported)
+await createCli(main);
 ```
 
 #### Advanced Usage Example
@@ -584,7 +611,7 @@ const mainCommand = defineCommand({
 });
 
 /**
- * The `runMain()` function sets up the launcher with several advanced features:
+ * The `createCli()` function sets up the launcher with several advanced features:
  *
  * - File-Based Commands: Enables scanning for commands within the "app" directory.
  * - Alias Mapping: Shorthand flags (e.g., `-v`) are mapped to their full names (e.g., `--verbose`).
@@ -592,8 +619,28 @@ const mainCommand = defineCommand({
  * - Negated Boolean Support: Allows flags to be negated (e.g., `--no-verbose`).
  * - Custom Unknown Flag Handler: Provides custom handling for unrecognized flags.
  */
-await runMain(mainCommand, {
-  fileBasedCmds: {
+// New object format (recommended)
+await createCli({
+  mainCommand: mainCommand,
+  fileBased: {
+    enable: true, // Enables file-based command detection.
+    cmdsRootPath: "app", // Directory to scan for commands.
+  },
+  alias: {
+    v: "verbose", // Maps shorthand flag -v to --verbose.
+  },
+  strict: false, // Do not throw errors for unknown flags.
+  warnOnUnknown: false, // Warn when encountering unknown flags.
+  negatedBoolean: true, // Support for negated booleans (e.g., --no-verbose).
+  // unknown: (flagName) => {
+  //   relinka("warn", "Unknown flag encountered:", flagName);
+  //   return false;
+  // },
+});
+
+// Legacy format (still supported)
+await createCli(mainCommand, {
+  fileBased: {
     enable: true, // Enables file-based command detection.
     cmdsRootPath: "app", // Directory to scan for commands.
   },
@@ -634,7 +681,7 @@ Finally, a full-featured CLI launcher without the ceremony. `@reliverse/rempts`'
   Seamlessly combines positional and named arguments with zero configuration, auto-parsing booleans, strings, numbers, arrays, and even supporting negated flags like `--no-flag`.
 
 - **Customizable Behavior:**  
-  Options such as `fileBasedCmds.enable`, `cmdsRootPath`, and `autoExit` allow you to tailor the launcher's behavior. For example, you can choose whether the process should exit automatically on error or allow manual error handling.
+  Options such as `fileBased.enable`, `cmdsRootPath`, and `autoExit` allow you to tailor the launcher's behavior. For example, you can choose whether the process should exit automatically on error or allow manual error handling.
 
 - **Error Management & Usage Output:**  
   The launcher provides clear error messages for missing required arguments, invalid types, or command import issues, and it automatically displays usage information for your CLI.
@@ -833,7 +880,7 @@ export default defineCommand({
 Below is a demonstration of how to define and use all supported argument types in rempts: positional, boolean, string, number, and array. This includes example CLI invocations and the resulting parsed output.
 
 ```ts
-import { defineCommand, runMain } from "@reliverse/rempts";
+import { defineCommand, createCli } from "@reliverse/rempts";
 
 const main = defineCommand({
   meta: {
@@ -877,7 +924,13 @@ const main = defineCommand({
   },
 });
 
-await runMain(main);
+// New object format (recommended)
+await createCli({
+  mainCommand: main,
+});
+
+// Legacy format (still supported)
+await createCli(main);
 ```
 
 ### Example CLI Invocations
@@ -1091,4 +1144,4 @@ All APIs are fully typed. See [`src/types.ts`](./src/types.ts) for advanced cust
 
 ## License
 
-💖 MIT © [blefnk (Nazar Kornienko)](https://github.com/blefnk)
+💖 MIT (see [LICENSE](./LICENSE) and [LICENCES](./LICENSES)) © [blefnk (Nazar Kornienko)](https://github.com/blefnk)

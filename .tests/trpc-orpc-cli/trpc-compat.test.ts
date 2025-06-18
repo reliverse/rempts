@@ -9,7 +9,7 @@ import type {
   Trpc11RouterLike,
 } from "~/mod.js";
 
-import { createCli, z } from "~/mod.js";
+import { createRpcCli, z } from "~/mod.js";
 
 expect.addSnapshotSerializer({
   test: (val) => val?.cause && val.message,
@@ -149,7 +149,7 @@ test("trpc v11 works without hoop-jumping", async () => {
       }),
   }) satisfies Trpc11RouterLike; // this satisfies makes sure people can write a normal router and they'll be allowed to pass it in
 
-  const cli = createCli({ router });
+  const cli = createRpcCli({ router });
 
   const runAndCaptureProcessExit = async ({
     argv,
@@ -184,7 +184,7 @@ test("trpc v10 works when passing in trpcServer", async () => {
       }),
   });
 
-  const cli = createCli({ router, trpcServer: import("trpcserver10") });
+  const cli = createRpcCli({ router, trpcServer: import("trpcserver10") });
 
   const runAndCaptureProcessExit = async ({
     argv,
@@ -219,7 +219,7 @@ test("trpc v10 has helpful error when not passing in trpcServer", async () => {
       }),
   });
 
-  const cli = createCli({ router });
+  const cli = createRpcCli({ router });
 
   const runAndCaptureProcessExit = async ({
     argv,
@@ -237,6 +237,6 @@ test("trpc v10 has helpful error when not passing in trpcServer", async () => {
   const error = await runAndCaptureProcessExit({ argv: ["add", "1", "2"] });
   expect(error).toMatchObject({ exitCode: 1 });
   expect(error?.cause).toMatchInlineSnapshot(
-    "[Error: Failed to create trpc caller. If using trpc v10, either upgrade to v11 or pass in the \`@trpc/server\` module to \`createCli\` explicitly]",
+    "[Error: Failed to create trpc caller. If using trpc v10, either upgrade to v11 or pass in the \`@trpc/server\` module to \`createRpcCli\` explicitly]",
   );
 });

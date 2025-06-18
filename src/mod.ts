@@ -1,17 +1,4 @@
 // AUTO-GENERATED AGGREGATOR START (via `dler agg`)
-export {
-  password,
-  multiselect,
-  select,
-  confirm,
-  input,
-  text,
-  startPrompt,
-  intro,
-  endPrompt,
-  outro,
-  spinner,
-} from "./components/aliases/aliases-mod.js";
 export { animationMap, animateText } from "./components/animate/animate.js";
 export { anykeyPrompt } from "./components/anykey/anykey-mod.js";
 export { createAsciiArt } from "./components/ascii-art/ascii-art.js";
@@ -26,20 +13,24 @@ export {
   cancel,
   createCancel,
 } from "./components/cancel/cancel.js";
-export { confirmPrompt } from "./components/confirm/confirm-prompt.js";
+export { confirm } from "./components/confirm/confirm-alias.js";
+export { confirmPrompt } from "./components/confirm/confirm-mod.js";
 export { datePrompt } from "./components/date/date.js";
 export { startEditor } from "./components/editor/editor-mod.js";
 export {
-  figures,
   mainSymbols,
   fallbackSymbols,
+  figures,
 } from "./components/figures/figures-mod.js";
-export { inputPrompt } from "./components/input/input-prompt.js";
-export { introPrompt } from "./components/intro/intro-start.js";
+export { input, text, password } from "./components/input/input-alias.js";
+export { inputPrompt } from "./components/input/input-mod.js";
+export { startPrompt, intro } from "./components/intro/intro-alias.js";
+export { introPrompt } from "./components/intro/intro-mod.js";
+export { runMain } from "./components/launcher/launcher-alias.js";
 export {
   defineCommand,
   showUsage,
-  runMain,
+  createCli,
   defineArgs,
   runCmd,
 } from "./components/launcher/launcher-mod.js";
@@ -63,7 +54,7 @@ export type {
   DefineCommandOptions,
   Command,
   InferArgTypes,
-  FileBasedCmdsOptions,
+  FileBasedOptions,
 } from "./components/launcher/launcher-types.js";
 export { loadCommand } from "./components/launcher/run-command.js";
 export { addCompletions } from "./components/launcher/trpc-orpc-support/completions.js";
@@ -74,7 +65,7 @@ export {
 export {
   TrpcCommand,
   parseRouter,
-  createCli,
+  createRpcCli,
   z,
 } from "./components/launcher/trpc-orpc-support/index.js";
 export {
@@ -157,7 +148,7 @@ export type {
   Prompter,
 } from "./components/launcher/trpc-orpc-support/types.js";
 export { looksLikeInstanceof } from "./components/launcher/trpc-orpc-support/util.js";
-export { log } from "./components/log/log.js";
+export { log } from "./components/log/log-alias.js";
 export { toBaseColor, toSolidColor } from "./components/msg-fmt/colors.js";
 export {
   relinkaByRemptsDeprecated,
@@ -190,19 +181,46 @@ export {
   isValidVariant,
   applyVariant,
 } from "./components/msg-fmt/variants.js";
+export { multiselect } from "./components/multiselect/multiselect-alias.js";
+export { multiselectPrompt } from "./components/multiselect/multiselect-prompt.js";
 export { nextStepsPrompt } from "./components/next-steps/next-steps.js";
 export { numberPrompt } from "./components/number/number-mod.js";
-export { outroPrompt } from "./components/outro/outro-end.js";
+export { endPrompt, outro } from "./components/outro/outro-alias.js";
+export { outroPrompt } from "./components/outro/outro-mod.js";
 export type { ResultsType } from "./components/results/results.js";
 export { resultPrompt } from "./components/results/results.js";
-export { multiselectPrompt } from "./components/select/multiselect-prompt.js";
+export { select } from "./components/select/aliases-alias.js";
 export { numMultiSelectPrompt } from "./components/select/nummultiselect-prompt.js";
 export { numSelectPrompt } from "./components/select/numselect-prompt.js";
 export { selectPrompt } from "./components/select/select-prompt.js";
 export { togglePrompt } from "./components/select/toggle-prompt.js";
+export { spinner } from "./components/spinner/spinner-alias.js";
 export { useSpinner } from "./components/spinner/spinner-mod.js";
 export { taskProgressPrompt } from "./components/task/progress.js";
 export { taskSpinPrompt } from "./components/task/task-spin.js";
+export { colorize } from "./components/utils/colorize.js";
+export { errorHandler } from "./components/utils/errors.js";
+export {
+  preventUnsupportedTTY,
+  preventWindowsHomeDirRoot,
+  preventWrongTerminalSize,
+} from "./components/utils/prevent.js";
+export {
+  completePrompt,
+  renderEndLine,
+  renderEndLineInput,
+} from "./components/utils/prompt-end.js";
+export {
+  streamText,
+  streamTextBox,
+  streamTextWithSpinner,
+} from "./components/utils/stream-text.js";
+export { pm, reliversePrompts } from "./components/utils/system.js";
+export {
+  isTerminalInteractive,
+  isValidName,
+  normalizeName,
+} from "./components/utils/validate.js";
 export type {
   MsgType,
   TypographyName,
@@ -236,27 +254,4 @@ export type {
   MultiselectPromptParams,
   DatePromptOptions,
 } from "./types.js";
-export { colorize } from "./utils/colorize.js";
-export { errorHandler } from "./utils/errors.js";
-export {
-  preventUnsupportedTTY,
-  preventWindowsHomeDirRoot,
-  preventWrongTerminalSize,
-} from "./utils/prevent.js";
-export {
-  completePrompt,
-  renderEndLine,
-  renderEndLineInput,
-} from "./utils/prompt-end.js";
-export {
-  streamText,
-  streamTextBox,
-  streamTextWithSpinner,
-} from "./utils/stream-text.js";
-export { pm, reliversePrompts } from "./utils/system.js";
-export {
-  isTerminalInteractive,
-  isValidName,
-  normalizeName,
-} from "./utils/validate.js";
 // AUTO-GENERATED AGGREGATOR END

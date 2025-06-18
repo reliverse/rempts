@@ -3,7 +3,7 @@ import { initTRPC } from "trpcserver11";
 import { expect, test } from "bun:test";
 import {
   type AnyRouter,
-  createCli,
+  createRpcCli,
   type TrpcCliMeta,
   type TrpcCliParams,
 } from "../src";
@@ -94,7 +94,7 @@ const runWith = <R extends AnyRouter>(
   params: TrpcCliParams<R>,
   argv: string[],
 ) => {
-  const cli = createCli(params);
+  const cli = createRpcCli(params);
   const logs = [] as unknown[][];
   const addLogs = (...args: unknown[]) => logs.push(args);
   return cli

@@ -13,8 +13,8 @@ import type {
 
 import { msg, symbols } from "~/components/msg-fmt/messages.js";
 import { deleteLastLine } from "~/components/msg-fmt/terminal.js";
-import { completePrompt } from "~/utils/prompt-end.js";
-import { streamText } from "~/utils/stream-text.js";
+import { completePrompt } from "~/components/utils/prompt-end.js";
+import { streamText } from "~/components/utils/stream-text.js";
 
 interface SeparatorOption {
   separator: true;

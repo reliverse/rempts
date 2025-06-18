@@ -19,8 +19,8 @@ import {
   preventWrongTerminalSize,
   preventWindowsHomeDirRoot,
   preventUnsupportedTTY,
-} from "~/utils/prevent.js";
-import { pm, reliversePrompts } from "~/utils/system.js";
+} from "~/components/utils/prevent.js";
+import { pm, reliversePrompts } from "~/components/utils/system.js";
 
 type StartPromptOptions = PromptOptions & {
   clearConsole?: boolean;

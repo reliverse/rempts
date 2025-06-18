@@ -2,7 +2,7 @@ import * as prompts from "@inquirer/prompts";
 import * as trpcServer from "@trpc/server";
 import { z } from "zod";
 
-import { createCli, type TrpcCliMeta } from "~/mod.js";
+import { createRpcCli, type TrpcCliMeta } from "~/mod.js";
 
 const trpc = trpcServer.initTRPC.meta<TrpcCliMeta>().create();
 
@@ -35,4 +35,4 @@ const router = trpc.router({
   }),
 });
 
-void createCli({ router }).run({ prompts });
+void createRpcCli({ router }).run({ prompts });

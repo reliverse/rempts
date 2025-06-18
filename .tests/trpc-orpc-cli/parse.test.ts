@@ -1,6 +1,6 @@
 import { initTRPC } from "@trpc/server";
 import { expect, test, vi } from "bun:test";
-import { createCli, type TrpcCli, type TrpcCliMeta, z } from "../src";
+import { createRpcCli, type TrpcCli, type TrpcCliMeta, z } from "../src";
 import { FailedToExitError } from "../src/errors";
 
 const t = initTRPC.meta<TrpcCliMeta>().create();
@@ -15,7 +15,7 @@ test("default command", async () => {
       .query(({ input }) => JSON.stringify(input)),
   });
 
-  const cli = createCli({ router });
+  const cli = createRpcCli({ router });
 
   const runFoo = await run(cli, ["foo", "--bar", "1"]);
 
@@ -48,7 +48,7 @@ test("optional positional", async () => {
       .query(({ input }) => JSON.stringify(input)),
   });
 
-  const cli = createCli({ router });
+  const cli = createRpcCli({ router });
 
   expect(await output(cli, ["foo", "abc", "--bar", "1"])).toMatchInlineSnapshot(
     `"["abc",{"bar":1}]"`,
@@ -76,7 +76,7 @@ test("required positional", async () => {
       .query(({ input }) => JSON.stringify(input)),
   });
 
-  const cli = createCli({ router });
+  const cli = createRpcCli({ router });
 
   expect(await output(cli, ["foo", "abc", "--bar", "1"])).toMatchInlineSnapshot(
     `"["abc",{"bar":1}]"`,
