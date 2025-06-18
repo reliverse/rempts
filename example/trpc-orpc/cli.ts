@@ -1,9 +1,9 @@
 import { Command } from "commander";
 import * as path from "node:path";
 
-import type { Trpc11RouterLike } from "~/components/launcher/trpc-orpc-support/trpc-compat";
+import type { Trpc11RouterLike } from "~/libs/launcher/trpc-orpc-support/trpc-compat";
 
-import { createRpcCli } from "~/components/launcher/trpc-orpc-support";
+import { createRpcCli } from "~/libs/launcher/trpc-orpc-support";
 
 const program = new Command("rempts");
 

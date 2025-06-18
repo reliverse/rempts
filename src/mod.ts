@@ -1,8 +1,8 @@
 // AUTO-GENERATED AGGREGATOR START (via `dler agg`)
-export { animationMap, animateText } from "./components/animate/animate.js";
-export { anykeyPrompt } from "./components/anykey/anykey-mod.js";
-export { createAsciiArt } from "./components/ascii-art/ascii-art.js";
-export type { CancelValue } from "./components/cancel/cancel.js";
+export { animationMap, animateText } from "./libs/animate/animate-mod.js";
+export { anykeyPrompt } from "./libs/anykey/anykey-mod.js";
+export { createAsciiArt } from "./libs/visual/visual-mod.js";
+export type { CancelValue } from "./libs/cancel/cancel.js";
 export {
   CANCEL,
   isWindows,
@@ -12,28 +12,28 @@ export {
   isCancel,
   cancel,
   createCancel,
-} from "./components/cancel/cancel.js";
-export { confirm } from "./components/confirm/confirm-alias.js";
-export { confirmPrompt } from "./components/confirm/confirm-mod.js";
-export { datePrompt } from "./components/date/date.js";
-export { startEditor } from "./components/editor/editor-mod.js";
+} from "./libs/cancel/cancel.js";
+export { confirm } from "./libs/confirm/confirm-alias.js";
+export { confirmPrompt } from "./libs/confirm/confirm-mod.js";
+export { datePrompt } from "./libs/date/date.js";
+export { startEditor } from "./libs/editor/editor-mod.js";
 export {
   mainSymbols,
   fallbackSymbols,
   figures,
-} from "./components/figures/figures-mod.js";
-export { input, text, password } from "./components/input/input-alias.js";
-export { inputPrompt } from "./components/input/input-mod.js";
-export { startPrompt, intro } from "./components/intro/intro-alias.js";
-export { introPrompt } from "./components/intro/intro-mod.js";
-export { runMain } from "./components/launcher/launcher-alias.js";
+} from "./libs/figures/figures-mod.js";
+export { input, text, password } from "./libs/input/input-alias.js";
+export { inputPrompt } from "./libs/input/input-mod.js";
+export { startPrompt, intro } from "./libs/intro/intro-alias.js";
+export { introPrompt } from "./libs/intro/intro-mod.js";
+export { runMain } from "./libs/launcher/launcher-alias.js";
 export {
   defineCommand,
   showUsage,
   createCli,
   defineArgs,
   runCmd,
-} from "./components/launcher/launcher-mod.js";
+} from "./libs/launcher/launcher-mod.js";
 export type {
   EmptyArgs,
   BaseArgProps,
@@ -55,37 +55,37 @@ export type {
   Command,
   InferArgTypes,
   FileBasedOptions,
-} from "./components/launcher/launcher-types.js";
-export { loadCommand } from "./components/launcher/run-command.js";
-export { addCompletions } from "./components/launcher/trpc-orpc-support/completions.js";
+} from "./libs/launcher/launcher-types.js";
+export { loadCommand } from "./libs/launcher/run-command.js";
+export { addCompletions } from "./libs/launcher/trpc-orpc-support/completions.js";
 export {
   CliValidationError,
   FailedToExitError,
-} from "./components/launcher/trpc-orpc-support/errors.js";
+} from "./libs/launcher/trpc-orpc-support/errors.js";
 export {
   TrpcCommand,
   parseRouter,
   createRpcCli,
   z,
-} from "./components/launcher/trpc-orpc-support/index.js";
+} from "./libs/launcher/trpc-orpc-support/index.js";
 export {
   flattenedProperties,
   incompatiblePropertyPairs,
   getDescription,
   getSchemaTypes,
   getEnumChoices,
-} from "./components/launcher/trpc-orpc-support/json-schema.js";
-export type { CommandJSON } from "./components/launcher/trpc-orpc-support/json.js";
-export { commandToJSON } from "./components/launcher/trpc-orpc-support/json.js";
+} from "./libs/launcher/trpc-orpc-support/json-schema.js";
+export type { CommandJSON } from "./libs/launcher/trpc-orpc-support/json.js";
+export { commandToJSON } from "./libs/launcher/trpc-orpc-support/json.js";
 export {
   lineByLineLogger,
   lineByLineConsoleLogger,
-} from "./components/launcher/trpc-orpc-support/logging.js";
-export { parseProcedureInputs } from "./components/launcher/trpc-orpc-support/parse-procedure.js";
+} from "./libs/launcher/trpc-orpc-support/logging.js";
+export { parseProcedureInputs } from "./libs/launcher/trpc-orpc-support/parse-procedure.js";
 export {
   createShadowCommand,
   promptify,
-} from "./components/launcher/trpc-orpc-support/prompts.js";
+} from "./libs/launcher/trpc-orpc-support/prompts.js";
 export type {
   StandardSchemaV1,
   StandardSchemaV1Props,
@@ -97,16 +97,16 @@ export type {
   StandardSchemaV1Types,
   StandardSchemaV1InferInput,
   StandardSchemaV1InferOutput,
-} from "./components/launcher/trpc-orpc-support/standard-schema/contract.js";
+} from "./libs/launcher/trpc-orpc-support/standard-schema/contract.js";
 export {
   prettifyStandardSchemaError,
   toDotPath,
   StandardSchemaV1Error,
-} from "./components/launcher/trpc-orpc-support/standard-schema/errors.js";
+} from "./libs/launcher/trpc-orpc-support/standard-schema/errors.js";
 export {
   looksLikeStandardSchemaFailure,
   looksLikeStandardSchema,
-} from "./components/launcher/trpc-orpc-support/standard-schema/utils.js";
+} from "./libs/launcher/trpc-orpc-support/standard-schema/utils.js";
 export type {
   Trpc11RouterLike,
   Trpc11ProcedureRecordLike,
@@ -119,12 +119,12 @@ export type {
   AnyRouter,
   AnyProcedure,
   inferRouterContext,
-} from "./components/launcher/trpc-orpc-support/trpc-compat.js";
+} from "./libs/launcher/trpc-orpc-support/trpc-compat.js";
 export {
   isTrpc11Procedure,
   isTrpc11Router,
   isOrpcRouter,
-} from "./components/launcher/trpc-orpc-support/trpc-compat.js";
+} from "./libs/launcher/trpc-orpc-support/trpc-compat.js";
 export type {
   TrpcCliParams,
   TrpcServerModuleLike,
@@ -146,16 +146,16 @@ export type {
   Dependencies,
   PromptContext,
   Prompter,
-} from "./components/launcher/trpc-orpc-support/types.js";
-export { looksLikeInstanceof } from "./components/launcher/trpc-orpc-support/util.js";
-export { log } from "./components/log/log-alias.js";
-export { toBaseColor, toSolidColor } from "./components/msg-fmt/colors.js";
+} from "./libs/launcher/trpc-orpc-support/types.js";
+export { looksLikeInstanceof } from "./libs/launcher/trpc-orpc-support/util.js";
+export { log } from "./libs/log/log-alias.js";
+export { toBaseColor, toSolidColor } from "./libs/msg-fmt/colors.js";
 export {
   relinkaByRemptsDeprecated,
   relinkaAsyncByRemptsDeprecated,
   throwError,
-} from "./components/msg-fmt/logger.js";
-export { colorMap, typographyMap } from "./components/msg-fmt/mapping.js";
+} from "./libs/msg-fmt/logger.js";
+export { colorMap, typographyMap } from "./libs/msg-fmt/mapping.js";
 export {
   symbols,
   bar,
@@ -164,7 +164,7 @@ export {
   msgUndo,
   msgUndoAll,
   printLineBar,
-} from "./components/msg-fmt/messages.js";
+} from "./libs/msg-fmt/messages.js";
 export {
   getTerminalHeight,
   getExactTerminalWidth,
@@ -175,52 +175,52 @@ export {
   deleteLastLine,
   deleteLastLines,
   countLines,
-} from "./components/msg-fmt/terminal.js";
+} from "./libs/msg-fmt/terminal.js";
 export {
   variantMap,
   isValidVariant,
   applyVariant,
-} from "./components/msg-fmt/variants.js";
-export { multiselect } from "./components/multiselect/multiselect-alias.js";
-export { multiselectPrompt } from "./components/multiselect/multiselect-prompt.js";
-export { nextStepsPrompt } from "./components/next-steps/next-steps.js";
-export { numberPrompt } from "./components/number/number-mod.js";
-export { endPrompt, outro } from "./components/outro/outro-alias.js";
-export { outroPrompt } from "./components/outro/outro-mod.js";
-export type { ResultsType } from "./components/results/results.js";
-export { resultPrompt } from "./components/results/results.js";
-export { select } from "./components/select/aliases-alias.js";
-export { numMultiSelectPrompt } from "./components/select/nummultiselect-prompt.js";
-export { numSelectPrompt } from "./components/select/numselect-prompt.js";
-export { selectPrompt } from "./components/select/select-prompt.js";
-export { togglePrompt } from "./components/select/toggle-prompt.js";
-export { spinner } from "./components/spinner/spinner-alias.js";
-export { useSpinner } from "./components/spinner/spinner-mod.js";
-export { taskProgressPrompt } from "./components/task/progress.js";
-export { taskSpinPrompt } from "./components/task/task-spin.js";
-export { colorize } from "./components/utils/colorize.js";
-export { errorHandler } from "./components/utils/errors.js";
+} from "./libs/msg-fmt/variants.js";
+export { multiselect } from "./libs/multiselect/multiselect-alias.js";
+export { multiselectPrompt } from "./libs/multiselect/multiselect-prompt.js";
+export { nextStepsPrompt } from "./libs/next-steps/next-steps.js";
+export { numberPrompt } from "./libs/number/number-mod.js";
+export { endPrompt, outro } from "./libs/outro/outro-alias.js";
+export { outroPrompt } from "./libs/outro/outro-mod.js";
+export type { ResultsType } from "./libs/results/results.js";
+export { resultPrompt } from "./libs/results/results.js";
+export { select } from "./libs/select/aliases-alias.js";
+export { numMultiSelectPrompt } from "./libs/select/nummultiselect-prompt.js";
+export { numSelectPrompt } from "./libs/select/numselect-prompt.js";
+export { selectPrompt } from "./libs/select/select-prompt.js";
+export { togglePrompt } from "./libs/select/toggle-prompt.js";
+export { spinner } from "./libs/spinner/spinner-alias.js";
+export { useSpinner } from "./libs/spinner/spinner-mod.js";
+export { taskProgressPrompt } from "./libs/task/progress.js";
+export { taskSpinPrompt } from "./libs/task/task-spin.js";
+export { colorize } from "./libs/utils/colorize.js";
+export { errorHandler } from "./libs/utils/errors.js";
 export {
   preventUnsupportedTTY,
   preventWindowsHomeDirRoot,
   preventWrongTerminalSize,
-} from "./components/utils/prevent.js";
+} from "./libs/utils/prevent.js";
 export {
   completePrompt,
   renderEndLine,
   renderEndLineInput,
-} from "./components/utils/prompt-end.js";
+} from "./libs/utils/prompt-end.js";
 export {
   streamText,
   streamTextBox,
   streamTextWithSpinner,
-} from "./components/utils/stream-text.js";
-export { pm, reliversePrompts } from "./components/utils/system.js";
+} from "./libs/utils/stream-text.js";
+export { pm, reliversePrompts } from "./libs/utils/system.js";
 export {
   isTerminalInteractive,
   isValidName,
   normalizeName,
-} from "./components/utils/validate.js";
+} from "./libs/utils/validate.js";
 export type {
   MsgType,
   TypographyName,

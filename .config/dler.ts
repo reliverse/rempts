@@ -48,6 +48,7 @@ export default defineConfigDler({
   libsDirDist: "dist-libs",
   libsDirSrc: "src/libs",
   libsList: {
+    // TODO: define all src/libs/* as separate packages here in the future
     // "@acme/cli-libName": {
     //   libDeclarations: true,
     //   libDescription: "@acme/cli defineConfigAcme",
