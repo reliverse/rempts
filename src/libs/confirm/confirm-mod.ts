@@ -114,11 +114,13 @@ export async function confirmPrompt(
 ): Promise<boolean> {
   const {
     title = "",
+    message, // Alias for title
     defaultValue,
+    initialValue, // Alias for defaultValue
+    content,
     titleColor = "cyan",
     titleTypography = "none",
     titleVariant,
-    content,
     contentColor = "dim",
     contentTypography = "italic",
     contentVariant,
@@ -132,16 +134,23 @@ export async function confirmPrompt(
     border = true,
   } = options;
 
+  // Use message as alias for title, concatenating both if provided
+  const finalTitle =
+    message && title ? `${title}: ${message}` : (message ?? title ?? "Confirm");
+
+  // Use initialValue as alias for defaultValue, prioritizing defaultValue if both are provided
+  const finalDefaultValue = defaultValue ?? initialValue;
+
   const rl = readline.createInterface({ input, output });
   let errorMessage = "";
-  const effectiveDefault = defaultValue ?? true;
+  const effectiveDefault = finalDefaultValue ?? true;
 
   // Define the default hint
   const defaultHint = effectiveDefault ? "[Y/n]" : "[y/N]";
   // Only prepend the default hint to the title if instructions are not displayed
   const adjustedTitle = displayInstructions
-    ? title
-    : `${re.blue(defaultHint)} ${title}`;
+    ? finalTitle
+    : `${re.blue(defaultHint)} ${finalTitle}`;
 
   const instructions = `Use <y/n> to confirm or deny, <Enter> for default (${effectiveDefault ? "Y" : "N"}), <Ctrl+C> to exit`;
 

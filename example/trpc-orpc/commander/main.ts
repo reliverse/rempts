@@ -5,6 +5,44 @@ import type { Trpc11RouterLike } from "~/libs/launcher/trpc-orpc-support/trpc-co
 
 import { createRpcCli } from "~/libs/launcher/trpc-orpc-support";
 
+// Run the CLI with the example router file
+// bun example/trpc-orpc/commander/main.ts example/trpc-orpc/rempts/main.ts
+
+// Or if you want to specify a particular export
+// bun example/trpc-orpc/commander/main.ts example/trpc-orpc/rempts/main.ts --export appRouter
+
+// The CLI automatically tries to load tsx if available
+// bun example/trpc-orpc/commander/main.ts example/trpc-orpc/rempts/main.ts
+
+// Or explicitly require tsx
+// bun example/trpc-orpc/commander/main.ts example/trpc-orpc/rempts/main.ts --require tsx/cjs --import tsx/esm
+
+// Basic procedures
+// =========================
+// # Call the hello procedure
+// rempts hello --name Alice
+// # Output: "Hello Alice!"
+
+// # Call hello without name (uses default)
+// rempts hello
+// # Output: "Hello World!"
+
+// # Call the add procedure
+// rempts add --a 5 --b 3
+// # Output: 8
+// =========================
+
+// Nested router procedures
+// =========================
+// # Create a user
+// rempts user create --name "John Doe" --email "john@example.com" --age 25
+// # Output: {"id": 1, "name": "John Doe", "email": "john@example.com", "age": 25}
+
+// # Get a user by ID
+// rempts user get --id 1
+// # Output: {"id": 1, "name": "John Doe", "email": "john@example.com"}
+// =========================
+
 const program = new Command("rempts");
 
 program.allowExcessArguments();

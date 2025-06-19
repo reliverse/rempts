@@ -707,7 +707,7 @@ test("defaults and negations", async () => {
 
 test("valibot schemas to JSON schema", () => {
   // just a test to quickly see how valibot schemas are converted to JSON schema
-  // honestly not a test of trpc-cli at all but useful for debugging
+  // honestly not a test of actual implementation at all but useful for debugging
   const toJsonSchema = (schema: any) => {
     try {
       return require("@valibot/to-json-schema").toJsonSchema(schema, {

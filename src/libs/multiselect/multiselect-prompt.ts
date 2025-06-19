@@ -145,9 +145,11 @@ export async function multiselectPrompt<T extends string>(
 ): Promise<T[]> {
   const {
     title = "",
+    message,
     content = "",
     options,
     defaultValue = [],
+    initialValues,
     borderColor = "dim",
     titleColor = "cyan",
     titleTypography = "none",
@@ -160,18 +162,28 @@ export async function multiselectPrompt<T extends string>(
     debug = false,
     terminalWidth: customTerminalWidth = 90,
     displayInstructions = false,
+    required = false,
     minSelect = 0,
     maxSelect,
     selectAll = false,
   } = params;
 
+  const finalTitle =
+    message && title
+      ? `${title}: ${message}`
+      : (message ?? title ?? "Select options");
+
+  const finalDefaultValue = defaultValue ?? initialValues;
+
+  const effectiveMinSelect = required ? Math.max(1, minSelect) : minSelect;
+
   let pointer =
-    defaultValue.length > 0
+    finalDefaultValue.length > 0
       ? options.findIndex(
           (opt) =>
             opt &&
             isSelectOption(opt) &&
-            defaultValue.includes(opt.value) &&
+            finalDefaultValue.includes(opt.value) &&
             !opt.disabled,
         )
       : 0;
@@ -190,7 +202,7 @@ export async function multiselectPrompt<T extends string>(
             opt && isSelectOption(opt) && !opt.disabled ? index : -1,
           )
           .filter((i) => i !== -1)
-      : defaultValue
+      : finalDefaultValue
           .map((val) =>
             options.findIndex((o) => o && isSelectOption(o) && o.value === val),
           )
@@ -270,7 +282,7 @@ export async function multiselectPrompt<T extends string>(
       }
     }
     lastUILineCount = renderPromptUI({
-      title,
+      title: finalTitle,
       content,
       options,
       pointer,
@@ -292,7 +304,7 @@ export async function multiselectPrompt<T extends string>(
     });
   }
   lastUILineCount = renderPromptUI({
-    title,
+    title: finalTitle,
     content,
     options,
     pointer,
@@ -340,10 +352,10 @@ export async function multiselectPrompt<T extends string>(
     }
     async function confirmSelection() {
       const selectedCount = selectedOptions.size;
-      if (selectedCount < minSelect) {
+      if (selectedCount < effectiveMinSelect) {
         deleteLastLine();
-        errorMessage = `You must select at least ${minSelect} option${
-          minSelect !== 1 ? "s" : ""
+        errorMessage = `You must select at least ${effectiveMinSelect} option${
+          effectiveMinSelect !== 1 ? "s" : ""
         }.`;
         renderOptions();
         return;

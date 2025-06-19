@@ -2,6 +2,8 @@
 //   Type Definitions
 // -------------------------
 
+import type { AnyRouter } from "./trpc-orpc-support/trpc-compat.js";
+
 export type EmptyArgs = Record<string, never>;
 
 export interface BaseArgProps {
@@ -128,6 +130,11 @@ export interface DefineCommandOptions<A extends ArgDefinitions = EmptyArgs> {
    * Called once per CLI process, after all command/run() logic is finished
    */
   onLauncherExit?: () => void | Promise<void>;
+  /**
+   * tRPC/oRPC router for RPC mode. When provided, the command will automatically
+   * switch to RPC mode and use the router's procedures as CLI commands.
+   */
+  router?: AnyRouter;
 }
 
 export interface Command<A extends ArgDefinitions = EmptyArgs> {
@@ -166,6 +173,11 @@ export interface Command<A extends ArgDefinitions = EmptyArgs> {
    * Called once per CLI process, after all command/run() logic is finished
    */
   onLauncherExit?: () => void | Promise<void>;
+  /**
+   * tRPC/oRPC router for RPC mode. When provided, the command will automatically
+   * switch to RPC mode and use the router's procedures as CLI commands.
+   */
+  router?: AnyRouter;
 }
 
 export type InferArgTypes<A extends ArgDefinitions> = {

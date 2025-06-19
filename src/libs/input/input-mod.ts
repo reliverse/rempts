@@ -174,7 +174,7 @@ function renderPromptUI(
 
       // Stream title first
       void streamText({
-        text: title,
+        text: title || "",
         delay: streamDelay,
         color: titleColor,
         newline: false,
@@ -297,6 +297,7 @@ async function validateInput(
       isValid = false;
       errorMessage = "Invalid input.";
     }
+    // If validationResult is undefined, validation passes (isValid remains true)
   }
 
   return { isValid, errorMessage };
@@ -321,10 +322,12 @@ export async function inputPrompt(
 ): Promise<string> {
   const {
     title,
+    message, // Alias for title
     hint,
     hintPlaceholderColor = "blue",
     validate,
     defaultValue = "",
+    initialValue, // Alias for defaultValue
     titleColor = "cyan",
     titleTypography = "none",
     titleVariant = "none",
@@ -346,6 +349,13 @@ export async function inputPrompt(
     shouldStream = false,
     streamDelay = 20,
   } = options;
+
+  // Use message as alias for title, concatenating both if provided
+  const finalTitle =
+    message && title ? `${title}: ${message}` : (message ?? title ?? "Input");
+
+  // Use initialValue as alias for defaultValue, prioritizing defaultValue if both are provided
+  const finalDefaultValue = defaultValue ?? initialValue;
 
   // Create a new readline interface
   const terminal = readline.createInterface({
@@ -397,7 +407,7 @@ export async function inputPrompt(
   async function handleHardcodedInput(): Promise<string> {
     msgUndoAll();
     await renderPromptUI({
-      title,
+      title: finalTitle,
       hint,
       hintPlaceholderColor,
       content,
@@ -420,7 +430,7 @@ export async function inputPrompt(
       streamDelay,
     });
 
-    const finalAnswer = currentInput || defaultValue;
+    const finalAnswer = currentInput || finalDefaultValue;
     const validated = await validateInput(finalAnswer, validate);
 
     if (!validated.isValid) {
@@ -460,7 +470,7 @@ export async function inputPrompt(
     }
 
     await renderPromptUI({
-      title,
+      title: finalTitle,
       hint,
       hintPlaceholderColor,
       content,
@@ -506,24 +516,24 @@ export async function inputPrompt(
       showPlaceholder = false;
     }
 
-    // Use defaultValue if nothing is entered
-    const finalAnswer = currentInput || defaultValue;
+    // Use finalDefaultValue if nothing is entered
+    const finalAnswer = currentInput || finalDefaultValue;
     const validated = await validateInput(finalAnswer, validate);
 
     if (validated.isValid) {
       // Show user what was accepted if input was empty but default is used
-      if (!currentInput && defaultValue) {
+      if (!currentInput && finalDefaultValue) {
         if (mode === "password") {
           deleteLastLine();
           deleteLastLine();
           // Mask the default
           msg({
             type: "M_MIDDLE",
-            title: `  ${getMaskChar(mask).repeat(defaultValue.length)}`,
+            title: `  ${getMaskChar(mask).repeat(finalDefaultValue.length)}`,
           });
         } else {
           deleteLastLine();
-          msg({ type: "M_MIDDLE", title: `  ${re.reset(defaultValue)}` });
+          msg({ type: "M_MIDDLE", title: `  ${re.reset(finalDefaultValue)}` });
         }
       }
       if (errorMessage) {

@@ -1,7 +1,6 @@
 // AUTO-GENERATED AGGREGATOR START (via `dler agg`)
 export { animationMap, animateText } from "./libs/animate/animate-mod.js";
 export { anykeyPrompt } from "./libs/anykey/anykey-mod.js";
-export { createAsciiArt } from "./libs/visual/visual-mod.js";
 export type { CancelValue } from "./libs/cancel/cancel.js";
 export {
   CANCEL,
@@ -22,6 +21,13 @@ export {
   fallbackSymbols,
   figures,
 } from "./libs/figures/figures-mod.js";
+export type {
+  GroupOptions,
+  GroupContext,
+  GroupStep,
+  GroupSteps,
+} from "./libs/group/group-mod.js";
+export { group, createStep, createMultiStep } from "./libs/group/group-mod.js";
 export { input, text, password } from "./libs/input/input-alias.js";
 export { inputPrompt } from "./libs/input/input-mod.js";
 export { startPrompt, intro } from "./libs/intro/intro-alias.js";
@@ -67,6 +73,8 @@ export {
   parseRouter,
   createRpcCli,
   z,
+  trpcServer,
+  zod,
 } from "./libs/launcher/trpc-orpc-support/index.js";
 export {
   flattenedProperties,
@@ -189,9 +197,9 @@ export { endPrompt, outro } from "./libs/outro/outro-alias.js";
 export { outroPrompt } from "./libs/outro/outro-mod.js";
 export type { ResultsType } from "./libs/results/results.js";
 export { resultPrompt } from "./libs/results/results.js";
-export { select } from "./libs/select/aliases-alias.js";
 export { numMultiSelectPrompt } from "./libs/select/nummultiselect-prompt.js";
 export { numSelectPrompt } from "./libs/select/numselect-prompt.js";
+export { select, selectSimple } from "./libs/select/select-alias.js";
 export { selectPrompt } from "./libs/select/select-prompt.js";
 export { togglePrompt } from "./libs/select/toggle-prompt.js";
 export { spinner } from "./libs/spinner/spinner-alias.js";
@@ -221,6 +229,7 @@ export {
   isValidName,
   normalizeName,
 } from "./libs/utils/validate.js";
+export { createAsciiArt } from "./libs/visual/visual-mod.js";
 export type {
   MsgType,
   TypographyName,
@@ -251,6 +260,7 @@ export type {
   FmtMsgOptions,
   TogglePromptParams,
   SeparatorOption,
+  SelectPromptParams,
   MultiselectPromptParams,
   DatePromptOptions,
 } from "./types.js";

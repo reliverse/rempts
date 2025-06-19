@@ -4,9 +4,10 @@ import { stdin as input, stdout as output } from "node:process";
 import readline from "node:readline";
 
 import type {
-  BorderColorName,
   ColorName,
   SelectOption,
+  SelectPromptParams,
+  SeparatorOption,
   TypographyName,
   VariantName,
 } from "~/types.js";
@@ -16,39 +17,10 @@ import { deleteLastLine } from "~/libs/msg-fmt/terminal.js";
 import { completePrompt } from "~/libs/utils/prompt-end.js";
 import { streamText } from "~/libs/utils/stream-text.js";
 
-interface SeparatorOption {
-  separator: true;
-  width?: number;
-  symbol?: keyof typeof symbols;
-}
-
 function isSelectOption<T>(
   option: SelectOption<T> | SeparatorOption,
 ): option is SelectOption<T> {
   return !("separator" in option);
-}
-
-interface SelectPromptParams<T extends string> {
-  title?: string;
-  message?: string;
-  content?: string;
-  options: (SelectOption<T> | SeparatorOption)[];
-  defaultValue?: T;
-  required?: boolean;
-  borderColor?: BorderColorName;
-  titleColor?: ColorName;
-  titleTypography?: TypographyName;
-  titleVariant?: VariantName;
-  contentColor?: ColorName;
-  contentTypography?: TypographyName;
-  border?: boolean;
-  endTitle?: string;
-  endTitleColor?: ColorName;
-  debug?: boolean;
-  terminalWidth?: number;
-  displayInstructions?: boolean;
-  shouldStream?: boolean;
-  streamDelay?: number;
 }
 
 /**
@@ -195,10 +167,12 @@ export async function selectPrompt<T extends string>(
 ): Promise<T> {
   const {
     title = "",
-    message = "",
+    message,
     content = "",
     options,
+    optionsArray,
     defaultValue,
+    initialValue,
     required = false,
     borderColor = "dim",
     titleColor = "cyan",
@@ -216,18 +190,36 @@ export async function selectPrompt<T extends string>(
     streamDelay = 20,
   } = params;
 
-  const finalTitle = message || title;
+  // Use message as alias for title, concatenating both if provided
+  const finalTitle =
+    message && title
+      ? `${title}: ${message}`
+      : (message ?? title ?? "Select option");
 
-  let selectedIndex = defaultValue
-    ? options.findIndex(
+  // Use initialValue as alias for defaultValue, prioritizing defaultValue if both are provided
+  const finalDefaultValue = defaultValue ?? initialValue;
+
+  // Convert optionsArray to standard options format if provided
+  const finalOptions =
+    options ??
+    optionsArray?.map((opt) => ({
+      value: opt.value,
+      label: opt.label ?? opt.value,
+      hint: opt.hint,
+      disabled: false,
+    })) ??
+    [];
+
+  let selectedIndex = finalDefaultValue
+    ? finalOptions.findIndex(
         (option) =>
           isSelectOption(option) &&
-          option.value === defaultValue &&
+          option.value === finalDefaultValue &&
           !option.disabled,
       )
     : -1;
   if (selectedIndex === -1) {
-    selectedIndex = options.findIndex(
+    selectedIndex = finalOptions.findIndex(
       (option) => isSelectOption(option) && !option.disabled,
     );
   }
@@ -243,7 +235,7 @@ export async function selectPrompt<T extends string>(
   const instructions =
     "Use <↑/↓> or <k/j> to navigate, <Enter> to select, <Ctrl+C> to exit";
   let errorMessage = "";
-  const allDisabled = options.every(
+  const allDisabled = finalOptions.every(
     (option) => isSelectOption(option) && option.disabled,
   );
   let lastUILineCount = 0;
@@ -257,7 +249,7 @@ export async function selectPrompt<T extends string>(
     void renderPromptUI({
       title: finalTitle,
       content,
-      options,
+      options: finalOptions,
       selectedIndex,
       errorMessage,
       displayInstructions,
@@ -282,7 +274,7 @@ export async function selectPrompt<T extends string>(
   lastUILineCount = await renderPromptUI({
     title: finalTitle,
     content,
-    options,
+    options: finalOptions,
     selectedIndex,
     errorMessage,
     displayInstructions,
@@ -323,8 +315,9 @@ export async function selectPrompt<T extends string>(
     function moveSelectionUp() {
       const originalPointer = selectedIndex;
       do {
-        selectedIndex = (selectedIndex - 1 + options.length) % options.length;
-        const option = options[selectedIndex];
+        selectedIndex =
+          (selectedIndex - 1 + finalOptions.length) % finalOptions.length;
+        const option = finalOptions[selectedIndex];
         if (option && isSelectOption(option) && !option.disabled) break;
       } while (selectedIndex !== originalPointer);
       renderOptions();
@@ -332,14 +325,14 @@ export async function selectPrompt<T extends string>(
     function moveSelectionDown() {
       const originalPointer = selectedIndex;
       do {
-        selectedIndex = (selectedIndex + 1) % options.length;
-        const option = options[selectedIndex];
+        selectedIndex = (selectedIndex + 1) % finalOptions.length;
+        const option = finalOptions[selectedIndex];
         if (option && isSelectOption(option) && !option.disabled) break;
       } while (selectedIndex !== originalPointer);
       renderOptions();
     }
     async function confirmSelection() {
-      const option = options[selectedIndex];
+      const option = finalOptions[selectedIndex];
       if (!option || !isSelectOption(option)) {
         errorMessage = "This option is not selectable.";
         renderOptions();
@@ -350,7 +343,7 @@ export async function selectPrompt<T extends string>(
         renderOptions();
         return;
       }
-      if (required && !option.value) {
+      if (required && (!option.value || option.value === "")) {
         errorMessage = "You must select a valid option.";
         renderOptions();
         return;

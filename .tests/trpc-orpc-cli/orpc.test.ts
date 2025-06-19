@@ -74,11 +74,11 @@ test("lazy router", async () => {
     })),
   });
 
-  // @ts-expect-error - we want an error here - that means users will get a type error if they try to use a lazy router without unlazying it first
+  // we want an error here - that means users will get a type error if they try to use a lazy router without unlazying it first
   await expect(
     run(lazyRouter, ["greeting", "casual", "bob"]),
   ).rejects.toMatchInlineSnapshot(
-    `Error: Lazy routers are not supported. Please use \`import {unlazyRouter} from '@orpc/server'\` to unlazy the router before passing it to trpc-cli. Lazy routes detected: departure`,
+    `Error: Lazy routers are not supported. Please use \`import {unlazyRouter} from '@orpc/server'\` to unlazy the router before passing it to @reliverse/rempts. Lazy routes detected: departure`,
   );
 
   const { departure, ...eagerRouterSubset } = lazyRouter;

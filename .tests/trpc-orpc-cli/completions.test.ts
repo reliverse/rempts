@@ -35,7 +35,7 @@ test("completions", async () => {
     },
   );
   expect(setup).toMatchInlineSnapshot(`
-    "setupShellInitFile /Users/blefnk/src/trpc-cli/test/completions-test-ignoreme.sh 
+    "setupShellInitFile /Users/blefnk/rempts/test/completions-test-ignoreme.sh 
     # begin completable completion
     . <(completable --completion)
     # end completable completion

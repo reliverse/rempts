@@ -20,7 +20,6 @@
   "ignoreDependencies": [
     "@orpc/contract",
     "@valibot/to-json-schema",
-    "effect",
     "eslint-plugin-codegen",
     "eslint-plugin-mmkal",
     "expect-type",

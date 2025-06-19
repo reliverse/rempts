@@ -9,7 +9,6 @@
     "target": "ESNext",
     "module": "Preserve",
     "moduleDetection": "force",
-    "jsx": "react-jsx",
     "allowJs": true,
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,

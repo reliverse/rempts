@@ -85,7 +85,9 @@ export interface PromptOptions {
   contentVariant?: VariantName;
   hint?: string;
   placeholder?: string;
-  validate?: (value: any) => boolean | string | Promise<boolean | string>;
+  validate?: (
+    value: any,
+  ) => boolean | string | undefined | Promise<boolean | string | undefined>;
   // defaultValue?: string | string[] | number | boolean;
   defaultColor?: ColorName;
   defaultTypography?: TypographyName;
@@ -220,8 +222,10 @@ export type PromptType =
 // --- Confirm Prompt ---
 
 export interface ConfirmPromptOptions {
-  title: string;
+  title?: string;
+  message?: string; // Alias for title
   defaultValue?: boolean;
+  initialValue?: boolean; // Alias for defaultValue
   content?: string;
   titleColor?: ColorName;
   titleTypography?: TypographyName;
@@ -306,6 +310,7 @@ export type InputPromptOptions = {
   contentVariant?: VariantName;
   customSymbol?: string;
   defaultValue?: string;
+  initialValue?: string; // Alias for defaultValue
   endTitle?: string;
   endTitleColor?: ColorName;
   hardcoded?: {
@@ -315,6 +320,7 @@ export type InputPromptOptions = {
   };
   hint?: string;
   hintPlaceholderColor?: ColorName;
+  message?: string; // Alias for title
   mode?: "plain" | "password";
   mask?: string;
   placeholder?: string;
@@ -323,7 +329,7 @@ export type InputPromptOptions = {
   streamDelay?: number;
   symbol?: SymbolName;
   symbolColor?: ColorName;
-  title: string;
+  title?: string;
   titleColor?: ColorName;
   titleTypography?: TypographyName;
   titleVariant?: VariantName;
@@ -348,7 +354,7 @@ export interface RenderParams {
   placeholder?: string;
   symbol?: SymbolName;
   symbolColor?: ColorName;
-  title: string;
+  title?: string;
   titleColor?: ColorName;
   titleTypography?: TypographyName;
   titleVariant?: VariantName;
@@ -419,10 +425,12 @@ export interface FmtMsgOptions {
 // --- Toggle Prompt ---
 
 export interface TogglePromptParams<T extends string> {
-  title: string;
+  title?: string;
+  message?: string; // Alias for title
   content?: string;
   options?: [T, T];
   defaultValue?: T;
+  initialValue?: T; // Alias for defaultValue
   borderColor?: BorderColorName;
   titleColor?: ColorName;
   titleTypography?: TypographyName;
@@ -444,11 +452,15 @@ export interface SeparatorOption {
   symbol?: SymbolName;
 }
 
-export interface MultiselectPromptParams<T extends string> {
-  title: string;
+export interface SelectPromptParams<T extends string> {
+  title?: string;
+  message?: string; // Alias for title
   content?: string;
-  options: (SelectOption<T> | SeparatorOption)[];
-  defaultValue?: T[];
+  options?: (SelectOption<T> | SeparatorOption)[];
+  optionsArray?: { value: T; label?: string; hint?: string }[]; // Simplified options format
+  defaultValue?: T;
+  initialValue?: T; // Alias for defaultValue
+  required?: boolean; // When true, user must make a selection
   borderColor?: BorderColorName;
   titleColor?: ColorName;
   titleTypography?: TypographyName;
@@ -461,6 +473,30 @@ export interface MultiselectPromptParams<T extends string> {
   debug?: boolean;
   terminalWidth?: number;
   displayInstructions?: boolean;
+  shouldStream?: boolean;
+  streamDelay?: number;
+}
+
+export interface MultiselectPromptParams<T extends string> {
+  title?: string;
+  message?: string; // Alias for title
+  content?: string;
+  options: (SelectOption<T> | SeparatorOption)[];
+  defaultValue?: T[];
+  initialValues?: T[]; // Alias for defaultValue
+  borderColor?: BorderColorName;
+  titleColor?: ColorName;
+  titleTypography?: TypographyName;
+  titleVariant?: VariantName;
+  contentColor?: ColorName;
+  contentTypography?: TypographyName;
+  border?: boolean;
+  endTitle?: string;
+  endTitleColor?: ColorName;
+  debug?: boolean;
+  terminalWidth?: number;
+  displayInstructions?: boolean;
+  required?: boolean; // When true, minSelect becomes 1
   minSelect?: number;
   maxSelect?: number;
   selectAll?: boolean;
