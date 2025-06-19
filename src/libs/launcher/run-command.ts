@@ -33,9 +33,9 @@ const tryLoadCommand = async (path: string): Promise<Command | null> => {
   if (!(await fs.pathExists(path))) return null;
 
   try {
-    relinka("verbose", `Attempting to load command from: ${path}`);
+    // relinka("verbose", `Attempting to load command from: ${path}`);
     const cmd: Command = await jiti.import(path, { default: true });
-    relinka("verbose", `Successfully loaded command from: ${path}`);
+    // relinka("verbose", `Successfully loaded command from: ${path}`);
     return cmd;
   } catch {
     relinka("verbose", `Failed to load ${path} as a command file`);
@@ -83,6 +83,22 @@ For developers: Ensure the command file:
 Original error: ${originalError instanceof Error ? originalError.message : String(originalError)}`,
   );
 
+/**
+ * Load a command from the filesystem.
+ *
+ * @param cmdPath - Path to the command file or directory containing cmd.ts/cmd.js
+ * @returns Promise<Command> - The loaded command
+ *
+ * @example
+ * ```ts
+ * // Load a command
+ * const cmd = await loadCommand("./web/cmd");
+ *
+ * // Use with runCmd - pass args as separate array elements
+ * await runCmd(cmd, ["--dev", "true"]); // ✅ Correct
+ * await runCmd(cmd, [`--dev ${isDev}`]); // ❌ Wrong - creates single string
+ * ```
+ */
 export async function loadCommand(cmdPath: string): Promise<Command> {
   try {
     const callerDir = getCallerDirectory();

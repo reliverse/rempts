@@ -1563,19 +1563,148 @@ export function defineArgs<A extends ArgDefinitions>(args: A): A {
 }
 
 /**
+ * Normalize argv array to ensure each argument is properly separated.
+ * Handles cases where users pass template literals or space-separated strings.
+ *
+ * @param argv - Array of arguments that may contain template literals or space-separated strings
+ * @returns Normalized array where each argument is a separate element
+ *
+ * @example
+ * ```ts
+ * normalizeArgv([`--dev ${isDev}`]) // ["--dev", "true"]
+ * normalizeArgv([`--dev ${isDev} --build mod.ts`]) // ["--dev", "true", "--build", "mod.ts"]
+ * normalizeArgv([`--dev ${isDev} --build mod.ts`, "--pub true", "--someBoolean"])
+ * // ["--dev", "true", "--build", "mod.ts", "--pub", "true", "--someBoolean"]
+ * ```
+ */
+function normalizeArgv(argv: string[]): string[] {
+  const normalized: string[] = [];
+
+  for (const arg of argv) {
+    // Simple space-based splitting for now
+    // This handles the common case where users pass template literals with simple values
+    const parts = arg.split(/\s+/).filter((part) => part.length > 0);
+    normalized.push(...parts);
+  }
+
+  return normalized;
+}
+
+/**
+ * Programmatically run a command with subcommand support and flexible argument handling.
+ * This function can handle subcommands (including nested), positional arguments, and automatically normalizes
+ * template literals and space-separated strings.
+ *
+ * @param command The command definition (from defineCommand)
+ * @param argv The argv array to parse (default: []). Supports template literals and subcommands.
+ * @param parserOptions Optional reliArgParser options
+ *
+ * @example
+ * ```ts
+ * // ✅ Single command with template literals
+ * await runCmdWithSubcommands(cmd, [`--dev ${isDev}`]);
+ *
+ * // ✅ Subcommand with arguments
+ * await runCmdWithSubcommands(cmd, [`build --input src/mod.ts --someBoolean`]);
+ *
+ * // ✅ Subcommand with positional arguments
+ * await runCmdWithSubcommands(cmd, [`build src/mod.ts --someBoolean`]);
+ *
+ * // ✅ Nested subcommands
+ * await runCmdWithSubcommands(cmd, [`build someSubCmd src/mod.ts --no-cjs`]);
+ * await runCmdWithSubcommands(cmd, [`build sub1 sub2 sub3 file.ts --flag`]);
+ *
+ * // ✅ Mixed array with subcommands
+ * await runCmdWithSubcommands(cmd, [
+ *   `build someSubCmd src/mod.ts`,
+ *   "--no-cjs",
+ *   "--verbose"
+ * ]);
+ * ```
+ */
+export async function runCmdWithSubcommands<
+  A extends ArgDefinitions = EmptyArgs,
+>(
+  command: Command<A>,
+  argv: string[] = [],
+  parserOptions: ReliArgParserOptions & {
+    fileBased?: FileBasedOptions;
+    autoExit?: boolean;
+  } = {},
+): Promise<any> {
+  // Normalize argv to handle template literals and space-separated strings
+  const normalizedArgv = normalizeArgv(argv);
+
+  // Recursively dispatch subcommands
+  let currentCommand: Command<any> = command;
+  let currentArgv = normalizedArgv;
+
+  while (
+    currentCommand.commands &&
+    currentArgv.length > 0 &&
+    currentArgv[0] &&
+    !isFlag(currentArgv[0])
+  ) {
+    const [maybeSub, ...restArgv] = currentArgv;
+    let subSpec: CommandSpec | undefined;
+    for (const [key, spec] of Object.entries(currentCommand.commands)) {
+      if (key === maybeSub) {
+        subSpec = spec;
+        break;
+      }
+      try {
+        const cmd = await loadSubCommand(spec);
+        if (cmd.meta?.aliases?.includes(maybeSub)) {
+          subSpec = spec;
+          break;
+        }
+      } catch (err) {
+        debugLog(`Error checking alias for command ${key}:`, err);
+      }
+    }
+    if (!subSpec) break;
+    // Load the subcommand
+    const loaded = await loadSubCommand(subSpec);
+    currentCommand = loaded;
+    currentArgv = restArgv;
+  }
+
+  // Run the final resolved command
+  return await runCommandWithArgs(currentCommand, currentArgv, {
+    ...parserOptions,
+    autoExit: false, // Don't exit process in programmatic usage
+  });
+}
+
+/**
  * Programmatically run a command's run() handler with parsed arguments.
  * Does not handle subcommands, file-based commands, or global hooks.
  * Suitable for use in demos, tests, or programmatic invocation.
  *
  * @param command The command definition (from defineCommand)
- * @param argv The argv array to parse (default: [])
+ * @param argv The argv array to parse (default: []). Each argument should be a separate array element.
  * @param parserOptions Optional reliArgParser options
+ *
+ * @example
+ * **each argument as separate array element**:
+ * ```ts
+ * await runCmd(cmd, ["--dev", "true"]);
+ * await runCmd(cmd, ["--name", "John", "--verbose"]);
+ * ```
+ * **automatic normalization of template literals**:
+ * ```ts
+ * await runCmd(cmd, [`--dev ${isDev}`]); // Automatically converted to ["--dev", "true"]
+ * await runCmd(cmd, [`--dev ${isDev} --build mod.ts`]); // ["--dev", "true", "--build", "mod.ts"]
+ * ```
  */
 export async function runCmd<A extends ArgDefinitions = EmptyArgs>(
   command: Command<A>,
   argv: string[] = [],
   parserOptions: ReliArgParserOptions = {},
 ) {
+  // Normalize argv to handle template literals and space-separated strings
+  const normalizedArgv = normalizeArgv(argv);
+
   // Prepare boolean keys and default values from command argument definitions.
   const booleanKeys = Object.keys(command.args || {}).filter(
     (k) => command.args?.[k]?.type === "boolean",
@@ -1599,7 +1728,7 @@ export async function runCmd<A extends ArgDefinitions = EmptyArgs>(
     defaults: { ...defaultMap, ...(parserOptions.defaults || {}) },
   };
 
-  const parsed = reliArgParser(argv, mergedParserOptions);
+  const parsed = reliArgParser(normalizedArgv, mergedParserOptions);
   debugLog("Parsed arguments (runCmd):", parsed);
 
   const finalArgs: Record<string, any> = {};
@@ -1687,6 +1816,9 @@ function getParsedContext<A extends ArgDefinitions>(
   argv: string[],
   parserOptions: ReliArgParserOptions,
 ): CommandContext<InferArgTypes<A>> {
+  // Normalize argv to handle template literals and space-separated strings
+  const normalizedArgv = normalizeArgv(argv);
+
   // Prepare boolean keys and default values from command argument definitions.
   const booleanKeys = Object.keys(command.args || {}).filter(
     (k) => command.args?.[k]?.type === "boolean",
@@ -1708,7 +1840,7 @@ function getParsedContext<A extends ArgDefinitions>(
     boolean: [...(parserOptions.boolean || []), ...booleanKeys],
     defaults: { ...defaultMap, ...(parserOptions.defaults || {}) },
   };
-  const parsed = reliArgParser(argv, mergedParserOptions);
+  const parsed = reliArgParser(normalizedArgv, mergedParserOptions);
   const finalArgs: Record<string, any> = {};
   const positionalKeys = Object.keys(command.args || {}).filter(
     (k) => command.args?.[k]?.type === "positional",

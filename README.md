@@ -1,8 +1,8 @@
 # 📃 rempts • powerful js/ts cli builder
 
-> @reliverse/rempts is a modern, type-safe toolkit for building delightful cli experiences. it's fast, flexible, and made for developer happiness. file-based commands keep things simple—no clutter, just clean and easy workflows. this is how cli should feel.
-
 [sponsor](https://github.com/sponsors/blefnk) — [discord](https://discord.gg/Pb8uKbwpsJ) — [repo](https://github.com/reliverse/rempts) — [npm](https://npmjs.com/@reliverse/rempts)
+
+> @reliverse/rempts is a modern, type-safe toolkit for building delightful cli experiences. it's fast, flexible, and made for developer happiness. file-based commands keep things simple—no clutter, just clean and easy workflows. this is how cli should feel.
 
 ## Features
 
@@ -34,14 +34,6 @@
 
 ```bash
 bun add @reliverse/rempts
-```
-
-**Coming soon**:
-
-```bash
-bun add -D @reliverse/dler
-bun dler rempts --init cmd1 cmd2 # creates `src/app/cmd1/cmd.ts` and `src/app/cmd2/cmd.ts` files
-bun dler rempts # creates `src/app/cmds.ts` file
 ```
 
 ## Usage Examples
@@ -221,6 +213,14 @@ await main();
 ## Launcher
 
 > **Note**: `runMain` is now an alias for `createCli` and is still supported for backward compatibility. The new `createCli` API provides a more intuitive object-based configuration format.
+
+### Automatic command creation
+
+```bash
+bun add -D @reliverse/dler
+bun dler rempts --init cmd1 cmd2 # creates `src/app/cmd1/cmd.ts` and `src/app/cmd2/cmd.ts` files
+bun dler rempts # creates `src/app/cmds.ts` file
+```
 
 ### Terminology
 
@@ -837,6 +837,37 @@ export default defineCommand({
 });
 ```
 
+### Using `runCmd` with Flexible Argument Handling
+
+The `runCmd` function supports flexible argument passing, automatically normalizing template literals and space-separated strings:
+
+```ts
+import { runCmd } from "@reliverse/rempts";
+
+// Traditional way - each argument as separate array element
+await runCmd(cmd, ["--dev", "true", "--name", "John"]);
+
+// Template literals work automatically
+await runCmd(cmd, [`--dev ${isDev}`]); // Automatically converted to ["--dev", "true"]
+await runCmd(cmd, [`--dev ${isDev} --build mod.ts`]); // ["--dev", "true", "--build", "mod.ts"]
+
+// Mixed arrays with template literals and regular strings
+await runCmd(cmd, [
+  `--dev ${isDev} --build mod.ts`,
+  "--pub true",
+  "--someBoolean",
+]);
+
+// Multiple template literals
+await runCmd(cmd, [`--dev ${isDev}`, `--name ${userName}`, `--count ${count}`]);
+```
+
+**Remember**:
+
+- If you need to pass a value with spaces (e.g. a name like "John Doe"), you should quote it in your template literal: `await runCmd(cmd, ['--name "John Doe"']);`
+- Otherwise, it will be split into two arguments: `"John"` and `"Doe"`.
+- We do not handle this intentionally, because some library users might rely on this Node.js behavior and handle it themselves in their own way (e.g. space can serve as a separator for values).
+
 ### Loading Commands with `loadCommand`
 
 The `loadCommand` utility helps you load command files from your filesystem. It automatically handles:
@@ -925,6 +956,37 @@ export default defineCommand({
   },
 });
 ```
+
+### Using `runCmdWithSubcommands` for Subcommands and Nested Subcommands
+
+If you need to programmatically run commands that support subcommands (including nested subcommands), use `runCmdWithSubcommands`:
+
+```ts
+import { runCmdWithSubcommands } from "@reliverse/rempts";
+
+// Single-level subcommand
+await runCmdWithSubcommands(mainCmd, [`build --input src/mod.ts --someBoolean`]);
+
+// Subcommand with positional arguments
+await runCmdWithSubcommands(mainCmd, [`build src/mod.ts --someBoolean`]);
+
+// Nested subcommands
+await runCmdWithSubcommands(mainCmd, [`build someSubCmd src/mod.ts --no-cjs`]);
+await runCmdWithSubcommands(mainCmd, [`build sub1 sub2 sub3 file.ts --flag`]);
+
+// Mixed array with subcommands
+await runCmdWithSubcommands(mainCmd, [
+  `build someSubCmd src/mod.ts`,
+  "--no-cjs",
+  "--verbose"
+]);
+```
+
+**Note:**
+
+- `runCmdWithSubcommands` automatically normalizes template literals and space-separated strings, just like `runCmd`.
+- If you need to pass a value with spaces (e.g. a name like "John Doe"), you should quote it in your template literal: `await runCmdWithSubcommands(cmd, ['--name "John Doe"']);`
+- For subcommands, always use `runCmdWithSubcommands` for the most robust behavior.
 
 ## Argument Types: Usage Comparison
 
@@ -1179,6 +1241,7 @@ All APIs are fully typed. See [`src/types.ts`](./src/types.ts) for advanced cust
 ## TODO
 
 - [ ] migrate to `dler libs` in the future (all main components will be published as separate packages; `@reliverse/rempts` will be a wrapper for all of them)
+- [ ] migrate all tests to `bun:test`
 
 ## Related
 

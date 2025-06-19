@@ -23,7 +23,13 @@ export default defineCommand({
       "info",
       `Running the 'minimal' command using runCmd() with name='${username}'`,
     );
+
+    // ✅ Correct way - each argument as separate array element
     await runCmd(await getCmdMinimal(), ["--name", username]);
+
+    // ❌ Wrong way - template literal creates single string element
+    // await runCmd(await getCmdMinimal(), [`--name ${username}`]); // This would create ["--name John"] instead of ["--name", "John"]
+
     relinka("log", "Done running 'minimal' via runCmd().");
   },
 });

@@ -13,8 +13,7 @@
     "dist-npm",
     "dist-libs",
     "src/types.ts",
-    ".tests/**/trpc-orpc-cli/**",
-    ".tests/figures.test.ts"
+    ".tests/**"
   ],
   "includeEntryExports": false,
   "ignoreDependencies": [

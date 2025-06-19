@@ -39,6 +39,7 @@ export {
   createCli,
   defineArgs,
   runCmd,
+  runCmdWithSubcommands,
 } from "./libs/launcher/launcher-mod.js";
 export type {
   EmptyArgs,
