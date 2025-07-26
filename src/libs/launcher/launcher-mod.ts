@@ -1000,7 +1000,7 @@ export function createCli<A extends ArgDefinitions = EmptyArgs>(
       }
 
       // @reliverse/relinka [1/2]
-      await relinkaConfig;
+      await relinkaConfig();
 
       // Only handle global help if no command was found
       if (rawArgv[0] === "help" || checkHelp(rawArgv)) {

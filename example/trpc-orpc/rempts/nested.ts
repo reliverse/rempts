@@ -14,7 +14,7 @@ const appRouter = t.router({
       .input(
         z.object({
           name: z.string(),
-          email: z.string().email(),
+          email: z.email(),
           age: z.number().min(18),
         }),
       )
@@ -31,7 +31,7 @@ const appRouter = t.router({
         z.object({
           id: z.number(),
           name: z.string().optional(),
-          email: z.string().email().optional(),
+          email: z.email().optional(),
         }),
       )
       .mutation(({ input }) => {

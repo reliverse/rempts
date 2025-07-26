@@ -1210,6 +1210,219 @@ mycli --tags desktop
 
 The validation happens after type casting, so for example with numbers, the input will first be converted to a number and then checked against the allowed list.
 
+## Typed Commands System
+
+The typed commands system provides TypeScript intellisense and type safety for rempts launcher usage while maintaining dynamic code execution.
+
+- 🎯 **TypeScript Intellisense**: Full autocomplete for command names and arguments
+- 🔒 **Type Safety**: Compile-time checking for argument types and required fields
+- ⚡ **Dynamic Execution**: Commands are still loaded and executed dynamically
+- 📝 **Automatic Sync**: Utility script to keep types in sync with actual command definitions
+
+### Usage
+
+#### Basic Usage
+
+```typescript
+import { callCmd } from "~/app/cmds";
+
+// Simple command with typed arguments
+await callCmd("pub", { dev: true });
+
+// Command with multiple arguments
+await callCmd("check", {
+  directory: "src",
+  checks: "missing-deps,file-extensions",
+  strict: true,
+  json: false
+});
+
+// Command with no arguments
+await callCmd("update");
+
+// Generators with typed arguments
+await callCmd("rempts", {
+  init: "new-cmd another-cmd",
+  overwrite: true,
+  outFile: "src/app/cmds.ts"
+});
+```
+
+#### Advanced Usage
+
+```typescript
+import { getTypedCmd } from "~/app/cmds";
+
+// Get command instance for more control
+const { command, run } = await getTypedCmd("magic");
+
+console.log(`Running: ${command.meta.name}`);
+console.log(`Description: ${command.meta.description}`);
+
+await run({
+  targets: ["dist-npm", "dist-jsr"],
+  concurrency: 4,
+  stopOnError: true
+});
+```
+
+#### TypeScript Benefits
+
+##### 1. Command Name Autocomplete
+
+When you type `callCmd("`, TypeScript will show all available commands.
+
+##### 2. Argument Intellisense
+
+When you type the arguments object, you get full autocomplete for:
+
+- Argument names
+- Argument types
+- Required vs optional fields
+
+##### 3. Type Validation
+
+```typescript
+// ✅ Correct usage
+await callCmd("create", {
+  mode: "files",    // Only "template" | "files" allowed
+  multiple: true    // boolean
+});
+
+// ❌ TypeScript errors
+await callCmd("create", {
+  mode: "invalid",  // Error: not assignable to type
+  multiple: "yes"   // Error: string not assignable to boolean
+});
+```
+
+##### 4. Required Field Checking
+
+```typescript
+// ✅ Required field provided
+await callCmd("magic", {
+  targets: ["dist-npm"]  // Required field
+});
+
+// ❌ TypeScript error: missing required field 'targets'
+await callCmd("magic", {
+  concurrency: 4
+});
+```
+
+### Maintaining the System
+
+#### Adding New Commands
+
+1. Create your command in `src/app/<command-name>/cmd.ts` using `defineCommand` and `defineArgs`
+2. Run the generator: `dler rempts --overwrite`
+3. The `CommandArgsMap` interface in `src/app/cmds.ts` will be automatically updated
+
+#### Manual Updates
+
+The `CommandArgsMap` interface is auto-generated. If you need custom types, you can add manual type assertions (it is more recommended to edit your command file instead and regenerate the types):
+
+```typescript
+interface CommandArgsMap {
+  myCommand: {
+    // Use union types for specific values
+    mode: "development" | "production";
+    
+    // Use template literal types for patterns
+    version: `${number}.${number}.${number}`;
+    
+    // Use branded types for validation
+    port: number & { __brand: "Port" };
+  };
+}
+```
+
+### Migration from Old System
+
+#### Before (Old System, still supported)
+
+```typescript
+import { runCmd } from "@reliverse/rempts";
+import { getPubCmd } from "./app/cmds";
+
+// No type safety, string-based arguments
+await runCmd(await getPubCmd(), [`--dev=${isDev}`]);
+```
+
+### After (New System)
+
+```typescript
+import { callCmd } from "./app/cmds";
+
+// Full type safety and intellisense
+await callCmd("pub", { dev: isDev });
+```
+
+### Implementation Details
+
+The system works by:
+
+1. **Command Loading**: Commands are still loaded dynamically using `loadCommand()`
+2. **Argument Conversion**: Typed arguments are converted to string array format that `runCmd` expects
+3. **Type Mapping**: `CommandArgsMap` interface maps command names to their argument types
+4. **Generic Types**: `callCmd<T extends keyof CommandArgsMap>` provides type safety
+
+### Generator Usage
+
+The typed command system also supports calling generators with full intellisense:
+
+#### Creating New Commands
+
+```typescript
+// Create new commands with typed arguments
+await callCmd("rempts", {
+  init: "auth login logout",           // Commands to create
+  overwrite: true,                     // Overwrite existing
+  outFile: "src/app/cmds.ts"          // Export file path
+});
+
+// Create commands in custom location
+await callCmd("rempts", {
+  init: "api-handler",
+  customCmdsRoot: "src/modules/api",
+  outFile: "src/modules/api/exports.ts",
+  overwrite: true
+});
+```
+
+#### Regenerating Exports
+
+```typescript
+// Regenerate exports file only
+await callCmd("rempts", {
+  overwrite: true,
+  outFile: "src/app/cmds.ts"
+});
+
+// Generate exports for specific directories
+await callCmd("rempts", {
+  cmdDirs: ["build", "pub", "magic"],
+  outFile: "src/app/core-cmds.ts",
+  overwrite: true
+});
+```
+
+#### Batch Operations
+
+```typescript
+// Create multiple commands programmatically
+const modules = ["auth", "db", "api", "deploy"];
+
+for (const module of modules) {
+  await callCmd("rempts", {
+    init: `${module}-create ${module}-update ${module}-delete`,
+    customCmdsRoot: `src/modules/${module}`,
+    outFile: `src/modules/${module}/cmds.ts`,
+    overwrite: true
+  });
+}
+```
+
 ## Contributing
 
 Bug report? Prompt idea? Want to build the best DX possible?

@@ -17,6 +17,7 @@
   ],
   "includeEntryExports": false,
   "ignoreDependencies": [
+    "minimatch",
     "@orpc/contract",
     "@valibot/to-json-schema",
     "eslint-plugin-codegen",

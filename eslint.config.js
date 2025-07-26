@@ -12,7 +12,7 @@ import tseslint from "typescript-eslint";
 const config = tseslint.config(
   {
     ignores: [
-      "**/{node_modules,dist-jsr,dist-npm,dist-libs,tests-runtime}/",
+      "**/{node_modules,dist-jsr,dist-npm,dist-libs,dist-tmp,tests-runtime}/",
       ".tests/**/trpc-orpc-cli", // temp
       ".tests/figures.test.ts", // temp
     ],

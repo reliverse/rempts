@@ -27,7 +27,7 @@
     "noPropertyAccessFromIndexSignature": false,
     "forceConsistentCasingInFileNames": true
   },
-  "include": ["**/*.ts", "**/*.js", ".*/**/*.ts"],
+  "include": ["**/*.ts", "**/*.js", ".*/**/*.ts", ".config/**/*.ts"],
   "exclude": [
     "node_modules",
     "dist*",

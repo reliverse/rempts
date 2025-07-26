@@ -2,5 +2,7 @@ node_modules
 .eslintcache
 .DS_Store
 /*txt
+/*log
 dist*
 logs
+dist

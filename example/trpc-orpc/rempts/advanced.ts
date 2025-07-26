@@ -45,7 +45,7 @@ const appRouter = t.router({
         title: z.string().min(1).max(100),
         description: z.string().optional(),
         priority: z.enum(["low", "medium", "high"]).default("medium"),
-        dueDate: z.string().datetime().optional(),
+        dueDate: z.iso.datetime().optional(),
         tags: z.array(z.string()).default([]),
       }),
     )

@@ -222,7 +222,7 @@ export async function confirmPrompt(
         deleteLastLine();
         msg({
           type: "M_NULL",
-          title: `${colorize(re.reset(formattedBar), borderColor)}  ${re.reset(effectiveDefault ? "y" : "n")}`,
+          title: `${colorize(re.reset(formattedBar), borderColor)}  ${effectiveDefault ? "y" : "n"}`,
         });
         result = effectiveDefault;
       } else if (answer === "y" || answer === "yes") {

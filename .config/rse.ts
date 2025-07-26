@@ -1,6 +1,6 @@
-import { defineConfigRse } from "@reliverse/cfg";
+import { defineConfig } from "@reliverse/rse-cfg";
 
-export default defineConfigRse({
+export default defineConfig({
   // RELIVERSE CONFIG (https://docs.reliverse.org/cli)
   // Restart the CLI to apply your config changes
   $schema: "./schema.json",
@@ -10,7 +10,7 @@ export default defineConfigRse({
   projectAuthor: "reliverse",
   projectDescription:
     "@reliverse/rempts is a modern, type-safe toolkit for building delightful cli experiences. it's fast, flexible, and made for developer happiness. file-based commands keep things simple.",
-  version: "1.7.40",
+  version: "1.7.42",
   projectLicense: "MIT",
   projectState: "creating",
   projectRepository: "https://github.com/reliverse/rempts",

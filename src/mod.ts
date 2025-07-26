@@ -32,14 +32,22 @@ export { input, text, password } from "./libs/input/input-alias.js";
 export { inputPrompt } from "./libs/input/input-mod.js";
 export { startPrompt, intro } from "./libs/intro/intro-alias.js";
 export { introPrompt } from "./libs/intro/intro-mod.js";
+export { loadCommand } from "./libs/launcher/command-runner.js";
+export {
+  argsToStringArray,
+  createCallCmd,
+  createGetTypedCmd,
+  callCmdImpl,
+  getTypedCmdImpl,
+} from "./libs/launcher/command-typed.js";
 export { runMain } from "./libs/launcher/launcher-alias.js";
 export {
   defineCommand,
   showUsage,
   createCli,
   defineArgs,
-  runCmd,
   runCmdWithSubcommands,
+  runCmd,
 } from "./libs/launcher/launcher-mod.js";
 export type {
   EmptyArgs,
@@ -63,7 +71,6 @@ export type {
   InferArgTypes,
   FileBasedOptions,
 } from "./libs/launcher/launcher-types.js";
-export { loadCommand } from "./libs/launcher/run-command.js";
 export { addCompletions } from "./libs/launcher/trpc-orpc-support/completions.js";
 export {
   CliValidationError,
@@ -74,8 +81,6 @@ export {
   parseRouter,
   createRpcCli,
   z,
-  trpcServer,
-  zod,
 } from "./libs/launcher/trpc-orpc-support/index.js";
 export {
   flattenedProperties,
