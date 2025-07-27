@@ -10,7 +10,7 @@ export default defineConfig({
   projectAuthor: "reliverse",
   projectDescription:
     "@reliverse/rempts is a modern, type-safe toolkit for building delightful cli experiences. it's fast, flexible, and made for developer happiness. file-based commands keep things simple.",
-  version: "1.7.42",
+  version: "1.7.44",
   projectLicense: "MIT",
   projectState: "creating",
   projectRepository: "https://github.com/reliverse/rempts",

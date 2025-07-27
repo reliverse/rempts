@@ -1,7 +1,7 @@
 {
   "name": "@reliverse/rempts",
   "author": "reliverse",
-  "version": "1.7.42",
+  "version": "1.7.44",
   "type": "module",
   "license": "MIT",
   "keywords": [
@@ -36,7 +36,7 @@
     "@orpc/server": "^1.7.5",
     "@reliverse/pathkit": "^1.3.4",
     "@reliverse/reliarg": "^1.0.3",
-    "@reliverse/relico": "^1.1.2",
+    "@reliverse/relico": "^1.2.0",
     "@reliverse/relifso": "^1.4.5",
     "@reliverse/relinka": "^1.5.3",
     "@reliverse/runtime": "^1.0.3",

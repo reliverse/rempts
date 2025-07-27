@@ -1,4 +1,4 @@
-import { colorize, re } from "@reliverse/relico";
+import { re } from "@reliverse/relico";
 import { stdin as input, stdout as output } from "node:process";
 import readline from "node:readline/promises";
 
@@ -222,7 +222,7 @@ export async function confirmPrompt(
         deleteLastLine();
         msg({
           type: "M_NULL",
-          title: `${colorize(re.reset(formattedBar), borderColor)}  ${effectiveDefault ? "y" : "n"}`,
+          title: `${formattedBar}  ${effectiveDefault ? "y" : "n"}`,
         });
         result = effectiveDefault;
       } else if (answer === "y" || answer === "yes") {

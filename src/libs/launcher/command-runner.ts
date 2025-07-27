@@ -18,14 +18,28 @@ const COMMAND_FILENAMES = ["cmd.ts", "cmd.js"] as const;
 const getCallerDirectory = (): string => {
   const stack = new Error().stack?.split("\n") ?? [];
 
+  // Look for the first stack frame that's not from the library
   for (const line of stack) {
     const match =
       /\((.*):(\d+):(\d+)\)/.exec(line) || /at (.*):(\d+):(\d+)/.exec(line);
-    if (match?.[1] && !match[1].includes("run-command")) {
-      return dirname(match[1]);
+    if (match?.[1]) {
+      const filePath = match[1];
+      // Skip library files and internal launcher files
+      if (
+        !filePath.includes("run-command") &&
+        !filePath.includes("@reliverse/rempts") &&
+        !filePath.includes("node_modules") &&
+        !filePath.includes("command-runner") &&
+        !filePath.includes("command-typed") &&
+        !filePath.includes("launcher-mod") &&
+        !filePath.includes("launcher-types")
+      ) {
+        return dirname(filePath);
+      }
     }
   }
 
+  // Fallback to process.cwd() if no suitable caller found
   return process.cwd();
 };
 
