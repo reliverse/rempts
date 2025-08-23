@@ -1,3 +1,3 @@
-import { useSpinner } from "~/libs/spinner/spinner-mod.js";
+import { useSpinner } from "../spinner/spinner-mod";
 
 export const spinner = useSpinner;

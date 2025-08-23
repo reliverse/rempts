@@ -2,7 +2,7 @@
 //   Type Definitions
 // -------------------------
 
-import type { AnyRouter } from "./trpc-orpc-support/trpc-compat.js";
+import type { AnyRouter } from "./trpc-orpc-support/trpc-compat";
 
 export type EmptyArgs = Record<string, never>;
 
@@ -75,9 +75,7 @@ export interface CommandMeta {
  * 2) A lazy import function returning a Promise that resolves to
  *    { default: Command<any> } or directly to a Command instance.
  */
-export type CommandSpec =
-  | string
-  | (() => Promise<{ default: Command<any> } | Command<any>>);
+export type CommandSpec = string | (() => Promise<{ default: Command<any> } | Command<any>>);
 
 export type CommandsMap = Record<string, CommandSpec>;
 
@@ -86,13 +84,9 @@ export interface CommandContext<ARGS> {
   raw: string[];
 }
 
-export type CommandRun<ARGS> = (
-  ctx: CommandContext<ARGS>,
-) => void | Promise<void>;
+export type CommandRun<ARGS> = (ctx: CommandContext<ARGS>) => void | Promise<void>;
 
-export type CommandHook<ARGS> = (
-  ctx: CommandContext<ARGS>,
-) => void | Promise<void>;
+export type CommandHook<ARGS> = (ctx: CommandContext<ARGS>) => void | Promise<void>;
 
 export interface DefineCommandOptions<A extends ArgDefinitions = EmptyArgs> {
   meta?: CommandMeta;

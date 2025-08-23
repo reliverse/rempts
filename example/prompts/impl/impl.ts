@@ -1,27 +1,25 @@
 import { relinka } from "@reliverse/relinka";
 
-import type { PromptType } from "~/types.js";
-
-import type { UserInput } from "./schema.js";
-
+import type { PromptType } from "~/types";
 import {
   askDir,
   doSomeFunStuff,
   showAnimatedText,
   showConfirmPrompt,
+  showDatePrompt,
   showEndPrompt,
-  showNumMultiselectPrompt,
+  showInputPrompt,
+  showInputPromptMasked,
+  showMultiselectPrompt,
   showNextStepsPrompt,
   showNumberPrompt,
+  showNumMultiselectPrompt,
   showNumSelectPrompt,
-  showInputPromptMasked,
   showResults,
-  showInputPrompt,
   showSelectPrompt,
-  showMultiselectPrompt,
   showTogglePrompt,
-  showDatePrompt,
-} from "./prompts.js";
+} from "./prompts";
+import type { UserInput } from "./schema";
 
 /**
  * Defines a prompt option for the example selector.
@@ -166,10 +164,7 @@ export const DEFAULT_USER_INPUT: UserInput = {
 const exampleHandlers: Partial<
   Record<
     PromptType,
-    (
-      userInput: Partial<UserInput>,
-      selectedExamples: PromptType[],
-    ) => Promise<void>
+    (userInput: Partial<UserInput>, selectedExamples: PromptType[]) => Promise<void>
   >
 > = {
   input: async (userInput) => {

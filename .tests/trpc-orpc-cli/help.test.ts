@@ -1,12 +1,7 @@
-import { initTRPC } from "@trpc/server";
 import { expect, test } from "bun:test";
+import { initTRPC } from "@trpc/server";
 import { z } from "zod";
-import {
-  type AnyRouter,
-  createRpcCli,
-  type TrpcCliMeta,
-  type TrpcCliParams,
-} from "../src";
+import { type AnyRouter, createRpcCli, type TrpcCliMeta, type TrpcCliParams } from "../src";
 import { looksLikeInstanceof } from "../src/util";
 
 expect.addSnapshotSerializer({
@@ -29,10 +24,7 @@ const t = initTRPC.meta<TrpcCliMeta>().create();
 const run = <R extends AnyRouter>(router: R, argv: string[]) => {
   return runWith({ router }, argv);
 };
-const runWith = <R extends AnyRouter>(
-  params: TrpcCliParams<R>,
-  argv: string[],
-) => {
+const runWith = <R extends AnyRouter>(params: TrpcCliParams<R>, argv: string[]) => {
   const cli = createRpcCli(params);
   const logs = [] as unknown[][];
   const addLogs = (...args: unknown[]) => logs.push(args);
@@ -43,8 +35,7 @@ const runWith = <R extends AnyRouter>(
       process: { exit: (_) => 0 as never },
     })
     .catch((e) => {
-      if (e.exitCode === 0 && e.cause.message === "(outputHelp)")
-        return logs?.[0]?.[0]; // should be the help text
+      if (e.exitCode === 0 && e.cause.message === "(outputHelp)") return logs?.[0]?.[0]; // should be the help text
       if (e.exitCode === 0) return e.cause;
       throw e;
     });
@@ -57,23 +48,17 @@ test("options with various modifiers", async () => {
         z.object({
           stringWithDefault: z.string().default("hello"),
           literalWithDefault: z.literal("hi").default("hi"),
-          unionWithDefault: z
-            .union([z.literal("foo"), z.literal("bar")])
-            .default("foo"),
+          unionWithDefault: z.union([z.literal("foo"), z.literal("bar")]).default("foo"),
           numberWithDefault: z.number().default(42),
           booleanWithDefault: z.boolean().default(true),
           booleanOrNumber: z.union([z.boolean(), z.number()]),
           enumWithDefault: z.enum(["foo", "bar"]).default("foo"),
           arrayWithDefault: z.array(z.string()).default(["hello"]),
-          objectWithDefault: z
-            .object({ foo: z.string() })
-            .default({ foo: "bar" }),
+          objectWithDefault: z.object({ foo: z.string() }).default({ foo: "bar" }),
           arrayOfObjectsWithDefault: z
             .array(z.object({ foo: z.string() }))
             .default([{ foo: "bar" }]),
-          arrayOfEnumsWithDefault: z
-            .array(z.enum(["foo", "bar"]))
-            .default(["foo"]),
+          arrayOfEnumsWithDefault: z.array(z.enum(["foo", "bar"])).default(["foo"]),
           arrayOfUnionsWithDefault: z
             .array(z.union([z.literal("foo"), z.literal("bar")]))
             .default(["foo"]),

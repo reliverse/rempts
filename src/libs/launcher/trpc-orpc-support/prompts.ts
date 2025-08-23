@@ -1,13 +1,13 @@
 import { Argument, Command, Option } from "commander";
 
 import type {
+  ClackPromptsLike,
   CommanderProgramLike,
   EnquirerLike,
   InquirerPromptsLike,
   Promptable,
   Prompter,
   PromptsLike,
-  ClackPromptsLike,
 } from "./types";
 
 // todo: in the future, eliminate 'commander' , '@clack/prompts' , '@inquirer/prompts' , 'prompts' , 'enquirer' dependencies
@@ -50,9 +50,7 @@ const parseUpstreamOptionInfo = (value: unknown): UpstreamOptionInfo | null => {
   }
 };
 
-const parseUpstreamArgumentInfo = (
-  value: unknown,
-): UpstreamArgumentInfo | null => {
+const parseUpstreamArgumentInfo = (value: unknown): UpstreamArgumentInfo | null => {
   if (typeof value !== "string" || !value.startsWith("{")) return null;
   try {
     const info = JSON.parse(value) as UpstreamArgumentInfo;
@@ -68,9 +66,7 @@ const getDefaultSubcommand = (command: Command) => {
   const defaultChild = /Available subcommands:.* (\S+) \(default\)/.exec(
     command.description(),
   )?.[1];
-  return defaultChild
-    ? command.commands.find((c) => c.name() === defaultChild)
-    : undefined;
+  return defaultChild ? command.commands.find((c) => c.name() === defaultChild) : undefined;
 };
 
 export const createShadowCommand = (
@@ -137,17 +133,15 @@ export const createShadowCommand = (
     const options = shadow.opts();
     if (args.at(-2) !== options) {
       // This is a code bug and not recoverable. Will hopefully never happen but if commander totally changes their API this will break
-      throw new Error(
-        "Unexpected args format, second last arg is not the options object",
-        { cause: args },
-      );
+      throw new Error("Unexpected args format, second last arg is not the options object", {
+        cause: args,
+      });
     }
     if (args.at(-1) !== shadow) {
       // This is a code bug and not recoverable. Will hopefully never happen but if commander totally changes their API this will break
-      throw new Error(
-        "Unexpected args format, last arg is not the Command instance",
-        { cause: args },
-      );
+      throw new Error("Unexpected args format, last arg is not the Command instance", {
+        cause: args,
+      });
     }
 
     positionalValues.forEach((value) => {
@@ -205,7 +199,7 @@ const clackPrompter = (prompts: ClackPromptsLike): Prompter => {
           validate: params.validate
             ? (input) => {
                 const result = params.validate!(input);
-                if (result === true) return undefined;
+                if (result === true) return;
                 if (result === false) return "Invalid input";
                 return result;
               }
@@ -221,9 +215,7 @@ const clackPrompter = (prompts: ClackPromptsLike): Prompter => {
             label: c.name,
             value: c.value,
           })),
-          initialValues: params.choices.flatMap((c) =>
-            c.checked ? [c.value] : [],
-          ),
+          initialValues: params.choices.flatMap((c) => (c.checked ? [c.value] : [])),
         })
         .then(throwOnCancel);
     },
@@ -240,8 +232,7 @@ const clackPrompter = (prompts: ClackPromptsLike): Prompter => {
         .select({
           message: params.message,
           options: params.choices.map((sorc) => {
-            const c =
-              typeof sorc === "string" ? { name: sorc, value: sorc } : sorc;
+            const c = typeof sorc === "string" ? { name: sorc, value: sorc } : sorc;
             return {
               label: c.name,
               value: c.value,
@@ -378,18 +369,12 @@ const enquirerPrompter = (prompts: EnquirerLike): Prompter => {
   };
 };
 
-export const promptify = (
-  program: CommanderProgramLike,
-  prompts: Promptable,
-) => {
+export const promptify = (program: CommanderProgramLike, prompts: Promptable) => {
   let promptsInput = prompts as any;
   if (promptsInput?.default) promptsInput = promptsInput.default as never;
 
   let prompter: Prompter;
-  if (
-    typeof promptsInput === "function" &&
-    typeof promptsInput.inject === "function"
-  ) {
+  if (typeof promptsInput === "function" && typeof promptsInput.inject === "function") {
     prompter = promptsPrompter(promptsInput as PromptsLike);
   } else if (promptsInput?.name === "Enquirer") {
     prompter = enquirerPrompter(promptsInput as EnquirerLike);
@@ -407,10 +392,7 @@ export const promptify = (
   interface ParseOptions {
     from: "user" | "node" | "electron";
   }
-  const analyseThenParse = async (
-    argv: string[],
-    parseOptions?: ParseOptions,
-  ) => {
+  const analyseThenParse = async (argv: string[], parseOptions?: ParseOptions) => {
     if (parseOptions?.from === "electron") {
       console.warn(
         `Warning: using prompts in electron mode is untested. The first two args of $0 are not available in electron mode. Assuming that the first two args of ${JSON.stringify(argv)} are electron-related and not intended for the CLI.`,
@@ -447,11 +429,7 @@ export const promptify = (
           // ok, the user hasn't actually specified a subcommand, let's prompt them for one, add it on to the args
           const name = await prompter.select(
             {
-              message:
-                `Select a ${an.command.original.name() || ""} subcommand`.replace(
-                  "  ",
-                  " ",
-                ),
+              message: `Select a ${an.command.original.name() || ""} subcommand`.replace("  ", " "),
               choices: an.command.original.commands.map((c) => ({
                 name: c.name(),
                 value: c.name(),
@@ -492,8 +470,7 @@ export const promptify = (
       const parts = [
         name,
         argOrOpt.description,
-        argOrOpt.defaultValue &&
-          `(default: ${argOrOpt.defaultValue as string})`,
+        argOrOpt.defaultValue && `(default: ${argOrOpt.defaultValue as string})`,
         !argOrOpt.defaultValue && !argOrOpt.required && "(optional)",
       ];
       return `${parts.filter(Boolean).join(" ").trim()}:`;
@@ -535,8 +512,7 @@ export const promptify = (
       const someRequiredOptionsUnspecified = analysis.options.some(
         (o) => o.original.required && !o.specified,
       );
-      shouldPrompt =
-        someRequiredArgsUnspecified || someRequiredOptionsUnspecified;
+      shouldPrompt = someRequiredArgsUnspecified || someRequiredOptionsUnspecified;
     }
 
     if (shouldPrompt) {
@@ -544,8 +520,7 @@ export const promptify = (
         const ctx = { ...baseContext, argument: arg.original };
         if (!arg.specified) {
           const parseArg =
-            "parseArg" in arg.original &&
-            typeof arg.original.parseArg === "function"
+            "parseArg" in arg.original && typeof arg.original.parseArg === "function"
               ? (arg.original.parseArg as (value: string) => string | undefined)
               : undefined;
           const promptedValue = await prompter.input(
@@ -570,18 +545,14 @@ export const promptify = (
       for (const option of analysis.options) {
         const ctx = { ...baseContext, option: option.original };
         if (!option.specified) {
-          const fullFlag =
-            option.original.long || `--${option.original.name()}`;
+          const fullFlag = option.original.long || `--${option.original.name()}`;
           const isBoolean =
-            option.original.isBoolean() ||
-            option.original.flags.includes("[boolean]");
+            option.original.isBoolean() || option.original.flags.includes("[boolean]");
           if (isBoolean) {
             const promptedValue = await prompter.confirm(
               {
                 message: getMessage(option.original),
-                default:
-                  (option.original.defaultValue as boolean | undefined) ??
-                  false,
+                default: (option.original.defaultValue as boolean | undefined) ?? false,
               },
               ctx,
             );
@@ -623,9 +594,7 @@ export const promptify = (
               const promptedValue = await prompter.input(
                 {
                   message: getMessage(option.original),
-                  default: option.original.defaultValue?.[
-                    values.length
-                  ] as string,
+                  default: option.original.defaultValue?.[values.length] as string,
                 },
                 ctx,
               );
@@ -637,10 +606,7 @@ export const promptify = (
             // let's handle this as a string - but the `parseArg` function could turn it into a number or boolean or whatever
             const getParsedValue = (input: string) => {
               return option.original.parseArg
-                ? option.original.parseArg(
-                    input,
-                    undefined as string | undefined,
-                  )
+                ? option.original.parseArg(input, undefined as string | undefined)
                 : input;
             };
             const promptedValue = await prompter.input(
@@ -657,10 +623,7 @@ export const promptify = (
               ctx,
             );
             if (promptedValue)
-              nextArgv.push(
-                fullFlag,
-                getParsedValue(promptedValue) ?? promptedValue,
-              );
+              nextArgv.push(fullFlag, getParsedValue(promptedValue) ?? promptedValue);
           }
         }
       }

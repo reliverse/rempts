@@ -1,18 +1,14 @@
-import { expect, test as baseTest } from "bun:test";
-import { execa } from "execa";
+import { test as baseTest, expect } from "bun:test";
 import * as fs from "node:fs";
 import * as path from "node:path";
+import { execa } from "execa";
 import stripAnsi from "strip-ansi";
 
 import "../src";
 
 const test = process.env.CI ? baseTest.skip : baseTest;
 
-const execAll = async (
-  program: string,
-  args: string[],
-  options: import("execa").Options = {},
-) => {
+const execAll = async (program: string, args: string[], options: import("execa").Options = {}) => {
   const { all } = await execa(program, args, {
     reject: false,
     cwd: path.join(__dirname, ".."),

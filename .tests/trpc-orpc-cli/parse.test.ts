@@ -1,5 +1,5 @@
-import { initTRPC } from "@trpc/server";
 import { expect, test, vi } from "bun:test";
+import { initTRPC } from "@trpc/server";
 import { createRpcCli, type TrpcCli, type TrpcCliMeta, z } from "../src";
 import { FailedToExitError } from "../src/errors";
 
@@ -53,13 +53,9 @@ test("optional positional", async () => {
   expect(await output(cli, ["foo", "abc", "--bar", "1"])).toMatchInlineSnapshot(
     `"["abc",{"bar":1}]"`,
   );
-  expect(await output(cli, ["foo", "--bar", "1"])).toMatchInlineSnapshot(
-    `"[null,{"bar":1}]"`,
-  );
+  expect(await output(cli, ["foo", "--bar", "1"])).toMatchInlineSnapshot(`"[null,{"bar":1}]"`);
   expect(await output(cli, ["foo"])).toMatchInlineSnapshot(`"[null,{}]"`);
-  expect(await output(cli, ["foo", "def"])).toMatchInlineSnapshot(
-    `"["def",{}]"`,
-  );
+  expect(await output(cli, ["foo", "def"])).toMatchInlineSnapshot(`"["def",{}]"`);
 });
 
 test("required positional", async () => {
@@ -87,9 +83,7 @@ test("required positional", async () => {
   expect(await output(cli, ["foo"])).toMatchInlineSnapshot(
     `"CommanderError: error: missing required argument 'name'"`,
   );
-  expect(await output(cli, ["foo", "def"])).toMatchInlineSnapshot(
-    `"["def",{}]"`,
-  );
+  expect(await output(cli, ["foo", "def"])).toMatchInlineSnapshot(`"["def",{}]"`);
 });
 
 const run = async (cli: TrpcCli, argv: string[]) => {

@@ -1,8 +1,7 @@
-import { re } from "@reliverse/relico";
-import { relinka } from "@reliverse/relinka";
 import { stdin as input, stdout as output } from "node:process";
 import readline from "node:readline";
-
+import { re } from "@reliverse/relico";
+import { relinka } from "@reliverse/relinka";
 import type {
   ColorName,
   SelectOption,
@@ -10,16 +9,13 @@ import type {
   SeparatorOption,
   TypographyName,
   VariantName,
-} from "~/types.js";
+} from "../../types";
+import { msg, symbols } from "../msg-fmt/messages";
+import { deleteLastLine } from "../msg-fmt/terminal";
+import { completePrompt } from "../utils/prompt-end";
+import { streamText } from "../utils/stream-text";
 
-import { msg, symbols } from "~/libs/msg-fmt/messages.js";
-import { deleteLastLine } from "~/libs/msg-fmt/terminal.js";
-import { completePrompt } from "~/libs/utils/prompt-end.js";
-import { streamText } from "~/libs/utils/stream-text.js";
-
-function isSelectOption<T>(
-  option: SelectOption<T> | SeparatorOption,
-): option is SelectOption<T> {
+function isSelectOption<T>(option: SelectOption<T> | SeparatorOption): option is SelectOption<T> {
   return !("separator" in option);
 }
 
@@ -145,9 +141,7 @@ async function renderPromptUI<T extends string>(params: {
         ? re.reset(re.yellow(option.label))
         : re.reset(option.label);
     const hint = option.hint
-      ? re.reset(
-          ` (${isDisabled ? re.dim(option.hint) : re.italic(re.dim(option.hint))})`,
-        )
+      ? re.reset(` (${isDisabled ? re.dim(option.hint) : re.italic(re.dim(option.hint))})`)
       : "";
     msg({ type: "M_NULL", title: `${prefix}${labelColor}${hint}` });
     uiLineCount++;
@@ -162,9 +156,7 @@ async function renderPromptUI<T extends string>(params: {
 /**
  * Displays a selectable prompt in the terminal and returns the chosen value.
  */
-export async function selectPrompt<T extends string>(
-  params: SelectPromptParams<T>,
-): Promise<T> {
+export async function selectPrompt<T extends string>(params: SelectPromptParams<T>): Promise<T> {
   const {
     title = "",
     message,
@@ -192,9 +184,7 @@ export async function selectPrompt<T extends string>(
 
   // Use message as alias for title, concatenating both if provided
   const finalTitle =
-    message && title
-      ? `${title}: ${message}`
-      : (message ?? title ?? "Select option");
+    message && title ? `${title}: ${message}` : (message ?? title ?? "Select option");
 
   // Use initialValue as alias for defaultValue, prioritizing defaultValue if both are provided
   const finalDefaultValue = defaultValue ?? initialValue;
@@ -213,15 +203,11 @@ export async function selectPrompt<T extends string>(
   let selectedIndex = finalDefaultValue
     ? finalOptions.findIndex(
         (option) =>
-          isSelectOption(option) &&
-          option.value === finalDefaultValue &&
-          !option.disabled,
+          isSelectOption(option) && option.value === finalDefaultValue && !option.disabled,
       )
     : -1;
   if (selectedIndex === -1) {
-    selectedIndex = finalOptions.findIndex(
-      (option) => isSelectOption(option) && !option.disabled,
-    );
+    selectedIndex = finalOptions.findIndex((option) => isSelectOption(option) && !option.disabled);
   }
   if (selectedIndex === -1) {
     selectedIndex = 0;
@@ -232,12 +218,9 @@ export async function selectPrompt<T extends string>(
   if (typeof input.setRawMode === "function") {
     input.setRawMode(true);
   }
-  const instructions =
-    "Use <↑/↓> or <k/j> to navigate, <Enter> to select, <Ctrl+C> to exit";
+  const instructions = "Use <↑/↓> or <k/j> to navigate, <Enter> to select, <Ctrl+C> to exit";
   let errorMessage = "";
-  const allDisabled = finalOptions.every(
-    (option) => isSelectOption(option) && option.disabled,
-  );
+  const allDisabled = finalOptions.every((option) => isSelectOption(option) && option.disabled);
   let lastUILineCount = 0;
 
   function renderOptions() {
@@ -315,8 +298,7 @@ export async function selectPrompt<T extends string>(
     function moveSelectionUp() {
       const originalPointer = selectedIndex;
       do {
-        selectedIndex =
-          (selectedIndex - 1 + finalOptions.length) % finalOptions.length;
+        selectedIndex = (selectedIndex - 1 + finalOptions.length) % finalOptions.length;
         const option = finalOptions[selectedIndex];
         if (option && isSelectOption(option) && !option.disabled) break;
       } while (selectedIndex !== originalPointer);

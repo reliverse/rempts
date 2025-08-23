@@ -1,8 +1,9 @@
 /* eslint-disable @typescript-eslint/no-shadow */
+
+import { expect, test } from "bun:test";
 import { oc } from "@orpc/contract";
 import { implement, os, unlazyRouter } from "@orpc/server";
 import * as v from "valibot";
-import { expect, test } from "bun:test";
 import { z } from "zod/v4";
 import { run, snapshotSerializer } from "./test-run";
 
@@ -48,15 +49,15 @@ const router = o.router({
 });
 
 test("orpc-cli", async () => {
-  expect(
-    await run(router, ["hello", "--foo", "world", "--bar", "42"]),
-  ).toMatchInlineSnapshot(`"hello world 42"`);
+  expect(await run(router, ["hello", "--foo", "world", "--bar", "42"])).toMatchInlineSnapshot(
+    `"hello world 42"`,
+  );
   expect(
     await run(router, ["with-valibot", "--abc", "hello", "--def", "42"]),
   ).toMatchInlineSnapshot(`"abc is hello and def is 42"`);
-  expect(
-    await run(router, ["deeply", "nested", "greeting", "hi"]),
-  ).toMatchInlineSnapshot(`"hello hi"`);
+  expect(await run(router, ["deeply", "nested", "greeting", "hi"])).toMatchInlineSnapshot(
+    `"hello hi"`,
+  );
 });
 
 test("lazy router", async () => {
@@ -75,21 +76,19 @@ test("lazy router", async () => {
   });
 
   // we want an error here - that means users will get a type error if they try to use a lazy router without unlazying it first
-  await expect(
-    run(lazyRouter, ["greeting", "casual", "bob"]),
-  ).rejects.toMatchInlineSnapshot(
+  await expect(run(lazyRouter, ["greeting", "casual", "bob"])).rejects.toMatchInlineSnapshot(
     `Error: Lazy routers are not supported. Please use \`import {unlazyRouter} from '@orpc/server'\` to unlazy the router before passing it to @reliverse/rempts. Lazy routes detected: departure`,
   );
 
   const { departure, ...eagerRouterSubset } = lazyRouter;
-  expect(
-    await run(eagerRouterSubset, ["greeting", "casual", "bob"]),
-  ).toMatchInlineSnapshot(`"hi bob"`);
+  expect(await run(eagerRouterSubset, ["greeting", "casual", "bob"])).toMatchInlineSnapshot(
+    `"hi bob"`,
+  );
 
   const unlazy = await unlazyRouter(lazyRouter);
-  await expect(
-    run(unlazy, ["departure", "casual", "bob"]),
-  ).resolves.toMatchInlineSnapshot(`"bye bob"`);
+  await expect(run(unlazy, ["departure", "casual", "bob"])).resolves.toMatchInlineSnapshot(
+    `"bye bob"`,
+  );
 });
 
 test("contract-based router", async () => {
@@ -108,19 +107,15 @@ test("contract-based router", async () => {
     hello: os.hello.handler(({ input }) => `hello ${input}`),
     deeply: {
       nested: {
-        greeting: os.deeply.nested.greeting.handler(
-          ({ input }) => `hi ${input}`,
-        ),
+        greeting: os.deeply.nested.greeting.handler(({ input }) => `hi ${input}`),
       },
     },
   });
 
-  expect(await run(router, ["hello", "world"])).toMatchInlineSnapshot(
-    `"hello world"`,
+  expect(await run(router, ["hello", "world"])).toMatchInlineSnapshot(`"hello world"`);
+  expect(await run(router, ["deeply", "nested", "greeting", "bob"])).toMatchInlineSnapshot(
+    `"hi bob"`,
   );
-  expect(
-    await run(router, ["deeply", "nested", "greeting", "bob"]),
-  ).toMatchInlineSnapshot(`"hi bob"`);
 });
 
 test("orpc unjsonifiable schema", async () => {
@@ -128,16 +123,13 @@ test("orpc unjsonifiable schema", async () => {
     hello: o
       .input(
         z.custom<{ foo: string; bar: number }>(
-          (value) =>
-            typeof value?.foo === "string" && typeof value.bar === "number",
+          (value) => typeof value?.foo === "string" && typeof value.bar === "number",
         ),
       )
       .handler(({ input }) => `foo is ${input.foo} and bar is ${input.bar}`),
   });
 
-  expect(
-    await run(router, ["hello", "--help"], { expectJsonInput: true }),
-  ).toMatchInlineSnapshot(`
+  expect(await run(router, ["hello", "--help"], { expectJsonInput: true })).toMatchInlineSnapshot(`
     "Usage: program hello [options]
 
     Options:
@@ -161,9 +153,7 @@ test("orpc json input via meta", async () => {
       .handler(({ input }) => `foo is ${input.foo} and bar is ${input.bar}`),
   });
 
-  expect(
-    await run(router, ["hello", "--help"], { expectJsonInput: true }),
-  ).toMatchInlineSnapshot(`
+  expect(await run(router, ["hello", "--help"], { expectJsonInput: true })).toMatchInlineSnapshot(`
     "Usage: program hello [options]
 
     Options:

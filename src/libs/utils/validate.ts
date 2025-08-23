@@ -16,8 +16,7 @@ export function isValidName(name: string): ValidationResult {
   if (!/^[a-zA-Z0-9-]+$/.test(name)) {
     return {
       isValid: false,
-      message:
-        "Project name can only contain latin letters, numbers and hyphens",
+      message: "Project name can only contain latin letters, numbers and hyphens",
     };
   }
   return { isValid: true };

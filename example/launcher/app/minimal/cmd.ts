@@ -1,6 +1,6 @@
 import { relinka } from "@reliverse/relinka";
 
-import { defineArgs, defineCommand } from "~/mod.js";
+import { defineArgs, defineCommand } from "~/mod";
 
 export default defineCommand({
   meta: {

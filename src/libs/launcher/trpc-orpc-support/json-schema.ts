@@ -1,7 +1,4 @@
-import type {
-  JsonSchema7ObjectType,
-  JsonSchema7Type,
-} from "zod-to-json-schema";
+import type { JsonSchema7ObjectType, JsonSchema7Type } from "zod-to-json-schema";
 
 const capitaliseFromCamelCase = (camel: string) => {
   const parts = camel.split(/(?=[A-Z])/);
@@ -10,9 +7,7 @@ const capitaliseFromCamelCase = (camel: string) => {
 
 const capitalise = (s: string) => s.slice(0, 1).toUpperCase() + s.slice(1);
 
-export const flattenedProperties = (
-  sch: JsonSchema7Type,
-): JsonSchema7ObjectType["properties"] => {
+export const flattenedProperties = (sch: JsonSchema7Type): JsonSchema7ObjectType["properties"] => {
   if ("properties" in sch) {
     return sch.properties;
   }
@@ -24,21 +19,15 @@ export const flattenedProperties = (
     );
   }
   if ("anyOf" in sch) {
-    const isExcluded = (v: JsonSchema7Type) =>
-      Object.keys(v).join(",") === "not";
+    const isExcluded = (v: JsonSchema7Type) => Object.keys(v).join(",") === "not";
     const entries = sch.anyOf!.flatMap((subSchema) => {
       const flattened = flattenedProperties(subSchema as JsonSchema7Type);
-      const excluded = Object.entries(flattened).flatMap(
-        ([name, propSchema]) => {
-          return isExcluded(propSchema) ? [`--${name}`] : [];
-        },
-      );
+      const excluded = Object.entries(flattened).flatMap(([name, propSchema]) => {
+        return isExcluded(propSchema) ? [`--${name}`] : [];
+      });
       return Object.entries(flattened).map(([k, v]): [typeof k, typeof v] => {
         if (!isExcluded(v) && excluded.length > 0) {
-          return [
-            k,
-            Object.assign({}, v, { "Do not use with": excluded }) as typeof v,
-          ];
+          return [k, { ...v, "Do not use with": excluded } as unknown as typeof v];
         }
         return [k, v];
       });
@@ -54,9 +43,7 @@ export const flattenedProperties = (
   return {};
 };
 /** For a union type, returns a list of pairs of properties which *shouldn't* be used together (because they don't appear in the same type variant) */
-export const incompatiblePropertyPairs = (
-  sch: JsonSchema7Type,
-): [string, string][] => {
+export const incompatiblePropertyPairs = (sch: JsonSchema7Type): [string, string][] => {
   const isUnion = "anyOf" in sch;
   if (!isUnion) return [];
 
@@ -69,11 +56,7 @@ export const incompatiblePropertyPairs = (
     return keys.map((key) => {
       return [
         key,
-        new Set(
-          sets
-            .filter((other) => other.set.has(key))
-            .flatMap((other) => other.keys),
-        ),
+        new Set(sets.filter((other) => other.set.has(key)).flatMap((other) => other.keys)),
       ] as const;
     });
   });
@@ -93,28 +76,18 @@ export const incompatiblePropertyPairs = (
 export const getDescription = (v: JsonSchema7Type, depth = 0): string => {
   if ("items" in v && v.items) {
     const { items, ...rest } = v;
-    return [
-      getDescription(items as JsonSchema7Type, 1),
-      getDescription(rest),
-      "array",
-    ]
+    return [getDescription(items as JsonSchema7Type, 1), getDescription(rest), "array"]
       .filter(Boolean)
       .join(" ");
   }
   return (
     Object.entries(v)
       .filter(([k, vv]) => {
-        if (k === "default" || k === "additionalProperties" || k === "optional")
-          return false;
+        if (k === "default" || k === "additionalProperties" || k === "optional") return false;
         if (k === "type" && typeof vv === "string") return depth > 0; // don't show type: string at depth 0, that's the default
         if (k.startsWith("$")) return false; // helpers props to add on to a few different external library output formats
         if (k === "maximum" && vv === Number.MAX_SAFE_INTEGER) return false; // zod adds this for `z.number().int().positive()`
-        if (
-          depth <= 1 &&
-          k === "enum" &&
-          getEnumChoices(v)?.type === "string_enum"
-        )
-          return false; // don't show Enum: ["a","b"], that's handled by commander's `choices`
+        if (depth <= 1 && k === "enum" && getEnumChoices(v)?.type === "string_enum") return false; // don't show Enum: ["a","b"], that's handled by commander's `choices`
         return true;
       })
       .sort(([a], [b]) => {
@@ -122,12 +95,10 @@ export const getDescription = (v: JsonSchema7Type, depth = 0): string => {
         return scores[0]! - scores[1]!;
       })
       .map(([k, vv], i) => {
-        if (k === "type" && Array.isArray(vv))
-          return `type: ${vv.join(" or ")}`;
+        if (k === "type" && Array.isArray(vv)) return `type: ${vv.join(" or ")}`;
         if (k === "description" && i === 0) return String(vv);
         if (k === "properties") return "Object (json formatted)";
-        if (typeof vv === "object")
-          return `${capitaliseFromCamelCase(k)}: ${JSON.stringify(vv)}`;
+        if (typeof vv === "object") return `${capitaliseFromCamelCase(k)}: ${JSON.stringify(vv)}`;
         return `${capitaliseFromCamelCase(k)}: ${vv}`;
       })
       .join("; ") || ""
@@ -150,14 +121,10 @@ export const getSchemaTypes = (
     array.push(typeof propertyValue.const);
   }
   if ("oneOf" in propertyValue) {
-    array.push(
-      ...(propertyValue.oneOf as JsonSchema7Type[]).flatMap(getSchemaTypes),
-    );
+    array.push(...(propertyValue.oneOf as JsonSchema7Type[]).flatMap(getSchemaTypes));
   }
   if ("anyOf" in propertyValue) {
-    array.push(
-      ...(propertyValue.anyOf as JsonSchema7Type[]).flatMap(getSchemaTypes),
-    );
+    array.push(...(propertyValue.anyOf as JsonSchema7Type[]).flatMap(getSchemaTypes));
   }
 
   return [...new Set(array)];
@@ -184,9 +151,7 @@ export const getEnumChoices = (propertyValue: JsonSchema7Type) => {
       // all the subschemas are string literals, so we can use them as choices
       return {
         type: "string_enum",
-        choices: propertyValue.anyOf.map(
-          (subSchema) => (subSchema as { const: string }).const,
-        ),
+        choices: propertyValue.anyOf.map((subSchema) => (subSchema as { const: string }).const),
       } as const;
     }
 
@@ -207,9 +172,7 @@ export const getEnumChoices = (propertyValue: JsonSchema7Type) => {
       // all the subschemas are string literals, so we can use them as choices
       return {
         type: "number_enum",
-        choices: propertyValue.anyOf.map(
-          (subSchema) => (subSchema as { const: number }).const,
-        ),
+        choices: propertyValue.anyOf.map((subSchema) => (subSchema as { const: number }).const),
       } as const;
     }
 

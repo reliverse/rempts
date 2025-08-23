@@ -1,13 +1,6 @@
-import {
-  buildRegExp,
-  choiceOf,
-  endOfString,
-  startOfString,
-} from "ts-regex-builder";
-
-import type { ColorName } from "~/types.js";
-
-import { colorMap } from "~/mod.js";
+import { buildRegExp, choiceOf, endOfString, startOfString } from "ts-regex-builder";
+import { colorMap } from "~/mod";
+import type { ColorName } from "~/types";
 
 /**
  * @reliverse/rempts allows you to define the schema once and reuse it for each prompt.

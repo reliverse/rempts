@@ -1,15 +1,12 @@
 import type { Interface } from "node:readline/promises";
-
+import readline from "node:readline/promises";
 import { re } from "@reliverse/relico";
 import { isUnicodeSupported } from "@reliverse/runtime";
-import readline from "node:readline/promises";
-
-import type { InputPromptOptions, MsgType, RenderParams } from "~/types.js";
-
-import { bar, msg, msgUndoAll } from "~/libs/msg-fmt/messages.js";
-import { deleteLastLine } from "~/libs/msg-fmt/terminal.js";
-import { completePrompt } from "~/libs/utils/prompt-end.js";
-import { streamText } from "~/libs/utils/stream-text.js";
+import type { InputPromptOptions, MsgType, RenderParams } from "../../types";
+import { bar, msg, msgUndoAll } from "../msg-fmt/messages";
+import { deleteLastLine } from "../msg-fmt/terminal";
+import { completePrompt } from "../utils/prompt-end";
+import { streamText } from "../utils/stream-text";
 
 const unicode = isUnicodeSupported();
 const S_MASK = unicode ? "▋" : "*";
@@ -317,9 +314,7 @@ async function validateInput(
  * @param options InputPromptOptions to customize the prompt.
  * @returns A Promise resolving to the validated user input (string).
  */
-export async function inputPrompt(
-  options: InputPromptOptions,
-): Promise<string> {
+export async function inputPrompt(options: InputPromptOptions): Promise<string> {
   const {
     title,
     message, // Alias for title
@@ -351,8 +346,7 @@ export async function inputPrompt(
   } = options;
 
   // Use message as alias for title, concatenating both if provided
-  const finalTitle =
-    message && title ? `${title}: ${message}` : (message ?? title ?? "Input");
+  const finalTitle = message && title ? `${title}: ${message}` : (message ?? title ?? "Input");
 
   // Use initialValue as alias for defaultValue, prioritizing defaultValue if both are provided
   const finalDefaultValue = defaultValue ?? initialValue;
@@ -460,9 +454,7 @@ export async function inputPrompt(
 
     // Mask the displayed userInput if mode === 'password'
     const displayedUserInput =
-      mode === "password"
-        ? getMaskChar(mask).repeat(currentInput.length)
-        : currentInput;
+      mode === "password" ? getMaskChar(mask).repeat(currentInput.length) : currentInput;
 
     if (errorMessage) {
       deleteLastLine();

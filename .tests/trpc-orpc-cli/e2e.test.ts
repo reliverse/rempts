@@ -1,19 +1,15 @@
-import { execa } from "execa";
-import * as path from "node:path";
-import stripAnsi from "strip-ansi";
 import { expect, test } from "bun:test";
+import * as path from "node:path";
+import { execa } from "execa";
+import stripAnsi from "strip-ansi";
 import "../src";
 
 const tsx = async (file: string, args: string[]) => {
-  const { all } = await execa(
-    "./node_modules/.bin/tsx",
-    [`test/fixtures/${file}`, ...args],
-    {
-      all: true,
-      reject: false,
-      cwd: path.join(__dirname, ".."),
-    },
-  );
+  const { all } = await execa("./node_modules/.bin/tsx", [`test/fixtures/${file}`, ...args], {
+    all: true,
+    reject: false,
+    cwd: path.join(__dirname, ".."),
+  });
   return stripAnsi(all);
 };
 
@@ -30,10 +26,7 @@ const tsxWithInput = async (input: string, file: string, args: string[]) => {
 
   const { all } = await execa(
     "sh",
-    [
-      "-c",
-      `echo ${input} | ./node_modules/.bin/tsx test/fixtures/${file} ${args.join(" ")}`,
-    ],
+    ["-c", `echo ${input} | ./node_modules/.bin/tsx test/fixtures/${file} ${args.join(" ")}`],
     {
       all: true,
       reject: false,
@@ -43,15 +36,9 @@ const tsxWithInput = async (input: string, file: string, args: string[]) => {
   return stripAnsi(all);
 };
 
-const tsxWithMultilineInput = async (
-  input: string,
-  file: string,
-  args: string[],
-) => {
+const tsxWithMultilineInput = async (input: string, file: string, args: string[]) => {
   if (process.env.CI)
-    console.warn(
-      `So far this hasn't worked in CI, you'll probably get timeouts'`,
-    );
+    console.warn(`So far this hasn't worked in CI, you'll probably get timeouts'`);
   const runSubprocess = () =>
     execa("./node_modules/.bin/tsx", [`test/fixtures/${file}`, ...args], {
       all: true,
@@ -75,10 +62,7 @@ const tsxWithMultilineInput = async (
 test("cli help", async () => {
   const output = await tsx("calculator", ["--help"]);
   expect(
-    output.replaceAll(
-      /(commands:|flags:)/gi,
-      (s) => s[0].toUpperCase() + s.slice(1).toLowerCase(),
-    ),
+    output.replaceAll(/(commands:|flags:)/gi, (s) => s[0].toUpperCase() + s.slice(1).toLowerCase()),
   ).toMatchInlineSnapshot(`
       "Usage: calculator [options] [command]
 
@@ -351,12 +335,7 @@ test("migrations search.byName help", async () => {
 });
 
 test("migrations search.byName", async () => {
-  const output = await tsx("migrations", [
-    "search",
-    "by-name",
-    "--name",
-    "two",
-  ]);
+  const output = await tsx("migrations", ["search", "by-name", "--name", "two"]);
   expect(output).toMatchInlineSnapshot(`
     "{
       "name": "two",
@@ -367,11 +346,7 @@ test("migrations search.byName", async () => {
 });
 
 test("migrations search.byContent", async () => {
-  const output = await tsx("migrations", [
-    "search.byContent",
-    "--searchTerm",
-    "create table",
-  ]);
+  const output = await tsx("migrations", ["search.byContent", "--searchTerm", "create table"]);
   expect(output).toMatchInlineSnapshot(`
     "error: unknown command 'search.byContent'
 
@@ -483,9 +458,7 @@ test("fs copy", async () => {
       }"
     `,
   );
-  expect(
-    await tsx("fs", ["copy", "one", "uno", "--force"]),
-  ).toMatchInlineSnapshot(
+  expect(await tsx("fs", ["copy", "one", "uno", "--force"])).toMatchInlineSnapshot(
     `
       "{
         "source": "one",
@@ -498,9 +471,7 @@ test("fs copy", async () => {
   );
 
   // invalid enum value:
-  expect(
-    await tsx("fs", ["diff", "one", "fileNotFound"]),
-  ).toMatchInlineSnapshot(`
+  expect(await tsx("fs", ["diff", "one", "fileNotFound"])).toMatchInlineSnapshot(`
     "✖ Invalid option: expected one of "one"|"two"|"three"|"four" → at [1]
 
     Usage: fs diff [options] <Base path> <Head path>
@@ -542,9 +513,9 @@ test("fs diff", async () => {
   expect(await tsx("fs", ["diff", "three", "four"])).toMatchInlineSnapshot(
     `"base has length 5 and head has length 6"`,
   );
-  expect(
-    await tsx("fs", ["diff", "three", "four", "--ignore-whitespace"]),
-  ).toMatchInlineSnapshot(`""`);
+  expect(await tsx("fs", ["diff", "three", "four", "--ignore-whitespace"])).toMatchInlineSnapshot(
+    `""`,
+  );
 });
 
 test("thrown error in procedure includes call stack", async () => {
@@ -558,10 +529,7 @@ const testLocalOnly = process.env.CI ? test.skip : test;
 test("promptable", async () => {
   // these snapshots look a little weird because inquirer uses `\r` to
   // replace the input line
-  const yOutput = await tsxWithInput("X", "promptable", [
-    "challenge",
-    "harshly",
-  ]);
+  const yOutput = await tsxWithInput("X", "promptable", ["challenge", "harshly"]);
   expect(yOutput).toMatchInlineSnapshot(`
     "? --why <string> Why are you doing this?:? --why <string> Why are you doing this?: X? --why <string> Why are you doing this?: X✔ --why <string> Why are you doing this?: X
     {"why":"X"}"
@@ -570,11 +538,7 @@ test("promptable", async () => {
 
 // something about github actions ci setup doesn't like this
 testLocalOnly("promptable multiline", async () => {
-  const subcommandOutput = await tsxWithMultilineInput(
-    "challenge\nharshly\ny",
-    "promptable",
-    [],
-  );
+  const subcommandOutput = await tsxWithMultilineInput("challenge\nharshly\ny", "promptable", []);
 
   expect(subcommandOutput).toMatchInlineSnapshot(`
     "? Select a subcommand (Use arrow keys)

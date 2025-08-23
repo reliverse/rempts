@@ -1,4 +1,4 @@
-import type { ColorName, OutputColor, StandardColor } from "~/types.js";
+import type { ColorName, OutputColor, StandardColor } from "../../types";
 
 /**
  * Mapping of gradient colors to their solid color equivalents
@@ -66,7 +66,7 @@ function stripColorModifiers(color: string): string {
  */
 export function toBaseColor(color?: ColorName): StandardColor | undefined {
   if (!color || color === "dim" || SPECIAL_COLORS.includes(color as any)) {
-    return undefined;
+    return;
   }
 
   // Handle gradient colors

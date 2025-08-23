@@ -1,29 +1,17 @@
-import {
-  ChalkAnimation,
-  type Animation,
-  type AnimationName,
-} from "@figliolia/chalk-animation";
+import { type Animation, type AnimationName, ChalkAnimation } from "@figliolia/chalk-animation";
 import { relinka } from "@reliverse/relinka";
+import type { BorderColorName, ColorName, MsgType, TypographyName } from "../../types";
+import { msg } from "../msg-fmt/messages";
+import { deleteLastLine, getTerminalWidth } from "../msg-fmt/terminal";
 
-import type {
-  BorderColorName,
-  ColorName,
-  MsgType,
-  TypographyName,
-} from "~/types.js";
-
-import { msg } from "~/libs/msg-fmt/messages.js";
-import { deleteLastLine, getTerminalWidth } from "~/libs/msg-fmt/terminal.js";
-
-export const animationMap: Record<AnimationName, (text: string) => Animation> =
-  {
-    rainbow: ChalkAnimation.rainbow,
-    pulse: ChalkAnimation.pulse,
-    glitch: ChalkAnimation.glitch,
-    radar: ChalkAnimation.radar,
-    neon: ChalkAnimation.neon,
-    karaoke: ChalkAnimation.karaoke,
-  };
+export const animationMap: Record<AnimationName, (text: string) => Animation> = {
+  rainbow: ChalkAnimation.rainbow,
+  pulse: ChalkAnimation.pulse,
+  glitch: ChalkAnimation.glitch,
+  radar: ChalkAnimation.radar,
+  neon: ChalkAnimation.neon,
+  karaoke: ChalkAnimation.karaoke,
+};
 
 function calculateDelay(text: string): number {
   const baseDelay = 1000;

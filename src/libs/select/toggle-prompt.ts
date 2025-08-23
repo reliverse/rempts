@@ -1,18 +1,11 @@
-import { re } from "@reliverse/relico";
-import { relinka } from "@reliverse/relinka";
 import { stdin as input, stdout as output } from "node:process";
 import readline from "node:readline";
-
-import type {
-  ColorName,
-  TogglePromptParams,
-  TypographyName,
-  VariantName,
-} from "~/types.js";
-
-import { msg } from "~/libs/msg-fmt/messages.js";
-import { deleteLastLine } from "~/libs/msg-fmt/terminal.js";
-import { completePrompt } from "~/libs/utils/prompt-end.js";
+import { re } from "@reliverse/relico";
+import { relinka } from "@reliverse/relinka";
+import type { ColorName, TogglePromptParams, TypographyName, VariantName } from "../../types";
+import { msg } from "../msg-fmt/messages";
+import { deleteLastLine } from "../msg-fmt/terminal";
+import { completePrompt } from "../utils/prompt-end";
 
 /**
  * Renders the toggle prompt using msg() calls.
@@ -95,9 +88,7 @@ function renderTogglePrompt<T extends string>(params: {
   }
 
   const displayString = options
-    .map((option, index) =>
-      index === selectedIndex ? re.yellow(option) : re.reset(option),
-    )
+    .map((option, index) => (index === selectedIndex ? re.yellow(option) : re.reset(option)))
     .join(re.dim(re.reset(" / ")));
 
   msg({ type: "M_NULL", title: displayString });
@@ -141,7 +132,7 @@ export async function togglePrompt<T extends string>(
     throw new Error("togglePrompt requires exactly two options.");
   }
 
-  let selectedIndex = options.findIndex((option) => option === defaultValue);
+  let selectedIndex = options.indexOf(defaultValue);
   if (selectedIndex === -1) {
     selectedIndex = 0;
   }
@@ -152,8 +143,7 @@ export async function togglePrompt<T extends string>(
     input.setRawMode(true);
   }
 
-  const instructions =
-    "Use <←/→> or <h/l> to navigate, <Enter> to select, <Ctrl+C> to exit";
+  const instructions = "Use <←/→> or <h/l> to navigate, <Enter> to select, <Ctrl+C> to exit";
   let errorMessage = "";
 
   let lastUILineCount = 0;

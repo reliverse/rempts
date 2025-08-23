@@ -1,9 +1,7 @@
 import fs from "@reliverse/relifso";
 import { relinka } from "@reliverse/relinka";
-
-import type { EditorExitResult } from "~/types.js";
-
-import { defineCommand, startEditor } from "~/mod.js";
+import { defineCommand, startEditor } from "~/mod";
+import type { EditorExitResult } from "~/types";
 
 export default defineCommand({
   run: async () => {
@@ -33,26 +31,16 @@ export default defineCommand({
         allowOpen: false,
         allowSaveAs: false,
         // Example hook: Validate JSON before saving
-        async onSave(
-          content: string,
-          filename: string | null,
-        ): Promise<boolean | string> {
+        async onSave(content: string, filename: string | null): Promise<boolean | string> {
           try {
             JSON.parse(content);
-            relinka(
-              "log",
-              `\n${filename || "Buffer"} is valid JSON. Saving...`,
-            );
+            relinka("log", `\n${filename || "Buffer"} is valid JSON. Saving...`);
             // Return true or content unmodified to proceed with save
             return true; // or return content;
           } catch (err: unknown) {
             // Check if err is an Error object before accessing message
-            const errorMessage =
-              err instanceof Error ? err.message : String(err);
-            relinka(
-              "error",
-              `\nInvalid JSON in ${filename || "Buffer"}: ${errorMessage}`,
-            );
+            const errorMessage = err instanceof Error ? err.message : String(err);
+            relinka("error", `\nInvalid JSON in ${filename || "Buffer"}: ${errorMessage}`);
             // Delay so user can see the error before editor redraws
             await new Promise((resolve) => setTimeout(resolve, 2000));
             // Return false to prevent saving invalid JSON
@@ -60,15 +48,8 @@ export default defineCommand({
           }
         },
         // Use underscore for unused 'content' parameter
-        onExit(
-          _content: string | null,
-          saved: boolean,
-          filename: string | null,
-        ) {
-          relinka(
-            "log",
-            `\nEditor closed for ${filename || "buffer"}. Saved: ${saved}`,
-          );
+        onExit(_content: string | null, saved: boolean, filename: string | null) {
+          relinka("log", `\nEditor closed for ${filename || "buffer"}. Saved: ${saved}`);
         },
       });
 
@@ -84,8 +65,7 @@ export default defineCommand({
         relinka("log", "Changes were discarded.");
       }
     } catch (error: unknown) {
-      const errorMessage =
-        error instanceof Error ? error.message : String(error);
+      const errorMessage = error instanceof Error ? error.message : String(error);
       relinka("error", "\nEditor encountered an error:", errorMessage);
       if (error instanceof Error && error.stack) {
         relinka("error", error.stack);

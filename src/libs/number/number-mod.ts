@@ -1,15 +1,8 @@
 import { stdin as input, stdout as output } from "node:process";
 import readline from "node:readline/promises";
-
-import type {
-  BorderColorName,
-  ColorName,
-  FmtMsgOptions,
-  TypographyName,
-} from "~/types.js";
-
-import { bar, msg } from "~/libs/msg-fmt/messages.js";
-import { deleteLastLine, deleteLastLines } from "~/libs/msg-fmt/terminal.js";
+import type { BorderColorName, ColorName, FmtMsgOptions, TypographyName } from "../../types";
+import { bar, msg } from "../msg-fmt/messages";
+import { deleteLastLine, deleteLastLines } from "../msg-fmt/terminal";
 
 type VariantName = FmtMsgOptions["titleVariant"];
 
@@ -62,9 +55,7 @@ interface RenderParams {
  * Uses `msg()` for all printing, so we can easily undo and re-render.
  * Returns the number of lines rendered.
  */
-function renderPromptUI(
-  params: RenderParams & { isRerender?: boolean },
-): number {
+function renderPromptUI(params: RenderParams & { isRerender?: boolean }): number {
   const {
     title,
     hint,
@@ -158,8 +149,7 @@ export async function numberPrompt(opts: NumberPromptOptions): Promise<number> {
   let lastLineCount = 0;
 
   // Convert defaultValue to number if it's a string
-  const effectiveDefault =
-    typeof defaultValue === "string" ? Number(defaultValue) : defaultValue;
+  const effectiveDefault = typeof defaultValue === "string" ? Number(defaultValue) : defaultValue;
 
   // If we have a hardcoded user input, skip interactive input and just validate
   if (hardcoded?.userInput !== undefined) {

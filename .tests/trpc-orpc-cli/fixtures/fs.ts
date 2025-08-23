@@ -1,5 +1,5 @@
-import { trpcServer } from "~/components/launcher/trpc-orpc-support/index.js";
-import { createRpcCli, type TrpcCliMeta, z } from "~/mod.js";
+import { trpcServer } from "~/components/launcher/trpc-orpc-support/index";
+import { createRpcCli, type TrpcCliMeta, z } from "~/mod";
 
 const trpc = trpcServer.initTRPC.meta<TrpcCliMeta>().create();
 
@@ -22,12 +22,10 @@ const router = trpc.router({
         }),
       ]),
     )
-    .mutation(
-      async ({ input: [source, destination = `${source}.copy`, options] }) => {
-        // ...copy logic...
-        return { source, destination, options };
-      },
-    ),
+    .mutation(async ({ input: [source, destination = `${source}.copy`, options] }) => {
+      // ...copy logic...
+      return { source, destination, options };
+    }),
   diff: trpc.procedure
     .input(
       z.tuple([
@@ -39,11 +37,7 @@ const router = trpc.router({
             .optional()
             .default(false)
             .describe("Ignore whitespace changes"),
-          trim: z
-            .boolean()
-            .optional()
-            .default(false)
-            .describe("Trim start/end whitespace"),
+          trim: z.boolean().optional().default(false).describe("Trim start/end whitespace"),
         }),
       ]),
     )
@@ -58,9 +52,7 @@ const router = trpc.router({
       if (left === right) return null;
       if (left.length !== right.length)
         return `base has length ${left.length} and head has length ${right.length}`;
-      const firstDiffIndex = left
-        .split("")
-        .findIndex((char, i) => char !== right[i]);
+      const firstDiffIndex = left.split("").findIndex((char, i) => char !== right[i]);
       return `base and head differ at index ${firstDiffIndex} (${JSON.stringify(left[firstDiffIndex])} !== ${JSON.stringify(right[firstDiffIndex])})`;
     }),
 });

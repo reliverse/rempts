@@ -3,7 +3,7 @@
 import { initTRPC } from "@trpc/server";
 import { z } from "zod";
 
-import { createCli } from "~/libs/launcher/launcher-mod.js";
+import { createCli } from "~/libs/launcher/launcher-mod";
 
 // Example tRPC router demonstrating Effect integration
 const t = initTRPC.create();
@@ -98,9 +98,7 @@ const appRouter = t.router({
       }
 
       if (input.completed !== undefined) {
-        filtered = filtered.filter(
-          (task) => task.completed === input.completed,
-        );
+        filtered = filtered.filter((task) => task.completed === input.completed);
       }
 
       return {

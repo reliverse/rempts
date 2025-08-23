@@ -1,14 +1,11 @@
-import type { ChoiceOptions, ColorName } from "~/types.js";
+import { colorMap, msg } from "~/mod";
+import type { ChoiceOptions, ColorName } from "~/types";
 
-import { colorMap, msg } from "~/mod.js";
-
-import type { UserInput } from "./schema.js";
+import type { UserInput } from "./schema";
 
 export function createColorChoices(): ChoiceOptions[] {
   return Object.keys(colorMap).map((key) => ({
-    title: colorMap[key as ColorName](
-      key.charAt(0).toUpperCase() + key.slice(1),
-    ),
+    title: colorMap[key as ColorName](key.charAt(0).toUpperCase() + key.slice(1)),
     id: key,
   }));
 }
@@ -22,8 +19,7 @@ export function calculateAge(birthday: string): number {
   let age = today.getFullYear() - birthDate.getFullYear();
   const hasHadBirthdayThisYear =
     today.getMonth() > birthDate.getMonth() ||
-    (today.getMonth() === birthDate.getMonth() &&
-      today.getDate() >= birthDate.getDate());
+    (today.getMonth() === birthDate.getMonth() && today.getDate() >= birthDate.getDate());
 
   if (!hasHadBirthdayThisYear) {
     age--;
@@ -32,11 +28,7 @@ export function calculateAge(birthday: string): number {
   return age;
 }
 
-export function validateAge(
-  calculatedAge: number,
-  userAge: number,
-  birthday: string,
-) {
+export function validateAge(calculatedAge: number, userAge: number, birthday: string) {
   const ageMessage = `Based on your birthday date (${birthday}), you're ${calculatedAge} years old.`;
 
   if (calculatedAge === userAge) {

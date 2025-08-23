@@ -1,7 +1,6 @@
-import type { Command } from "./launcher-types";
-
 import { loadCommand } from "./command-runner";
 import { runCmd } from "./launcher-mod";
+import type { Command } from "./launcher-types";
 
 /**
  * Static implementation functions for the typed command system.
@@ -38,9 +37,7 @@ export async function createCallCmd<TCommandArgsMap>() {
       const command: Command = await loadCommand(cmdName as string);
 
       // Convert typed arguments to string array format
-      const stringArgs = args
-        ? argsToStringArray(args as Record<string, unknown>)
-        : [];
+      const stringArgs = args ? argsToStringArray(args as Record<string, unknown>) : [];
 
       // Run the command with converted arguments
       await runCmd(command, stringArgs);
@@ -64,9 +61,7 @@ export async function createGetTypedCmd<TCommandArgsMap>() {
     return {
       command,
       run: async (args?: TCommandArgsMap[T]) => {
-        const stringArgs = args
-          ? argsToStringArray(args as Record<string, unknown>)
-          : [];
+        const stringArgs = args ? argsToStringArray(args as Record<string, unknown>) : [];
         await runCmd(command, stringArgs);
       },
     };
@@ -83,9 +78,7 @@ export async function callCmdImpl<TCommandArgsMap>(
     const command: Command = await loadCommand(cmdName as string);
 
     // Convert typed arguments to string array format
-    const stringArgs = args
-      ? argsToStringArray(args as Record<string, unknown>)
-      : [];
+    const stringArgs = args ? argsToStringArray(args as Record<string, unknown>) : [];
 
     // Run the command with converted arguments
     await runCmd(command, stringArgs);
@@ -95,9 +88,7 @@ export async function callCmdImpl<TCommandArgsMap>(
   }
 }
 
-export async function getTypedCmdImpl<TCommandArgsMap>(
-  cmdName: keyof TCommandArgsMap,
-): Promise<{
+export async function getTypedCmdImpl<TCommandArgsMap>(cmdName: keyof TCommandArgsMap): Promise<{
   command: Command;
   run: (args?: TCommandArgsMap[keyof TCommandArgsMap]) => Promise<void>;
 }> {
@@ -106,9 +97,7 @@ export async function getTypedCmdImpl<TCommandArgsMap>(
   return {
     command,
     run: async (args?: TCommandArgsMap[keyof TCommandArgsMap]) => {
-      const stringArgs = args
-        ? argsToStringArray(args as Record<string, unknown>)
-        : [];
+      const stringArgs = args ? argsToStringArray(args as Record<string, unknown>) : [];
       await runCmd(command, stringArgs);
     },
   };

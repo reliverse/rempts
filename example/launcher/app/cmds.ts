@@ -1,12 +1,9 @@
 // 👉 `dler rempts init --cmds`
 
-import { loadCommand, type Command } from "~/mod.js";
+import { type Command, loadCommand } from "~/mod";
 
-export const getCmdHooks = async (): Promise<Command> =>
-  loadCommand("./hooks/cmd");
+export const getCmdHooks = async (): Promise<Command> => loadCommand("./hooks/cmd");
 
-export const getCmdMinimal = async (): Promise<Command> =>
-  loadCommand("./minimal/cmd");
+export const getCmdMinimal = async (): Promise<Command> => loadCommand("./minimal/cmd");
 
-export const getRuncmdAdvancedCmd = async () =>
-  await loadCommand("./runcmd/advanced/cmd");
+export const getRuncmdAdvancedCmd = async () => await loadCommand("./runcmd/advanced/cmd");

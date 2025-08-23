@@ -5,17 +5,8 @@ import { re } from "@reliverse/relico";
 import { relinka } from "@reliverse/relinka";
 import { isBunRuntime } from "@reliverse/runtime";
 
-import { getCmdHooks } from "@/launcher/app/cmds.js";
-import {
-  defineCommand,
-  multiselectPrompt,
-  runCmd,
-  runMain,
-  selectPrompt,
-} from "~/mod.js";
-
-import type { UserInput } from "./impl/schema.js";
-
+import { getCmdHooks } from "@/launcher/app/cmds";
+import { defineCommand, multiselectPrompt, runCmd, runMain, selectPrompt } from "~/mod";
 import {
   DEFAULT_USER_INPUT,
   EXAMPLE_OPTIONS,
@@ -23,8 +14,9 @@ import {
   INPUT_EXAMPLES,
   processOutputExamples,
   validateUserInput,
-} from "./impl/impl.js";
-import { showAnykeyPrompt, showStartPrompt } from "./impl/prompts.js";
+} from "./impl/impl";
+import { showAnykeyPrompt, showStartPrompt } from "./impl/prompts";
+import type { UserInput } from "./impl/schema";
 
 /**
  * Main example function that orchestrates the entire demo.
@@ -102,10 +94,7 @@ const main = defineCommand({
       }
       case "cmd-a":
         relinka("clear", "");
-        relinka(
-          "log",
-          "`bun example/app/e-other/args-a.ts Alice --friendly --age 22 --adj cool`",
-        );
+        relinka("log", "`bun example/app/e-other/args-a.ts Alice --friendly --age 22 --adj cool`");
         relinka("log", "Run without any arguments to see the help message.");
         break;
       case "cmd-b":

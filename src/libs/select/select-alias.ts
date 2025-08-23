@@ -1,6 +1,5 @@
-import type { SelectPromptParams } from "~/types.js";
-
-import { selectPrompt } from "~/libs/select/select-prompt.js";
+import type { SelectPromptParams } from "../../types";
+import { selectPrompt } from "../select/select-prompt";
 
 export const select = selectPrompt as <T extends string>(
   params: SelectPromptParams<T>,

@@ -3,7 +3,7 @@ import { inspect } from "util";
 import * as v from "valibot";
 
 import { trpcServer } from "~/components/launcher/trpc-orpc-support";
-import { createRpcCli, type TrpcCliMeta } from "~/mod.js";
+import { createRpcCli, type TrpcCliMeta } from "~/mod";
 
 import { run, snapshotSerializer } from "./test-run";
 

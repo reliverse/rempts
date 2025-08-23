@@ -1,10 +1,11 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { type } from "arktype";
-import { inspect } from "node:util";
-import { initTRPC } from "trpcserver11";
-import { expect, test } from "bun:test";
 
-import { createRpcCli, type TrpcCliMeta } from "~/mod.js";
+import { expect, test } from "bun:test";
+import { inspect } from "node:util";
+import { type } from "arktype";
+import { initTRPC } from "trpcserver11";
+
+import { createRpcCli, type TrpcCliMeta } from "~/mod";
 
 import { run, snapshotSerializer } from "./test-run";
 
@@ -38,9 +39,7 @@ test("string input", async () => {
       .query(({ input }) => JSON.stringify(input)),
   });
 
-  expect(await run(router, ["foo", "hello"])).toMatchInlineSnapshot(
-    `""hello""`,
-  );
+  expect(await run(router, ["foo", "hello"])).toMatchInlineSnapshot(`""hello""`);
 });
 
 test("enum input", async () => {
@@ -163,13 +162,9 @@ test("regex input", async () => {
       .query(({ input }) => JSON.stringify(input || null)),
   });
 
-  expect(await run(router, ["foo", "hello abc"])).toMatchInlineSnapshot(
-    `""hello abc""`,
-  );
+  expect(await run(router, ["foo", "hello abc"])).toMatchInlineSnapshot(`""hello abc""`);
   // todo: raise a zod-validation-error issue 👇 not a great error message
-  await expect(
-    run(router, ["foo", "goodbye xyz"]),
-  ).rejects.toMatchInlineSnapshot(`
+  await expect(run(router, ["foo", "goodbye xyz"])).rejects.toMatchInlineSnapshot(`
     CLI exited with code 1
       Caused by: CliValidationError: must be greeting (was "goodbye xyz")
   `);
@@ -196,12 +191,8 @@ test("tuple input", async () => {
       .query(({ input }) => JSON.stringify(input || null)),
   });
 
-  expect(await run(router, ["foo", "hello", "123"])).toMatchInlineSnapshot(
-    `"["hello",123]"`,
-  );
-  await expect(
-    run(router, ["foo", "hello", "not a number!"]),
-  ).rejects.toMatchInlineSnapshot(`
+  expect(await run(router, ["foo", "hello", "123"])).toMatchInlineSnapshot(`"["hello",123]"`);
+  await expect(run(router, ["foo", "hello", "not a number!"])).rejects.toMatchInlineSnapshot(`
     CLI exited with code 1
       Caused by: CommanderError: error: command-argument value 'not a number!' is invalid for argument 'parameter_2'. Invalid number: not a number!
   `);
@@ -220,12 +211,10 @@ test("tuple input with flags", async () => {
       .query(({ input }) => JSON.stringify(input || null)),
   });
 
-  expect(
-    await run(router, ["foo", "hello", "123", "--foo", "bar"]),
-  ).toMatchInlineSnapshot(`"["hello",123,{"foo":"bar"}]"`);
-  await expect(
-    run(router, ["foo", "hello", "123"]),
-  ).rejects.toMatchInlineSnapshot(`
+  expect(await run(router, ["foo", "hello", "123", "--foo", "bar"])).toMatchInlineSnapshot(
+    `"["hello",123,{"foo":"bar"}]"`,
+  );
+  await expect(run(router, ["foo", "hello", "123"])).rejects.toMatchInlineSnapshot(`
     CLI exited with code 1
       Caused by: CommanderError: error: required option '--foo <string>' not specified
   `);
@@ -235,9 +224,7 @@ test("tuple input with flags", async () => {
     CLI exited with code 1
       Caused by: CommanderError: error: command-argument value 'not a number!' is invalid for argument 'parameter_2'. Invalid number: not a number!
   `);
-  await expect(
-    run(router, ["foo", "hello", "not a number!"]),
-  ).rejects.toMatchInlineSnapshot(`
+  await expect(run(router, ["foo", "hello", "not a number!"])).rejects.toMatchInlineSnapshot(`
     CLI exited with code 1
       Caused by: CommanderError: error: required option '--foo <string>' not specified
   `);
@@ -266,9 +253,7 @@ test("custom default procedure", async () => {
   expect(yarnOutput).toMatchInlineSnapshot(`"install: {"cwd":"/foo/bar"}"`);
 
   const yarnInstallOutput = await run(router, ["install", "--cwd", "/foo/bar"]);
-  expect(yarnInstallOutput).toMatchInlineSnapshot(
-    `"install: {"cwd":"/foo/bar"}"`,
-  );
+  expect(yarnInstallOutput).toMatchInlineSnapshot(`"install: {"cwd":"/foo/bar"}"`);
 });
 
 test("command alias", async () => {
@@ -280,9 +265,7 @@ test("command alias", async () => {
   });
 
   const yarnIOutput = await run(router, ["i", "--frozen-lockfile"]);
-  expect(yarnIOutput).toMatchInlineSnapshot(
-    `"install: {"frozenLockfile":true}"`,
-  );
+  expect(yarnIOutput).toMatchInlineSnapshot(`"install: {"frozenLockfile":true}"`);
 });
 
 test("option alias", async () => {
@@ -294,9 +277,7 @@ test("option alias", async () => {
   });
 
   const yarnIOutput = await run(router, ["install", "-x"]);
-  expect(yarnIOutput).toMatchInlineSnapshot(
-    `"install: {"frozenLockfile":true}"`,
-  );
+  expect(yarnIOutput).toMatchInlineSnapshot(`"install: {"frozenLockfile":true}"`);
 });
 
 test("option alias can be two characters", async () => {
@@ -308,9 +289,7 @@ test("option alias can be two characters", async () => {
   });
 
   const yarnIOutput = await run(router, ["install", "--xx"]);
-  expect(yarnIOutput).toMatchInlineSnapshot(
-    `"install: {"frozenLockfile":true}"`,
-  );
+  expect(yarnIOutput).toMatchInlineSnapshot(`"install: {"frozenLockfile":true}"`);
 });
 
 test("option alias typo", async () => {
@@ -330,10 +309,7 @@ test("validation", async () => {
   const router = t.router({
     tupleOfStrings: t.procedure
       .input(
-        type([
-          type("string", "@", "the first string"),
-          type("string", "@", "the second string"),
-        ]),
+        type([type("string", "@", "the first string"), type("string", "@", "the second string")]),
       )
       .query(() => "ok"),
     tupleWithBoolean: t.procedure
@@ -374,9 +350,7 @@ test("number array input", async () => {
   const result = await run(router, ["test", "1", "2", "3", "4"]);
   expect(result).toMatchInlineSnapshot(`"list: [1,2,3,4]"`);
 
-  await expect(
-    run(router, ["test", "1", "bad"]),
-  ).rejects.toMatchInlineSnapshot(`
+  await expect(run(router, ["test", "1", "bad"])).rejects.toMatchInlineSnapshot(`
     CLI exited with code 1
       Caused by: CliValidationError: value at [1] must be a number (was a string)
   `);
@@ -385,9 +359,7 @@ test("number array input", async () => {
 test("number array input with constraints", async () => {
   const router = t.router({
     foo: t.procedure
-      .input(
-        type("number[]").narrow((ns) => ns.every((n) => Number.isInteger(n))),
-      ) //
+      .input(type("number[]").narrow((ns) => ns.every((n) => Number.isInteger(n)))) //
       .query(({ input }) => `list: ${JSON.stringify(input)}`),
   });
 
@@ -407,9 +379,7 @@ test("boolean array input", async () => {
   const result = await run(router, ["test", "true", "false", "true"]);
   expect(result).toMatchInlineSnapshot(`"list: [true,false,true]"`);
 
-  await expect(
-    run(router, ["test", "true", "bad"]),
-  ).rejects.toMatchInlineSnapshot(`
+  await expect(run(router, ["test", "true", "bad"])).rejects.toMatchInlineSnapshot(`
     CLI exited with code 1
       Caused by: CliValidationError: [1] must be boolean (was "bad")
   `);
@@ -422,18 +392,8 @@ test("mixed array input", async () => {
       .query(({ input }) => `list: ${JSON.stringify(input)}`),
   });
 
-  const result = await run(router, [
-    "test",
-    "12",
-    "true",
-    "3.14",
-    "null",
-    "undefined",
-    "hello",
-  ]);
-  expect(result).toMatchInlineSnapshot(
-    `"list: [12,true,3.14,"null","undefined","hello"]"`,
-  );
+  const result = await run(router, ["test", "12", "true", "3.14", "null", "undefined", "hello"]);
+  expect(result).toMatchInlineSnapshot(`"list: [12,true,3.14,"null","undefined","hello"]"`);
 });
 
 test("record input", async () => {
@@ -443,9 +403,7 @@ test("record input", async () => {
       .query(({ input }) => `input: ${JSON.stringify(input)}`),
   });
 
-  expect(
-    await run(router, ["test", "--help"], { expectJsonInput: true }),
-  ).toMatchInlineSnapshot(`
+  expect(await run(router, ["test", "--help"], { expectJsonInput: true })).toMatchInlineSnapshot(`
     "Usage: program test [options]
 
     Options:
@@ -456,12 +414,10 @@ test("record input", async () => {
     "
   `);
   // expect(await run(router, ['test'])).toMatchInlineSnapshot(`"input: undefined"`)
-  expect(
-    await run(router, ["test", "--input", '{"foo": 1}']),
-  ).toMatchInlineSnapshot(`"input: {"foo":1}"`);
-  await expect(
-    run(router, ["test", "--input", '{"foo": "x"}']),
-  ).rejects.toMatchInlineSnapshot(`
+  expect(await run(router, ["test", "--input", '{"foo": 1}'])).toMatchInlineSnapshot(
+    `"input: {"foo":1}"`,
+  );
+  await expect(run(router, ["test", "--input", '{"foo": "x"}'])).rejects.toMatchInlineSnapshot(`
     CLI exited with code 1
       Caused by: CliValidationError: foo must be a number (was a string)
   `);
@@ -489,11 +445,9 @@ test("nullable array inputs aren't supported", async () => {
       -h, --help      display help for command
     "
   `);
-  const result = await run(
-    router,
-    ["test1", "--input", JSON.stringify(["a", null, "b"])],
-    { expectJsonInput: true },
-  );
+  const result = await run(router, ["test1", "--input", JSON.stringify(["a", null, "b"])], {
+    expectJsonInput: true,
+  });
   expect(result).toMatchInlineSnapshot(`"list: ["a",null,"b"]"`);
 
   await expect(
@@ -523,19 +477,13 @@ test("string array input with options", async () => {
   });
 
   const result = await run(router, ["test", "hello", "world", "--foo", "bar"]);
-  expect(result).toMatchInlineSnapshot(
-    `"input: [["hello","world"],{"foo":"bar"}]"`,
-  );
+  expect(result).toMatchInlineSnapshot(`"input: [["hello","world"],{"foo":"bar"}]"`);
 
   const result2 = await run(router, ["test", "--foo", "bar", "hello", "world"]);
-  expect(result2).toMatchInlineSnapshot(
-    `"input: [["hello","world"],{"foo":"bar"}]"`,
-  );
+  expect(result2).toMatchInlineSnapshot(`"input: [["hello","world"],{"foo":"bar"}]"`);
 
   const result3 = await run(router, ["test", "hello", "--foo=bar", "world"]);
-  expect(result3).toMatchInlineSnapshot(
-    `"input: [["hello","world"],{"foo":"bar"}]"`,
-  );
+  expect(result3).toMatchInlineSnapshot(`"input: [["hello","world"],{"foo":"bar"}]"`);
 });
 
 test("mixed array input with options", async () => {
@@ -553,47 +501,19 @@ test("mixed array input with options", async () => {
   const result0 = await run(router, ["test", "hello", "1", "world"]);
   expect(result0).toMatchInlineSnapshot(`"input: [["hello",1,"world"],{}]"`);
 
-  const result1 = await run(router, [
-    "test",
-    "hello",
-    "1",
-    "world",
-    "--foo",
-    "bar",
-  ]);
-  expect(result1).toMatchInlineSnapshot(
-    `"input: [["hello",1,"world"],{"foo":"bar"}]"`,
-  );
+  const result1 = await run(router, ["test", "hello", "1", "world", "--foo", "bar"]);
+  expect(result1).toMatchInlineSnapshot(`"input: [["hello",1,"world"],{"foo":"bar"}]"`);
 
-  const result2 = await run(router, [
-    "test",
-    "--foo",
-    "bar",
-    "hello",
-    "1",
-    "world",
-  ]);
-  expect(result2).toMatchInlineSnapshot(
-    `"input: [["hello",1,"world"],{"foo":"bar"}]"`,
-  );
+  const result2 = await run(router, ["test", "--foo", "bar", "hello", "1", "world"]);
+  expect(result2).toMatchInlineSnapshot(`"input: [["hello",1,"world"],{"foo":"bar"}]"`);
 
-  const result3 = await run(router, [
-    "test",
-    "hello",
-    "world",
-    "--foo=bar",
-    "1",
-  ]);
-  expect(result3).toMatchInlineSnapshot(
-    `"input: [["hello","world",1],{"foo":"bar"}]"`,
-  );
+  const result3 = await run(router, ["test", "hello", "world", "--foo=bar", "1"]);
+  expect(result3).toMatchInlineSnapshot(`"input: [["hello","world",1],{"foo":"bar"}]"`);
 });
 
 test("defaults and negations", async () => {
   const router = t.router({
-    normalBoolean: t.procedure
-      .input(type({ foo: "boolean" }))
-      .query(({ input }) => inspect(input)),
+    normalBoolean: t.procedure.input(type({ foo: "boolean" })).query(({ input }) => inspect(input)),
     optionalBoolean: t.procedure
       .input(type({ "foo?": "boolean" }))
       .query(({ input }) => inspect(input)),
@@ -614,79 +534,63 @@ test("defaults and negations", async () => {
       .query(({ input }) => inspect(input)),
   });
 
-  expect(await run(router, ["normal-boolean"])).toMatchInlineSnapshot(
-    `"{ foo: false }"`,
-  );
-  expect(await run(router, ["normal-boolean", "--foo"])).toMatchInlineSnapshot(
-    `"{ foo: true }"`,
-  );
+  expect(await run(router, ["normal-boolean"])).toMatchInlineSnapshot(`"{ foo: false }"`);
+  expect(await run(router, ["normal-boolean", "--foo"])).toMatchInlineSnapshot(`"{ foo: true }"`);
 
   expect(await run(router, ["optional-boolean"])).toMatchInlineSnapshot(`"{}"`);
-  expect(
-    await run(router, ["optional-boolean", "--foo"]),
-  ).toMatchInlineSnapshot(`"{ foo: true }"`);
-  expect(
-    await run(router, ["optional-boolean", "--no-foo"]),
-  ).toMatchInlineSnapshot(`"{ foo: false }"`);
-  expect(
-    await run(router, ["optional-boolean", "--foo", "true"]),
-  ).toMatchInlineSnapshot(`"{ foo: true }"`);
-  expect(
-    await run(router, ["optional-boolean", "--foo", "false"]),
-  ).toMatchInlineSnapshot(`"{ foo: false }"`);
-
-  expect(await run(router, ["default-true-boolean"])).toMatchInlineSnapshot(
+  expect(await run(router, ["optional-boolean", "--foo"])).toMatchInlineSnapshot(`"{ foo: true }"`);
+  expect(await run(router, ["optional-boolean", "--no-foo"])).toMatchInlineSnapshot(
+    `"{ foo: false }"`,
+  );
+  expect(await run(router, ["optional-boolean", "--foo", "true"])).toMatchInlineSnapshot(
     `"{ foo: true }"`,
   );
-  expect(
-    await run(router, ["default-true-boolean", "--no-foo"]),
-  ).toMatchInlineSnapshot(`"{ foo: false }"`);
-
-  expect(await run(router, ["default-false-boolean"])).toMatchInlineSnapshot(
+  expect(await run(router, ["optional-boolean", "--foo", "false"])).toMatchInlineSnapshot(
     `"{ foo: false }"`,
   );
-  expect(
-    await run(router, ["default-false-boolean", "--foo"]),
-  ).toMatchInlineSnapshot(`"{ foo: true }"`);
 
-  expect(await run(router, ["boolean-or-number"])).toMatchInlineSnapshot(
+  expect(await run(router, ["default-true-boolean"])).toMatchInlineSnapshot(`"{ foo: true }"`);
+  expect(await run(router, ["default-true-boolean", "--no-foo"])).toMatchInlineSnapshot(
     `"{ foo: false }"`,
   );
-  expect(
-    await run(router, ["boolean-or-number", "--foo"]),
-  ).toMatchInlineSnapshot(`"{ foo: true }"`);
-  expect(
-    await run(router, ["boolean-or-number", "--foo", "false"]),
-  ).toMatchInlineSnapshot(`"{ foo: false }"`);
-  expect(
-    await run(router, ["boolean-or-number", "--foo", "true"]),
-  ).toMatchInlineSnapshot(`"{ foo: true }"`);
-  expect(
-    await run(router, ["boolean-or-number", "--foo", "1"]),
-  ).toMatchInlineSnapshot(`"{ foo: 1 }"`);
 
-  expect(await run(router, ["boolean-or-string"])).toMatchInlineSnapshot(
+  expect(await run(router, ["default-false-boolean"])).toMatchInlineSnapshot(`"{ foo: false }"`);
+  expect(await run(router, ["default-false-boolean", "--foo"])).toMatchInlineSnapshot(
+    `"{ foo: true }"`,
+  );
+
+  expect(await run(router, ["boolean-or-number"])).toMatchInlineSnapshot(`"{ foo: false }"`);
+  expect(await run(router, ["boolean-or-number", "--foo"])).toMatchInlineSnapshot(
+    `"{ foo: true }"`,
+  );
+  expect(await run(router, ["boolean-or-number", "--foo", "false"])).toMatchInlineSnapshot(
     `"{ foo: false }"`,
   );
-  expect(
-    await run(router, ["boolean-or-string", "--foo"]),
-  ).toMatchInlineSnapshot(`"{ foo: true }"`);
-  expect(
-    await run(router, ["boolean-or-string", "--foo", "1"]),
-  ).toMatchInlineSnapshot(`"{ foo: '1' }"`);
-  expect(
-    await run(router, ["boolean-or-string", "--foo", "a"]),
-  ).toMatchInlineSnapshot(`"{ foo: 'a' }"`);
+  expect(await run(router, ["boolean-or-number", "--foo", "true"])).toMatchInlineSnapshot(
+    `"{ foo: true }"`,
+  );
+  expect(await run(router, ["boolean-or-number", "--foo", "1"])).toMatchInlineSnapshot(
+    `"{ foo: 1 }"`,
+  );
 
-  expect(
-    await run(router, ["array-of-boolean-or-number"]),
-  ).toMatchInlineSnapshot(`"{ foo: [] }"`);
-  expect(
-    await run(router, ["array-of-boolean-or-number", "--foo", "true"]),
-  ).toMatchInlineSnapshot(`"{ foo: [ true ] }"`);
-  expect(
-    await run(router, ["array-of-boolean-or-number", "--foo", "1"]),
-  ).toMatchInlineSnapshot(`"{ foo: [ 1 ] }"`);
+  expect(await run(router, ["boolean-or-string"])).toMatchInlineSnapshot(`"{ foo: false }"`);
+  expect(await run(router, ["boolean-or-string", "--foo"])).toMatchInlineSnapshot(
+    `"{ foo: true }"`,
+  );
+  expect(await run(router, ["boolean-or-string", "--foo", "1"])).toMatchInlineSnapshot(
+    `"{ foo: '1' }"`,
+  );
+  expect(await run(router, ["boolean-or-string", "--foo", "a"])).toMatchInlineSnapshot(
+    `"{ foo: 'a' }"`,
+  );
+
+  expect(await run(router, ["array-of-boolean-or-number"])).toMatchInlineSnapshot(`"{ foo: [] }"`);
+  expect(await run(router, ["array-of-boolean-or-number", "--foo", "true"])).toMatchInlineSnapshot(
+    `"{ foo: [ true ] }"`,
+  );
+  expect(await run(router, ["array-of-boolean-or-number", "--foo", "1"])).toMatchInlineSnapshot(
+    `"{ foo: [ 1 ] }"`,
+  );
   expect(
     await run(router, ["array-of-boolean-or-number", "--foo", "--foo", "1"]),
   ).toMatchInlineSnapshot(`"{ foo: [ 1 ] }"`);
@@ -701,8 +605,7 @@ test("arktype issues", () => {
     try {
       return schema.toJsonSchema({
         fallback: (ctx) => {
-          if (ctx.code === "unit" && ctx.unit === undefined)
-            return { ...ctx.base, optional: true };
+          if (ctx.code === "unit" && ctx.unit === undefined) return { ...ctx.base, optional: true };
           return ctx.base;
         },
       });
@@ -812,9 +715,7 @@ test("arktype issues", () => {
     }
   `);
 
-  expect(
-    toJsonSchema(type({ foo: type("string").default("hi") })),
-  ).toMatchInlineSnapshot(`
+  expect(toJsonSchema(type({ foo: type("string").default("hi") }))).toMatchInlineSnapshot(`
     {
       "$schema": "https://json-schema.org/draft/2020-12/schema",
       "properties": {
@@ -835,9 +736,7 @@ test("arktype issues", () => {
     }
   `);
 
-  expect(
-    toJsonSchema(type("string").describe("a piece of text")),
-  ).toMatchInlineSnapshot(`
+  expect(toJsonSchema(type("string").describe("a piece of text"))).toMatchInlineSnapshot(`
     {
       "$schema": "https://json-schema.org/draft/2020-12/schema",
       "description": "a piece of text",

@@ -6,13 +6,7 @@
 
 import { relinka } from "@reliverse/relinka";
 
-import {
-  defineArgs,
-  defineCommand,
-  inputPrompt,
-  multiselectPrompt,
-  startPrompt,
-} from "~/mod.js";
+import { defineArgs, defineCommand, inputPrompt, multiselectPrompt, startPrompt } from "~/mod";
 
 const setupArgs = defineArgs({
   // 1. Array argument

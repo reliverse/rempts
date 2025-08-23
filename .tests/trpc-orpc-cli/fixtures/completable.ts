@@ -1,7 +1,7 @@
 import * as trpcServer from "@trpc/server";
 import { z } from "zod";
 
-import { createRpcCli, type TrpcCliMeta } from "~/mod.js";
+import { createRpcCli, type TrpcCliMeta } from "~/mod";
 
 const trpc = trpcServer.initTRPC.meta<TrpcCliMeta>().create();
 
@@ -75,9 +75,7 @@ void createRpcCli({
   router,
 }).run({
   completion: async () => {
-    const completion = await import("omelette").then((m) =>
-      m.default("completable"),
-    );
+    const completion = await import("omelette").then((m) => m.default("completable"));
     if (process.argv.includes("--setupCompletions")) {
       completion.setupShellInitFile(process.env.SHELL_INIT_FILE);
     }

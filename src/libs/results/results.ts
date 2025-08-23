@@ -1,4 +1,4 @@
-import { msg } from "~/libs/msg-fmt/messages.js";
+import { msg } from "../msg-fmt/messages";
 
 export interface ResultsType {
   username: string;
@@ -45,7 +45,7 @@ export async function resultPrompt({
 import { Type } from "@sinclair/typebox";
 import { Value } from "@sinclair/typebox/value";
 
-import { msg } from "~/libs/core/core-impl/msg-fmt/messages.js";
+import { msg } from "../core/core-impl/msg-fmt/messages";
 
 const ResultsSchema = Type.Object({
   username: Type.String(),

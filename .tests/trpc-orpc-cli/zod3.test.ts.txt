@@ -3,7 +3,7 @@ import { expect, test } from "bun:test";
 import { inspect } from "node:util";
 import { z } from "zod/v3"; // same as 'zod' but this is more explicit
 
-import { createRpcCli, type TrpcCliMeta } from "~/mod.js";
+import { createRpcCli, type TrpcCliMeta } from "~/mod";
 
 import { run, snapshotSerializer } from "./test-run";
 

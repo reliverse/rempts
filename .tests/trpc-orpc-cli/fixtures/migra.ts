@@ -1,5 +1,5 @@
-import { trpcServer } from "~/components/launcher/trpc-orpc-support/index.js";
-import { createRpcCli, type TrpcCliMeta, z } from "~/mod.js";
+import { trpcServer } from "~/components/launcher/trpc-orpc-support/index";
+import { createRpcCli, type TrpcCliMeta, z } from "~/mod";
 
 const trpc = trpcServer.initTRPC.meta<TrpcCliMeta>().create();
 
@@ -13,10 +13,7 @@ const router = trpc.router({
           .describe("Base database URL"), //
         z.string().describe("Head database URL"),
         z.object({
-          unsafe: z
-            .boolean()
-            .default(false)
-            .describe("Allow destructive commands"),
+          unsafe: z.boolean().default(false).describe("Allow destructive commands"),
         }),
       ]),
     )

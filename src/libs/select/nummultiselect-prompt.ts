@@ -1,15 +1,9 @@
-import { re } from "@reliverse/relico";
 import { stdin as input, stdout as output } from "node:process";
 import readline from "node:readline/promises";
-
-import type { PromptOptions } from "~/types.js";
-
-import { bar, fmt, msg } from "~/libs/msg-fmt/messages.js";
-import {
-  countLines,
-  deleteLastLine,
-  deleteLastLines,
-} from "~/libs/msg-fmt/terminal.js";
+import { re } from "@reliverse/relico";
+import type { PromptOptions } from "../../types";
+import { bar, fmt, msg } from "../msg-fmt/messages";
+import { countLines, deleteLastLine, deleteLastLines } from "../msg-fmt/terminal";
 
 type NumMultiSelectPromptOptions = PromptOptions & {
   defaultValue?: string[];

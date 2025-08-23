@@ -42,8 +42,7 @@ export function toDotPath(path: (string | number | symbol)[]): string {
   const segs: string[] = [];
   for (const seg of path) {
     if (typeof seg === "number") segs.push(`[${seg}]`);
-    else if (typeof seg === "symbol")
-      segs.push(`[${JSON.stringify(String(seg))}]`);
+    else if (typeof seg === "symbol") segs.push(`[${JSON.stringify(String(seg))}]`);
     else if (/[^\w$]/.test(seg)) segs.push(`[${JSON.stringify(seg)}]`);
     else {
       if (segs.length) segs.push(".");
@@ -54,15 +53,9 @@ export function toDotPath(path: (string | number | symbol)[]): string {
   return segs.join("");
 }
 
-export class StandardSchemaV1Error
-  extends Error
-  implements StandardSchemaV1FailureResult
-{
+export class StandardSchemaV1Error extends Error implements StandardSchemaV1FailureResult {
   issues: StandardSchemaV1FailureResult["issues"];
-  constructor(
-    failure: StandardSchemaV1FailureResult,
-    options?: { cause?: Error },
-  ) {
+  constructor(failure: StandardSchemaV1FailureResult, options?: { cause?: Error }) {
     super("Standard Schema error - details in `issues`.", options);
     this.issues = failure.issues;
   }

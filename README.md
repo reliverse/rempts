@@ -810,7 +810,7 @@ For larger CLIs or when you want to programmatically run commands (e.g.: [prompt
 
 import { relinka } from "@reliverse/relinka";
 import { defineArgs, defineCommand, runCmd } from "@reliverse/rempts";
-import { cmdMinimal } from "../cmds.js";
+import { cmdMinimal } from "../cmds";
 
 export default defineCommand({
   meta: {

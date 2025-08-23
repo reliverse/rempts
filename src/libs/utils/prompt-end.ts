@@ -1,15 +1,8 @@
 import { re } from "@reliverse/relico";
 import { relinka } from "@reliverse/relinka";
-
-import type {
-  BorderColorName,
-  ColorName,
-  TypographyName,
-  VariantName,
-} from "~/types.js";
-
-import { msg, symbols } from "~/libs/msg-fmt/messages.js";
-import { getExactTerminalWidth } from "~/libs/msg-fmt/terminal.js";
+import type { BorderColorName, ColorName, TypographyName, VariantName } from "../../types";
+import { msg, symbols } from "../msg-fmt/messages";
+import { getExactTerminalWidth } from "../msg-fmt/terminal";
 
 /**
  * Ends the prompt by optionally displaying an end message and running the action if confirmed.
@@ -21,7 +14,7 @@ export async function completePrompt(
   _endTitle = "",
   _endTitleColor: ColorName = "dim",
   _titleTypography: TypographyName = "none",
-  _titleVariant: VariantName | undefined = undefined,
+  _titleVariant: VariantName | undefined,
   _border = true,
   borderColor: BorderColorName = "dim",
   action?: () => Promise<void>,

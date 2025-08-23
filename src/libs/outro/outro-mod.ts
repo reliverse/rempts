@@ -1,24 +1,17 @@
 import type { Fonts } from "figlet";
-
-import type { PromptOptions } from "~/types.js";
-
-import { animateText } from "~/libs/animate/animate-mod.js";
-import { msg } from "~/libs/msg-fmt/messages.js";
-import { getExactTerminalWidth } from "~/libs/msg-fmt/terminal.js";
-import { createAsciiArt } from "~/libs/visual/visual-mod.js";
+import type { PromptOptions } from "../../types";
+import { animateText } from "../animate/animate-mod";
+import { msg } from "../msg-fmt/messages";
+import { getExactTerminalWidth } from "../msg-fmt/terminal";
+import { createAsciiArt } from "../visual/visual-mod";
 
 type EndPromptOptions = PromptOptions & {
   variant?: "footer" | "ascii-art";
   asciiArtFont?: Fonts;
 };
 
-export async function outroPrompt(
-  optionsOrTitle: EndPromptOptions | string,
-): Promise<void> {
-  const options =
-    typeof optionsOrTitle === "string"
-      ? { title: optionsOrTitle }
-      : optionsOrTitle;
+export async function outroPrompt(optionsOrTitle: EndPromptOptions | string): Promise<void> {
+  const options = typeof optionsOrTitle === "string" ? { title: optionsOrTitle } : optionsOrTitle;
 
   const {
     title = "",

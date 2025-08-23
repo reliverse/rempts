@@ -1,4 +1,4 @@
-import { outroPrompt } from "~/libs/outro/outro-mod.js";
+import { outroPrompt } from "../outro/outro-mod";
 
 export const endPrompt = outroPrompt;
 export const outro = outroPrompt;

@@ -1,6 +1,5 @@
 import { relinka } from "@reliverse/relinka";
-import { runCmd } from "@reliverse/rempts";
-import { defineArgs, defineCommand } from "@reliverse/rempts";
+import { defineArgs, defineCommand, runCmd } from "@reliverse/rempts";
 
 import { getRuncmdAdvancedCmd } from "@/launcher/app/cmds";
 

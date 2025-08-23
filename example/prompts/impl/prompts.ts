@@ -2,38 +2,37 @@ import { relinka } from "@reliverse/relinka";
 import { isBunRuntime } from "@reliverse/runtime";
 import { detect } from "detect-package-manager";
 import { emojify } from "node-emoji";
-
-import type { ColorName } from "~/types.js";
-
 import packageJson from "~/../package.json" with { type: "json" };
-import { msg } from "~/mod.js";
-import { anykeyPrompt, taskSpinPrompt } from "~/mod.js";
-import { multiselectPrompt } from "~/mod.js";
-import { taskProgressPrompt } from "~/mod.js";
 import {
   animateText,
+  anykeyPrompt,
   confirmPrompt,
   datePrompt,
   endPrompt,
-  numMultiSelectPrompt,
+  inputPrompt,
+  msg,
+  multiselectPrompt,
   nextStepsPrompt,
   numberPrompt,
+  numMultiSelectPrompt,
+  numSelectPrompt,
+  resultPrompt,
+  selectPrompt,
   startPrompt,
-  inputPrompt,
+  taskProgressPrompt,
+  taskSpinPrompt,
   togglePrompt,
-} from "~/mod.js";
-import { resultPrompt } from "~/mod.js";
-import { numSelectPrompt } from "~/mod.js";
-import { selectPrompt } from "~/mod.js";
+} from "~/mod";
+import type { ColorName } from "~/types";
 
-import { basicConfig, extendedConfig } from "./cfg.js";
+import { basicConfig, extendedConfig } from "./cfg";
 import {
   calculateAge,
   createColorChoices,
   displayUserInputs,
   hashPassword,
   validateAge,
-} from "./utils.js";
+} from "./utils";
 
 const pkg = packageJson;
 
@@ -46,16 +45,12 @@ export async function showStartPrompt() {
     packageName: pkg.name,
     packageVersion: pkg.version,
     terminalSizeOptions: {
-      sizeErrorDescription:
-        "Please increase the terminal size to run this prompts example.",
+      sizeErrorDescription: "Please increase the terminal size to run this prompts example.",
     },
   });
 }
 
-export async function showAnykeyPrompt(
-  kind: "pm" | "privacy",
-  username?: string,
-) {
+export async function showAnykeyPrompt(kind: "pm" | "privacy", username?: string) {
   const pm = await detect();
   let notification = "[anykeyPrompt] Press any key to continue...";
   if (kind === "privacy") {
@@ -100,8 +95,7 @@ export async function showNumberPrompt() {
   const age = await numberPrompt({
     ...extendedConfig,
     title: "[numberPrompt] Enter your age",
-    content:
-      "“It matters not how long we live but how we live.“ – Philip James Bailey",
+    content: "“It matters not how long we live but how we live.“ – Philip James Bailey",
     hint: "Try: 42 | Default: 36",
     defaultValue: "36",
     validate: (value) => {
@@ -132,10 +126,7 @@ export async function showInputPromptMasked() {
       },
     });
   } catch (_error) {
-    relinka(
-      "error",
-      "Input prompt masked cancelled. Returning default password.",
-    );
+    relinka("error", "Input prompt masked cancelled. Returning default password.");
     return "silverHand2077";
   }
   return password ?? "silverHand2077";
@@ -222,8 +213,7 @@ export async function showMultiselectPrompt() {
   const langs = await multiselectPrompt({
     title: "[multiselectPrompt] Select your favorite programming languages",
     displayInstructions: true,
-    content:
-      '"Code is like humor. When you have to explain it, it\'s bad." – Cory House',
+    content: '"Code is like humor. When you have to explain it, it\'s bad." – Cory House',
     options: [
       {
         label: "TypeScript",
@@ -325,8 +315,7 @@ export async function showNumMultiselectPrompt() {
       {
         id: "typescript",
         title: "TypeScript",
-        description:
-          "A programming language that adds static typing to JavaScript.",
+        description: "A programming language that adds static typing to JavaScript.",
       },
       {
         id: "eslint",
@@ -360,8 +349,7 @@ export async function showConfirmPrompt(username: string) {
   await showAnykeyPrompt("pm", username);
 
   const spinner = await confirmPrompt({
-    title:
-      "[confirmPrompt] Do you want to see spinner and progressbar in action?",
+    title: "[confirmPrompt] Do you want to see spinner and progressbar in action?",
     ...extendedConfig,
     titleColor: "red",
     titleVariant: "doubleBox",
@@ -396,8 +384,7 @@ async function showProgressbar() {
   await taskProgressPrompt({
     total: 100,
     width: 10,
-    format:
-      "[progressbar] [:bar] :percent% | Elapsed: :elapsed s | ETA: :eta s",
+    format: "[progressbar] [:bar] :percent% | Elapsed: :elapsed s | ETA: :eta s",
     completeChar: "#",
     incompleteChar: "-",
     colorize: true,
@@ -425,20 +412,14 @@ export async function doSomeFunStuff(userInput: any) {
 export async function showNextStepsPrompt() {
   await nextStepsPrompt({
     title: "[nextStepsPrompt] Next Steps",
-    content: [
-      "- Set up your profile",
-      "- Review your dashboard",
-      "- Create tasks",
-    ],
+    content: ["- Set up your profile", "- Review your dashboard", "- Create tasks"],
     ...extendedConfig,
   });
 }
 
 export async function showAnimatedText() {
   await animateText({
-    title: emojify(
-      "ℹ  :exploding_head: Our library even supports animated messages and emojis!",
-    ),
+    title: emojify("ℹ  :exploding_head: Our library even supports animated messages and emojis!"),
     anim: "neon",
     delay: 1000,
     ...basicConfig,

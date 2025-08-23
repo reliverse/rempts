@@ -1,89 +1,216 @@
 {
-  "$schema": "https://biomejs.dev/schemas/2.1.2/schema.json",
+  "$schema": "https://biomejs.dev/schemas/2.2.0/schema.json",
+  "extends": ["ultracite"],
   "vcs": {
     "enabled": false,
     "clientKind": "git",
     "useIgnoreFile": false
   },
   "files": {
-    "ignoreUnknown": true,
+    "ignoreUnknown": false,
+    "maxSize": 1700000,
     "includes": [
       "**",
-      "!**/node_modules/",
-      "!**/dist-jsr/**",
-      "!**/dist-npm/**",
-      "!**/dist-libs/**",
-      "!**/bun.lock"
+      "!**/.js",
+      "!**/.d.ts",
+      "!**/_generated",
+      "!**/.basehub",
+      "!**/.expo",
+      "!**/.next",
+      "!**/.nuxt",
+      "!**/.react-email",
+      "!**/.source",
+      "!**/.turbo",
+      "!**/.vercel",
+      "!**/.wrangler",
+      "!**/.zed",
+      "!**/dev-dist",
+      "!**/dist-*",
+      "!**/dist",
+      "!**/drizzle/migrations",
+      "!**/node_modules",
+      "!**/routeTree.gen.ts",
+      "!**/src-tauri"
     ]
   },
   "formatter": {
     "enabled": true,
     "indentStyle": "space",
-    "attributePosition": "auto",
-    "formatWithErrors": false,
-    "indentWidth": 2,
-    "lineEnding": "lf",
-    "lineWidth": 80
-  },
-  "assist": {
-    "actions": {
-      "source": {
-        "organizeImports": "off"
-      }
-    }
+    "lineWidth": 100
   },
   "linter": {
     "enabled": true,
     "rules": {
       "recommended": true,
       "suspicious": {
+        "noVar": "off",
+        "noMisplacedAssertion": "off",
+        "useErrorMessage": "off",
         "noControlCharactersInRegex": "off",
-        "noExplicitAny": "off",
+        "useGetterReturn": "off",
+        "noThenProperty": "off",
+        "useGuardForIn": "off",
         "noAssignInExpressions": "off",
-        "noImplicitAnyLet": "off"
-      },
-      "style": {
-        "noNonNullAssertion": "off",
-        "noParameterAssign": "off",
-        "useAsConstAssertion": "error",
-        "useDefaultParameterLast": "error",
-        "useEnumInitializers": "error",
-        "useSelfClosingElements": "error",
-        "useSingleVarDeclarator": "error",
-        "noUnusedTemplateLiteral": "error",
-        "useNumberNamespace": "error",
-        "noInferrableTypes": "error",
-        "noUselessElse": "error"
-      },
-      "complexity": {
-        "noBannedTypes": "off",
-        "noForEach": "off"
+        "noShadowRestrictedNames": "off",
+        "noTemplateCurlyInString": "off",
+        "noConstantBinaryExpressions": "off",
+        "noBitwiseOperators": "off",
+        "useIterableCallbackReturn": "off",
+        "noEmptyInterface": "off",
+        "noImplicitAnyLet": "off",
+        "noUnknownAtRules": "off",
+        "noDoubleEquals": "off",
+        "noDuplicateAtImportRules": "off",
+        "noEmptyBlockStatements": "off",
+        "noEvolvingTypes": "off",
+        "useAwait": "off",
+        "noConsole": "off",
+        "noExplicitAny": "off",
+        "noArrayIndexKey": "off"
       },
       "security": {
-        "noGlobalEval": "off"
+        "noGlobalEval": "off",
+        "noDangerouslySetInnerHtml": "off"
+      },
+      "a11y": {
+        "noNoninteractiveElementToInteractiveRole": "off",
+        "noInteractiveElementToNoninteractiveRole": "off",
+        "noNoninteractiveElementInteractions": "off",
+        "useAriaPropsSupportedByRole": "off",
+        "useButtonType": "off",
+        "noRedundantRoles": "off",
+        "noNoninteractiveTabindex": "off",
+        "noStaticElementInteractions": "off",
+        "noLabelWithoutControl": "off",
+        "useHtmlLang": "warn",
+        "noHeaderScope": "warn",
+        "useValidAriaRole": {
+          "level": "warn",
+          "options": {
+            "ignoreNonDom": false,
+            "allowInvalidRoles": ["none", "text"]
+          }
+        },
+        "useSemanticElements": "off",
+        "noSvgWithoutTitle": "off",
+        "useMediaCaption": "off",
+        "noAutofocus": "off",
+        "useFocusableInteractive": "off",
+        "useAriaPropsForRole": "off",
+        "useKeyWithClickEvents": "off"
+      },
+      "style": {
+        "noNamespace": "off",
+        "useGraphqlNamingConvention": "off",
+        "useFilenamingConvention": "off",
+        "useConsistentObjectDefinitions": "off",
+        "useNumericSeparators": "off",
+        "noMagicNumbers": "off",
+        "useNumberNamespace": "off",
+        "useNodejsImportProtocol": "off",
+        "noEnum": "off",
+        "useForOf": "off",
+        "useDefaultSwitchClause": "off",
+        "noParameterAssign": "off",
+        "useShorthandFunctionType": "off",
+        "noParameterProperties": "off",
+        "noExportedImports": "off",
+        "useConsistentMemberAccessibility": "off",
+        "useConsistentBuiltinInstantiation": "off",
+        "useImportType": "off",
+        "useCollapsedIf": "off",
+        "useCollapsedElseIf": "off",
+        "useAtIndex": "off",
+        "useConsistentArrayType": "off",
+        "noNestedTernary": "off",
+        "noNegationElse": "off",
+        "useBlockStatements": "off",
+        "useTemplate": "off",
+        "noNonNullAssertion": "off",
+        "useFragmentSyntax": "off",
+        "noYodaExpression": "off",
+        "useDefaultParameterLast": "off",
+        "useExponentiationOperator": "off",
+        "noUnusedTemplateLiteral": "off",
+        "noUselessElse": "off"
       },
       "correctness": {
+        "noUnsafeOptionalChaining": "off",
+        "useHookAtTopLevel": "off",
+        "noUndeclaredVariables": "off",
+        "noConstantCondition": "off",
+        "noNestedComponentDefinitions": "off",
+        "useParseIntRadix": "off",
+        "noSolidDestructuredProps": "off",
+        "useUniqueElementIds": "off",
+        "noUnreachable": "off",
+        "noUndeclaredDependencies": "off",
+        "noUnusedVariables": "off",
         "noUnusedFunctionParameters": "off",
-        "noUnusedVariables": "off"
+        "noUnusedImports": "off",
+        "useJsxKeyInIterable": "off",
+        "useExhaustiveDependencies": "off"
+      },
+      "complexity": {
+        "noUselessLoneBlockStatements": "off",
+        "noUselessStringRaw": "off",
+        "noUselessEmptyExport": "off",
+        "noCommaOperator": "off",
+        "noImplicitCoercions": "off",
+        "noExcessiveNestedTestSuites": "off",
+        "noExcessiveLinesPerFunction": "off",
+        "noUselessContinue": "off",
+        "noVoid": "off",
+        "noStaticOnlyClass": "off",
+        "noExcessiveCognitiveComplexity": "off",
+        "useSimplifiedLogicExpression": "off",
+        "noUselessFragments": "off",
+        "useLiteralKeys": "off",
+        "useOptionalChain": "off",
+        "noUselessStringConcat": "off",
+        "noForEach": "off",
+        "noUselessSwitchCase": "off",
+        "noUselessThisAlias": "off",
+        "noBannedTypes": "off"
+      },
+      "performance": {
+        "noBarrelFile": "off",
+        "useTopLevelRegex": "off",
+        "noImgElement": "off",
+        "noNamespaceImport": "off"
+      },
+      "nursery": {
+        "useAnchorHref": "off",
+        "useMaxParams": "off",
+        "useImageSize": "off",
+        "noUnnecessaryConditions": "off",
+        "useExhaustiveSwitchCases": "off",
+        "noShadow": "off",
+        "useSortedClasses": "off",
+        "useConsistentTypeDefinitions": "off"
       }
     }
   },
   "javascript": {
+    "globals": ["Bun", "Liveblocks"],
     "formatter": {
-      "arrowParentheses": "always",
-      "attributePosition": "auto",
-      "bracketSameLine": false,
-      "bracketSpacing": true,
-      "enabled": true,
-      "indentStyle": "space",
-      "indentWidth": 2,
       "jsxQuoteStyle": "double",
-      "lineEnding": "lf",
-      "lineWidth": 80,
       "quoteProperties": "asNeeded",
-      "quoteStyle": "double",
+      "trailingCommas": "all",
       "semicolons": "always",
-      "trailingCommas": "all"
+      "arrowParentheses": "always",
+      "bracketSpacing": true,
+      "bracketSameLine": false,
+      "quoteStyle": "double",
+      "attributePosition": "auto"
+    }
+  },
+  "assist": {
+    "enabled": true,
+    "actions": {
+      "source": {
+        "organizeImports": "on"
+      }
     }
   }
 }

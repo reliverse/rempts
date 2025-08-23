@@ -1,7 +1,5 @@
 import type { expect } from "bun:test";
-
-import { type AnyRouter, type TrpcCliParams, createRpcCli } from "~/mod.js";
-import { looksLikeInstanceof } from "~/mod.js";
+import { type AnyRouter, createRpcCli, looksLikeInstanceof, type TrpcCliParams } from "~/mod";
 
 export const run = <R extends AnyRouter>(
   router: R,
@@ -25,8 +23,7 @@ export const runWith = async <R extends AnyRouter>(
       process: { exit: (_) => 0 as never },
     })
     .catch((e) => {
-      if (e.exitCode === 0 && e.cause.message === "(outputHelp)")
-        return logs[0][0]; // should be the help text
+      if (e.exitCode === 0 && e.cause.message === "(outputHelp)") return logs[0][0]; // should be the help text
       if (e.exitCode === 0) return e.cause;
       throw e;
     });
@@ -36,9 +33,7 @@ export const runWith = async <R extends AnyRouter>(
   // `mycli --foo bar` it'll fail with a message that includes `--input [json]` in the help text because it's expecting `--input '{"foo":"bar"}'`
   const hasJsonInput = result.includes("--input [json]");
   if (result.includes("--") && hasJsonInput !== expectJsonInput) {
-    throw new Error(
-      `${hasJsonInput ? "Got" : "Did not get"} --input [json]:\n\n${result}`,
-    );
+    throw new Error(`${hasJsonInput ? "Got" : "Did not get"} --input [json]:\n\n${result}`);
   }
   return result;
 };

@@ -1,6 +1,6 @@
+import { expect, test, vi } from "bun:test";
 import { initTRPC } from "@trpc/server";
 import type { Command } from "commander";
-import { expect, test, vi } from "bun:test";
 import { createRpcCli, type TrpcCliMeta, z } from "../src";
 import { FailedToExitError } from "../src/errors";
 
@@ -52,7 +52,7 @@ test("override of process.exit and pass in bad option", async () => {
     .catch((err) => err);
 
   expect(result).toMatchInlineSnapshot(
-    "[Error: Program exit after failure. The process was expected to exit with exit code 1 but did not. This may be because a custom \`process\` parameter was used. The exit reason is in the \`cause\` property.]",
+    "[Error: Program exit after failure. The process was expected to exit with exit code 1 but did not. This may be because a custom `process` parameter was used. The exit reason is in the `cause` property.]",
   );
   expect(result.exitCode).toBe(1);
   expect(result.cause).toMatchInlineSnapshot(`
@@ -86,19 +86,15 @@ test("override of process.exit with parse error", async () => {
     .catch((err) => err);
 
   expect(result).toMatchInlineSnapshot(
-    "[Error: Root command exitOverride. The process was expected to exit with exit code 1 but did not. This may be because a custom \`process\` parameter was used. The exit reason is in the \`cause\` property.]",
+    "[Error: Root command exitOverride. The process was expected to exit with exit code 1 but did not. This may be because a custom `process` parameter was used. The exit reason is in the `cause` property.]",
   );
-  expect(result.cause).toMatchInlineSnapshot(
-    `[CommanderError: error: unknown command 'footypo']`,
-  );
+  expect(result.cause).toMatchInlineSnapshot(`[CommanderError: error: unknown command 'footypo']`);
 });
 
 const calculatorRouter = t.router({
-  add: t.procedure
-    .input(z.tuple([z.number(), z.number()]))
-    .query(({ input }) => {
-      return input[0] + input[1];
-    }),
+  add: t.procedure.input(z.tuple([z.number(), z.number()])).query(({ input }) => {
+    return input[0] + input[1];
+  }),
   squareRoot: t.procedure.input(z.number()).query(({ input }) => {
     if (input < 0) throw new Error("Get real");
     return Math.sqrt(input);
@@ -128,9 +124,7 @@ const run = async (argv: string[]) => {
 test("make sure parsing works correctly", async () => {
   await expect(run(["add", "2", "3"])).resolves.toBe(5);
   await expect(run(["square-root", "--", "4"])).resolves.toBe(2);
-  await expect(run(["square-root", "--", "-1"])).rejects.toMatchInlineSnapshot(
-    "[Error: Get real]",
-  );
+  await expect(run(["square-root", "--", "-1"])).rejects.toMatchInlineSnapshot("[Error: Get real]");
   await expect(run(["add", "2", "notanumber"])).rejects.toMatchInlineSnapshot(
     `[CommanderError: error: command-argument value 'notanumber' is invalid for argument 'parameter_2'. Invalid number: notanumber]`,
   );

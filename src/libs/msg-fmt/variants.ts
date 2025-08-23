@@ -1,6 +1,6 @@
-import type { ColorName, VariantName } from "~/types.js";
+import type { ColorName, VariantName } from "../../types";
 
-import { colorMap } from "./mapping.js";
+import { colorMap } from "./mapping";
 
 export const variantMap = {
   // box: createBox,
@@ -11,9 +11,7 @@ export const variantMap = {
 
 type ValidVariant = keyof typeof variantMap;
 
-export function isValidVariant(
-  variant: string | undefined,
-): variant is ValidVariant {
+export function isValidVariant(variant: string | undefined): variant is ValidVariant {
   return variant !== undefined && variant !== "none" && variant in variantMap;
 }
 
@@ -50,11 +48,7 @@ export async function applyVariant(
 //   return `${topBorder}\n${middle}\n${bottomBorder}`;
 // }
 
-function createDoubleBox(
-  lines: string[],
-  limit?: number,
-  borderColor?: ColorName,
-): string {
+function createDoubleBox(lines: string[], limit?: number, borderColor?: ColorName): string {
   const processedLines = processLines(lines, limit);
   const maxLength = Math.max(...processedLines.map((line) => line.length));
   const indentation = "";

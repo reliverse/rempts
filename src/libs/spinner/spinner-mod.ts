@@ -1,6 +1,6 @@
 import { re } from "@reliverse/relico";
 
-import { block } from "~/libs/cancel/cancel.js";
+import { block } from "../cancel/cancel";
 
 interface SpinnerOptions {
   cancelMessage?: string;
@@ -56,8 +56,7 @@ interface SpinnerState {
   indicatorTimer: number;
 }
 
-const unicode =
-  process.platform !== "win32" || process.env.TERM_PROGRAM === "vscode";
+const unicode = process.platform !== "win32" || process.env.TERM_PROGRAM === "vscode";
 const defaultFrames = unicode ? ["◒", "◐", "◓", "◑"] : ["•", "o", "O", "0"];
 const defaultDelay = unicode ? 80 : 120;
 
@@ -235,11 +234,7 @@ export function useSpinner(options: SpinnerOptions): SpinnerControls {
       }
 
       if (options.silent || !interactive) {
-        console.log(
-          options.prefixText
-            ? `${options.prefixText} ${options.text}`
-            : options.text,
-        );
+        console.log(options.prefixText ? `${options.prefixText} ${options.text}` : options.text);
         state.isActive = true;
         state.startTime = Date.now();
         return controls;
@@ -260,27 +255,19 @@ export function useSpinner(options: SpinnerOptions): SpinnerControls {
 
         clearPrevMessage();
         state.prevMessage = state.text;
-        const frame = re.magenta(
-          (options.frames ?? defaultFrames)[frameIndex] ?? "",
-        );
+        const frame = re.magenta((options.frames ?? defaultFrames)[frameIndex] ?? "");
 
         if (process.env.CI) {
           process.stdout.write(`${frame}  ${state.text}...`);
         } else if (options.indicator === "timer") {
-          process.stdout.write(
-            `${frame}  ${state.text} ${formatTimer(state.origin)}`,
-          );
+          process.stdout.write(`${frame}  ${state.text} ${formatTimer(state.origin)}`);
         } else {
-          const loadingDots = "."
-            .repeat(Math.floor(state.indicatorTimer))
-            .slice(0, 3);
+          const loadingDots = ".".repeat(Math.floor(state.indicatorTimer)).slice(0, 3);
           process.stdout.write(`${frame}  ${state.text}${loadingDots}`);
         }
 
-        frameIndex =
-          (frameIndex + 1) % (options.frames ?? defaultFrames).length;
-        state.indicatorTimer =
-          state.indicatorTimer < 4 ? state.indicatorTimer + 0.125 : 0;
+        frameIndex = (frameIndex + 1) % (options.frames ?? defaultFrames).length;
+        state.indicatorTimer = state.indicatorTimer < 4 ? state.indicatorTimer + 0.125 : 0;
       }, options.delay ?? defaultDelay);
 
       return controls;
@@ -293,14 +280,11 @@ export function useSpinner(options: SpinnerOptions): SpinnerControls {
       clearInterval(loop);
       clearPrevMessage();
 
-      const step =
-        code === 0 ? re.green("✓") : code === 1 ? re.red("✗") : re.red("✗");
+      const step = code === 0 ? re.green("✓") : code === 1 ? re.red("✗") : re.red("✗");
 
       const finalText = text ?? state.text;
       if (options.indicator === "timer") {
-        process.stdout.write(
-          `${step}  ${finalText} ${formatTimer(state.origin)}\n`,
-        );
+        process.stdout.write(`${step}  ${finalText} ${formatTimer(state.origin)}\n`);
       } else {
         process.stdout.write(`${step}  ${finalText}\n`);
       }
@@ -456,9 +440,7 @@ useSpinner.withTiming = async <T>(
     return { result, duration };
   } catch (error) {
     const duration = Date.now() - startTime;
-    spinner.fail(
-      `${options.failText || options.text} (failed after ${duration}ms)`,
-    );
+    spinner.fail(`${options.failText || options.text} (failed after ${duration}ms)`);
     throw error;
   } finally {
     spinner.dispose();

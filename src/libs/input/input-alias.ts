@@ -1,6 +1,6 @@
-import type { InputPromptOptions } from "~/types.js";
+import type { InputPromptOptions } from "../../types";
 
-import { inputPrompt } from "./input-mod.js";
+import { inputPrompt } from "./input-mod";
 
 export const input = inputPrompt;
 export const text = inputPrompt;

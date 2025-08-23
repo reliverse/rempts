@@ -1,7 +1,5 @@
-import type { ConfirmPromptOptions } from "~/types.js";
+import type { ConfirmPromptOptions } from "../../types";
 
-import { confirmPrompt } from "./confirm-mod.js";
+import { confirmPrompt } from "./confirm-mod";
 
-export const confirm = confirmPrompt as (
-  options: ConfirmPromptOptions,
-) => Promise<boolean>;
+export const confirm = confirmPrompt as (options: ConfirmPromptOptions) => Promise<boolean>;

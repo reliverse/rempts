@@ -1,8 +1,7 @@
-import { re } from "@reliverse/relico";
-import { relinka } from "@reliverse/relinka";
 import { stdin as input, stdout as output } from "node:process";
 import readline from "node:readline";
-
+import { re } from "@reliverse/relico";
+import { relinka } from "@reliverse/relinka";
 import type {
   ColorName,
   MultiselectPromptParams,
@@ -10,15 +9,12 @@ import type {
   SeparatorOption,
   TypographyName,
   VariantName,
-} from "~/types.js";
+} from "../../types";
+import { msg, symbols } from "../msg-fmt/messages";
+import { deleteLastLine } from "../msg-fmt/terminal";
+import { completePrompt } from "../utils/prompt-end";
 
-import { msg, symbols } from "~/libs/msg-fmt/messages.js";
-import { deleteLastLine } from "~/libs/msg-fmt/terminal.js";
-import { completePrompt } from "~/libs/utils/prompt-end.js";
-
-function isSelectOption<T>(
-  option: SelectOption<T> | SeparatorOption,
-): option is SelectOption<T> {
+function isSelectOption<T>(option: SelectOption<T> | SeparatorOption): option is SelectOption<T> {
   return !("separator" in option);
 }
 
@@ -122,9 +118,7 @@ function renderPromptUI<T extends string>(params: {
         ? re.reset(re.yellow(option.label))
         : re.reset(option.label);
     const hint = option.hint
-      ? re.reset(
-          ` (${isDisabled ? re.dim(option.hint) : re.gray(option.hint)})`,
-        )
+      ? re.reset(` (${isDisabled ? re.dim(option.hint) : re.gray(option.hint)})`)
       : "";
     const formattedCheckbox = isHighlighted ? re.yellow(checkbox) : checkbox;
     msg({
@@ -169,9 +163,7 @@ export async function multiselectPrompt<T extends string>(
   } = params;
 
   const finalTitle =
-    message && title
-      ? `${title}: ${message}`
-      : (message ?? title ?? "Select options");
+    message && title ? `${title}: ${message}` : (message ?? title ?? "Select options");
 
   const finalDefaultValue = defaultValue ?? initialValues;
 
@@ -181,16 +173,11 @@ export async function multiselectPrompt<T extends string>(
     finalDefaultValue.length > 0
       ? options.findIndex(
           (opt) =>
-            opt &&
-            isSelectOption(opt) &&
-            finalDefaultValue.includes(opt.value) &&
-            !opt.disabled,
+            opt && isSelectOption(opt) && finalDefaultValue.includes(opt.value) && !opt.disabled,
         )
       : 0;
   if (pointer === -1) {
-    pointer = options.findIndex(
-      (opt) => opt && isSelectOption(opt) && !opt.disabled,
-    );
+    pointer = options.findIndex((opt) => opt && isSelectOption(opt) && !opt.disabled);
     if (pointer === -1) {
       pointer = 0;
     }
@@ -198,20 +185,12 @@ export async function multiselectPrompt<T extends string>(
   const selectedOptions = new Set<number>(
     selectAll
       ? options
-          .map((opt, index) =>
-            opt && isSelectOption(opt) && !opt.disabled ? index : -1,
-          )
+          .map((opt, index) => (opt && isSelectOption(opt) && !opt.disabled ? index : -1))
           .filter((i) => i !== -1)
       : finalDefaultValue
-          .map((val) =>
-            options.findIndex((o) => o && isSelectOption(o) && o.value === val),
-          )
+          .map((val) => options.findIndex((o) => o && isSelectOption(o) && o.value === val))
           .filter(
-            (i) =>
-              i >= 0 &&
-              options[i] &&
-              isSelectOption(options[i]) &&
-              !options[i].disabled,
+            (i) => i >= 0 && options[i] && isSelectOption(options[i]) && !options[i].disabled,
           ),
   );
   const rl = readline.createInterface({ input, output });
@@ -220,11 +199,8 @@ export async function multiselectPrompt<T extends string>(
     input.setRawMode(true);
   }
   let errorMessage = "";
-  const allDisabled = options
-    .filter(isSelectOption)
-    .every((option) => option.disabled);
-  const instructions =
-    "Use <↑/↓> to navigate, <Space> to toggle, <A> to toggle all";
+  const allDisabled = options.filter(isSelectOption).every((option) => option.disabled);
+  const instructions = "Use <↑/↓> to navigate, <Space> to toggle, <A> to toggle all";
 
   function toggleSelectAll() {
     const selectableIndexes = options
@@ -247,11 +223,7 @@ export async function multiselectPrompt<T extends string>(
     do {
       pointer = (pointer - 1 + options.length) % options.length;
       const currentOption = options[pointer];
-      if (
-        currentOption &&
-        isSelectOption(currentOption) &&
-        !currentOption.disabled
-      ) {
+      if (currentOption && isSelectOption(currentOption) && !currentOption.disabled) {
         break;
       }
     } while (pointer !== originalPointer);
@@ -263,11 +235,7 @@ export async function multiselectPrompt<T extends string>(
     do {
       pointer = (pointer + 1) % options.length;
       const currentOption = options[pointer];
-      if (
-        currentOption &&
-        isSelectOption(currentOption) &&
-        !currentOption.disabled
-      ) {
+      if (currentOption && isSelectOption(currentOption) && !currentOption.disabled) {
         break;
       }
     } while (pointer !== originalPointer);
@@ -362,9 +330,7 @@ export async function multiselectPrompt<T extends string>(
       }
       if (maxSelect !== undefined && selectedCount > maxSelect) {
         deleteLastLine();
-        errorMessage = `You can select at most ${maxSelect} option${
-          maxSelect !== 1 ? "s" : ""
-        }.`;
+        errorMessage = `You can select at most ${maxSelect} option${maxSelect !== 1 ? "s" : ""}.`;
         renderOptions();
         return;
       }
@@ -415,11 +381,7 @@ export async function multiselectPrompt<T extends string>(
           break;
         case "space": {
           const currentOption = options[pointer];
-          if (
-            !currentOption ||
-            !isSelectOption(currentOption) ||
-            currentOption.disabled
-          ) {
+          if (!currentOption || !isSelectOption(currentOption) || currentOption.disabled) {
             errorMessage = "This option is disabled";
           } else {
             if (selectedOptions.has(pointer)) {

@@ -1,22 +1,16 @@
 {
+  "typescript.tsdk": "node_modules\\typescript\\lib",
+  "typescript.enablePromptUseWorkspaceTsdk": true,
+  "typescript.preferences.importModuleSpecifier": "project-relative",
+  "openMultipleFiles.limit": 700,
   "editor.formatOnSave": true,
   "editor.codeActionsOnSave": {
-    "quickfix.biome": "explicit",
-    "source.addMissingImports": "never",
-    "source.fixAll.eslint": "explicit",
-    "source.organizeImports": "never",
-    "source.removeUnused": "never"
+    "source.biome": "explicit",
+    "source.fixAll.biome": "explicit",
+    "source.organizeImports.biome": "explicit"
   },
-  "eslint.rules.customizations": [
-    {
-      "rule": "perfectionist/sort-imports",
-      "severity": "off"
-    }
-  ],
-  "openMultipleFiles.limit": 700,
   "markdownlint.config": {
-    "MD033": false
-  },
-  "typescript.tsdk": "node_modules\\typescript\\lib",
-  "eslint.ignoreUntitled": true
+    "MD033": false,
+    "MD041": false
+  }
 }

@@ -1,11 +1,11 @@
-import type { SpinnerName } from "cli-spinners";
+import process from "node:process";
 
 import { re } from "@reliverse/relico";
-import process from "node:process";
+import type { SpinnerName } from "cli-spinners";
 import ora from "ora";
 import { cursor, erase } from "sisteransi";
 
-import { msg } from "~/libs/msg-fmt/messages.js";
+import { msg } from "../msg-fmt/messages";
 
 type SimpleSpinnerType = "default" | "dottedCircle" | "boxSpinner";
 type OraSpinnerType = Extract<SpinnerName, OraAllowedSpinners>;
@@ -67,8 +67,7 @@ export async function taskSpinPrompt<T extends "simple" | "ora">(
 
       msg({
         type: "M_ERROR",
-        title:
-          error instanceof Error ? error.message : "An unknown error occurred.",
+        title: error instanceof Error ? error.message : "An unknown error occurred.",
         titleColor: "red",
       });
 
@@ -94,10 +93,7 @@ export async function taskSpinPrompt<T extends "simple" | "ora">(
     };
 
     try {
-      if (
-        process.stdin.isTTY &&
-        typeof process.stdin.setRawMode === "function"
-      ) {
+      if (process.stdin.isTTY && typeof process.stdin.setRawMode === "function") {
         process.stdin.setRawMode(true);
         process.stdin.resume();
         process.stdin.on("data", handleInput);
@@ -105,9 +101,7 @@ export async function taskSpinPrompt<T extends "simple" | "ora">(
 
       interval = setInterval(() => {
         const frame = re.magenta(frames[frameIndex] ?? "");
-        process.stdout.write(
-          `${cursor.move(-999, 0)}${erase.line}${frame} ${re.cyan(message)}`,
-        );
+        process.stdout.write(`${cursor.move(-999, 0)}${erase.line}${frame} ${re.cyan(message)}`);
         frameIndex = (frameIndex + 1) % frames.length;
       }, delay);
 
@@ -118,9 +112,7 @@ export async function taskSpinPrompt<T extends "simple" | "ora">(
       clearInterval(interval);
       interval = null;
 
-      process.stdout.write(
-        `\r${erase.line}${re.green("✔")} ${successMessage}\n`,
-      );
+      process.stdout.write(`\r${erase.line}${re.green("✔")} ${successMessage}\n`);
 
       msg({
         type: "M_INFO",
@@ -140,17 +132,13 @@ export async function taskSpinPrompt<T extends "simple" | "ora">(
 
       msg({
         type: "M_ERROR",
-        title:
-          error instanceof Error ? error.message : "An unknown error occurred.",
+        title: error instanceof Error ? error.message : "An unknown error occurred.",
         titleColor: "red",
       });
 
       process.exit(1);
     } finally {
-      if (
-        process.stdin.isTTY &&
-        typeof process.stdin.setRawMode === "function"
-      ) {
+      if (process.stdin.isTTY && typeof process.stdin.setRawMode === "function") {
         process.stdin.setRawMode(false);
         process.stdin.pause();
         process.stdin.removeListener("data", handleInput);

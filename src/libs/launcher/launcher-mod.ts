@@ -1,11 +1,11 @@
-import type { ReliArgParserOptions } from "@reliverse/reliarg";
+import process from "node:process";
 
 import path from "@reliverse/pathkit";
+import type { ReliArgParserOptions } from "@reliverse/reliarg";
 import { reliArgParser } from "@reliverse/reliarg";
 import { re } from "@reliverse/relico";
 import fs from "@reliverse/relifso";
 import { relinka, relinkaConfig, relinkaShutdown } from "@reliverse/relinka";
-import process from "node:process";
 import { readPackageJSON } from "pkg-types";
 
 import type {
@@ -18,23 +18,16 @@ import type {
   EmptyArgs,
   FileBasedOptions,
   InferArgTypes,
-} from "./launcher-types.js";
-import type { AnyRouter } from "./trpc-orpc-support/trpc-compat.js";
-import type {
-  Logger,
-  OmeletteInstanceLike,
-  Promptable,
-} from "./trpc-orpc-support/types.js";
-
-import { createRpcCli } from "./trpc-orpc-support/index.js";
+} from "./launcher-types";
+import { createRpcCli } from "./trpc-orpc-support/index";
+import type { AnyRouter } from "./trpc-orpc-support/trpc-compat";
+import type { Logger, OmeletteInstanceLike, Promptable } from "./trpc-orpc-support/types";
 
 // Helper to build a plausible example CLI argument string from ArgDefinitions
 function buildExampleArgs(args: ArgDefinitions): string {
   const parts: string[] = [];
   // Positional args in order
-  const positionalKeys = Object.keys(args || {}).filter(
-    (k) => args?.[k]?.type === "positional",
-  );
+  const positionalKeys = Object.keys(args || {}).filter((k) => args?.[k]?.type === "positional");
   positionalKeys.forEach((key) => {
     const def = args?.[key];
     if (def && (def.required || Math.random() > 0.5)) {
@@ -43,9 +36,7 @@ function buildExampleArgs(args: ArgDefinitions): string {
     }
   });
   // Non-positional args: include required and a few random optionals
-  const otherKeys = Object.keys(args || {}).filter(
-    (k) => args?.[k]?.type !== "positional",
-  );
+  const otherKeys = Object.keys(args || {}).filter((k) => args?.[k]?.type !== "positional");
   for (const key of otherKeys) {
     const def = args?.[key];
     if (def && (def.required || Math.random() > 0.7)) {
@@ -209,25 +200,15 @@ async function findRecursiveFileBasedCommands(
 /**
  * Calculate padding for table alignment
  */
-function calculatePadding(
-  items: { text: string; desc?: string }[],
-  minPad = 2,
-): number {
-  const maxLength = items.reduce(
-    (max, item) => Math.max(max, item.text.length),
-    0,
-  );
+function calculatePadding(items: { text: string; desc?: string }[], minPad = 2): number {
+  const maxLength = items.reduce((max, item) => Math.max(max, item.text.length), 0);
   return maxLength + minPad;
 }
 
 /**
  * Format a table row with dynamic padding
  */
-function formatTableRow(
-  text: string,
-  desc: string | undefined,
-  padding: number,
-): string {
+function formatTableRow(text: string, desc: string | undefined, padding: number): string {
   const spaces = " ".repeat(Math.max(0, padding - text.length));
   return `${text}${spaces}| ${desc || ""}`;
 }
@@ -249,13 +230,11 @@ export async function showUsage<A extends ArgDefinitions>(
   } = {},
   globalCliMeta?: { name?: string; version?: string; description?: string },
 ) {
-  const { name: fallbackName, version: fallbackVersion } =
-    await getDefaultCliNameAndVersion();
+  const { name: fallbackName, version: fallbackVersion } = await getDefaultCliNameAndVersion();
 
   // Use global CLI metadata if available, otherwise fall back to command meta or package defaults
   const cliName = globalCliMeta?.name || command.meta?.name || fallbackName;
-  const cliVersion =
-    globalCliMeta?.version || command.meta?.version || fallbackVersion;
+  const cliVersion = globalCliMeta?.version || command.meta?.version || fallbackVersion;
 
   relinka("info", `${cliName}${cliVersion ? ` v${cliVersion}` : ""}`);
 
@@ -287,13 +266,8 @@ export async function showUsage<A extends ArgDefinitions>(
     let usageLine = [pkgName, ...pathSegments].join(" ");
 
     // Find all commands recursively
-    const allCommands = await findRecursiveFileBasedCommands(
-      commandsDir,
-      pathSegments,
-    );
-    const directCommands = allCommands.filter(
-      (cmd) => cmd.path.length === pathSegments.length + 1,
-    );
+    const allCommands = await findRecursiveFileBasedCommands(commandsDir, pathSegments);
+    const directCommands = allCommands.filter((cmd) => cmd.path.length === pathSegments.length + 1);
 
     // If this command has subcommands, add <command> [command's options]
     if (directCommands.length > 0) {
@@ -315,9 +289,7 @@ export async function showUsage<A extends ArgDefinitions>(
         const exampleArgs = buildExampleArgs(exampleDef.args || {});
         relinka(
           "log",
-          re.cyan(
-            `Example: ${pkgName} ${path.join(" ")}${exampleArgs ? ` ${exampleArgs}` : ""}`,
-          ),
+          re.cyan(`Example: ${pkgName} ${path.join(" ")}${exampleArgs ? ` ${exampleArgs}` : ""}`),
         );
       }
     }
@@ -326,10 +298,7 @@ export async function showUsage<A extends ArgDefinitions>(
       relinka("info", "Available commands (run with `help` to see more):");
 
       // Group commands by their depth/path
-      const commandsByPath = new Map<
-        string,
-        { name: string; def: any; path: string[] }[]
-      >();
+      const commandsByPath = new Map<string, { name: string; def: any; path: string[] }[]>();
 
       for (const cmd of allCommands) {
         const parentPath = cmd.path.slice(0, -1).join("/") || "/";
@@ -355,7 +324,7 @@ export async function showUsage<A extends ArgDefinitions>(
       // Display commands hierarchically
       for (const [parentPath, cmds] of commandsByPath) {
         if (parentPath !== "/") {
-          relinka("log", re.cyanPastel(`Sub-commands in ${parentPath}:`));
+          relinka("log", re.cyanBright(`Sub-commands in ${parentPath}:`));
         }
         const padding = groupPaddings.get(parentPath) || 0;
         for (const { def, path } of cmds) {
@@ -457,13 +426,9 @@ export async function showUsage<A extends ArgDefinitions>(
       const parts = [
         def.description ?? "",
         `type=${def.type}`,
-        def.default !== undefined
-          ? `default=${JSON.stringify(def.default)}`
-          : null,
+        def.default !== undefined ? `default=${JSON.stringify(def.default)}` : null,
         def.required ? "required" : null,
-        def.dependencies
-          ? `depends on: ${def.dependencies.map((r) => `--${r}`).join(", ")}`
-          : null,
+        def.dependencies ? `depends on: ${def.dependencies.map((r) => `--${r}`).join(", ")}` : null,
       ].filter(Boolean);
       optionItems.push({ text, desc: parts.join(" | ") });
     }
@@ -542,9 +507,7 @@ export function createCli<A extends ArgDefinitions = EmptyArgs>(
         rpcRunParams?: {
           argv?: string[];
           logger?: Logger;
-          completion?:
-            | OmeletteInstanceLike
-            | (() => Promise<OmeletteInstanceLike>);
+          completion?: OmeletteInstanceLike | (() => Promise<OmeletteInstanceLike>);
           prompts?: Promptable;
           /** Format an error thrown by the root procedure before logging to `logger.error` */
           formatError?: (error: unknown) => string;
@@ -570,8 +533,7 @@ export function createCli<A extends ArgDefinitions = EmptyArgs>(
       showDescriptionOnMain?: boolean;
     };
   };
-  let globalCliMeta: { name?: string; version?: string; description?: string } =
-    {};
+  let globalCliMeta: { name?: string; version?: string; description?: string } = {};
 
   if (
     typeof options === "object" &&
@@ -652,10 +614,7 @@ export function createCli<A extends ArgDefinitions = EmptyArgs>(
   }
 
   // If command has a run() handler, merge global CLI metadata with command metadata
-  if (
-    command.run &&
-    (globalCliMeta.name || globalCliMeta.version || globalCliMeta.description)
-  ) {
+  if (command.run && (globalCliMeta.name || globalCliMeta.version || globalCliMeta.description)) {
     const mergedMeta: any = { ...command.meta };
 
     // Only set properties if they have actual values and command meta doesn't already have them
@@ -678,12 +637,7 @@ export function createCli<A extends ArgDefinitions = EmptyArgs>(
   // Extract the actual execution logic into a separate function
   const execute = async (_ctx?: any): Promise<void> => {
     // Handle RPC functionality if provided
-    if (
-      options &&
-      typeof options === "object" &&
-      "rpc" in options &&
-      options.rpc
-    ) {
+    if (options && typeof options === "object" && "rpc" in options && options.rpc) {
       const rpcOptions = options.rpc;
       const rpcRunParams = (options as any).rpcRunParams || {};
 
@@ -705,7 +659,7 @@ export function createCli<A extends ArgDefinitions = EmptyArgs>(
         if ("_def" in router && router._def && "meta" in router._def) {
           return router._def.meta;
         }
-        return undefined;
+        return;
       };
 
       const routerMeta = getRouterMeta(rpcOptions.router);
@@ -715,8 +669,7 @@ export function createCli<A extends ArgDefinitions = EmptyArgs>(
         router: rpcOptions.router,
         name: globalCliMeta.name || (routerMeta as any)?.name,
         version: globalCliMeta.version || (routerMeta as any)?.version,
-        description:
-          globalCliMeta.description || (routerMeta as any)?.description,
+        description: globalCliMeta.description || (routerMeta as any)?.description,
         usage: rpcOptions.usage,
         context: rpcOptions.context,
         trpcServer: rpcOptions.trpcServer,
@@ -724,10 +677,7 @@ export function createCli<A extends ArgDefinitions = EmptyArgs>(
         effect: rpcOptions.effect,
       });
 
-      debugLog(
-        "RPC CLI created, running with argv:",
-        rpcRunParams.argv || process.argv.slice(2),
-      );
+      debugLog("RPC CLI created, running with argv:", rpcRunParams.argv || process.argv.slice(2));
 
       // Run the RPC CLI with the provided run parameters
       await rpcCli.run({
@@ -746,9 +696,7 @@ export function createCli<A extends ArgDefinitions = EmptyArgs>(
 
     // Check if command has a router and automatically enable RPC mode
     if (command.router) {
-      debugLog(
-        "Router detected in command, automatically enabling RPC mode...",
-      );
+      debugLog("Router detected in command, automatically enabling RPC mode...");
 
       // Automatically try to load tsx for TypeScript support when using RPC
       try {
@@ -766,7 +714,7 @@ export function createCli<A extends ArgDefinitions = EmptyArgs>(
         if ("_def" in router && router._def && "meta" in router._def) {
           return router._def.meta;
         }
-        return undefined;
+        return;
       };
 
       const routerMeta = getRouterMeta(command.router);
@@ -774,22 +722,15 @@ export function createCli<A extends ArgDefinitions = EmptyArgs>(
       // Create RPC CLI with the command's router
       const rpcCli = createRpcCli({
         router: command.router,
-        name:
-          globalCliMeta.name || command.meta?.name || (routerMeta as any)?.name,
-        version:
-          globalCliMeta.version ||
-          command.meta?.version ||
-          (routerMeta as any)?.version,
+        name: globalCliMeta.name || command.meta?.name || (routerMeta as any)?.name,
+        version: globalCliMeta.version || command.meta?.version || (routerMeta as any)?.version,
         description:
           globalCliMeta.description ||
           command.meta?.description ||
           (routerMeta as any)?.description,
       });
 
-      debugLog(
-        "RPC CLI created from command router, running with argv:",
-        process.argv.slice(2),
-      );
+      debugLog("RPC CLI created from command router, running with argv:", process.argv.slice(2));
 
       // Run the RPC CLI
       await rpcCli.run({
@@ -828,9 +769,7 @@ export function createCli<A extends ArgDefinitions = EmptyArgs>(
 
         // Check if the default path exists, if not try the original path
         const exists = await fs.pathExists(defaultCmdsRoot);
-        const finalCmdsRoot = exists
-          ? defaultCmdsRoot
-          : path.join(mainEntry, "app");
+        const finalCmdsRoot = exists ? defaultCmdsRoot : path.join(mainEntry, "app");
 
         parserOptions.fileBased = {
           enable: true,
@@ -862,16 +801,9 @@ export function createCli<A extends ArgDefinitions = EmptyArgs>(
       if (parserOptions.fileBased?.enable && rawArgv.length > 0) {
         // Find the deepest command and leftover argv
         const commandsDir = path.resolve(parserOptions.fileBased.cmdsRootPath);
-        const resolved = await resolveFileBasedCommandPath(
-          commandsDir,
-          rawArgv,
-        );
+        const resolved = await resolveFileBasedCommandPath(commandsDir, rawArgv);
         if (resolved) {
-          const {
-            def: subCommand,
-            leftoverArgv,
-            path: pathSegments,
-          } = resolved;
+          const { def: subCommand, leftoverArgv, path: pathSegments } = resolved;
           // If last arg is 'help' or '--help' or '-h', show help for this command
           const helpIdx = leftoverArgv.findIndex(
             (arg) => arg === "help" || arg === "--help" || arg === "-h",
@@ -897,17 +829,11 @@ export function createCli<A extends ArgDefinitions = EmptyArgs>(
       const fileBasedEnabled = parserOptions.fileBased?.enable;
 
       // Handle file-based subcommand execution (if not already handled by help)
-      if (
-        fileBasedEnabled &&
-        rawArgv.length > 0 &&
-        rawArgv[0] &&
-        !isFlag(rawArgv[0])
-      ) {
+      if (fileBasedEnabled && rawArgv.length > 0 && rawArgv[0] && !isFlag(rawArgv[0])) {
         const [subName, ...subCmdArgv] = rawArgv;
         try {
           const ctx = getParsedContext(command, rawArgv, parserOptions);
-          if (typeof command.onCmdInit === "function")
-            await command.onCmdInit(ctx);
+          if (typeof command.onCmdInit === "function") await command.onCmdInit(ctx);
           await runFileBasedSubCmd(
             subName,
             subCmdArgv,
@@ -976,8 +902,7 @@ export function createCli<A extends ArgDefinitions = EmptyArgs>(
 
           try {
             const ctx = getParsedContext(command, rawArgv, parserOptions);
-            if (typeof command.onCmdInit === "function")
-              await command.onCmdInit(ctx);
+            if (typeof command.onCmdInit === "function") await command.onCmdInit(ctx);
             await runSubCommand(
               subSpec,
               subCmdArgv,
@@ -1022,12 +947,7 @@ export function createCli<A extends ArgDefinitions = EmptyArgs>(
 
       // For main run() handler, do NOT call onCmdInit/onCmdExit
       try {
-        await runCommandWithArgs(
-          command,
-          rawArgv,
-          parserOptions,
-          globalCliMeta,
-        );
+        await runCommandWithArgs(command, rawArgv, parserOptions, globalCliMeta);
       } finally {
         // No onCmdExit here
       }
@@ -1035,8 +955,7 @@ export function createCli<A extends ArgDefinitions = EmptyArgs>(
       // @reliverse/relinka [2/2]
       await relinkaShutdown();
     } finally {
-      if (typeof command.onLauncherExit === "function")
-        await command.onLauncherExit();
+      if (typeof command.onLauncherExit === "function") await command.onLauncherExit();
     }
   };
 
@@ -1121,10 +1040,7 @@ async function runFileBasedSubCmd(
   ): Promise<{ importPath: string; leftoverArgv: string[] }> {
     if (args.length === 0 || (args[0] && isFlag(args[0]))) {
       // Try to load cmd.ts/cmd.js in current dir
-      const possibleFiles = [
-        path.join(baseDir, "cmd.js"),
-        path.join(baseDir, "cmd.ts"),
-      ];
+      const possibleFiles = [path.join(baseDir, "cmd.js"), path.join(baseDir, "cmd.ts")];
       for (const file of possibleFiles) {
         if (await fs.pathExists(file)) {
           return { importPath: file, leftoverArgv: args };
@@ -1136,18 +1052,12 @@ async function runFileBasedSubCmd(
     }
     // Check if next arg is a subfolder
     const nextDir = path.join(baseDir, args[0] || "");
-    if (
-      (await fs.pathExists(nextDir)) &&
-      (await fs.stat(nextDir)).isDirectory()
-    ) {
+    if ((await fs.pathExists(nextDir)) && (await fs.stat(nextDir)).isDirectory()) {
       // Recurse into subfolder
       return resolveCmdPath(nextDir, args.slice(1));
     }
     // No subfolder, try to load cmd.ts/cmd.js in current dir
-    const possibleFiles = [
-      path.join(baseDir, "cmd.js"),
-      path.join(baseDir, "cmd.ts"),
-    ];
+    const possibleFiles = [path.join(baseDir, "cmd.js"), path.join(baseDir, "cmd.ts")];
     for (const file of possibleFiles) {
       if (await fs.pathExists(file)) {
         return { importPath: file, leftoverArgv: args };
@@ -1160,10 +1070,7 @@ async function runFileBasedSubCmd(
 
   // Start recursive resolution from cmdsRootPath/subName
   const startDir = path.join(fileCmdOpts.cmdsRootPath, subName);
-  if (
-    !(await fs.pathExists(startDir)) ||
-    !(await fs.stat(startDir)).isDirectory()
-  ) {
+  if (!(await fs.pathExists(startDir)) || !(await fs.stat(startDir)).isDirectory()) {
     const attempted = [subName, ...argv].join(" ");
     const expectedPath = path.relative(
       process.cwd(),
@@ -1171,9 +1078,7 @@ async function runFileBasedSubCmd(
     );
 
     // Find all available commands to suggest alternatives
-    const allCommands = await findRecursiveFileBasedCommands(
-      fileCmdOpts.cmdsRootPath,
-    );
+    const allCommands = await findRecursiveFileBasedCommands(fileCmdOpts.cmdsRootPath);
     const commandNames = allCommands.map((cmd) => cmd.path.join(" "));
 
     // Find the closest match using Levenshtein distance
@@ -1188,8 +1093,7 @@ async function runFileBasedSubCmd(
     }
 
     // Only suggest if we found a reasonably close match
-    const suggestion =
-      minDistance <= 3 ? ` (Did you mean: \`${closestMatch}\`?)` : "";
+    const suggestion = minDistance <= 3 ? ` (Did you mean: \`${closestMatch}\`?)` : "";
 
     throw new Error(
       `\nUnknown command or arguments: ${attempted}${suggestion}\n\nInfo for this CLI's developer: No valid command directory found, expected: ${expectedPath}`,
@@ -1201,20 +1105,12 @@ async function runFileBasedSubCmd(
   const imported = await import(path.resolve(importPath));
   const subCommand = imported.default;
   if (!subCommand) {
-    throw new Error(
-      `File-based subcommand has no default export or is invalid: ${importPath}`,
-    );
+    throw new Error(`File-based subcommand has no default export or is invalid: ${importPath}`);
   }
 
   try {
-    const subCtx = await runCommandWithArgs(
-      subCommand,
-      leftoverArgv,
-      parserOptions,
-      globalCliMeta,
-    );
-    if (typeof parentFinish === "function" && subCtx)
-      await parentFinish(subCtx);
+    const subCtx = await runCommandWithArgs(subCommand, leftoverArgv, parserOptions, globalCliMeta);
+    if (typeof parentFinish === "function" && subCtx) await parentFinish(subCtx);
   } finally {
     // ...
   }
@@ -1236,28 +1132,15 @@ async function runSubCommand(
   const subCommand = await loadSubCommand(spec);
   try {
     // Check for help before running the subcommand
-    const helpIdx = argv.findIndex(
-      (arg) => arg === "help" || arg === "--help" || arg === "-h",
-    );
+    const helpIdx = argv.findIndex((arg) => arg === "help" || arg === "--help" || arg === "-h");
     if (helpIdx !== -1) {
-      await showUsage(
-        subCommand,
-        { ...parserOptions, _isSubcommand: true },
-        globalCliMeta,
-      );
+      await showUsage(subCommand, { ...parserOptions, _isSubcommand: true }, globalCliMeta);
       if (parserOptions.autoExit !== false) process.exit(0);
       return;
     }
 
-    const subCtx = await runCommandWithArgs(
-      subCommand,
-      argv,
-      parserOptions,
-      globalCliMeta,
-      true,
-    );
-    if (typeof parentFinish === "function" && subCtx)
-      await parentFinish(subCtx);
+    const subCtx = await runCommandWithArgs(subCommand, argv, parserOptions, globalCliMeta, true);
+    if (typeof parentFinish === "function" && subCtx) await parentFinish(subCtx);
   } finally {
     // ...
   }
@@ -1290,9 +1173,7 @@ async function runCommandWithArgs<A extends ArgDefinitions>(
       defaultMap[argKey] = def.default !== undefined ? def.default : false;
     } else if (def.default !== undefined) {
       defaultMap[argKey] =
-        def.type === "array" && typeof def.default === "string"
-          ? [def.default]
-          : def.default;
+        def.type === "array" && typeof def.default === "string" ? [def.default] : def.default;
     }
   }
 
@@ -1319,8 +1200,7 @@ async function runCommandWithArgs<A extends ArgDefinitions>(
 
     const def = command.args[key] as any;
     const val = leftoverPositionals[i];
-    finalArgs[key] =
-      val != null && def ? castArgValue(def, val, key) : def?.default;
+    finalArgs[key] = val != null && def ? castArgValue(def, val, key) : def?.default;
   }
 
   // Process non-positional arguments.
@@ -1334,19 +1214,13 @@ async function runCommandWithArgs<A extends ArgDefinitions>(
 
     let rawVal = (parsed as Record<string, any>)[key];
 
-    if (
-      def.type === "array" &&
-      rawVal !== undefined &&
-      !Array.isArray(rawVal)
-    ) {
+    if (def.type === "array" && rawVal !== undefined && !Array.isArray(rawVal)) {
       rawVal = [rawVal];
     }
 
-    const casted =
-      rawVal !== undefined ? castArgValue(def, rawVal, key) : def.default;
+    const casted = rawVal !== undefined ? castArgValue(def, rawVal, key) : def.default;
 
-    const argUsed =
-      rawVal !== undefined && (def.type === "boolean" ? casted === true : true);
+    const argUsed = rawVal !== undefined && (def.type === "boolean" ? casted === true : true);
 
     if (casted == null && def.required) {
       await showUsage(command, parserOptions, globalCliMeta);
@@ -1414,7 +1288,7 @@ async function runCommandWithArgs<A extends ArgDefinitions>(
     else throw err;
   }
   if (returnCtx) return ctx;
-  return undefined;
+  return;
 }
 
 /**
@@ -1494,14 +1368,10 @@ function castArgValue(def: ArgDefinition, rawVal: any, argName: string): any {
         // Warn if value looks like a split bracketed array
         if (
           !warned &&
-          ((v.startsWith("[") && !v.endsWith("]")) ||
-            (!v.startsWith("[") && v.endsWith("]")))
+          ((v.startsWith("[") && !v.endsWith("]")) || (!v.startsWith("[") && v.endsWith("]")))
         ) {
           relinka("error", `Don't use quotes around array elements.`);
-          relinka(
-            "error",
-            `Also — don't use spaces — unless you wrap the whole array in quotes.`,
-          );
+          relinka("error", `Also — don't use spaces — unless you wrap the whole array in quotes.`);
           relinka(
             "warn",
             `Array argument --${argName}: Detected possible shell splitting of bracketed value ('${v}').`,
@@ -1520,10 +1390,7 @@ function castArgValue(def: ArgDefinition, rawVal: any, argName: string): any {
         const parts = v.split(/\s*,\s*/).filter(Boolean);
         // For each part, throw error if quoted
         parts.forEach((p) => {
-          if (
-            (p.startsWith('"') && p.endsWith('"')) ||
-            (p.startsWith("'") && p.endsWith("'"))
-          ) {
+          if ((p.startsWith('"') && p.endsWith('"')) || (p.startsWith("'") && p.endsWith("'"))) {
             throw new Error(
               `Array argument --${argName}: Quoted values are not supported due to shell parsing limitations. Please avoid using single or double quotes around array elements.`,
             );
@@ -1548,9 +1415,7 @@ function castArgValue(def: ArgDefinition, rawVal: any, argName: string): any {
  * Renders a help string for all positional arguments.
  */
 function renderPositional(args: ArgDefinitions) {
-  const positionalKeys = Object.keys(args || {}).filter(
-    (k) => args?.[k]?.type === "positional",
-  );
+  const positionalKeys = Object.keys(args || {}).filter((k) => args?.[k]?.type === "positional");
   return positionalKeys.map((k) => `<${k}>`).join(" ");
 }
 
@@ -1622,9 +1487,7 @@ function normalizeArgv(argv: string[]): string[] {
  * ]);
  * ```
  */
-export async function runCmdWithSubcommands<
-  A extends ArgDefinitions = EmptyArgs,
->(
+export async function runCmdWithSubcommands<A extends ArgDefinitions = EmptyArgs>(
   command: Command<A>,
   argv: string[] = [],
   parserOptions: ReliArgParserOptions & {
@@ -1716,9 +1579,7 @@ export async function runCmd<A extends ArgDefinitions = EmptyArgs>(
       defaultMap[argKey] = def.default !== undefined ? def.default : false;
     } else if (def.default !== undefined) {
       defaultMap[argKey] =
-        def.type === "array" && typeof def.default === "string"
-          ? [def.default]
-          : def.default;
+        def.type === "array" && typeof def.default === "string" ? [def.default] : def.default;
     }
   }
 
@@ -1745,8 +1606,7 @@ export async function runCmd<A extends ArgDefinitions = EmptyArgs>(
 
     const def = command.args[key] as any;
     const val = leftoverPositionals[i];
-    finalArgs[key] =
-      val != null && def ? castArgValue(def, val, key) : def?.default;
+    finalArgs[key] = val != null && def ? castArgValue(def, val, key) : def?.default;
   }
 
   // Process non-positional arguments.
@@ -1760,19 +1620,13 @@ export async function runCmd<A extends ArgDefinitions = EmptyArgs>(
 
     let rawVal = parsed[key];
 
-    if (
-      def.type === "array" &&
-      rawVal !== undefined &&
-      !Array.isArray(rawVal)
-    ) {
+    if (def.type === "array" && rawVal !== undefined && !Array.isArray(rawVal)) {
       rawVal = [rawVal];
     }
 
-    const casted =
-      rawVal !== undefined ? castArgValue(def, rawVal, key) : def.default;
+    const casted = rawVal !== undefined ? castArgValue(def, rawVal, key) : def.default;
 
-    const argUsed =
-      rawVal !== undefined && (def.type === "boolean" ? casted === true : true);
+    const argUsed = rawVal !== undefined && (def.type === "boolean" ? casted === true : true);
 
     if (casted == null && def.required) {
       throw new Error(`Missing required argument: --${key}`);
@@ -1830,9 +1684,7 @@ function getParsedContext<A extends ArgDefinitions>(
       defaultMap[argKey] = def.default !== undefined ? def.default : false;
     } else if (def.default !== undefined) {
       defaultMap[argKey] =
-        def.type === "array" && typeof def.default === "string"
-          ? [def.default]
-          : def.default;
+        def.type === "array" && typeof def.default === "string" ? [def.default] : def.default;
     }
   }
   const mergedParserOptions: ReliArgParserOptions = {
@@ -1852,8 +1704,7 @@ function getParsedContext<A extends ArgDefinitions>(
 
     const def = command.args[key] as any;
     const val = leftoverPositionals[i];
-    finalArgs[key] =
-      val != null && def ? castArgValue(def, val, key) : def?.default;
+    finalArgs[key] = val != null && def ? castArgValue(def, val, key) : def?.default;
   }
   const otherKeys = Object.keys(command.args || {}).filter(
     (k) => command.args?.[k]?.type !== "positional",
@@ -1863,17 +1714,12 @@ function getParsedContext<A extends ArgDefinitions>(
     if (!def) continue;
 
     let rawVal = parsed[key];
-    if (
-      def.type === "array" &&
-      rawVal !== undefined &&
-      !Array.isArray(rawVal)
-    ) {
+    if (def.type === "array" && rawVal !== undefined && !Array.isArray(rawVal)) {
       rawVal = [rawVal];
     }
     if (def.type === "boolean") {
       // Always default to false if not specified
-      finalArgs[key] =
-        rawVal !== undefined ? castArgValue(def, rawVal, key) : false;
+      finalArgs[key] = rawVal !== undefined ? castArgValue(def, rawVal, key) : false;
     } else {
       finalArgs[key] = castArgValue(def, rawVal, key);
     }
@@ -1891,10 +1737,7 @@ async function resolveFileBasedCommandPath(
   let leftover = [...argv];
   while (leftover.length > 0 && leftover[0] && !isFlag(leftover[0])) {
     const nextDir = path.join(currentDir, leftover[0]);
-    if (
-      (await fs.pathExists(nextDir)) &&
-      (await fs.stat(nextDir)).isDirectory()
-    ) {
+    if ((await fs.pathExists(nextDir)) && (await fs.stat(nextDir)).isDirectory()) {
       currentDir = nextDir;
       pathSegments.push(leftover[0]);
       leftover = leftover.slice(1);

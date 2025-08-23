@@ -1,14 +1,23 @@
-import type { JsonSchema7Type } from "zod-to-json-schema";
-
-import * as trpcServer11 from "@trpc/server";
-import {
-  Argument,
-  Command as BaseCommand,
-  InvalidArgumentError,
-  Option,
-} from "commander";
 import { inspect } from "node:util";
 
+import * as trpcServer11 from "@trpc/server";
+import { Argument, Command as BaseCommand, InvalidArgumentError, Option } from "commander";
+import type { JsonSchema7Type } from "zod-to-json-schema";
+import { addCompletions } from "./completions";
+import { CliValidationError, FailedToExitError } from "./errors";
+import { commandToJSON } from "./json";
+import {
+  flattenedProperties,
+  getDescription,
+  getEnumChoices,
+  getSchemaTypes,
+  incompatiblePropertyPairs,
+} from "./json-schema";
+import { lineByLineConsoleLogger } from "./logging";
+import { parseProcedureInputs } from "./parse-procedure";
+import { promptify } from "./prompts";
+import { prettifyStandardSchemaError } from "./standard-schema/errors";
+import { looksLikeStandardSchemaFailure } from "./standard-schema/utils";
 import type {
   AnyProcedure,
   AnyRouter,
@@ -17,6 +26,7 @@ import type {
   Trpc10RouterLike,
   Trpc11RouterLike,
 } from "./trpc-compat";
+import { isOrpcRouter } from "./trpc-compat";
 import type {
   ParsedProcedure,
   TrpcCli,
@@ -24,31 +34,12 @@ import type {
   TrpcCliParams,
   TrpcCliRunParams,
 } from "./types";
-
-import { addCompletions } from "./completions";
-import { FailedToExitError, CliValidationError } from "./errors";
-import { commandToJSON } from "./json";
-import {
-  flattenedProperties,
-  incompatiblePropertyPairs,
-  getDescription,
-  getSchemaTypes,
-  getEnumChoices,
-} from "./json-schema";
-import { lineByLineConsoleLogger } from "./logging";
-import { parseProcedureInputs } from "./parse-procedure";
-import { promptify } from "./prompts";
-import { prettifyStandardSchemaError } from "./standard-schema/errors";
-import { looksLikeStandardSchemaFailure } from "./standard-schema/utils";
-import { isOrpcRouter } from "./trpc-compat";
 import { looksLikeInstanceof } from "./util";
 
-export * from "./types";
-
-export { z } from "zod/v4";
-export * as zod from "zod";
-
 export * as trpcServer from "@trpc/server";
+export * as zod from "zod";
+export { z } from "zod/v4";
+export * from "./types";
 
 export class TrpcCommand extends BaseCommand {
   /** @internal track the commands that have been run, so that we can find the `__result` of the last command */
@@ -63,10 +54,7 @@ export class TrpcCommand extends BaseCommand {
  * Officially, just internal for building a CLI. GLHF.
  */
 // todo: maybe refactor to remove CLI-specific concepts like "positional parameters" and "options". Libraries like trpc-ui want to do basically the same thing, but here we handle lots more validation libraries and edge cases. We could share.
-export const parseRouter = <R extends AnyRouter>({
-  router,
-  ...params
-}: TrpcCliParams<R>) => {
+export const parseRouter = <R extends AnyRouter>({ router, ...params }: TrpcCliParams<R>) => {
   if (isOrpcRouter(router)) return parseOrpcRouter({ router, ...params });
 
   return parseTrpcRouter({ router, ...params });
@@ -77,125 +65,112 @@ const parseTrpcRouter = <R extends Trpc10RouterLike | Trpc11RouterLike>({
   ...params
 }: TrpcCliParams<R>) => {
   const defEntries = Object.entries<AnyProcedure>(router._def.procedures as {});
-  return defEntries.map(
-    ([procedurePath, procedure]): [string, ProcedureInfo] => {
-      const meta = getMeta(procedure);
-      if (meta.jsonInput) {
-        return [
-          procedurePath,
-          {
-            meta,
-            parsedProcedure: jsonProcedureInputs(),
-            incompatiblePairs: [],
-            procedure,
-          },
-        ];
-      }
-      const procedureInputsResult = parseProcedureInputs(
-        procedure._def.inputs!,
-        params,
-      );
-      if (!procedureInputsResult.success) {
-        const procedureInputs = jsonProcedureInputs(
-          `procedure's schema couldn't be converted to CLI arguments: ${procedureInputsResult.error}`,
-        );
-        return [
-          procedurePath,
-          {
-            meta,
-            parsedProcedure: procedureInputs,
-            incompatiblePairs: [],
-            procedure,
-          },
-        ];
-      }
-
-      const procedureInputs = procedureInputsResult.value;
-      const incompatiblePairs = incompatiblePropertyPairs(
-        procedureInputs.optionsJsonSchema,
-      );
-
+  return defEntries.map(([procedurePath, procedure]): [string, ProcedureInfo] => {
+    const meta = getMeta(procedure);
+    if (meta.jsonInput) {
       return [
         procedurePath,
         {
-          meta: getMeta(procedure),
-          parsedProcedure: procedureInputs,
-          incompatiblePairs,
+          meta,
+          parsedProcedure: jsonProcedureInputs(),
+          incompatiblePairs: [],
           procedure,
         },
       ];
-    },
-  );
+    }
+    const procedureInputsResult = parseProcedureInputs(procedure._def.inputs!, params);
+    if (!procedureInputsResult.success) {
+      const procedureInputs = jsonProcedureInputs(
+        `procedure's schema couldn't be converted to CLI arguments: ${procedureInputsResult.error}`,
+      );
+      return [
+        procedurePath,
+        {
+          meta,
+          parsedProcedure: procedureInputs,
+          incompatiblePairs: [],
+          procedure,
+        },
+      ];
+    }
+
+    const procedureInputs = procedureInputsResult.value;
+    const incompatiblePairs = incompatiblePropertyPairs(procedureInputs.optionsJsonSchema);
+
+    return [
+      procedurePath,
+      {
+        meta: getMeta(procedure),
+        parsedProcedure: procedureInputs,
+        incompatiblePairs,
+        procedure,
+      },
+    ];
+  });
 };
 
-const parseOrpcRouter = <R extends OrpcRouterLike<any>>(
-  params: TrpcCliParams<R>,
-) => {
+const parseOrpcRouter = <R extends OrpcRouterLike<any>>(params: TrpcCliParams<R>) => {
   const entries: [string, ProcedureInfo][] = [];
 
-  const { traverseContractProcedures, isProcedure } = eval(
-    `require('@orpc/server')`,
-  ) as typeof import("@orpc/server");
+  const { traverseContractProcedures, isProcedure } = (() => {
+    try {
+      return require("@orpc/server") as typeof import("@orpc/server");
+    } catch (e) {
+      throw new Error(
+        "@orpc/server dependency could not be found - try installing it and re-running",
+        { cause: e },
+      );
+    }
+  })();
   const router = params.router as import("@orpc/server").AnyRouter;
-  const lazyRoutes = traverseContractProcedures(
-    { path: [], router },
-    ({ contract, path }) => {
-      let procedure: Record<string, unknown> = params.router;
-      for (const p of path) procedure = procedure[p] as Record<string, unknown>;
-      if (!isProcedure(procedure)) return; // if it's contract-only, we can't run it via CLI (user may have passed an implemented contract router? should we tell them? it's undefined behaviour so kinda on them)
+  const lazyRoutes = traverseContractProcedures({ path: [], router }, ({ contract, path }) => {
+    let procedure: Record<string, unknown> = params.router;
+    for (const p of path) procedure = procedure[p] as Record<string, unknown>;
+    if (!isProcedure(procedure)) return; // if it's contract-only, we can't run it via CLI (user may have passed an implemented contract router? should we tell them? it's undefined behaviour so kinda on them)
 
-      const procedureInputsResult = parseProcedureInputs(
-        [contract["~orpc"].inputSchema],
-        {
-          "@valibot/to-json-schema": params["@valibot/to-json-schema"],
-          effect: params.effect,
-        },
-      );
-      const procedurePath = path.join(".");
-      const procedureish = {
-        _def: { meta: contract["~orpc"].meta },
-      } as AnyProcedure;
-      const meta = getMeta(procedureish);
+    const procedureInputsResult = parseProcedureInputs([contract["~orpc"].inputSchema], {
+      "@valibot/to-json-schema": params["@valibot/to-json-schema"],
+      effect: params.effect,
+    });
+    const procedurePath = path.join(".");
+    const procedureish = {
+      _def: { meta: contract["~orpc"].meta },
+    } as AnyProcedure;
+    const meta = getMeta(procedureish);
 
-      if (meta.jsonInput) {
-        entries.push([
-          procedurePath,
-          {
-            meta,
-            parsedProcedure: jsonProcedureInputs(),
-            incompatiblePairs: [],
-            procedure,
-          },
-        ]);
-        return;
-      }
-      if (!procedureInputsResult.success) {
-        const parsedProcedure = jsonProcedureInputs(
-          `procedure's schema couldn't be converted to CLI arguments: ${procedureInputsResult.error}`,
-        );
-        entries.push([
-          procedurePath,
-          {
-            meta,
-            parsedProcedure: parsedProcedure,
-            incompatiblePairs: [],
-            procedure,
-          },
-        ]);
-        return;
-      }
-
-      const parsedProcedure = procedureInputsResult.value;
-      const incompatiblePairs = incompatiblePropertyPairs(
-        parsedProcedure.optionsJsonSchema,
-      );
-
+    if (meta.jsonInput) {
       entries.push([
         procedurePath,
-        { procedure, meta, incompatiblePairs, parsedProcedure },
+        {
+          meta,
+          parsedProcedure: jsonProcedureInputs(),
+          incompatiblePairs: [],
+          procedure,
+        },
       ]);
-    },
-  );
+      return;
+    }
+    if (!procedureInputsResult.success) {
+      const parsedProcedure = jsonProcedureInputs(
+        `procedure's schema couldn't be converted to CLI arguments: ${procedureInputsResult.error}`,
+      );
+      entries.push([
+        procedurePath,
+        {
+          meta,
+          parsedProcedure: parsedProcedure,
+          incompatiblePairs: [],
+          procedure,
+        },
+      ]);
+      return;
+    }
+
+    const parsedProcedure = procedureInputsResult.value;
+    const incompatiblePairs = incompatiblePropertyPairs(parsedProcedure.optionsJsonSchema);
+
+    entries.push([procedurePath, { procedure, meta, incompatiblePairs, parsedProcedure }]);
+  });
   if (lazyRoutes.length) {
     const suggestion = `Please use \`import {unlazyRouter} from '@orpc/server'\` to unlazy the router before passing it to @reliverse/rempts`;
     const routes = lazyRoutes.map(({ path }) => path.join(".")).join(", ");
@@ -219,8 +194,7 @@ const jsonProcedureInputs = (reason?: string): ParsedProcedure => {
       },
     },
     getPojoInput: (parsedCliParams) => {
-      if (parsedCliParams.options.input == null)
-        return parsedCliParams.options.input;
+      if (parsedCliParams.options.input == null) return parsedCliParams.options.input;
       return JSON.parse(parsedCliParams.options.input as string) as {};
     },
   };
@@ -253,8 +227,7 @@ export function createRpcCli<R extends AnyRouter>({
 
     if (params.version) program.version(params.version);
     if (params.description) program.description(params.description);
-    if (params.usage)
-      [params.usage].flat().forEach((usage) => program.usage(usage));
+    if (params.usage) [params.usage].flat().forEach((usage) => program.usage(usage));
 
     program.showHelpAfterError();
     program.showSuggestionAfterError();
@@ -280,9 +253,7 @@ export function createRpcCli<R extends AnyRouter>({
       procedurePath: string,
       { meta, parsedProcedure, incompatiblePairs, procedure }: ProcedureInfo,
     ) => {
-      const optionJsonSchemaProperties = flattenedProperties(
-        parsedProcedure.optionsJsonSchema,
-      );
+      const optionJsonSchemaProperties = flattenedProperties(parsedProcedure.optionsJsonSchema);
       command.exitOverride((ec) => {
         _process.exit(ec.exitCode);
         throw new FailedToExitError(`Command ${command.name()} exitOverride`, {
@@ -302,10 +273,7 @@ export function createRpcCli<R extends AnyRouter>({
 
       if (meta.usage) command.usage([meta.usage].flat().join("\n"));
       if (meta.examples)
-        command.addHelpText(
-          "after",
-          `\nExamples:\n${[meta.examples].flat().join("\n")}`,
-        );
+        command.addHelpText("after", `\nExamples:\n${[meta.examples].flat().join("\n")}`);
 
       meta?.aliases?.command?.forEach((alias) => {
         command.alias(alias);
@@ -319,15 +287,11 @@ export function createRpcCli<R extends AnyRouter>({
           param.description,
           param.required ? "(required)" : "",
         ];
-        const argument = new Argument(
-          param.name,
-          descriptionParts.filter(Boolean).join(" "),
-        );
+        const argument = new Argument(param.name, descriptionParts.filter(Boolean).join(" "));
         if (param.type === "number") {
           argument.argParser((value) => {
             const number = numberParser(value, { fallback: null });
-            if (number == null)
-              throw new InvalidArgumentError(`Invalid number: ${value}`);
+            if (number == null) throw new InvalidArgumentError(`Invalid number: ${value}`);
             return value;
           });
         }
@@ -339,10 +303,7 @@ export function createRpcCli<R extends AnyRouter>({
       const unusedOptionAliases: Record<string, string> = {
         ...meta.aliases?.options,
       };
-      const addOptionForProperty = ([propertyKey, propertyValue]: [
-        string,
-        JsonSchema7Type,
-      ]) => {
+      const addOptionForProperty = ([propertyKey, propertyValue]: [string, JsonSchema7Type]) => {
         const description = getDescription(propertyValue);
 
         const longOption = `--${kebabCase(propertyKey)}`;
@@ -367,11 +328,7 @@ export function createRpcCli<R extends AnyRouter>({
         /** try to get a parser that can confidently parse a string into the correct type. Returns null if it can't confidently parse */
         const getValueParser = (types: ReturnType<typeof getSchemaTypes>) => {
           types = types.map((t) => (t === "integer" ? "number" : t));
-          if (
-            types.length === 2 &&
-            types[0] === "boolean" &&
-            types[1] === "number"
-          ) {
+          if (types.length === 2 && types[0] === "boolean" && types[1] === "number") {
             return {
               type: "boolean|number",
               parser: (value: string) =>
@@ -432,25 +389,16 @@ export function createRpcCli<R extends AnyRouter>({
           command.addOption(negation);
         }
 
-        const bracketise = (name: string) =>
-          isCliOptionRequired ? `<${name}>` : `[${name}]`;
+        const bracketise = (name: string) => (isCliOptionRequired ? `<${name}>` : `[${name}]`);
 
-        if (
-          rootTypes.length === 2 &&
-          rootTypes[0] === "boolean" &&
-          rootTypes[1] === "string"
-        ) {
+        if (rootTypes.length === 2 && rootTypes[0] === "boolean" && rootTypes[1] === "string") {
           const option = new Option(`${flags} [value]`, description);
           option.default(defaultValue.exists ? defaultValue.value : false);
           command.addOption(option);
           negate();
           return;
         }
-        if (
-          rootTypes.length === 2 &&
-          rootTypes[0] === "boolean" &&
-          rootTypes[1] === "number"
-        ) {
+        if (rootTypes.length === 2 && rootTypes[0] === "boolean" && rootTypes[1] === "number") {
           const option = new Option(`${flags} [value]`, description);
           option.argParser(getValueParser(rootTypes).parser!);
           option.default(defaultValue.exists ? defaultValue.value : false);
@@ -458,15 +406,8 @@ export function createRpcCli<R extends AnyRouter>({
           negate();
           return;
         }
-        if (
-          rootTypes.length === 2 &&
-          rootTypes[0] === "number" &&
-          rootTypes[1] === "string"
-        ) {
-          const option = new Option(
-            `${flags} ${bracketise("value")}`,
-            description,
-          );
+        if (rootTypes.length === 2 && rootTypes[0] === "number" && rootTypes[1] === "string") {
+          const option = new Option(`${flags} ${bracketise("value")}`, description);
           option.argParser((value) => {
             const number = numberParser(value, { fallback: null });
             return number ?? value;
@@ -517,9 +458,7 @@ export function createRpcCli<R extends AnyRouter>({
           if (defaultValue.exists) option.default(defaultValue.value);
           else if (isValueRequired) option.default([]);
           const itemsProp =
-            "items" in propertyValue
-              ? (propertyValue.items as JsonSchema7Type)
-              : null;
+            "items" in propertyValue ? (propertyValue.items as JsonSchema7Type) : null;
           const itemTypes = itemsProp ? getSchemaTypes(itemsProp) : [];
 
           const itemEnumTypes = itemsProp && getEnumChoices(itemsProp);
@@ -531,8 +470,7 @@ export function createRpcCli<R extends AnyRouter>({
           if (itemParser.parser) {
             option.argParser((value, previous) => {
               const parsed = itemParser.parser(value);
-              if (Array.isArray(previous))
-                return [...previous, parsed] as unknown[];
+              if (Array.isArray(previous)) return [...previous, parsed] as unknown[];
               return [parsed] as unknown[];
             });
           }
@@ -569,9 +507,7 @@ export function createRpcCli<R extends AnyRouter>({
         ([option, alias]) => `${option}: ${alias}`,
       );
       if (invalidOptionAliases.length) {
-        throw new Error(
-          `Invalid option aliases: ${invalidOptionAliases.join(", ")}`,
-        );
+        throw new Error(`Invalid option aliases: ${invalidOptionAliases.join(", ")}`);
       }
 
       // Set the action for this command
@@ -583,17 +519,15 @@ export function createRpcCli<R extends AnyRouter>({
 
         if (args.at(-2) !== options) {
           // This is a code bug and not recoverable. Will hopefully never happen but if commander totally changes their API this will break
-          throw new Error(
-            "Unexpected args format, second last arg is not the options object",
-            { cause: args },
-          );
+          throw new Error("Unexpected args format, second last arg is not the options object", {
+            cause: args,
+          });
         }
         if (args.at(-1) !== command) {
           // This is a code bug and not recoverable. Will hopefully never happen but if commander totally changes their API this will break
-          throw new Error(
-            "Unexpected args format, last arg is not the Command instance",
-            { cause: args },
-          );
+          throw new Error("Unexpected args format, last arg is not the Command instance", {
+            cause: args,
+          });
         }
 
         // the last arg is the Command instance itself, the second last is the options object, and the other args are positional
@@ -606,18 +540,24 @@ export function createRpcCli<R extends AnyRouter>({
         const resolvedTrpcServer = await (params.trpcServer || trpcServer11);
 
         let caller: Record<string, (input: unknown) => unknown>;
-        const deprecatedCreateCaller = Reflect.get(
-          params,
-          "createCallerFactory",
-        ) as CreateCallerFactoryLike | undefined;
+        const deprecatedCreateCaller = Reflect.get(params, "createCallerFactory") as
+          | CreateCallerFactoryLike
+          | undefined;
         if (deprecatedCreateCaller) {
           const message = `Using deprecated \`createCallerFactory\` option. Use \`trpcServer\` instead. e.g. \`createRpcCli({router: myRouter, trpcServer: import('@trpc/server')})\``;
           logger.error?.(message);
           caller = deprecatedCreateCaller(router)(params.context);
         } else if (isOrpcRouter(router)) {
-          const { call } = eval(
-            `require('@orpc/server')`,
-          ) as typeof import("@orpc/server");
+          const { call } = (() => {
+            try {
+              return require("@orpc/server") as typeof import("@orpc/server");
+            } catch (e) {
+              throw new Error(
+                "@orpc/server dependency could not be found - try installing it and re-running",
+                { cause: e },
+              );
+            }
+          })();
           // create an object which acts enough like a trpc caller to be used for this specific procedure
           caller = {
             [procedurePath]: (_input: unknown) =>
@@ -629,9 +569,7 @@ export function createRpcCli<R extends AnyRouter>({
           caller = createCallerFactor(router)(params.context);
         }
 
-        const result = await (
-          caller[procedurePath]?.(input) as Promise<unknown>
-        ).catch((err) => {
+        const result = await (caller[procedurePath]?.(input) as Promise<unknown>).catch((err) => {
           throw transformError(err, command);
         });
         command.__result = result;
@@ -665,8 +603,7 @@ export function createRpcCli<R extends AnyRouter>({
       // Create the actual leaf command
       const leafName = segments.at(-1);
       if (!leafName) return; // Skip if no leaf name
-      const parentPath =
-        segments.length > 1 ? segments.slice(0, -1).join(".") : "";
+      const parentPath = segments.length > 1 ? segments.slice(0, -1).join(".") : "";
       const parentCommand = commandTree[parentPath];
       if (!parentCommand) return; // Skip if parent doesn't exist
 
@@ -804,9 +741,7 @@ export function createRpcCli<R extends AnyRouter>({
   };
 }
 
-function getMeta(procedure: {
-  _def: { meta?: {} };
-}): Omit<TrpcCliMeta, "cliMeta"> {
+function getMeta(procedure: { _def: { meta?: {} } }): Omit<TrpcCliMeta, "cliMeta"> {
   const meta: Partial<TrpcCliMeta> | undefined = procedure._def.meta;
   return meta?.cliMeta || meta || {};
 }
@@ -816,10 +751,7 @@ function kebabCase(propName: string) {
 }
 
 function transformError(err: unknown, command: TrpcCommand) {
-  if (
-    looksLikeInstanceof(err, Error) &&
-    err.message.includes("This is a client-only function")
-  ) {
+  if (looksLikeInstanceof(err, Error) && err.message.includes("This is a client-only function")) {
     return new Error(
       "Failed to create trpc caller. If using trpc v10, either upgrade to v11 or pass in the `@trpc/server` module to `createRpcCli` explicitly",
     );
@@ -829,9 +761,7 @@ function transformError(err: unknown, command: TrpcCommand) {
     const cause = err.cause;
     if (looksLikeStandardSchemaFailure(cause)) {
       const prettyMessage = prettifyStandardSchemaError(cause);
-      return new CliValidationError(
-        `${prettyMessage}\n\n${command.helpInformation()}`,
-      );
+      return new CliValidationError(`${prettyMessage}\n\n${command.helpInformation()}`);
     }
 
     if (
@@ -839,9 +769,7 @@ function transformError(err: unknown, command: TrpcCommand) {
       (err.cause?.constructor?.name === "TraversalError" || // arktype error
         err.cause?.constructor?.name === "StandardSchemaV1Error") // valibot error
     ) {
-      return new CliValidationError(
-        `${err.cause.message}\n\n${command.helpInformation()}`,
-      );
+      return new CliValidationError(`${err.cause.message}\n\n${command.helpInformation()}`);
     }
     if (err.code === "INTERNAL_SERVER_ERROR") {
       return cause;

@@ -1,6 +1,5 @@
+import { describe, expect, expectTypeOf, test, vi } from "bun:test";
 import type { Command } from "commander";
-import { expect, expectTypeOf, test, vi } from "bun:test";
-import { describe } from "bun:test";
 import {
   type AnyRouter,
   createRpcCli,
@@ -46,10 +45,7 @@ test("custom prompter", async () => {
       .meta({ default: true })
       .input(
         z.object({
-          projectName: z
-            .string()
-            .describe("What will your project be called?")
-            .default("my-app"),
+          projectName: z.string().describe("What will your project be called?").default("my-app"),
           language: z
             .enum(["typescript", "javascript"])
             .describe("What language will you be using?"),
@@ -57,10 +53,7 @@ test("custom prompter", async () => {
             .enum(["better-auth", "pgkit", "tailwind", "trpc"])
             .array()
             .describe("What packages will you be using?"),
-          gitInit: z
-            .boolean()
-            .describe("Initialize a git repository?")
-            .default(true),
+          gitInit: z.boolean().describe("Initialize a git repository?").default(true),
           packageManager: z
             .enum(["npm", "yarn", "pnpm"])
             .describe("What package manager will you be using?")
@@ -114,18 +107,12 @@ test("custom prompter", async () => {
           return true;
         },
         checkbox: async (params, _ctx) => {
-          return params.choices.flatMap((c, i) =>
-            i % 2 === 0 ? [c.value] : [],
-          );
+          return params.choices.flatMap((c, i) => (i % 2 === 0 ? [c.value] : []));
         },
       };
     },
   };
-  const result = await runWith(
-    { router },
-    ["create", "--package-manager", "yarn"],
-    runOptions,
-  );
+  const result = await runWith({ router }, ["create", "--package-manager", "yarn"], runOptions);
   expect(JSON.parse(result)).toMatchObject({ packageManager: "yarn" });
 
   expect(log.mock.calls[0][0]).toMatchObject({
@@ -215,8 +202,7 @@ async function runWith<R extends AnyRouter>(
       argv,
     })
     .catch((e) => {
-      if (e.exitCode === 0 && e.cause.message === "(outputHelp)")
-        return logs[0][0]; // should be the help text
+      if (e.exitCode === 0 && e.cause.message === "(outputHelp)") return logs[0][0]; // should be the help text
       if (e.exitCode === 0) return e.cause;
       throw e;
     });

@@ -5,7 +5,7 @@ import { relinka } from "@reliverse/relinka";
 import { loadConfig } from "c12";
 import termkit from "terminal-kit";
 
-import type { EditorExitResult } from "~/types.js";
+import type { EditorExitResult } from "../../types";
 
 const { terminal: term } = termkit;
 
@@ -219,9 +219,7 @@ function renderStatusBar() {
 
   const statusBar = leftPart + middlePart + rightPart;
   term.moveTo(1, term.height - 1);
-  term(
-    state.theme.statusBarBg(state.theme.statusBarText(statusBar.padEnd(width))),
-  );
+  term(state.theme.statusBarBg(state.theme.statusBarText(statusBar.padEnd(width))));
 }
 
 function renderMessageBar() {
@@ -246,19 +244,13 @@ function applySyntaxHighlighting(line: string): string {
   }
   // Very basic example
   let highlightedLine = line;
-  highlightedLine = highlightedLine.replace(/(\/\/.*)/g, (match) =>
-    re.green(match),
-  ); // Comments
-  highlightedLine = highlightedLine.replace(/(['"`].*?['"`])/g, (match) =>
-    re.magenta(match),
-  ); // Strings
+  highlightedLine = highlightedLine.replace(/(\/\/.*)/g, (match) => re.green(match)); // Comments
+  highlightedLine = highlightedLine.replace(/(['"`].*?['"`])/g, (match) => re.magenta(match)); // Strings
   highlightedLine = highlightedLine.replace(
     /\b(const|let|var|function|return|if|else|for|while|import|export|from|default|async|await|new|this)\b/g,
     (match) => re.blue(match),
   ); // Keywords
-  highlightedLine = highlightedLine.replace(/(\d+)/g, (match) =>
-    re.cyan(match),
-  ); // Numbers
+  highlightedLine = highlightedLine.replace(/(\d+)/g, (match) => re.cyan(match)); // Numbers
   // Apply default text color to the entire potentially modified line
   // This ensures parts not matched by regex still get the base theme color.
   // A more sophisticated approach would tokenize and color segments.
@@ -294,10 +286,7 @@ function renderEditor() {
       term(state.theme.lineNumber(`${lineNum} `)); // Line number
 
       const line = state.lines[fileLineIndex];
-      const displayLine = line?.substring(
-        state.leftCol,
-        state.leftCol + displayWidth,
-      );
+      const displayLine = line?.substring(state.leftCol, state.leftCol + displayWidth);
 
       // Apply syntax highlighting here before printing
       const highlightedDisplayLine = applySyntaxHighlighting(displayLine ?? "");
@@ -320,18 +309,14 @@ function render() {
   // Position cursor relative to viewport and account for line numbers
   const screenX = state.cursorX - state.leftCol + 4 + 1; // +4 for line num, +1 for 1-based term coords
   const screenY = state.cursorY - state.topLine + 1; // +1 for 1-based term coords
-  term.moveTo(
-    clamp(screenX, 5, term.width),
-    clamp(screenY, 1, term.height - 2),
-  );
+  term.moveTo(clamp(screenX, 5, term.width), clamp(screenY, 1, term.height - 2));
   term.restoreCursor();
 }
 
 // --- Editing Operations ---
 function insertChar(char: string) {
   const line = getCurrentLine();
-  const newLine =
-    line.slice(0, state.cursorX) + char + line.slice(state.cursorX);
+  const newLine = line.slice(0, state.cursorX) + char + line.slice(state.cursorX);
   state.lines[state.cursorY] = newLine;
   state.cursorX++;
   updateModifiedStatus();
@@ -340,8 +325,7 @@ function insertChar(char: string) {
 function deleteCharBackward() {
   if (state.cursorX > 0) {
     const line = getCurrentLine();
-    const newLine =
-      line.slice(0, state.cursorX - 1) + line.slice(state.cursorX);
+    const newLine = line.slice(0, state.cursorX - 1) + line.slice(state.cursorX);
     state.lines[state.cursorY] = newLine;
     state.cursorX--;
     updateModifiedStatus();
@@ -359,8 +343,7 @@ function deleteCharBackward() {
 function deleteCharForward() {
   const line = getCurrentLine();
   if (state.cursorX < line.length) {
-    const newLine =
-      line.slice(0, state.cursorX) + line.slice(state.cursorX + 1);
+    const newLine = line.slice(0, state.cursorX) + line.slice(state.cursorX + 1);
     state.lines[state.cursorY] = newLine;
     updateModifiedStatus();
   } else if (state.cursorY < state.lines.length - 1) {
@@ -438,11 +421,7 @@ function pageMove(direction: number) {
   state.cursorY = clamp(state.cursorY + step, 0, state.lines.length - 1);
 
   // Then adjust scroll based on new cursor position (the render function will fine-tune)
-  state.topLine = clamp(
-    state.topLine + step,
-    0,
-    Math.max(0, state.lines.length - editorHeight),
-  );
+  state.topLine = clamp(state.topLine + step, 0, Math.max(0, state.lines.length - editorHeight));
   // Ensure cursor stays within the new viewport bounds roughly
   if (state.cursorY < state.topLine) {
     state.topLine = state.cursorY;
@@ -480,9 +459,7 @@ function jumpToDocumentEdge(pos: "start" | "end") {
 }
 
 // --- File Operations ---
-async function promptForFilename(
-  promptMessage = "File path: ",
-): Promise<string | null> {
+async function promptForFilename(promptMessage = "File path: "): Promise<string | null> {
   renderStatusBar(); // Update status bar before prompt
   renderMessageBar(); // Render any existing message first
   term.moveTo(1, term.height); // Move to message bar line for input
@@ -502,9 +479,7 @@ async function promptForFilename(
   }
 }
 
-async function confirmAction(
-  promptMessage = "Are you sure? (y/N)",
-): Promise<boolean> {
+async function confirmAction(promptMessage = "Are you sure? (y/N)"): Promise<boolean> {
   renderStatusBar();
   renderMessageBar();
   term.moveTo(1, term.height);
@@ -537,10 +512,7 @@ async function saveFile(): Promise<boolean> {
   // --- Pre-save Hook ---
   if (state.hooks?.onSave) {
     try {
-      const hookResult = await state.hooks.onSave(
-        contentToSave,
-        state.filename,
-      );
+      const hookResult = await state.hooks.onSave(contentToSave, state.filename);
       if (hookResult === false) {
         state.statusMessage = "Save prevented by hook.";
         proceed = false;
@@ -553,8 +525,7 @@ async function saveFile(): Promise<boolean> {
       }
       // If hook returns true or undefined, proceed normally
     } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : String(error);
+      const errorMessage = error instanceof Error ? error.message : String(error);
       state.statusMessage = `Error in onSave hook: ${errorMessage}`;
       relinka("error", "onSave Hook Error:", error);
       proceed = false; // Don't save if hook fails
@@ -753,8 +724,7 @@ async function findText(): Promise<void> {
     for (let y = 0; y <= state.cursorY; y++) {
       const line = state.lines[y];
       // On the cursor line search only up to the original cursor pos
-      const endIdx =
-        y === state.cursorY ? state.cursorX + 1 : (line?.length ?? 0); // Search whole line if wrapping
+      const endIdx = y === state.cursorY ? state.cursorX + 1 : (line?.length ?? 0); // Search whole line if wrapping
       const matchIndex = line?.substring(0, endIdx).indexOf(termToUse) ?? -1;
       if (matchIndex !== -1) {
         state.cursorY = y;
@@ -925,10 +895,7 @@ async function handleInput(
 }
 
 // --- Editor Lifecycle ---
-async function cleanupAndExit(
-  saved = false,
-  content: string | null = null,
-): Promise<void> {
+async function cleanupAndExit(saved = false, content: string | null = null): Promise<void> {
   if (!state.isRunning) return; // Prevent double-exit issues
   state.isRunning = false; // Stop input loop and rendering
 
@@ -979,11 +946,7 @@ function handleResize(_width: number, _height: number): void {
 
 // Wrapper to handle async input handler correctly with terminal-kit's sync event
 let isHandlingInput = false;
-async function handleInputWrapper(
-  key: string,
-  matches: string[],
-  data: any,
-): Promise<void> {
+async function handleInputWrapper(key: string, matches: string[], data: any): Promise<void> {
   if (isHandlingInput || !state.isRunning) return; // Prevent re-entrancy and handling after exit called
   isHandlingInput = true;
   try {
@@ -1042,27 +1005,18 @@ async function initializeEditorState(options: EditorOptions): Promise<void> {
 
   // --- Load Configuration ---
   try {
-    const loadedConfig = await loadEditorConfig(
-      state.options.cwd,
-      options.configOverrides,
-    );
+    const loadedConfig = await loadEditorConfig(state.options.cwd, options.configOverrides);
     state.editorConfig = loadedConfig; // Store loaded config
 
     // Determine final behavior based on options > config > defaults
     state.options.allowSaveAs =
       options.allowSaveAs ?? state.editorConfig.defaultAllowSaveAs ?? true;
-    state.options.allowOpen =
-      options.allowOpen ?? state.editorConfig.defaultAllowOpen ?? true;
+    state.options.allowOpen = options.allowOpen ?? state.editorConfig.defaultAllowOpen ?? true;
     state.options.autoCloseOnSave =
-      options.autoCloseOnSave ??
-      state.editorConfig.defaultAutoCloseOnSave ??
-      false;
+      options.autoCloseOnSave ?? state.editorConfig.defaultAutoCloseOnSave ?? false;
     state.options.returnContentOnSave =
-      options.returnContentOnSave ??
-      state.editorConfig.defaultReturnContentOnSave ??
-      false;
-    state.syntaxHighlightToggle =
-      state.editorConfig.syntaxHighlighting ?? false; // Initial toggle based on config
+      options.returnContentOnSave ?? state.editorConfig.defaultReturnContentOnSave ?? false;
+    state.syntaxHighlightToggle = state.editorConfig.syntaxHighlighting ?? false; // Initial toggle based on config
     state.theme = {
       // Reset theme based on config
       text: (str) => str,
@@ -1111,9 +1065,7 @@ async function initializeEditorState(options: EditorOptions): Promise<void> {
 }
 
 // --- Main Editor Function (for embedding) ---
-export async function startEditor(
-  options: EditorOptions = {},
-): Promise<EditorExitResult> {
+export async function startEditor(options: EditorOptions = {}): Promise<EditorExitResult> {
   // Perform all async setup *before* creating the promise
   await initializeEditorState(options);
 

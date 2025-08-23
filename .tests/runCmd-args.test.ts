@@ -1,6 +1,6 @@
 import { describe, expect, it } from "bun:test";
 
-import { defineArgs, defineCommand, runCmd } from "../src/mod.js";
+import { defineArgs, defineCommand, runCmd } from "../src/mod";
 
 describe("runCmd argument handling", () => {
   it("should correctly parse boolean arguments when passed as separate array elements", async () => {

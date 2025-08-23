@@ -1,4 +1,4 @@
-import type { PromptOptions } from "~/types.js";
+import type { PromptOptions } from "~/types";
 
 export const basicConfig = {
   titleColor: "cyan",

@@ -1,9 +1,7 @@
-import { Command } from "commander";
 import * as path from "node:path";
-
-import type { Trpc11RouterLike } from "~/libs/launcher/trpc-orpc-support/trpc-compat";
-
+import { Command } from "commander";
 import { createRpcCli } from "~/libs/launcher/trpc-orpc-support";
+import type { Trpc11RouterLike } from "~/libs/launcher/trpc-orpc-support/trpc-compat";
 
 // Run the CLI with the example router file
 // bun example/trpc-orpc/commander/main.ts example/trpc-orpc/rempts/main.ts
@@ -106,10 +104,7 @@ program.action(async () => {
     // this is a cjs-like module, possibly what tsx gives us
     importedModule = importedModule?.["module.exports"] as never;
   }
-  while (
-    "default" in importedModule &&
-    importedModule?.default !== importedModule
-  ) {
+  while ("default" in importedModule && importedModule?.default !== importedModule) {
     // depending on how it's loaded we can end up with weird stuff like `{default: {default: {myRouter: ...}}}`
     importedModule = importedModule?.default as never;
   }
@@ -117,9 +112,7 @@ program.action(async () => {
   const isTrpcRouterLike = (value: unknown): value is Trpc11RouterLike =>
     Boolean((value as Trpc11RouterLike)?._def?.procedures);
   if (options.export) {
-    router = (importedModule as Record<string, Trpc11RouterLike>)[
-      options.export
-    ]!;
+    router = (importedModule as Record<string, Trpc11RouterLike>)[options.export]!;
     if (!isTrpcRouterLike(router)) {
       throw new Error(
         `Expected a trpc router in ${filepath}.${options.export}, got ${typeof router}`,
@@ -128,8 +121,7 @@ program.action(async () => {
   } else if (isTrpcRouterLike(importedModule)) {
     router = importedModule;
   } else {
-    const routerExports =
-      Object.values(importedModule).filter(isTrpcRouterLike);
+    const routerExports = Object.values(importedModule).filter(isTrpcRouterLike);
     if (routerExports.length !== 1) {
       throw new Error(
         `Expected exactly one trpc router in ${filepath}, found ${routerExports.length}. Exports: ${Object.keys(importedModule).join(", ")}`,

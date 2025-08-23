@@ -44,9 +44,7 @@ export interface StandardSchemaV1Issue {
   /** The error message of the issue. */
   readonly message: string;
   /** The path of the issue, if any. */
-  readonly path?:
-    | readonly (PropertyKey | StandardSchemaV1PathSegment)[]
-    | undefined;
+  readonly path?: readonly (PropertyKey | StandardSchemaV1PathSegment)[] | undefined;
 }
 
 /** The path segment interface of the issue. */
@@ -64,9 +62,11 @@ export interface StandardSchemaV1Types<Input = unknown, Output = Input> {
 }
 
 /** Infers the input type of a Standard Schema. */
-export type StandardSchemaV1InferInput<Schema extends StandardSchemaV1> =
-  NonNullable<Schema["~standard"]["types"]>["input"];
+export type StandardSchemaV1InferInput<Schema extends StandardSchemaV1> = NonNullable<
+  Schema["~standard"]["types"]
+>["input"];
 
 /** Infers the output type of a Standard Schema. */
-export type StandardSchemaV1InferOutput<Schema extends StandardSchemaV1> =
-  NonNullable<Schema["~standard"]["types"]>["output"];
+export type StandardSchemaV1InferOutput<Schema extends StandardSchemaV1> = NonNullable<
+  Schema["~standard"]["types"]
+>["output"];

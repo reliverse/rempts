@@ -1,11 +1,6 @@
 // 👉 `bun examples\other\stream.ts`
 
-import {
-  defineCommand,
-  streamText,
-  streamTextBox,
-  streamTextWithSpinner,
-} from "~/mod.js";
+import { defineCommand, streamText, streamTextBox, streamTextWithSpinner } from "~/mod";
 
 export default defineCommand({
   run: async () => {

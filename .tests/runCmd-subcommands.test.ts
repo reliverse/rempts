@@ -1,10 +1,6 @@
 import { describe, expect, it } from "bun:test";
 
-import {
-  defineArgs,
-  defineCommand,
-  runCmdWithSubcommands,
-} from "../src/mod.js";
+import { defineArgs, defineCommand, runCmdWithSubcommands } from "../src/mod";
 
 describe("runCmdWithSubcommands", () => {
   it("should handle subcommand with template literals", async () => {
@@ -45,9 +41,7 @@ describe("runCmdWithSubcommands", () => {
     const isDev = true;
 
     // ✅ Should work with subcommand and template literals
-    await runCmdWithSubcommands(mainCmd, [
-      `build --input src/mod.ts --someBoolean ${isDev}`,
-    ]);
+    await runCmdWithSubcommands(mainCmd, [`build --input src/mod.ts --someBoolean ${isDev}`]);
     expect(receivedCommand).toBe("build");
     expect(receivedArgs.input).toBe("src/mod.ts");
     expect(receivedArgs.someBoolean).toBe(true);
@@ -144,9 +138,7 @@ describe("runCmdWithSubcommands", () => {
     });
 
     // ✅ Should work with nested subcommands
-    await runCmdWithSubcommands(mainCmd, [
-      "build someSubCmd src/mod.ts --no-cjs",
-    ]);
+    await runCmdWithSubcommands(mainCmd, ["build someSubCmd src/mod.ts --no-cjs"]);
     expect(receivedCommand).toBe("someSubCmd");
     expect(receivedArgs.input).toBe("src/mod.ts");
     expect(receivedArgs.cjs).toBe(false);
@@ -204,11 +196,7 @@ describe("runCmdWithSubcommands", () => {
     });
 
     // ✅ Should work with mixed array containing subcommands
-    await runCmdWithSubcommands(mainCmd, [
-      "build someSubCmd src/mod.ts",
-      "--no-cjs",
-      "--verbose",
-    ]);
+    await runCmdWithSubcommands(mainCmd, ["build someSubCmd src/mod.ts", "--no-cjs", "--verbose"]);
     expect(receivedCommand).toBe("someSubCmd");
     expect(receivedArgs.input).toBe("src/mod.ts");
     expect(receivedArgs.cjs).toBe(false);
@@ -275,13 +263,7 @@ describe("runCmdWithSubcommands", () => {
     });
 
     // ✅ Should still work with properly separated arguments
-    await runCmdWithSubcommands(testCmd, [
-      "--name",
-      "John",
-      "--age",
-      "25",
-      "--active",
-    ]);
+    await runCmdWithSubcommands(testCmd, ["--name", "John", "--age", "25", "--active"]);
     expect(receivedArgs.name).toBe("John");
     expect(receivedArgs.age).toBe(25);
     expect(receivedArgs.active).toBe(true);

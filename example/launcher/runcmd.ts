@@ -1,6 +1,6 @@
-/* import { runCmd } from "~/mod.js";
+/* import { runCmd } from "~/mod";
 
-import { cmdMinimal } from "./app/cmds.js";
+import { cmdMinimal } from "./app/cmds";
 
 async function main() {
   try {

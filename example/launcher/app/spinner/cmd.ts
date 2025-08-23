@@ -1,16 +1,16 @@
 import { relinka } from "@reliverse/relinka";
 
 import {
-  defineCommand,
   colorize,
   createAsciiArt,
-  msg,
-  taskSpinPrompt,
+  defineCommand,
   endPrompt,
   inputPrompt,
+  msg,
   selectPrompt,
   startPrompt,
-} from "~/mod.js";
+  taskSpinPrompt,
+} from "~/mod";
 
 export default defineCommand({
   meta: {

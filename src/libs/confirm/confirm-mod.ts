@@ -1,17 +1,10 @@
-import { re } from "@reliverse/relico";
 import { stdin as input, stdout as output } from "node:process";
 import readline from "node:readline/promises";
-
-import type {
-  ColorName,
-  ConfirmPromptOptions,
-  TypographyName,
-  VariantName,
-} from "~/types.js";
-
-import { bar, msg } from "~/libs/msg-fmt/messages.js";
-import { deleteLastLine } from "~/libs/msg-fmt/terminal.js";
-import { completePrompt } from "~/libs/utils/prompt-end.js";
+import { re } from "@reliverse/relico";
+import type { ColorName, ConfirmPromptOptions, TypographyName, VariantName } from "../../types";
+import { bar, msg } from "../msg-fmt/messages";
+import { deleteLastLine } from "../msg-fmt/terminal";
+import { completePrompt } from "../utils/prompt-end";
 
 /**
  * Builds the prompt lines using `msg()` calls.
@@ -109,9 +102,7 @@ function renderPrompt(params: {
 /**
  * Prompts the user with a yes/no question, returning a boolean based on their input.
  */
-export async function confirmPrompt(
-  options: ConfirmPromptOptions,
-): Promise<boolean> {
+export async function confirmPrompt(options: ConfirmPromptOptions): Promise<boolean> {
   const {
     title = "",
     message, // Alias for title
@@ -135,8 +126,7 @@ export async function confirmPrompt(
   } = options;
 
   // Use message as alias for title, concatenating both if provided
-  const finalTitle =
-    message && title ? `${title}: ${message}` : (message ?? title ?? "Confirm");
+  const finalTitle = message && title ? `${title}: ${message}` : (message ?? title ?? "Confirm");
 
   // Use initialValue as alias for defaultValue, prioritizing defaultValue if both are provided
   const finalDefaultValue = defaultValue ?? initialValue;
@@ -148,9 +138,7 @@ export async function confirmPrompt(
   // Define the default hint
   const defaultHint = effectiveDefault ? "[Y/n]" : "[y/N]";
   // Only prepend the default hint to the title if instructions are not displayed
-  const adjustedTitle = displayInstructions
-    ? finalTitle
-    : `${re.blue(defaultHint)} ${finalTitle}`;
+  const adjustedTitle = displayInstructions ? finalTitle : `${re.blue(defaultHint)} ${finalTitle}`;
 
   const instructions = `Use <y/n> to confirm or deny, <Enter> for default (${effectiveDefault ? "Y" : "N"}), <Ctrl+C> to exit`;
 
@@ -211,9 +199,7 @@ export async function confirmPrompt(
       });
 
       const formattedBar = bar({ borderColor });
-      const answer = (await rl.question(`${formattedBar}  `))
-        .toLowerCase()
-        .trim();
+      const answer = (await rl.question(`${formattedBar}  `)).toLowerCase().trim();
 
       let result: boolean;
       if (!answer) {

@@ -3,7 +3,7 @@
 import { initTRPC } from "@trpc/server";
 import { z } from "zod";
 
-import { createCli } from "~/libs/launcher/launcher-mod.js";
+import { createCli } from "~/libs/launcher/launcher-mod";
 
 // Example tRPC router for a calculator CLI
 const t = initTRPC.create();
@@ -22,12 +22,7 @@ const appRouter = t.router({
     .query(({ input }) => input[0] * input[1]),
 
   divide: t.procedure
-    .input(
-      z.tuple([
-        z.number(),
-        z.number().refine((n) => n !== 0, "Cannot divide by zero"),
-      ]),
-    )
+    .input(z.tuple([z.number(), z.number().refine((n) => n !== 0, "Cannot divide by zero")]))
     .query(({ input }) => input[0] / input[1]),
 
   power: t.procedure
@@ -35,23 +30,17 @@ const appRouter = t.router({
     .query(({ input }) => input[0] ** input[1]),
 
   sqrt: t.procedure
-    .input(
-      z
-        .number()
-        .refine((n) => n >= 0, "Cannot take square root of negative number"),
-    )
+    .input(z.number().refine((n) => n >= 0, "Cannot take square root of negative number"))
     .query(({ input }) => Math.sqrt(input)),
 
-  factorial: t.procedure
-    .input(z.number().int().min(0).max(20))
-    .query(({ input }) => {
-      if (input === 0 || input === 1) return 1;
-      let result = 1;
-      for (let i = 2; i <= input; i++) {
-        result *= i;
-      }
-      return result;
-    }),
+  factorial: t.procedure.input(z.number().int().min(0).max(20)).query(({ input }) => {
+    if (input === 0 || input === 1) return 1;
+    let result = 1;
+    for (let i = 2; i <= input; i++) {
+      result *= i;
+    }
+    return result;
+  }),
 
   // Complex operations
   solve: t.procedure
@@ -73,8 +62,7 @@ const appRouter = t.router({
         const a = input.coefficients[0]!;
         const b = input.coefficients[1]!;
         const c = input.coefficients[2]!;
-        if (a === 0)
-          throw new Error("Not a quadratic equation (a cannot be 0)");
+        if (a === 0) throw new Error("Not a quadratic equation (a cannot be 0)");
 
         const discriminant = b * b - 4 * a * c;
         if (discriminant < 0) {

@@ -2,11 +2,7 @@ import type { JSONSchema7 } from "json-schema";
 import type { JsonSchema7Type } from "zod-to-json-schema";
 
 import type { CommandJSON } from "./json";
-import type {
-  AnyRouter,
-  CreateCallerFactoryLike,
-  inferRouterContext,
-} from "./trpc-compat";
+import type { AnyRouter, CreateCallerFactoryLike, inferRouterContext } from "./trpc-compat";
 
 export interface TrpcCliParams<R extends AnyRouter> extends Dependencies {
   /** A tRPC router. Procedures will become CLI commands. */
@@ -81,9 +77,7 @@ export interface ParsedProcedure {
   }) => unknown;
 }
 
-export type Result<T> =
-  | { success: true; value: T }
-  | { success: false; error: string };
+export type Result<T> = { success: true; value: T } | { success: false; error: string };
 
 /** A function that logs any inputs. e.g. `console.info` */
 export type Log = (...args: unknown[]) => void;
@@ -214,10 +208,7 @@ export interface CommanderProgramLike {
 
 export interface TrpcCli {
   /** run the CLI - gets args from `process.argv` by default */
-  run: (
-    params?: TrpcCliRunParams,
-    program?: CommanderProgramLike,
-  ) => Promise<void>;
+  run: (params?: TrpcCliRunParams, program?: CommanderProgramLike) => Promise<void>;
   /**
    * Build a `Commander` program from the CLI - you can use this to manually customise the program before passing it to `.run(...)`.
    * Note that you will need to cast the return value to `import('commander').Command` to use it as a `Command` instance.
@@ -280,9 +271,7 @@ export interface Prompter {
   select: (
     params: {
       message: string;
-      choices:
-        | string[]
-        | { name: string; value: string; description?: string }[];
+      choices: string[] | { name: string; value: string; description?: string }[];
       required?: boolean;
       default?: string;
       validate?: (input: string) => boolean | string;

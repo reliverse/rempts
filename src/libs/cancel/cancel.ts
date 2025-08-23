@@ -1,8 +1,7 @@
-import type { Key } from "node:readline";
-import type { Readable, Writable } from "node:stream";
-
 import { stdin, stdout } from "node:process";
+import type { Key } from "node:readline";
 import * as readline from "node:readline";
+import type { Readable, Writable } from "node:stream";
 import { ReadStream, WriteStream } from "node:tty";
 import { cursor } from "sisteransi";
 

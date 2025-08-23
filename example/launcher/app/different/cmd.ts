@@ -1,18 +1,15 @@
 // 👉 `bun examples/src/other/different.ts`
 
-import { msg } from "~/mod.js";
 import {
   confirmPrompt,
   inputPrompt,
+  msg,
   multiselectPrompt,
   selectPrompt,
   togglePrompt,
-} from "~/mod.js";
+} from "~/mod";
 
-import {
-  showEndPrompt,
-  showStartPrompt,
-} from "../../../prompts/impl/prompts.js";
+import { showEndPrompt, showStartPrompt } from "../../../prompts/impl/prompts";
 
 export async function detailedExample() {
   await showStartPrompt();

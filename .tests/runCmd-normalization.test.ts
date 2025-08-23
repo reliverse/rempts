@@ -1,6 +1,6 @@
 import { describe, expect, it } from "bun:test";
 
-import { defineArgs, defineCommand, runCmd } from "../src/mod.js";
+import { defineArgs, defineCommand, runCmd } from "../src/mod";
 
 describe("runCmd argument normalization", () => {
   it("should handle template literal with single argument", async () => {
@@ -94,11 +94,7 @@ describe("runCmd argument normalization", () => {
     const isDev = true;
 
     // ✅ Should work with mixed array
-    await runCmd(testCmd, [
-      `--dev ${isDev} --build mod.ts`,
-      "--pub true",
-      "--someBoolean",
-    ]);
+    await runCmd(testCmd, [`--dev ${isDev} --build mod.ts`, "--pub true", "--someBoolean"]);
 
     expect(receivedArgs.dev).toBe(true);
     expect(receivedArgs.build).toBe("mod.ts");

@@ -1,14 +1,13 @@
-import { re } from "@reliverse/relico";
 import { stdout } from "node:process";
+import { re } from "@reliverse/relico";
 import ora from "ora";
 import { cursor } from "sisteransi";
 import terminalSize from "terminal-size";
 import wrapAnsi from "wrap-ansi";
-
-import type { BorderColorName, ColorName, StreamTextOptions } from "~/types.js";
-
-import { toBaseColor } from "~/libs/msg-fmt/colors.js";
-import { msg } from "~/libs/msg-fmt/messages.js";
+import type { BorderColorName, ColorName, StreamTextOptions } from "../../types";
+import { toBaseColor } from "../msg-fmt/colors";
+import { colorMap } from "../msg-fmt/mapping";
+import { msg } from "../msg-fmt/messages";
 
 function getTerminalWidth(): number {
   return terminalSize().columns;
@@ -31,23 +30,16 @@ function extractAnsi(text: string): string[] {
   return text.match(/\x1b\[[0-9;]*[a-zA-Z]/g) || [];
 }
 
-function wrapWithBar(
-  text: string,
-  isFirst: boolean,
-  color?: ColorName,
-): string {
+function wrapWithBar(text: string, isFirst: boolean, color?: ColorName): string {
   const prefix = isFirst ? re.green("◆") : re.dim("│"); // TODO: true here is not working looks like
 
   // Extract and reapply ANSI sequences
   const ansiCodes = extractAnsi(text);
   const cleanText = stripAnsi(text);
-  const coloredText = color
-    ? re[color as keyof typeof re](cleanText)
-    : re.dim(cleanText);
+  const coloredText = color ? colorMap[color](cleanText) : re.dim(cleanText);
 
   // Reapply original ANSI codes if they exist
-  const finalText =
-    ansiCodes.length > 0 ? ansiCodes.join("") + coloredText : coloredText;
+  const finalText = ansiCodes.length > 0 ? ansiCodes.join("") + coloredText : coloredText;
   return `${prefix}  ${finalText}`;
 }
 
@@ -91,7 +83,7 @@ export async function streamText({
         const output = isStartOfLine
           ? wrapWithBar(buffer, isFirstLine, color)
           : color
-            ? re[color as keyof typeof re](buffer)
+            ? colorMap[color](buffer)
             : re.dim(buffer);
         stdout.write(output);
         buffer = "";
@@ -108,7 +100,7 @@ export async function streamText({
       const output = isStartOfLine
         ? wrapWithBar(buffer, isFirstLine, color)
         : color
-          ? re[color as keyof typeof re](buffer)
+          ? colorMap[color](buffer)
           : re.dim(buffer);
       stdout.write(output);
       await new Promise((resolve) => setTimeout(resolve, delay));
@@ -125,7 +117,7 @@ export async function streamText({
     const output = isStartOfLine
       ? wrapWithBar(buffer, isFirstLine, color)
       : color
-        ? re[color as keyof typeof re](buffer)
+        ? colorMap[color](buffer)
         : re.dim(buffer);
     stdout.write(output);
     if (onProgress) {
@@ -206,9 +198,7 @@ export async function streamTextWithSpinner({
   // Stream text after spinner
   for (const char of text) {
     currentText += char;
-    spinner.text = color
-      ? re[color as keyof typeof re](currentText)
-      : currentText;
+    spinner.text = color ? colorMap[color](currentText) : currentText;
     await new Promise((resolve) => setTimeout(resolve, delay));
   }
 

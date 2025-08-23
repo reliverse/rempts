@@ -1,17 +1,13 @@
-import { it, expect, afterAll } from "bun:test";
+import { afterAll, expect, it } from "bun:test";
 
 afterAll(() => {
   vi.unstubAllEnvs();
 });
 
 it("falls back to ascii figures when unicode is not supported", async () => {
-  const { default: unicodeFigures } = await import(
-    "~/components/figures/figures-mod.js"
-  );
+  const { default: unicodeFigures } = await import("~/components/figures/figures-mod.js");
   vi.resetModules().stubEnv("TERM", "linux");
-  const { default: asciiFigures } = await import(
-    "~/components/figures/figures-mod.js"
-  );
+  const { default: asciiFigures } = await import("~/components/figures/figures-mod.js");
 
   expect(asciiFigures.checkboxOn).not.toEqual(unicodeFigures.checkboxOn);
 

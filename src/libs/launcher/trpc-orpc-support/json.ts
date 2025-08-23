@@ -56,25 +56,20 @@ export const commandToJSON = (command: Command): CommandJSON => {
   if (usage) json.usage = usage;
 
   json.arguments = command.registeredArguments.map((arg) => {
-    const result = { name: arg.name() } as NonNullable<
-      CommandJSON["arguments"]
-    >[number];
+    const result = { name: arg.name() } as NonNullable<CommandJSON["arguments"]>[number];
 
     result.variadic = arg.variadic;
     result.required = arg.required;
 
     if (arg.description) result.description = arg.description;
     if (arg.defaultValue) result.defaultValue = arg.defaultValue as {};
-    if (arg.defaultValueDescription)
-      result.defaultValueDescription = arg.defaultValueDescription;
+    if (arg.defaultValueDescription) result.defaultValueDescription = arg.defaultValueDescription;
     if (arg.argChoices) result.choices = arg.argChoices;
     return result;
   });
 
   json.options = command.options.map((o) => {
-    const result = { name: o.name() } as NonNullable<
-      CommandJSON["options"]
-    >[number];
+    const result = { name: o.name() } as NonNullable<CommandJSON["options"]>[number];
 
     result.required = o.required;
     result.optional = o.optional;
@@ -90,8 +85,7 @@ export const commandToJSON = (command: Command): CommandJSON => {
     if (attributeName) result.attributeName = attributeName;
 
     if (o.defaultValue) result.defaultValue = o.defaultValue as {};
-    if (o.defaultValueDescription)
-      result.defaultValueDescription = o.defaultValueDescription;
+    if (o.defaultValueDescription) result.defaultValueDescription = o.defaultValueDescription;
 
     return result;
   });

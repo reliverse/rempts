@@ -1,4 +1,4 @@
-import { msg } from "~/libs/msg-fmt/messages.js";
+import { msg } from "../msg-fmt/messages";
 
 export interface GroupOptions {
   onCancel?: () => void;
@@ -13,9 +13,7 @@ export interface GroupContext<T> {
   totalSteps: number;
 }
 
-export type GroupStep<T, K extends keyof T> = (
-  context: GroupContext<T>,
-) => Promise<T[K]> | T[K];
+export type GroupStep<T, K extends keyof T> = (context: GroupContext<T>) => Promise<T[K]> | T[K];
 
 export type GroupSteps<T> = {
   [K in keyof T]: GroupStep<T, K>;
@@ -111,18 +109,13 @@ export async function group<T extends Record<string, any>>(
  * Utility function to create a step that depends on specific previous results
  */
 export function createStep<T, K extends keyof T, D extends keyof T>(
-  stepFunction: (
-    context: GroupContext<T>,
-    dependency: T[D],
-  ) => Promise<T[K]> | T[K],
+  stepFunction: (context: GroupContext<T>, dependency: T[D]) => Promise<T[K]> | T[K],
   dependencyKey: D,
 ): GroupStep<T, K> {
   return (context: GroupContext<T>) => {
     const dependency = context.results[dependencyKey];
     if (dependency === undefined) {
-      throw new Error(
-        `Dependency '${String(dependencyKey)}' is required but not available`,
-      );
+      throw new Error(`Dependency '${String(dependencyKey)}' is required but not available`);
     }
     return stepFunction(context, dependency);
   };
@@ -144,9 +137,7 @@ export function createMultiStep<T, K extends keyof T, D extends (keyof T)[]>(
     for (const key of dependencyKeys) {
       const dependency = context.results[key];
       if (dependency === undefined) {
-        throw new Error(
-          `Dependency '${String(key)}' is required but not available`,
-        );
+        throw new Error(`Dependency '${String(key)}' is required but not available`);
       }
       dependencies[key] = dependency;
     }

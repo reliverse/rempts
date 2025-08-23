@@ -1,6 +1,5 @@
-import type { MultiselectPromptParams } from "~/types.js";
-
-import { multiselectPrompt } from "~/libs/multiselect/multiselect-prompt.js";
+import type { MultiselectPromptParams } from "../../types";
+import { multiselectPrompt } from "../multiselect/multiselect-prompt";
 
 export const multiselect = multiselectPrompt as <T extends string>(
   params: MultiselectPromptParams<T>,

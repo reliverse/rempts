@@ -9,18 +9,14 @@ import type {
   MsgConfig,
   MsgType,
   SymbolName,
+  Symbols,
   TypographyName,
   VariantName,
-  Symbols,
-} from "~/types.js";
+} from "../../types";
 
-import { colorMap, typographyMap } from "./mapping.js";
-import {
-  deleteLastLines,
-  getExactTerminalWidth,
-  getTerminalWidth,
-} from "./terminal.js";
-import { isValidVariant, variantMap } from "./variants.js";
+import { colorMap, typographyMap } from "./mapping";
+import { deleteLastLines, getExactTerminalWidth, getTerminalWidth } from "./terminal";
+import { isValidVariant, variantMap } from "./variants";
 
 const unicode = isUnicodeSupported();
 const u = (c: string, fallback: string) => (unicode ? c : fallback);
@@ -57,16 +53,12 @@ function wrapThenStyle(
 
   // 1) Possibly wrap text
   const width = getTerminalWidth();
-  const wrappedText = wrap
-    ? wrapAnsi(input, width, { hard: false, trim: true })
-    : input;
+  const wrappedText = wrap ? wrapAnsi(input, width, { hard: false, trim: true }) : input;
 
   // 2) Apply styling line by line
   return wrappedText
     .split("\n")
-    .map((line) =>
-      applyStyles(line, colorName, typographyName, variantName, borderColor),
-    )
+    .map((line) => applyStyles(line, colorName, typographyName, variantName, borderColor))
     .join("\n");
 }
 
@@ -84,11 +76,7 @@ function applyStyles(
 
   // If variant is valid, that overrides color + typography
   if (variantName && isValidVariant(variantName)) {
-    styledText = variantMap[variantName](
-      [styledText],
-      undefined,
-      borderColor,
-    ).toString();
+    styledText = variantMap[variantName]([styledText], undefined, borderColor).toString();
     return styledText;
   }
 
@@ -105,11 +93,7 @@ function applyStyles(
 /**
  * Returns a colored vertical bar symbol. Prevents gradient colors for bars.
  */
-export const bar = ({
-  borderColor = "dim",
-}: {
-  borderColor?: ColorName;
-} = {}): string => {
+export const bar = ({ borderColor = "dim" }: { borderColor?: ColorName } = {}): string => {
   if (borderColor.endsWith("Gradient")) {
     relinka(
       "error",
@@ -143,18 +127,14 @@ function getColoredSymbol(
       ? colorMap[symbolColor](symbols[symbolName])
       : symbols[symbolName];
   }
-  return undefined;
+  return;
 }
 
 /**
  * Formats the title (with hints, placeholder, errorMessage).
  * Returns a combined string suitable for printing.
  */
-function formatTitle(
-  opts: FmtMsgOptions,
-  borderTwoSpaces: string,
-  borderError: string,
-): string {
+function formatTitle(opts: FmtMsgOptions, borderTwoSpaces: string, borderError: string): string {
   let formattedTitle = "";
 
   if (!opts.title) return formattedTitle;
@@ -434,9 +414,7 @@ export function msg(opts: FmtMsgOptions): void {
   }
 
   // +1 for the extra newline we wrote out (except when noNewLine is true for M_BAR)
-  printedLineStack.push(
-    opts.type === "M_BAR" && opts.noNewLine ? lineCount : lineCount + 1,
-  );
+  printedLineStack.push(opts.type === "M_BAR" && opts.noNewLine ? lineCount : lineCount + 1);
 }
 
 /**

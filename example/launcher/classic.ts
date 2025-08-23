@@ -2,7 +2,7 @@
 
 import { relinka } from "@reliverse/relinka";
 
-import { defineArgs, defineCommand, runMain } from "~/mod.js";
+import { defineArgs, defineCommand, runMain } from "~/mod";
 
 const main = defineCommand({
   meta: {

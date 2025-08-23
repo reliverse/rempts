@@ -1,15 +1,10 @@
+import { homedir } from "node:os";
 import { re } from "@reliverse/relico";
 import { relinka } from "@reliverse/relinka";
-import { homedir } from "node:os";
 import terminalSize from "terminal-size";
-
-import type { PreventWrongTerminalSizeOptions } from "~/types.js";
-
-import { msg } from "~/libs/msg-fmt/messages.js";
-import {
-  getExactTerminalWidth,
-  getTerminalWidth,
-} from "~/libs/msg-fmt/terminal.js";
+import type { PreventWrongTerminalSizeOptions } from "../../types";
+import { msg } from "../msg-fmt/messages";
+import { getExactTerminalWidth, getTerminalWidth } from "../msg-fmt/terminal";
 
 export function preventUnsupportedTTY() {
   if (!process.stdout.isTTY) {
@@ -74,8 +69,7 @@ export async function preventWrongTerminalSize({
     msg({
       type: "M_ERROR",
       title: re.redBright(errors.join("\n││    ")),
-      content:
-        size.rows >= 7 && terminalWidth >= 70 ? sizeErrorDescription : "",
+      content: size.rows >= 7 && terminalWidth >= 70 ? sizeErrorDescription : "",
       contentColor: "redBright",
     });
 

@@ -1,14 +1,14 @@
 import {
-  defineCommand,
   colorize,
   createAsciiArt,
-  msg,
-  useSpinner,
+  defineCommand,
   endPrompt,
   inputPrompt,
+  msg,
   selectPrompt,
   startPrompt,
-} from "~/mod.js";
+  useSpinner,
+} from "~/mod";
 
 export default defineCommand({
   meta: {

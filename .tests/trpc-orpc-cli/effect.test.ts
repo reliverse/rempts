@@ -1,12 +1,7 @@
+import { expect, test } from "bun:test";
 import { Schema } from "effect";
 import { initTRPC } from "trpcserver11";
-import { expect, test } from "bun:test";
-import {
-  type AnyRouter,
-  createRpcCli,
-  type TrpcCliMeta,
-  type TrpcCliParams,
-} from "../src";
+import { type AnyRouter, createRpcCli, type TrpcCliMeta, type TrpcCliParams } from "../src";
 import { looksLikeInstanceof } from "../src/util";
 
 const t = initTRPC.meta<TrpcCliMeta>().create();
@@ -18,9 +13,7 @@ test("string input", async () => {
       .query(({ input }) => JSON.stringify(input)),
   });
 
-  expect(await run(router, ["foo", "hello"])).toMatchInlineSnapshot(
-    `""hello""`,
-  );
+  expect(await run(router, ["foo", "hello"])).toMatchInlineSnapshot(`""hello""`);
 });
 
 test("number input", async () => {
@@ -40,11 +33,7 @@ test("number input", async () => {
 test("enum input", async () => {
   const router = t.router({
     foo: t.procedure
-      .input(
-        Schema.standardSchemaV1(
-          Schema.Union(Schema.Literal("aa"), Schema.Literal("bb")),
-        ),
-      ) //
+      .input(Schema.standardSchemaV1(Schema.Union(Schema.Literal("aa"), Schema.Literal("bb")))) //
       .query(({ input }) => JSON.stringify(input)),
   });
 
@@ -70,18 +59,14 @@ test("options", async () => {
       .query(({ input }) => JSON.stringify(input)),
   });
 
-  expect(
-    await run(router, ["foo", "--user-id", "123", "--name", "bob"]),
-  ).toMatchInlineSnapshot(`"{"userId":123,"name":"bob"}"`);
-  await expect(
-    run(router, ["foo", "--name", "bob"]),
-  ).rejects.toMatchInlineSnapshot(`
+  expect(await run(router, ["foo", "--user-id", "123", "--name", "bob"])).toMatchInlineSnapshot(
+    `"{"userId":123,"name":"bob"}"`,
+  );
+  await expect(run(router, ["foo", "--name", "bob"])).rejects.toMatchInlineSnapshot(`
     CLI exited with code 1
       Caused by: CommanderError: error: required option '--user-id <number>' not specified
   `);
-  await expect(
-    run(router, ["foo", "--user-id", "123"]),
-  ).rejects.toMatchInlineSnapshot(`
+  await expect(run(router, ["foo", "--user-id", "123"])).rejects.toMatchInlineSnapshot(`
     CLI exited with code 1
       Caused by: CommanderError: error: required option '--name <string>' not specified
   `);
@@ -90,10 +75,7 @@ test("options", async () => {
 const run = <R extends AnyRouter>(router: R, argv: string[]) => {
   return runWith({ router }, argv);
 };
-const runWith = <R extends AnyRouter>(
-  params: TrpcCliParams<R>,
-  argv: string[],
-) => {
+const runWith = <R extends AnyRouter>(params: TrpcCliParams<R>, argv: string[]) => {
   const cli = createRpcCli(params);
   const logs = [] as unknown[][];
   const addLogs = (...args: unknown[]) => logs.push(args);
@@ -104,8 +86,7 @@ const runWith = <R extends AnyRouter>(
       process: { exit: (_) => 0 as never },
     })
     .catch((e) => {
-      if (e.exitCode === 0 && e.cause.message === "(outputHelp)")
-        return logs[0][0]; // should be the help text
+      if (e.exitCode === 0 && e.cause.message === "(outputHelp)") return logs[0][0]; // should be the help text
       if (e.exitCode === 0) return e.cause;
       throw e;
     });

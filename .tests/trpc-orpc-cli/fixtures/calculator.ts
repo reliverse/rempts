@@ -1,7 +1,7 @@
 import { z } from "zod";
 
-import { trpcServer } from "~/components/launcher/trpc-orpc-support/index.js";
-import { createRpcCli, type TrpcCliMeta } from "~/mod.js";
+import { trpcServer } from "~/components/launcher/trpc-orpc-support/index";
+import { createRpcCli, type TrpcCliMeta } from "~/mod";
 
 const trpc = trpcServer.initTRPC.meta<TrpcCliMeta>().create();
 

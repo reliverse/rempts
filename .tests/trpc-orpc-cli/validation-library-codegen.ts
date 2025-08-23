@@ -1,10 +1,6 @@
 import type { CodegenPreset } from "eslint-plugin-mmkal";
 
-export const testSuite: CodegenPreset = ({
-  dependencies: { path, fs, dedent },
-  context,
-  meta,
-}) => {
+export const testSuite: CodegenPreset = ({ dependencies: { path, fs, dedent }, context, meta }) => {
   const parseTestFile = (content: string) => {
     const lines = content.split("\n").map((line) => (line.trim() ? line : ""));
     const firstNonImportLine = lines.findIndex(
@@ -20,20 +16,14 @@ export const testSuite: CodegenPreset = ({
       endLine: number;
     }[] = [];
 
-    let currentTest:
-      | { name: string; code: string; startLine: number; endLine: number }
-      | undefined;
+    let currentTest: { name: string; code: string; startLine: number; endLine: number } | undefined;
     for (const [index, line] of lines.entries()) {
       const testPrefix = "test(";
       if (line.startsWith(testPrefix)) {
         if (currentTest) throw new Error("test already started");
         const quote = line.at(testPrefix.length);
-        if (quote !== '"' && quote !== "'")
-          throw new Error("test name must be quoted");
-        const name = line.slice(
-          testPrefix.length + 1,
-          line.indexOf(quote, testPrefix.length + 1),
-        );
+        if (quote !== '"' && quote !== "'") throw new Error("test name must be quoted");
+        const name = line.slice(testPrefix.length + 1, line.indexOf(quote, testPrefix.length + 1));
         currentTest = { name, code: line, startLine: index, endLine: index };
       } else if (currentTest) {
         currentTest.code += `\n${line}`;
@@ -48,10 +38,7 @@ export const testSuite: CodegenPreset = ({
     return { lines, tests, codeAfterImports, firstNonImportLine };
   };
 
-  const zod3Filename = path.join(
-    path.dirname(context.physicalFilename),
-    "zod3.test.ts",
-  );
+  const zod3Filename = path.join(path.dirname(context.physicalFilename), "zod3.test.ts");
   const zod3 = parseTestFile(fs.readFileSync(zod3Filename, "utf8"));
 
   const current = parseTestFile(meta.existingContent);
@@ -59,10 +46,7 @@ export const testSuite: CodegenPreset = ({
   const parseTest = (test: { code: string }) => {
     const chunks = test.code.split(".input(");
     let code = chunks[0] || "";
-    const placeholders = {} as Record<
-      number,
-      { original: string; placeholder: string }
-    >;
+    const placeholders = {} as Record<number, { original: string; placeholder: string }>;
     for (const [chunkIndex, chunk] of chunks.slice(1).entries()) {
       code += ".input(";
       const firstParen = chunk.indexOf("(");
@@ -112,10 +96,7 @@ export const testSuite: CodegenPreset = ({
           existingPlaceholders[i]!.original !== placeholder
         ) {
           //   throw new Error(`replacing ${placeholder} with ${existingPlaceholders[i].original}`)
-          code = code.replaceAll(
-            placeholder,
-            existingPlaceholders[i]!.original,
-          );
+          code = code.replaceAll(placeholder, existingPlaceholders[i]!.original);
         }
       }
       const s = zodExamples.length > 1 ? "s" : "";

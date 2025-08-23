@@ -3,7 +3,7 @@
 import { initTRPC } from "@trpc/server";
 import { z } from "zod";
 
-import { createCli } from "~/libs/launcher/launcher-mod.js";
+import { createCli } from "~/libs/launcher/launcher-mod";
 
 // Example tRPC router
 const t = initTRPC.create();
@@ -31,11 +31,9 @@ const appRouter = t.router({
       }
     }),
 
-  greet: t.procedure
-    .input(z.object({ name: z.string().optional() }))
-    .query(({ input }) => {
-      return `Hello ${input.name ?? "World"}!`;
-    }),
+  greet: t.procedure.input(z.object({ name: z.string().optional() })).query(({ input }) => {
+    return `Hello ${input.name ?? "World"}!`;
+  }),
 });
 
 export type AppRouter = typeof appRouter;

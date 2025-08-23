@@ -1,6 +1,6 @@
 import { relinka } from "@reliverse/relinka";
 
-import { defineCommand } from "~/mod.js";
+import { defineCommand } from "~/mod";
 
 export default defineCommand({
   meta: {
@@ -31,8 +31,7 @@ export default defineCommand({
     },
     prod: {
       type: "boolean",
-      description:
-        "Create a production deployment (default is preview deployment)",
+      description: "Create a production deployment (default is preview deployment)",
     },
     project: {
       type: "string",

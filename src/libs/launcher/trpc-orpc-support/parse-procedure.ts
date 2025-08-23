@@ -1,28 +1,21 @@
-import type { JSONSchema7, JSONSchema7Definition } from "json-schema";
-
 import { inspect } from "node:util";
-import zodToJsonSchema from "zod-to-json-schema";
+import type { JSONSchema7, JSONSchema7Definition } from "json-schema";
 import * as zod4 from "zod/v4/core";
-
-import type { Dependencies, ParsedProcedure, Result } from "./types";
-
+import zodToJsonSchema from "zod-to-json-schema";
 import { CliValidationError } from "./errors";
 import { getSchemaTypes } from "./json-schema";
+import type { Dependencies, ParsedProcedure, Result } from "./types";
 
 /**
  * Attempts to convert a trpc procedure input to JSON schema.
  * Uses @see jsonSchemaConverters to convert the input to JSON schema.
  */
-function toJsonSchema(
-  input: unknown,
-  dependencies: Dependencies,
-): Result<JSONSchema7> {
+function toJsonSchema(input: unknown, dependencies: Dependencies): Result<JSONSchema7> {
   try {
     const jsonSchemaConverters = getJsonSchemaConverters(dependencies);
     const vendor = getVendor(input);
     if (vendor && vendor in jsonSchemaConverters) {
-      const converter =
-        jsonSchemaConverters[vendor as keyof typeof jsonSchemaConverters];
+      const converter = jsonSchemaConverters[vendor as keyof typeof jsonSchemaConverters];
       const converted = converter(input);
       return { success: true, value: converted };
     }
@@ -37,14 +30,11 @@ function toJsonSchema(
   }
 }
 
-function looksLikeJsonSchema(
-  value: unknown,
-): value is JSONSchema7 & { type: string } {
+function looksLikeJsonSchema(value: unknown): value is JSONSchema7 & { type: string } {
   return (
     typeof value === "object" &&
     value !== null &&
-    (("type" in value &&
-      (typeof value.type === "string" || Array.isArray(value.type))) ||
+    (("type" in value && (typeof value.type === "string" || Array.isArray(value.type))) ||
       "const" in value ||
       "oneOf" in value ||
       "anyOf" in value)
@@ -91,9 +81,7 @@ export function parseProcedureInputs(
   return handleMergedSchema(mergedSchema);
 }
 
-function handleMergedSchema(
-  mergedSchema: JSONSchema7,
-): Result<ParsedProcedure> {
+function handleMergedSchema(mergedSchema: JSONSchema7): Result<ParsedProcedure> {
   if (mergedSchema.additionalProperties) {
     return {
       success: false,
@@ -129,15 +117,11 @@ function handleMergedSchema(
   }
 
   if (mergedSchema.type === "array") {
-    return parseArrayInput(
-      mergedSchema as JSONSchema7 & { items: { type: unknown } },
-    );
+    return parseArrayInput(mergedSchema as JSONSchema7 & { items: { type: unknown } });
   }
 
   if (mergedSchema.anyOf) {
-    const allObjects = mergedSchema.anyOf.every((sub) =>
-      acceptsObject(toRoughJsonSchema7(sub)),
-    );
+    const allObjects = mergedSchema.anyOf.every((sub) => acceptsObject(toRoughJsonSchema7(sub)));
     if (allObjects) {
       return {
         success: true,
@@ -148,10 +132,7 @@ function handleMergedSchema(
         },
       };
     }
-    if (
-      mergedSchema.anyOf.length === 2 &&
-      JSON.stringify(mergedSchema.anyOf[0]) === '{"not":{}}'
-    ) {
+    if (mergedSchema.anyOf.length === 2 && JSON.stringify(mergedSchema.anyOf[0]) === '{"not":{}}') {
       return handleMergedSchema(mergedSchema.anyOf[1] as JSONSchema7);
     }
   }
@@ -175,11 +156,9 @@ function handleMergedSchema(
 
 // zod-to-json-schema turns `z.string().optional()` into `{"anyOf":[{"not":{}},{"type":"string"}]}`
 function isOptional(schema: JSONSchema7Definition) {
-  if (schema && typeof schema === "object" && "optional" in schema)
-    return schema.optional === true;
+  if (schema && typeof schema === "object" && "optional" in schema) return schema.optional === true;
   const anyOf = schemaDefPropValue(schema, "anyOf");
-  if (anyOf?.length === 2 && JSON.stringify(anyOf[0]) === '{"not":{}}')
-    return true;
+  if (anyOf?.length === 2 && JSON.stringify(anyOf[0]) === '{"not":{}}') return true;
   if (anyOf?.some((sub) => isOptional(sub))) return true;
   return false;
 }
@@ -187,9 +166,7 @@ function isOptional(schema: JSONSchema7Definition) {
 function parsePrimitiveInput(schema: JSONSchema7): Result<ParsedProcedure> {
   const typeName = acceptedPrimitiveTypes(schema).join(" | ");
   const name = (
-    schema.title || schema.description || /\W/.test(typeName)
-      ? "value"
-      : typeName
+    schema.title || schema.description || /\W/.test(typeName) ? "value" : typeName
   ).replaceAll(/\s+/g, "_");
   return {
     success: true,
@@ -204,8 +181,7 @@ function parsePrimitiveInput(schema: JSONSchema7): Result<ParsedProcedure> {
         },
       ],
       optionsJsonSchema: {},
-      getPojoInput: (argv) =>
-        convertPositional(schema, argv.positionalValues[0] as string),
+      getPojoInput: (argv) => convertPositional(schema, argv.positionalValues[0] as string),
     },
   };
 }
@@ -214,17 +190,11 @@ const schemaDefPropValue = <K extends keyof JSONSchema7>(
   schema: JSONSchema7Definition,
   prop: K,
 ): JSONSchema7[K] | undefined => {
-  if (schema && typeof schema === "object" && prop in schema)
-    return schema[prop];
-  return undefined;
+  if (schema && typeof schema === "object" && prop in schema) return schema[prop];
+  return;
 };
 
-const primitiveCandidateTypes = [
-  "string",
-  "number",
-  "boolean",
-  "integer",
-] as const;
+const primitiveCandidateTypes = ["string", "number", "boolean", "integer"] as const;
 function acceptedPrimitiveTypes(
   schema: JSONSchema7Definition,
 ): (typeof primitiveCandidateTypes)[number][] {
@@ -239,27 +209,16 @@ function acceptedPrimitiveTypes(
   const typeList =
     constVals ||
     schemaDefPropValue(schema, "type") ||
-    schemaDefPropValue(schema, "oneOf")?.flatMap((s) =>
-      acceptedPrimitiveTypes(s),
-    ) ||
-    schemaDefPropValue(schema, "anyOf")?.flatMap((s) =>
-      acceptedPrimitiveTypes(s),
-    );
+    schemaDefPropValue(schema, "oneOf")?.flatMap((s) => acceptedPrimitiveTypes(s)) ||
+    schemaDefPropValue(schema, "anyOf")?.flatMap((s) => acceptedPrimitiveTypes(s));
   const acceptedJsonSchemaTypes = new Set([typeList].flat().filter(Boolean));
   return primitiveCandidateTypes.filter((c) => acceptedJsonSchemaTypes.has(c));
 }
 
-function parseMultiInputs(
-  inputs: unknown[],
-  dependencies: Dependencies,
-): Result<ParsedProcedure> {
-  const parsedIndividually = inputs.map((input) =>
-    parseProcedureInputs([input], dependencies),
-  );
+function parseMultiInputs(inputs: unknown[], dependencies: Dependencies): Result<ParsedProcedure> {
+  const parsedIndividually = inputs.map((input) => parseProcedureInputs([input], dependencies));
 
-  const failures = parsedIndividually.flatMap((p) =>
-    p.success ? [] : [p.error],
-  );
+  const failures = parsedIndividually.flatMap((p) => (p.success ? [] : [p.error]));
   if (failures.length > 0) {
     return { success: false, error: failures.join("\n") };
   }
@@ -300,29 +259,21 @@ function parseMultiInputs(
 function isNullable(schema: JSONSchema7) {
   if (Array.isArray(schema.type) && schema.type.includes("null")) return true;
   if (schema.type === "null") return true;
-  if (
-    (schema.anyOf || schema.oneOf)?.some((sub) =>
-      isNullable(toRoughJsonSchema7(sub)),
-    )
-  )
+  if ((schema.anyOf || schema.oneOf)?.some((sub) => isNullable(toRoughJsonSchema7(sub))))
     return true;
   if (schema.const === null) return true;
   return false;
 }
 
-const tupleItemsSchemas = (
-  schema: JSONSchema7Definition,
-): JSONSchema7Definition[] | undefined => {
-  if (!schema || typeof schema !== "object") return undefined;
+const tupleItemsSchemas = (schema: JSONSchema7Definition): JSONSchema7Definition[] | undefined => {
+  if (!schema || typeof schema !== "object") return;
   if (Array.isArray(schema.items)) return schema.items;
   if ("prefixItems" in schema && Array.isArray(schema.prefixItems))
     return schema.prefixItems as JSONSchema7Definition[];
-  return undefined;
+  return;
 };
 
-function isTuple(
-  schema: JSONSchema7,
-): schema is JSONSchema7 & { items: JSONSchema7[] } {
+function isTuple(schema: JSONSchema7): schema is JSONSchema7 & { items: JSONSchema7[] } {
   return Array.isArray(tupleItemsSchemas(schema));
 }
 
@@ -356,21 +307,15 @@ function parseArrayInput(
   };
 }
 
-function parseTupleInput(
-  tuple: JSONSchema7Definition,
-): Result<ParsedProcedure> {
+function parseTupleInput(tuple: JSONSchema7Definition): Result<ParsedProcedure> {
   const items = tupleItemsSchemas(tuple);
-  if (!Array.isArray(items))
-    throw new Error(".items is not an array, is this really a tuple?");
+  if (!Array.isArray(items)) throw new Error(".items is not an array, is this really a tuple?");
 
   const flagsSchemaIndex = items.findIndex((item) => {
     if (acceptedPrimitiveTypes(item as JSONSchema7).length > 0) {
       return false; // it's a string, number or boolean
     }
-    if (
-      looksLikeArray(item) &&
-      acceptedPrimitiveTypes(item.items as JSONSchema7).length > 0
-    ) {
+    if (looksLikeArray(item) && acceptedPrimitiveTypes(item.items as JSONSchema7).length > 0) {
       return false; // it's an array of strings, numbers or booleans
     }
     return true; // it's not a string, number, boolean or array of strings, numbers or booleans. So it's probably a flags object
@@ -393,8 +338,7 @@ function parseTupleInput(
     };
   }
 
-  const positionalSchemas =
-    flagsSchemaIndex === -1 ? items : items.slice(0, flagsSchemaIndex);
+  const positionalSchemas = flagsSchemaIndex === -1 ? items : items.slice(0, flagsSchemaIndex);
 
   return {
     success: true,
@@ -406,8 +350,7 @@ function parseTupleInput(
         required: !isOptional(schema),
         type: getSchemaTypes(toRoughJsonSchema7(schema)).join(" | "),
       })),
-      optionsJsonSchema:
-        flagsSchema && typeof flagsSchema === "object" ? flagsSchema : {},
+      optionsJsonSchema: flagsSchema && typeof flagsSchema === "object" ? flagsSchema : {},
       getPojoInput: (commandArgs) => {
         const inputs: unknown[] = commandArgs.positionalValues.map((v, i) => {
           const correspondingSchema = positionalSchemas[i];
@@ -416,23 +359,15 @@ function parseTupleInput(
           }
           if (looksLikeArray(correspondingSchema)) {
             if (!Array.isArray(v)) {
-              throw new CliValidationError(
-                `Expected array at position ${i}, got ${typeof v}`,
-              );
+              throw new CliValidationError(`Expected array at position ${i}, got ${typeof v}`);
             }
             return v.map((s) => {
-              if (
-                !correspondingSchema.items ||
-                Array.isArray(correspondingSchema.items)
-              )
-                return s;
+              if (!correspondingSchema.items || Array.isArray(correspondingSchema.items)) return s;
               return convertPositional(correspondingSchema.items, s);
             });
           }
           if (typeof v !== "string" && v !== undefined) {
-            throw new CliValidationError(
-              `Expected string at position ${i}, got ${typeof v}`,
-            );
+            throw new CliValidationError(`Expected string at position ${i}, got ${typeof v}`);
           }
           return convertPositional(correspondingSchema, v);
         });
@@ -495,9 +430,7 @@ const looksLikeArray = (
   return schemaDefPropValue(schema, "type") === "array";
 };
 
-const toRoughJsonSchema7 = (
-  schema: JSONSchema7Definition | undefined,
-): JSONSchema7 => {
+const toRoughJsonSchema7 = (schema: JSONSchema7Definition | undefined): JSONSchema7 => {
   if (!schema || typeof schema !== "object") {
     return {};
   }
@@ -508,10 +441,7 @@ const toRoughJsonSchema7 = (
 const parameterName = (s: JSONSchema7Definition, position: number): string => {
   if (looksLikeArray(s)) {
     const items = toRoughJsonSchema7(s).items;
-    const elementName = parameterName(
-      !items || Array.isArray(items) ? {} : items,
-      position,
-    );
+    const elementName = parameterName(!items || Array.isArray(items) ? {} : items, position);
     return `[${elementName.slice(1, -1)}...]`;
   }
   // commander requiremenets: no special characters in positional parameters; `<name>` for required and `[name]` for optional parameters
@@ -558,8 +488,7 @@ const getJsonSchemaConverters = (dependencies: Dependencies) => {
       const type = prepareArktypeType(input) as import("arktype").Type;
       return type.toJsonSchema({
         fallback: (ctx) => {
-          if (ctx.code === "unit" && ctx.unit === undefined)
-            return { ...ctx.base, optional: true };
+          if (ctx.code === "unit" && ctx.unit === undefined) return { ...ctx.base, optional: true };
           return ctx.base;
         },
       }) as JSONSchema7;
@@ -568,7 +497,7 @@ const getJsonSchemaConverters = (dependencies: Dependencies) => {
       let valibotToJsonSchemaLib = dependencies["@valibot/to-json-schema"];
       if (!valibotToJsonSchemaLib) {
         try {
-          valibotToJsonSchemaLib = eval(`require('@valibot/to-json-schema')`);
+          valibotToJsonSchemaLib = require("@valibot/to-json-schema");
         } catch (e: unknown) {
           throw new Error(
             "@valibot/to-json-schema could not be found - try installing it and re-running",
@@ -585,7 +514,7 @@ const getJsonSchemaConverters = (dependencies: Dependencies) => {
       }
       let v: typeof import("valibot");
       try {
-        v = eval(`require('valibot')`);
+        v = require("valibot");
       } catch {
         // couldn't load valibot, maybe it's aliased to something else? anyway bad luck, you won't know about optional positional parameters, but that's a rare-ish case so not a big deal
         return valibotToJsonSchema(input);
@@ -597,18 +526,20 @@ const getJsonSchemaConverters = (dependencies: Dependencies) => {
         },
       );
       const child = parent.properties!.child as JSONSchema7;
-      return parent.required?.length === 0
-        ? Object.assign(child, { optional: true })
-        : child;
+      return parent.required?.length === 0 ? Object.assign(child, { optional: true }) : child;
     },
     effect: (input: unknown) => {
       const effect =
         dependencies.effect ||
-        (eval(`require('effect')`) as Dependencies["effect"]);
+        (() => {
+          try {
+            return require("effect") as Dependencies["effect"];
+          } catch {
+            return null;
+          }
+        })();
       if (!effect) {
-        throw new Error(
-          "effect dependency could not be found - try installing it and re-running",
-        );
+        throw new Error("effect dependency could not be found - try installing it and re-running");
       }
       if (!effect.Schema.isSchema(input)) {
         const message =
@@ -622,10 +553,7 @@ const getJsonSchemaConverters = (dependencies: Dependencies) => {
 
 function getVendor(schema: unknown) {
   // note: don't check for typeof schema === 'object' because arktype schemas are functions (you call them directly instead of `.parse(...)`)
-  return (
-    (schema as { "~standard"?: { vendor?: string } })?.["~standard"]?.vendor ??
-    null
-  );
+  return (schema as { "~standard"?: { vendor?: string } })?.["~standard"]?.vendor ?? null;
 }
 
 const jsonSchemaVendorNames = new Set(Object.keys(getJsonSchemaConverters({})));

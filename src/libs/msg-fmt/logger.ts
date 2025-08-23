@@ -1,14 +1,8 @@
-import type {
-  AllKinds,
-  MessageConfig,
-  MessageKind,
-  StreamOptions,
-} from "~/types.js";
+import type { AllKinds, MessageConfig, MessageKind, StreamOptions } from "../../types";
+import { streamText, streamTextWithSpinner } from "../utils/stream-text";
 
-import { streamText, streamTextWithSpinner } from "~/libs/utils/stream-text.js";
-
-import { toSolidColor } from "./colors.js";
-import { msg } from "./messages.js";
+import { toSolidColor } from "./colors";
+import { msg } from "./messages";
 
 const verboseLogging = false;
 
@@ -51,9 +45,7 @@ export function relinkaByRemptsDeprecated(
   hint?: string,
 ): void {
   const isVerbose = kind.endsWith("-verbose");
-  const baseKind = (
-    isVerbose ? kind.replace("-verbose", "") : kind
-  ) as MessageKind;
+  const baseKind = (isVerbose ? kind.replace("-verbose", "") : kind) as MessageKind;
 
   if (isVerbose && !verboseLogging) {
     return;
@@ -87,9 +79,7 @@ export const relinkaAsyncByRemptsDeprecated = async (
   streamOpts?: StreamOptions,
 ): Promise<void> => {
   const isVerbose = kind.endsWith("-verbose");
-  const baseKind = (
-    isVerbose ? kind.replace("-verbose", "") : kind
-  ) as MessageKind;
+  const baseKind = (isVerbose ? kind.replace("-verbose", "") : kind) as MessageKind;
 
   if (isVerbose && !verboseLogging) {
     return;

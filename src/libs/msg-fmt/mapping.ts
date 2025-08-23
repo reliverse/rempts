@@ -1,8 +1,7 @@
 import { re } from "@reliverse/relico";
-import gradient, { cristal, mind, passion, retro, vice } from "gradient-string";
-import { rainbow } from "gradient-string";
+import gradient, { cristal, mind, passion, rainbow, retro, vice } from "gradient-string";
 
-import type { ColorName, TypographyName } from "~/types.js";
+import type { ColorName, TypographyName } from "../../types";
 
 export const colorMap: Record<ColorName, (text: string) => string> = {
   // @reliverse/relico
@@ -30,14 +29,7 @@ export const colorMap: Record<ColorName, (text: string) => string> = {
 
   // gradient-string
   cristalGradient: cristal,
-  gradientGradient: gradient([
-    "red",
-    "yellow",
-    "green",
-    "cyan",
-    "blue",
-    "magenta",
-  ]),
+  gradientGradient: gradient(["red", "yellow", "green", "cyan", "blue", "magenta"]),
   mindGradient: mind,
   passionGradient: passion,
   rainbowGradient: rainbow,

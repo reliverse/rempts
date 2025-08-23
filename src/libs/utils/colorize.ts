@@ -1,25 +1,15 @@
 import { re } from "@reliverse/relico";
 import { relinka } from "@reliverse/relinka";
-import gradient, {
-  cristal,
-  mind,
-  passion,
-  rainbow,
-  vice,
-} from "gradient-string";
+import gradient, { cristal, mind, passion, rainbow, vice } from "gradient-string";
 
-import type { ColorName, TypographyName } from "~/types.js";
+import type { ColorName, TypographyName } from "../../types";
 
 // Strip ANSI color codes using @reliverse/relico
 function stripAnsi(text: string): string {
   return re.reset(text);
 }
 
-export function colorize(
-  text: string,
-  colorName?: ColorName,
-  typography?: TypographyName,
-): string {
+export function colorize(text: string, colorName?: ColorName, typography?: TypographyName): string {
   if (!colorName) return text;
 
   // Strip any existing ANSI codes before applying new colors
@@ -30,14 +20,7 @@ export function colorize(
   if (colorName.endsWith("Gradient")) {
     switch (colorName) {
       case "gradientGradient":
-        result = gradient([
-          "red",
-          "yellow",
-          "green",
-          "cyan",
-          "blue",
-          "magenta",
-        ])(result);
+        result = gradient(["red", "yellow", "green", "cyan", "blue", "magenta"])(result);
         break;
       case "rainbowGradient":
         result = rainbow(result);

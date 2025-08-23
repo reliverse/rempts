@@ -1,21 +1,15 @@
 // 👉 `bun examples\other\relinka.ts`
 
-import { defineCommand, relinkaAsyncByRemptsDeprecated } from "~/mod.js";
+import { defineCommand, relinkaAsyncByRemptsDeprecated } from "~/mod";
 
 const spinnerFrames = ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"];
 
 export default defineCommand({
   run: async () => {
     // 1. Just title with spinner
-    await relinkaAsyncByRemptsDeprecated(
-      "log",
-      "Starting demo...",
-      undefined,
-      undefined,
-      {
-        useSpinner: true,
-      },
-    );
+    await relinkaAsyncByRemptsDeprecated("log", "Starting demo...", undefined, undefined, {
+      useSpinner: true,
+    });
     await new Promise((resolve) => setTimeout(resolve, 500));
 
     // 2. Title and content with spinner
@@ -46,15 +40,9 @@ export default defineCommand({
     await new Promise((resolve) => setTimeout(resolve, 500));
 
     // 4. Just title with streaming (no spinner)
-    await relinkaAsyncByRemptsDeprecated(
-      "error",
-      "Connection Failed",
-      undefined,
-      undefined,
-      {
-        delay: 20,
-      },
-    );
+    await relinkaAsyncByRemptsDeprecated("error", "Connection Failed", undefined, undefined, {
+      delay: 20,
+    });
     await new Promise((resolve) => setTimeout(resolve, 500));
 
     // 5. Title and content with streaming (no spinner)

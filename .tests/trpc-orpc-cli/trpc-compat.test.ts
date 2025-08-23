@@ -2,14 +2,9 @@ import { expect, expectTypeOf, test } from "bun:test";
 import { initTRPC as initTRPC_v10 } from "trpcserver10";
 import { initTRPC as initTRPC_v11 } from "trpcserver11";
 
-import type {
-  TrpcCliMeta,
-  TrpcServerModuleLike,
-  Trpc10RouterLike,
-  Trpc11RouterLike,
-} from "~/mod.js";
+import type { Trpc10RouterLike, Trpc11RouterLike, TrpcCliMeta, TrpcServerModuleLike } from "~/mod";
 
-import { createRpcCli, z } from "~/mod.js";
+import { createRpcCli, z } from "~/mod";
 
 expect.addSnapshotSerializer({
   test: (val) => val?.cause && val.message,
@@ -22,10 +17,7 @@ expect.addSnapshotSerializer({
 test("trpc v10 shape check", async () => {
   expectTypeOf(await import("trpcserver10")).toExtend<TrpcServerModuleLike>();
 
-  const t = initTRPC_v10
-    .context<{ customContext: true }>()
-    .meta<TrpcCliMeta>()
-    .create();
+  const t = initTRPC_v10.context<{ customContext: true }>().meta<TrpcCliMeta>().create();
 
   const router = t.router({
     add: t.procedure
@@ -71,10 +63,7 @@ test("trpc v10 shape check", async () => {
 test("trpc v11 shape check", async () => {
   expectTypeOf(await import("trpcserver11")).toExtend<TrpcServerModuleLike>();
 
-  const t = initTRPC_v11
-    .context<{ customContext: true }>()
-    .meta<TrpcCliMeta>()
-    .create();
+  const t = initTRPC_v11.context<{ customContext: true }>().meta<TrpcCliMeta>().create();
 
   const trpc = t;
   const router = t.router({
@@ -108,9 +97,7 @@ test("trpc v11 shape check", async () => {
   expect(router._def.procedures).not.toHaveProperty("abc");
 
   // @ts-expect-error for some reason trpc11 doesn't expose `.inputs` at the type level
-  expect(router._def.procedures.add._def.inputs).toEqual([
-    expect.any(z.ZodType),
-  ]);
+  expect(router._def.procedures.add._def.inputs).toEqual([expect.any(z.ZodType)]);
   expect(router._def.procedures.add._def.meta).toEqual({
     description: "Add two numbers",
   });
@@ -135,10 +122,7 @@ test("trpc v11 shape check", async () => {
 });
 
 test("trpc v11 works without hoop-jumping", async () => {
-  const t = initTRPC_v11
-    .context<{ customContext: true }>()
-    .meta<TrpcCliMeta>()
-    .create();
+  const t = initTRPC_v11.context<{ customContext: true }>().meta<TrpcCliMeta>().create();
 
   const router = t.router({
     add: t.procedure
@@ -170,10 +154,7 @@ test("trpc v11 works without hoop-jumping", async () => {
 });
 
 test("trpc v10 works when passing in trpcServer", async () => {
-  const t = initTRPC_v10
-    .context<{ customContext: true }>()
-    .meta<TrpcCliMeta>()
-    .create();
+  const t = initTRPC_v10.context<{ customContext: true }>().meta<TrpcCliMeta>().create();
 
   const router = t.router({
     add: t.procedure
@@ -205,10 +186,7 @@ test("trpc v10 works when passing in trpcServer", async () => {
 });
 
 test("trpc v10 has helpful error when not passing in trpcServer", async () => {
-  const t = initTRPC_v10
-    .context<{ customContext: true }>()
-    .meta<TrpcCliMeta>()
-    .create();
+  const t = initTRPC_v10.context<{ customContext: true }>().meta<TrpcCliMeta>().create();
 
   const router = t.router({
     add: t.procedure
@@ -237,6 +215,6 @@ test("trpc v10 has helpful error when not passing in trpcServer", async () => {
   const error = await runAndCaptureProcessExit({ argv: ["add", "1", "2"] });
   expect(error).toMatchObject({ exitCode: 1 });
   expect(error?.cause).toMatchInlineSnapshot(
-    "[Error: Failed to create trpc caller. If using trpc v10, either upgrade to v11 or pass in the \`@trpc/server\` module to \`createRpcCli\` explicitly]",
+    "[Error: Failed to create trpc caller. If using trpc v10, either upgrade to v11 or pass in the `@trpc/server` module to `createRpcCli` explicitly]",
   );
 });

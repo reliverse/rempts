@@ -3,7 +3,7 @@
 import { initTRPC } from "@trpc/server";
 import { z } from "zod";
 
-import { createCli } from "~/libs/launcher/launcher-mod.js";
+import { createCli } from "~/libs/launcher/launcher-mod";
 
 // Example tRPC router with context and middleware
 const t = initTRPC
@@ -97,9 +97,7 @@ const appRouter = t.router({
         filtered = filtered.filter(
           (task) =>
             task.title.toLowerCase().includes(input.query!.toLowerCase()) ||
-            task.description
-              ?.toLowerCase()
-              .includes(input.query!.toLowerCase()),
+            task.description?.toLowerCase().includes(input.query!.toLowerCase()),
         );
       }
 

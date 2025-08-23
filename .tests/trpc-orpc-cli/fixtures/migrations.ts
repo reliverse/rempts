@@ -1,7 +1,6 @@
-import type * as trpcCompat from "~/mod.js";
-
-import { trpcServer } from "~/components/launcher/trpc-orpc-support/index.js";
-import { createRpcCli, type TrpcCliMeta, z } from "~/mod.js";
+import { trpcServer } from "~/components/launcher/trpc-orpc-support/index";
+import type * as trpcCompat from "~/mod";
+import { createRpcCli, type TrpcCliMeta, z } from "~/mod";
 
 const trpc = trpcServer.initTRPC.meta<TrpcCliMeta>().create();
 
@@ -33,8 +32,7 @@ const searchProcedure = trpc.procedure
 export const router = trpc.router({
   up: trpc.procedure
     .meta({
-      description:
-        "Apply migrations. By default all pending migrations will be applied.",
+      description: "Apply migrations. By default all pending migrations will be applied.",
     })
     .input(
       z.union([
@@ -45,11 +43,7 @@ export const router = trpc.router({
           to: z.string().describe("Mark migrations up to this one as exectued"),
         }),
         z.object({
-          step: z
-            .number()
-            .int()
-            .positive()
-            .describe("Mark this many migrations as executed"),
+          step: z.number().int().positive().describe("Mark this many migrations as executed"),
         }),
       ]),
     )
@@ -96,15 +90,11 @@ export const router = trpc.router({
         z.object({
           searchTerm: z
             .string()
-            .describe(
-              "Only show migrations whose `content` value contains this string",
-            ),
+            .describe("Only show migrations whose `content` value contains this string"),
         }),
       )
       .query(({ ctx, input }) => {
-        return ctx.filter(
-          migrations.filter((m) => m.content.includes(input.searchTerm)),
-        );
+        return ctx.filter(migrations.filter((m) => m.content.includes(input.searchTerm)));
       }),
   }),
 }) satisfies trpcCompat.Trpc11RouterLike;

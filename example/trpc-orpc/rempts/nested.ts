@@ -3,7 +3,7 @@
 import { initTRPC } from "@trpc/server";
 import { z } from "zod";
 
-import { createCli } from "~/libs/launcher/launcher-mod.js";
+import { createCli } from "~/libs/launcher/launcher-mod";
 
 // Example tRPC router with nested procedures
 const t = initTRPC.create();

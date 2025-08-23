@@ -1,11 +1,9 @@
 import { re } from "@reliverse/relico";
 import { cursor, erase } from "sisteransi";
 
-import type { ProgressBar, ProgressBarOptions } from "~/types.js";
+import type { ProgressBar, ProgressBarOptions } from "../../types";
 
-export async function taskProgressPrompt(
-  options: ProgressBarOptions,
-): Promise<ProgressBar> {
+export async function taskProgressPrompt(options: ProgressBarOptions): Promise<ProgressBar> {
   if (options.total <= 0) {
     throw new Error("Total must be a positive number");
   }
@@ -17,8 +15,7 @@ export async function taskProgressPrompt(
     completeChar: options.completeChar ?? "█",
     incompleteChar: options.incompleteChar ?? "░",
     startTime: Date.now(),
-    format:
-      options.format ?? "Progress: [:bar] :percent% | Elapsed: :elapsed s",
+    format: options.format ?? "Progress: [:bar] :percent% | Elapsed: :elapsed s",
     colorize: options.colorize ?? false,
   };
 

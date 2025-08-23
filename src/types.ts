@@ -12,12 +12,7 @@ export type MsgType =
   | "M_NEWLINE"
   | "M_BAR";
 
-export type TypographyName =
-  | "bold"
-  | "strikethrough"
-  | "underline"
-  | "italic"
-  | "none";
+export type TypographyName = "bold" | "strikethrough" | "underline" | "italic" | "none";
 
 export type BorderColorName =
   | "reset"
@@ -52,13 +47,7 @@ export type ColorName =
   | "retroGradient"
   | "none";
 
-type AnimationName =
-  | "rainbow"
-  | "pulse"
-  | "glitch"
-  | "radar"
-  | "neon"
-  | "karaoke";
+type AnimationName = "rainbow" | "pulse" | "glitch" | "radar" | "neon" | "karaoke";
 
 export type VariantName = "doubleBox" | "none";
 
@@ -85,9 +74,7 @@ export interface PromptOptions {
   contentVariant?: VariantName;
   hint?: string;
   placeholder?: string;
-  validate?: (
-    value: any,
-  ) => boolean | string | undefined | Promise<boolean | string | undefined>;
+  validate?: (value: any) => boolean | string | undefined | Promise<boolean | string | undefined>;
   // defaultValue?: string | string[] | number | boolean;
   defaultColor?: ColorName;
   defaultTypography?: TypographyName;

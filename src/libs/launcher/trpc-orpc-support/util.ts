@@ -13,8 +13,7 @@ export const looksLikeInstanceof = <T>(
 ): value is T => {
   let current = value?.constructor;
   while (current?.name) {
-    if (current?.name === (typeof target === "string" ? target : target.name))
-      return true;
+    if (current?.name === (typeof target === "string" ? target : target.name)) return true;
     current = Object.getPrototypeOf(current) as typeof current; // parent class
   }
   return false;

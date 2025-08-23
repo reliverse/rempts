@@ -1,11 +1,9 @@
 import logUpdate from "log-update";
 import { cursor } from "sisteransi";
-
-import type { ColorName } from "~/types.js";
-
-import { fmt } from "~/libs/msg-fmt/messages.js";
-import { outroPrompt } from "~/libs/outro/outro-mod.js";
-import { streamText } from "~/libs/utils/stream-text.js";
+import type { ColorName } from "../../types";
+import { fmt } from "../msg-fmt/messages";
+import { outroPrompt } from "../outro/outro-mod";
+import { streamText } from "../utils/stream-text";
 
 const DEFAULT_MESSAGE = "Press any key to continue...";
 
@@ -106,10 +104,7 @@ export async function anykeyPrompt(
   return new Promise((resolve, reject) => {
     const cleanup = () => {
       process.stdin.removeListener("data", handler);
-      if (
-        process.stdin.isTTY &&
-        typeof process.stdin.setRawMode === "function"
-      ) {
+      if (process.stdin.isTTY && typeof process.stdin.setRawMode === "function") {
         process.stdin.setRawMode(false);
       }
       process.stdin.pause();

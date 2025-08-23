@@ -1,22 +1,10 @@
-import { re } from "@reliverse/relico";
 import { stdin as input, stdout as output } from "node:process";
 import readline from "node:readline/promises";
-import {
-  buildRegExp,
-  digit,
-  endOfString,
-  repeat,
-  startOfString,
-} from "ts-regex-builder";
-
-import type { DatePromptOptions } from "~/types.js";
-
-import { fmt, msg, symbols } from "~/libs/msg-fmt/messages.js";
-import {
-  countLines,
-  deleteLastLine,
-  deleteLastLines,
-} from "~/libs/msg-fmt/terminal.js";
+import { re } from "@reliverse/relico";
+import { buildRegExp, digit, endOfString, repeat, startOfString } from "ts-regex-builder";
+import type { DatePromptOptions } from "../../types";
+import { fmt, msg, symbols } from "../msg-fmt/messages";
+import { countLines, deleteLastLine, deleteLastLines } from "../msg-fmt/terminal";
 
 // Helper constructs
 const twoDigits = repeat(digit, 2); // \d{2}
@@ -124,9 +112,7 @@ export async function datePrompt(opts: DatePromptOptions): Promise<string> {
         contentTypography,
         contentVariant,
         borderColor,
-        hint: `${hint ? `${hint} ` : ""}${
-          defaultValue ? `Default: ${defaultValue}` : ""
-        }`,
+        hint: `${hint ? `${hint} ` : ""}${defaultValue ? `Default: ${defaultValue}` : ""}`,
         hintPlaceholderColor,
         variantOptions,
         errorMessage,
@@ -183,11 +169,7 @@ export async function datePrompt(opts: DatePromptOptions): Promise<string> {
 
       // Validate the answer against the accepted date formats (DD.MM.YYYY, MM/DD/YYYY, YYYY.MM.DD)
       if (
-        !(
-          regexDDMMYYYY.test(answer) ||
-          regexMMDDYYYY.test(answer) ||
-          regexYYYYMMDD.test(answer)
-        )
+        !(regexDDMMYYYY.test(answer) || regexMMDDYYYY.test(answer) || regexYYYYMMDD.test(answer))
       ) {
         if (errorMessage !== "") {
           deleteLastLine();
@@ -215,34 +197,17 @@ export async function datePrompt(opts: DatePromptOptions): Promise<string> {
         let date: Date;
 
         if (matchedFormat === "DD.MM.YYYY") {
-          date = new Date(
-            Number(parts[2]),
-            Number(parts[1]) - 1,
-            Number(parts[0]),
-          );
+          date = new Date(Number(parts[2]), Number(parts[1]) - 1, Number(parts[0]));
         } else if (matchedFormat === "MM/DD/YYYY") {
-          date = new Date(
-            Number(parts[2]),
-            Number(parts[0]) - 1,
-            Number(parts[1]),
-          );
+          date = new Date(Number(parts[2]), Number(parts[0]) - 1, Number(parts[1]));
         } else if (matchedFormat === "YYYY.MM.DD") {
-          date = new Date(
-            Number(parts[0]),
-            Number(parts[1]) - 1,
-            Number(parts[2]),
-          );
+          date = new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
         } else {
           date = new Date(answer);
         }
 
-        if (
-          Number.isNaN(date.getTime()) ||
-          date.getFullYear() < 1900 ||
-          date > new Date()
-        ) {
-          errorMessage =
-            "Please enter a valid birthday date (e.g., 14.09.1999).";
+        if (Number.isNaN(date.getTime()) || date.getFullYear() < 1900 || date > new Date()) {
+          errorMessage = "Please enter a valid birthday date (e.g., 14.09.1999).";
           msg({ type: "M_ERROR", title: errorMessage });
           linesToDelete = countLines(errorMessage) + 1;
           continue;
@@ -261,8 +226,7 @@ export async function datePrompt(opts: DatePromptOptions): Promise<string> {
         const validation = await validate(answer);
         if (validation !== true) {
           isValid = false;
-          errorMessage =
-            typeof validation === "string" ? validation : "Invalid input.";
+          errorMessage = typeof validation === "string" ? validation : "Invalid input.";
           msg({ type: "M_ERROR", title: errorMessage });
           gotError = true;
           linesToDelete = countLines(errorMessage) + 1;

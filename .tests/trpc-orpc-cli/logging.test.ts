@@ -12,8 +12,7 @@ beforeEach(() => {
 
 expect.addSnapshotSerializer({
   test: (val) => val?.mock?.calls,
-  print: (val: any) =>
-    val.mock.calls.map((call: unknown[]) => call.join(" ")).join("\n"),
+  print: (val: any) => val.mock.calls.map((call: unknown[]) => call.join(" ")).join("\n"),
 });
 
 expect.addSnapshotSerializer({

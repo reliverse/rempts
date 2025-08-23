@@ -1,26 +1,16 @@
-import type { Fonts } from "figlet";
-
 import { relinka } from "@reliverse/relinka";
 import { getCurrentTerminalName } from "@reliverse/runtime";
-
-import type {
-  PreventWrongTerminalSizeOptions,
-  PromptOptions,
-} from "~/types.js";
-
-import { msg } from "~/libs/msg-fmt/messages.js";
+import type { Fonts } from "figlet";
+import type { PreventWrongTerminalSizeOptions, PromptOptions } from "../../types";
+import { msg } from "../msg-fmt/messages";
+import { getExactTerminalWidth, getTerminalHeight, getTerminalWidth } from "../msg-fmt/terminal";
 import {
-  getExactTerminalWidth,
-  getTerminalHeight,
-  getTerminalWidth,
-} from "~/libs/msg-fmt/terminal.js";
-import {
-  preventWrongTerminalSize,
-  preventWindowsHomeDirRoot,
   preventUnsupportedTTY,
-} from "~/libs/utils/prevent.js";
-import { pm, reliversePrompts } from "~/libs/utils/system.js";
-import { createAsciiArt } from "~/libs/visual/visual-mod.js";
+  preventWindowsHomeDirRoot,
+  preventWrongTerminalSize,
+} from "../utils/prevent";
+import { pm, reliversePrompts } from "../utils/system";
+import { createAsciiArt } from "../visual/visual-mod";
 
 type StartPromptOptions = PromptOptions & {
   clearConsole?: boolean;
@@ -39,13 +29,8 @@ type StartPromptOptions = PromptOptions & {
   asciiArtFont?: Fonts;
 };
 
-export async function introPrompt(
-  optionsOrTitle: StartPromptOptions | string,
-): Promise<void> {
-  const options =
-    typeof optionsOrTitle === "string"
-      ? { title: optionsOrTitle }
-      : optionsOrTitle;
+export async function introPrompt(optionsOrTitle: StartPromptOptions | string): Promise<void> {
+  const options = typeof optionsOrTitle === "string" ? { title: optionsOrTitle } : optionsOrTitle;
 
   const {
     title = "",
@@ -89,9 +74,7 @@ export async function introPrompt(
     title !== ""
       ? title
       : `${packageName} v${packageVersion} | ${pm.packageManager} v${pm.version} | ${getCurrentTerminalName()}${
-          isDev && terminalWidth > 80
-            ? ` | isDev | w${terminalWidth} h${terminalHeight}`
-            : ""
+          isDev && terminalWidth > 80 ? ` | isDev | w${terminalWidth} h${terminalHeight}` : ""
         }`;
 
   if (variant === "ascii-art") {
@@ -105,9 +88,7 @@ export async function introPrompt(
 
   if (horizontalLineLength === 0) {
     const titleFullLength =
-      titleColor === "inverse"
-        ? `⠀${formattedTitle}⠀`.length + 5
-        : formattedTitle.length + 5;
+      titleColor === "inverse" ? `⠀${formattedTitle}⠀`.length + 5 : formattedTitle.length + 5;
 
     horizontalLineLength = Math.max(1, exactTerminalWidth - titleFullLength);
   }

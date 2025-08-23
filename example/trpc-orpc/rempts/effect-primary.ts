@@ -5,9 +5,9 @@
 
 import { initTRPC } from "@trpc/server";
 import * as Effect from "effect";
-import { Schema, pipe } from "effect";
+import { pipe, Schema } from "effect";
 
-import { createCli } from "~/libs/launcher/launcher-mod.js";
+import { createCli } from "~/libs/launcher/launcher-mod";
 
 const t = initTRPC.create();
 
@@ -61,11 +61,7 @@ const appRouter = t.router({
   validateAge: t.procedure
     .input(
       Schema.standardSchemaV1(
-        pipe(
-          Schema.Number,
-          Schema.greaterThan(0),
-          Schema.lessThanOrEqualTo(120),
-        ),
+        pipe(Schema.Number, Schema.greaterThan(0), Schema.lessThanOrEqualTo(120)),
       ),
     )
     .query(({ input }) => {

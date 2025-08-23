@@ -2,16 +2,10 @@
 
 import { stdin as input, stdout as output } from "node:process";
 import readline from "node:readline/promises";
-
-import type { PromptOptions } from "~/types.js";
-
-import { bar, fmt, msg } from "~/libs/msg-fmt/messages.js";
-import {
-  countLines,
-  deleteLastLine,
-  deleteLastLines,
-} from "~/libs/msg-fmt/terminal.js";
-import { colorize } from "~/mod.js";
+import type { PromptOptions } from "../../types";
+import { bar, fmt, msg } from "../msg-fmt/messages";
+import { countLines, deleteLastLine, deleteLastLines } from "../msg-fmt/terminal";
+import { colorize } from "../utils/colorize";
 
 type NumSelectPromptOptions = PromptOptions & {
   inline?: boolean;
@@ -76,18 +70,14 @@ export async function numSelectPrompt(opts: NumSelectPromptOptions) {
       choicesText = choices
         .map(
           (choice, index) =>
-            `${index + 1}) ${choice.title}${
-              choice.description ? ` (${choice.description})` : ""
-            }`,
+            `${index + 1}) ${choice.title}${choice.description ? ` (${choice.description})` : ""}`,
         )
         .join(" / ");
     } else {
       choicesText = choices
         .map(
           (choice, index) =>
-            `${index + 1}) ${choice.title}${
-              choice.description ? ` - ${choice.description}` : ""
-            }`,
+            `${index + 1}) ${choice.title}${choice.description ? ` - ${choice.description}` : ""}`,
         )
         .join(`\n${formattedBar} `);
     }
@@ -136,8 +126,7 @@ export async function numSelectPrompt(opts: NumSelectPromptOptions) {
       const validation = await validate(selectedValue);
       if (validation !== true) {
         isValid = false;
-        errorMessage =
-          typeof validation === "string" ? validation : "Invalid input.";
+        errorMessage = typeof validation === "string" ? validation : "Invalid input.";
       }
     }
 

@@ -1,7 +1,5 @@
-import type { TypographyName, ColorName } from "~/types.js";
-import type { VariantName } from "~/types.js";
-
-import { msg } from "~/libs/msg-fmt/messages.js";
+import type { ColorName, TypographyName, VariantName } from "../../types";
+import { msg } from "../msg-fmt/messages";
 
 interface NextStepsPromptOptions {
   title?: string;
@@ -14,9 +12,7 @@ interface NextStepsPromptOptions {
   contentTypography?: TypographyName;
 }
 
-export async function nextStepsPrompt(
-  options: NextStepsPromptOptions,
-): Promise<void> {
+export async function nextStepsPrompt(options: NextStepsPromptOptions): Promise<void> {
   const {
     title = "",
     titleColor = "cyan",
