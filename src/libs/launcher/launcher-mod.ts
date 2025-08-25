@@ -1,13 +1,11 @@
+import { readdir, stat } from "node:fs/promises";
 import process from "node:process";
-
-import path from "@reliverse/pathkit";
-import type { ReliArgParserOptions } from "@reliverse/reliarg";
-import { reliArgParser } from "@reliverse/reliarg";
 import { re } from "@reliverse/relico";
-import fs from "@reliverse/relifso";
 import { relinka, relinkaConfig, relinkaShutdown } from "@reliverse/relinka";
+import path from "path";
 import { readPackageJSON } from "pkg-types";
-
+import type { ReliArgParserOptions } from "../reliarg/reliarg-mod";
+import { reliArgParser } from "../reliarg/reliarg-mod";
 import type {
   ArgDefinition,
   ArgDefinitions,
@@ -19,9 +17,15 @@ import type {
   FileBasedOptions,
   InferArgTypes,
 } from "./launcher-types";
-import { createRpcCli } from "./trpc-orpc-support/index";
-import type { AnyRouter } from "./trpc-orpc-support/trpc-compat";
-import type { Logger, OmeletteInstanceLike, Promptable } from "./trpc-orpc-support/types";
+
+async function pathExists(path: string) {
+  try {
+    await stat(path);
+    return true;
+  } catch (error) {
+    return false;
+  }
+}
 
 // Helper to build a plausible example CLI argument string from ArgDefinitions
 function buildExampleArgs(args: ArgDefinitions): string {
@@ -114,7 +118,6 @@ export function defineCommand<A extends ArgDefinitions = EmptyArgs>(
     onCmdExit,
     onLauncherInit,
     onLauncherExit,
-    router: options.router,
     // Backward-compatible aliases
     setup: onCmdInit,
     cleanup: onCmdExit,
@@ -163,7 +166,7 @@ async function findRecursiveFileBasedCommands(
   currentPath: string[] = [],
 ): Promise<{ name: string; def: any; path: string[] }[]> {
   const results = [];
-  const items = await fs.readdir(path.join(baseDir, ...currentPath), {
+  const items = await readdir(path.join(baseDir, ...currentPath), {
     withFileTypes: true,
   });
 
@@ -173,7 +176,7 @@ async function findRecursiveFileBasedCommands(
       // First check for cmd.ts/cmd.js in this directory
       for (const fname of ["cmd.ts", "cmd.js"]) {
         const fpath = path.join(baseDir, ...newPath, fname);
-        if (await fs.pathExists(fpath)) {
+        if (await pathExists(fpath)) {
           try {
             const imported = await import(path.resolve(fpath));
             if (imported.default && !imported.default.meta?.hidden) {
@@ -449,7 +452,6 @@ export async function showUsage<A extends ArgDefinitions>(
  * - File-based Commands: scanning for commands within a given commands root.
  * - Commands defined within the command object.
  * - Standard flags like --help, --version, and --debug.
- * - RPC functionality: tRPC/oRPC router integration with automatic CLI generation.
  *
  * This function passes along remaining arguments to command runners to ensure
  * consistent parsing.
@@ -478,43 +480,6 @@ export function createCli<A extends ArgDefinitions = EmptyArgs>(
         onCmdExit?: Command<A>["onCmdExit"];
         onLauncherInit?: Command<A>["onLauncherInit"];
         onLauncherExit?: Command<A>["onLauncherExit"];
-
-        // RPC-specific options
-        rpc?: {
-          /** A tRPC router. Procedures will become CLI commands. */
-          router: AnyRouter;
-          /** Context to be supplied when invoking the router. */
-          context?: any;
-          /** The `@trpc/server` module to use for calling procedures. Required when using trpc v10. */
-          trpcServer?: any | Promise<any>;
-          /** Usage code examples to display in `--help` output. */
-          usage?: string | string[];
-          /** Dependencies for schema validation libraries */
-          "@valibot/to-json-schema"?: {
-            toJsonSchema: (
-              input: unknown,
-              options?: { errorMode?: "throw" | "ignore" | "warn" },
-            ) => any;
-          };
-          effect?: {
-            Schema: {
-              isSchema: (input: unknown) => input is "JSONSchemaMakeable";
-            };
-            JSONSchema: { make: (input: "JSONSchemaMakeable") => any };
-          };
-        };
-        // RPC run parameters
-        rpcRunParams?: {
-          argv?: string[];
-          logger?: Logger;
-          completion?: OmeletteInstanceLike | (() => Promise<OmeletteInstanceLike>);
-          prompts?: Promptable;
-          /** Format an error thrown by the root procedure before logging to `logger.error` */
-          formatError?: (error: unknown) => string;
-          process?: {
-            exit: (code: number) => never;
-          };
-        };
       },
   legacyParserOptions?: ReliArgParserOptions & {
     fileBased?: FileBasedOptions;
@@ -636,116 +601,6 @@ export function createCli<A extends ArgDefinitions = EmptyArgs>(
 
   // Extract the actual execution logic into a separate function
   const execute = async (_ctx?: any): Promise<void> => {
-    // Handle RPC functionality if provided
-    if (options && typeof options === "object" && "rpc" in options && options.rpc) {
-      const rpcOptions = options.rpc;
-      const rpcRunParams = (options as any).rpcRunParams || {};
-
-      debugLog("RPC integration detected, creating RPC CLI...");
-
-      // Automatically try to load tsx for TypeScript support when using RPC
-      try {
-        // eslint-disable-next-line @typescript-eslint/no-require-imports
-        require("tsx/cjs");
-        // @ts-expect-error - this might not be available, that's why we're catching
-        await import("tsx/esm");
-        debugLog("tsx loaded successfully for TypeScript support");
-      } catch {
-        debugLog("tsx not available, continuing without TypeScript support");
-      }
-
-      // Helper function to safely get meta from router
-      const getRouterMeta = (router: AnyRouter) => {
-        if ("_def" in router && router._def && "meta" in router._def) {
-          return router._def.meta;
-        }
-        return;
-      };
-
-      const routerMeta = getRouterMeta(rpcOptions.router);
-
-      // Create RPC CLI with the provided router and options
-      const rpcCli = createRpcCli({
-        router: rpcOptions.router,
-        name: globalCliMeta.name || (routerMeta as any)?.name,
-        version: globalCliMeta.version || (routerMeta as any)?.version,
-        description: globalCliMeta.description || (routerMeta as any)?.description,
-        usage: rpcOptions.usage,
-        context: rpcOptions.context,
-        trpcServer: rpcOptions.trpcServer,
-        "@valibot/to-json-schema": rpcOptions["@valibot/to-json-schema"],
-        effect: rpcOptions.effect,
-      });
-
-      debugLog("RPC CLI created, running with argv:", rpcRunParams.argv || process.argv.slice(2));
-
-      // Run the RPC CLI with the provided run parameters
-      await rpcCli.run({
-        argv: rpcRunParams.argv || process.argv.slice(2),
-        logger: rpcRunParams.logger || {
-          info: console.log,
-          error: console.error,
-        },
-        completion: rpcRunParams.completion,
-        prompts: rpcRunParams.prompts,
-        formatError: rpcRunParams.formatError,
-        process: rpcRunParams.process,
-      });
-      return;
-    }
-
-    // Check if command has a router and automatically enable RPC mode
-    if (command.router) {
-      debugLog("Router detected in command, automatically enabling RPC mode...");
-
-      // Automatically try to load tsx for TypeScript support when using RPC
-      try {
-        // eslint-disable-next-line @typescript-eslint/no-require-imports
-        require("tsx/cjs");
-        // @ts-expect-error - this might not be available, that's why we're catching
-        await import("tsx/esm");
-        debugLog("tsx loaded successfully for TypeScript support");
-      } catch {
-        debugLog("tsx not available, continuing without TypeScript support");
-      }
-
-      // Helper function to safely get meta from router
-      const getRouterMeta = (router: AnyRouter) => {
-        if ("_def" in router && router._def && "meta" in router._def) {
-          return router._def.meta;
-        }
-        return;
-      };
-
-      const routerMeta = getRouterMeta(command.router);
-
-      // Create RPC CLI with the command's router
-      const rpcCli = createRpcCli({
-        router: command.router,
-        name: globalCliMeta.name || command.meta?.name || (routerMeta as any)?.name,
-        version: globalCliMeta.version || command.meta?.version || (routerMeta as any)?.version,
-        description:
-          globalCliMeta.description ||
-          command.meta?.description ||
-          (routerMeta as any)?.description,
-      });
-
-      debugLog("RPC CLI created from command router, running with argv:", process.argv.slice(2));
-
-      // Run the RPC CLI
-      await rpcCli.run({
-        argv: process.argv.slice(2),
-        logger: {
-          info: console.log,
-          error: console.error,
-        },
-        process: {
-          exit: process.exit,
-        },
-      });
-      return;
-    }
-
     // Call onLauncherInit before any other operations
     if (typeof command.onLauncherInit === "function") {
       try {
@@ -768,7 +623,7 @@ export function createCli<A extends ArgDefinitions = EmptyArgs>(
         const defaultCmdsRoot = path.join(mainEntry, "src", "app");
 
         // Check if the default path exists, if not try the original path
-        const exists = await fs.pathExists(defaultCmdsRoot);
+        const exists = await pathExists(defaultCmdsRoot);
         const finalCmdsRoot = exists ? defaultCmdsRoot : path.join(mainEntry, "app");
 
         parserOptions.fileBased = {
@@ -785,14 +640,13 @@ export function createCli<A extends ArgDefinitions = EmptyArgs>(
         !(
           parserOptions.fileBased?.enable ||
           (command.commands && Object.keys(command.commands).length > 0) ||
-          command.run ||
-          command.router
+          command.run
         )
       ) {
         relinka(
           "error",
-          "Invalid CLI configuration: No file-based commands, subCommands, run() handler, or router are defined. This CLI will not do anything.\n" +
-            "│   To fix: add file-based commands (./app), or provide at least one subCommand, a run() handler, or a router.",
+          "Invalid CLI configuration: No file-based commands, subCommands, or run() handler are defined. This CLI will not do anything.\n" +
+            "│   To fix: add file-based commands (./app), or provide at least one subCommand, or a run() handler.",
         );
         process.exit(1);
       }
@@ -1042,7 +896,7 @@ async function runFileBasedSubCmd(
       // Try to load cmd.ts/cmd.js in current dir
       const possibleFiles = [path.join(baseDir, "cmd.js"), path.join(baseDir, "cmd.ts")];
       for (const file of possibleFiles) {
-        if (await fs.pathExists(file)) {
+        if (await pathExists(file)) {
           return { importPath: file, leftoverArgv: args };
         }
       }
@@ -1052,14 +906,14 @@ async function runFileBasedSubCmd(
     }
     // Check if next arg is a subfolder
     const nextDir = path.join(baseDir, args[0] || "");
-    if ((await fs.pathExists(nextDir)) && (await fs.stat(nextDir)).isDirectory()) {
+    if ((await pathExists(nextDir)) && (await stat(nextDir)).isDirectory()) {
       // Recurse into subfolder
       return resolveCmdPath(nextDir, args.slice(1));
     }
     // No subfolder, try to load cmd.ts/cmd.js in current dir
     const possibleFiles = [path.join(baseDir, "cmd.js"), path.join(baseDir, "cmd.ts")];
     for (const file of possibleFiles) {
-      if (await fs.pathExists(file)) {
+      if (await pathExists(file)) {
         return { importPath: file, leftoverArgv: args };
       }
     }
@@ -1070,7 +924,7 @@ async function runFileBasedSubCmd(
 
   // Start recursive resolution from cmdsRootPath/subName
   const startDir = path.join(fileCmdOpts.cmdsRootPath, subName);
-  if (!(await fs.pathExists(startDir)) || !(await fs.stat(startDir)).isDirectory()) {
+  if (!(await pathExists(startDir)) || !(await stat(startDir)).isDirectory()) {
     const attempted = [subName, ...argv].join(" ");
     const expectedPath = path.relative(
       process.cwd(),
@@ -1259,8 +1113,7 @@ async function runCommandWithArgs<A extends ArgDefinitions>(
       // No 'run' function. Check if this is a dispatcher expecting a subcommand.
       const isDispatcher =
         parserOptions.fileBased?.enable ||
-        (command.commands && Object.keys(command.commands).length > 0) ||
-        command.router;
+        (command.commands && Object.keys(command.commands).length > 0);
 
       // No subcommand was provided if leftoverPositionals is empty,
       // AND this command itself doesn't define its own positional arguments that might have been consumed.
@@ -1456,213 +1309,6 @@ function normalizeArgv(argv: string[]): string[] {
 }
 
 /**
- * Programmatically run a command with subcommand support and flexible argument handling.
- * This function can handle subcommands (including nested), positional arguments, and automatically normalizes
- * template literals and space-separated strings.
- *
- * @param command The command definition (from defineCommand)
- * @param argv The argv array to parse (default: []). Supports template literals and subcommands.
- * @param parserOptions Optional reliArgParser options
- *
- * @example
- * ```ts
- * // ✅ Single command with template literals
- * await runCmdWithSubcommands(cmd, [`--dev ${isDev}`]);
- *
- * // ✅ Subcommand with arguments
- * await runCmdWithSubcommands(cmd, [`build --input src/mod.ts --someBoolean`]);
- *
- * // ✅ Subcommand with positional arguments
- * await runCmdWithSubcommands(cmd, [`build src/mod.ts --someBoolean`]);
- *
- * // ✅ Nested subcommands
- * await runCmdWithSubcommands(cmd, [`build someSubCmd src/mod.ts --no-cjs`]);
- * await runCmdWithSubcommands(cmd, [`build sub1 sub2 sub3 file.ts --flag`]);
- *
- * // ✅ Mixed array with subcommands
- * await runCmdWithSubcommands(cmd, [
- *   `build someSubCmd src/mod.ts`,
- *   "--no-cjs",
- *   "--verbose"
- * ]);
- * ```
- */
-export async function runCmdWithSubcommands<A extends ArgDefinitions = EmptyArgs>(
-  command: Command<A>,
-  argv: string[] = [],
-  parserOptions: ReliArgParserOptions & {
-    fileBased?: FileBasedOptions;
-    autoExit?: boolean;
-  } = {},
-): Promise<any> {
-  // Normalize argv to handle template literals and space-separated strings
-  const normalizedArgv = normalizeArgv(argv);
-
-  // Recursively dispatch subcommands
-  let currentCommand: Command<any> = command;
-  let currentArgv = normalizedArgv;
-
-  while (
-    currentCommand.commands &&
-    currentArgv.length > 0 &&
-    currentArgv[0] &&
-    !isFlag(currentArgv[0])
-  ) {
-    const [maybeSub, ...restArgv] = currentArgv;
-    let subSpec: CommandSpec | undefined;
-    for (const [key, spec] of Object.entries(currentCommand.commands)) {
-      if (key === maybeSub) {
-        subSpec = spec;
-        break;
-      }
-      try {
-        const cmd = await loadSubCommand(spec);
-        if (cmd.meta?.aliases?.includes(maybeSub)) {
-          subSpec = spec;
-          break;
-        }
-      } catch (err) {
-        debugLog(`Error checking alias for command ${key}:`, err);
-      }
-    }
-    if (!subSpec) break;
-    // Load the subcommand
-    const loaded = await loadSubCommand(subSpec);
-    currentCommand = loaded;
-    currentArgv = restArgv;
-  }
-
-  // Run the final resolved command
-  return await runCommandWithArgs(currentCommand, currentArgv, {
-    ...parserOptions,
-    autoExit: false, // Don't exit process in programmatic usage
-  });
-}
-
-/**
- * Programmatically run a command's run() handler with parsed arguments.
- * Does not handle subcommands, file-based commands, or global hooks.
- * Suitable for use in demos, tests, or programmatic invocation.
- *
- * @param command The command definition (from defineCommand)
- * @param argv The argv array to parse (default: []). Each argument should be a separate array element.
- * @param parserOptions Optional reliArgParser options
- *
- * @example
- * **each argument as separate array element**:
- * ```ts
- * await runCmd(cmd, ["--dev", "true"]);
- * await runCmd(cmd, ["--name", "John", "--verbose"]);
- * ```
- * **automatic normalization of template literals**:
- * ```ts
- * await runCmd(cmd, [`--dev ${isDev}`]); // Automatically converted to ["--dev", "true"]
- * await runCmd(cmd, [`--dev ${isDev} --build mod.ts`]); // ["--dev", "true", "--build", "mod.ts"]
- * ```
- */
-export async function runCmd<A extends ArgDefinitions = EmptyArgs>(
-  command: Command<A>,
-  argv: string[] = [],
-  parserOptions: ReliArgParserOptions = {},
-) {
-  // Normalize argv to handle template literals and space-separated strings
-  const normalizedArgv = normalizeArgv(argv);
-
-  // Prepare boolean keys and default values from command argument definitions.
-  const booleanKeys = Object.keys(command.args || {}).filter(
-    (k) => command.args?.[k]?.type === "boolean",
-  );
-  const defaultMap: Record<string, any> = {};
-  for (const [argKey, def] of Object.entries(command.args || {})) {
-    if (def.type === "boolean") {
-      // Always default to false if not specified
-      defaultMap[argKey] = def.default !== undefined ? def.default : false;
-    } else if (def.default !== undefined) {
-      defaultMap[argKey] =
-        def.type === "array" && typeof def.default === "string" ? [def.default] : def.default;
-    }
-  }
-
-  const mergedParserOptions: ReliArgParserOptions = {
-    ...parserOptions,
-    boolean: [...(parserOptions.boolean || []), ...booleanKeys],
-    defaults: { ...defaultMap, ...(parserOptions.defaults || {}) },
-  };
-
-  const parsed = reliArgParser(normalizedArgv, mergedParserOptions);
-  debugLog("Parsed arguments (runCmd):", parsed);
-
-  const finalArgs: Record<string, any> = {};
-
-  const positionalKeys = Object.keys(command.args || {}).filter(
-    (k) => command.args?.[k]?.type === "positional",
-  );
-  const leftoverPositionals = [...(parsed._ || [])];
-
-  // Process positional arguments.
-  for (let i = 0; i < positionalKeys.length; i++) {
-    const key = positionalKeys[i];
-    if (!key || !command.args) continue;
-
-    const def = command.args[key] as any;
-    const val = leftoverPositionals[i];
-    finalArgs[key] = val != null && def ? castArgValue(def, val, key) : def?.default;
-  }
-
-  // Process non-positional arguments.
-  const otherKeys = Object.keys(command.args || {}).filter(
-    (k) => command.args?.[k]?.type !== "positional",
-  );
-
-  for (const key of otherKeys) {
-    const def = command.args?.[key];
-    if (!def) continue;
-
-    let rawVal = parsed[key];
-
-    if (def.type === "array" && rawVal !== undefined && !Array.isArray(rawVal)) {
-      rawVal = [rawVal];
-    }
-
-    const casted = rawVal !== undefined ? castArgValue(def, rawVal, key) : def.default;
-
-    const argUsed = rawVal !== undefined && (def.type === "boolean" ? casted === true : true);
-
-    if (casted == null && def.required) {
-      throw new Error(`Missing required argument: --${key}`);
-    }
-
-    if (argUsed && def.dependencies?.length) {
-      const missingDeps = def.dependencies.filter((d) => {
-        const depVal = parsed[d] ?? defaultMap[d];
-        return !depVal;
-      });
-      if (missingDeps.length) {
-        const depsList = missingDeps.map((d) => `--${d}`).join(", ");
-        throw new Error(
-          `Argument --${key} can only be used when ${depsList} ${
-            missingDeps.length === 1 ? "is" : "are"
-          } set`,
-        );
-      }
-    }
-
-    finalArgs[key] = def.type === "boolean" ? Boolean(casted) : casted;
-  }
-
-  const ctx: CommandContext<InferArgTypes<A>> = {
-    args: finalArgs as InferArgTypes<A>,
-    raw: argv,
-  };
-
-  if (typeof command.run === "function") {
-    await command.run(ctx);
-  } else {
-    throw new Error("Command has no run() handler.");
-  }
-}
-
-/**
  * Helper to parse args for a command and argv
  */
 function getParsedContext<A extends ArgDefinitions>(
@@ -1737,7 +1383,7 @@ async function resolveFileBasedCommandPath(
   let leftover = [...argv];
   while (leftover.length > 0 && leftover[0] && !isFlag(leftover[0])) {
     const nextDir = path.join(currentDir, leftover[0]);
-    if ((await fs.pathExists(nextDir)) && (await fs.stat(nextDir)).isDirectory()) {
+    if ((await pathExists(nextDir)) && (await stat(nextDir)).isDirectory()) {
       currentDir = nextDir;
       pathSegments.push(leftover[0]);
       leftover = leftover.slice(1);
@@ -1748,7 +1394,7 @@ async function resolveFileBasedCommandPath(
   // Try to load cmd.ts/cmd.js in currentDir
   for (const fname of ["cmd.ts", "cmd.js"]) {
     const fpath = path.join(currentDir, fname);
-    if (await fs.pathExists(fpath)) {
+    if (await pathExists(fpath)) {
       const imported = await import(path.resolve(fpath));
       if (imported.default) {
         return {

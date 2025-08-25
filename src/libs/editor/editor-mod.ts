@@ -1,13 +1,335 @@
-import path from "@reliverse/pathkit";
 import { re } from "@reliverse/relico";
-import fs from "@reliverse/relifso";
 import { relinka } from "@reliverse/relinka";
-import { loadConfig } from "c12";
-import termkit from "terminal-kit";
-
+import ansiEscapes from "ansi-escapes";
+import { realpathSync } from "fs";
+import { readFile, writeFile } from "fs/promises";
+import path from "path";
+import readline from "readline";
+import { cursor } from "sisteransi";
 import type { EditorExitResult } from "../../types";
 
-const { terminal: term } = termkit;
+// Custom terminal interface to replace termkit
+class TerminalInterface {
+  private rl: readline.Interface;
+  private _width: number;
+  private _height: number;
+  private keyListeners: Array<(key: string, matches: string[], data: any) => void> = [];
+  private resizeListeners: Array<(width: number, height: number) => void> = [];
+
+  constructor() {
+    this.rl = readline.createInterface({
+      input: process.stdin,
+      output: process.stdout,
+      terminal: true,
+    });
+
+    // Get initial terminal size
+    this._width = process.stdout.columns || 80;
+    this._height = process.stdout.rows || 24;
+
+    // Handle terminal resize
+    process.stdout.on("resize", () => {
+      this._width = process.stdout.columns || 80;
+      this._height = process.stdout.rows || 24;
+      this.resizeListeners.forEach((listener) => listener(this._width, this._height));
+    });
+
+    // Handle raw input for key events
+    process.stdin.setRawMode(true);
+    process.stdin.resume();
+    process.stdin.setEncoding("utf8");
+
+    process.stdin.on("data", (data) => {
+      const key = this.parseKey(data);
+      if (key) {
+        this.keyListeners.forEach((listener) =>
+          listener(key, [], {
+            isCharacter: this.isCharacter(key),
+            code: data,
+            codepoint: data.toString().charCodeAt(0),
+          }),
+        );
+      }
+    });
+  }
+
+  private parseKey(data: Buffer): string {
+    const str = data.toString();
+
+    // Handle special keys
+    if (str === "\u0003") return "CTRL_C";
+    if (str === "\u0001") return "CTRL_A";
+    if (str === "\u000F") return "CTRL_O";
+    if (str === "\u0013") return "CTRL_S";
+    if (str === "\u0018") return "CTRL_X";
+    if (str === "\u0006") return "CTRL_F";
+    if (str === "\u000B") return "CTRL_K";
+    if (str === "\u0015") return "CTRL_U";
+    if (str === "\u0014") return "CTRL_T";
+    if (str === "\u0009") return "TAB";
+    if (str === "\r" || str === "\n") return "ENTER";
+    if (str === "\u007F" || str === "\b") return "BACKSPACE";
+    if (str === "\u001B[3~") return "DELETE";
+    if (str === "\u001B[A") return "UP";
+    if (str === "\u001B[B") return "DOWN";
+    if (str === "\u001B[C") return "RIGHT";
+    if (str === "\u001B[D") return "LEFT";
+    if (str === "\u001B[5~") return "PAGE_UP";
+    if (str === "\u001B[6~") return "PAGE_DOWN";
+    if (str === "\u001B[H") return "HOME";
+    if (str === "\u001B[F") return "END";
+    if (str === "\u001B[1;5H") return "CTRL_HOME";
+    if (str === "\u001B[1;5F") return "CTRL_END";
+    if (str === "\u001B[1;3C") return "ALT_C";
+    if (str === "\u001B[2;2~") return "SHIFT_INSERT";
+    if (str === "\u001B[2;5~") return "CTRL_INSERT";
+
+    // Return single character for regular input
+    return str.length === 1 ? str : "";
+  }
+
+  private isCharacter(key: string): boolean {
+    return (
+      key.length === 1 &&
+      !key.startsWith("\u001B") &&
+      ![
+        "CTRL_C",
+        "CTRL_A",
+        "CTRL_O",
+        "CTRL_S",
+        "CTRL_X",
+        "CTRL_F",
+        "CTRL_K",
+        "CTRL_U",
+        "CTRL_T",
+        "TAB",
+        "ENTER",
+        "BACKSPACE",
+        "DELETE",
+        "UP",
+        "DOWN",
+        "RIGHT",
+        "LEFT",
+        "PAGE_UP",
+        "PAGE_DOWN",
+        "HOME",
+        "END",
+        "CTRL_HOME",
+        "CTRL_END",
+        "ALT_C",
+        "SHIFT_INSERT",
+        "CTRL_INSERT",
+      ].includes(key)
+    );
+  }
+
+  get width(): number {
+    return this._width;
+  }
+  get height(): number {
+    return this._height;
+  }
+
+  fullscreen(enabled: boolean) {
+    if (enabled) {
+      process.stdout.write("\u001B[?1049h"); // Enter alternate screen
+    } else {
+      process.stdout.write("\u001B[?1049l"); // Exit alternate screen
+    }
+  }
+
+  grabInput(enabled: boolean) {
+    if (enabled) {
+      process.stdin.setRawMode(true);
+    } else {
+      process.stdin.setRawMode(false);
+    }
+  }
+
+  on(event: string, listener: (...args: any[]) => void) {
+    if (event === "key") {
+      this.keyListeners.push(listener);
+    } else if (event === "resize") {
+      this.resizeListeners.push(listener);
+    }
+  }
+
+  off(event: string, listener: (...args: any[]) => void) {
+    if (event === "key") {
+      const index = this.keyListeners.indexOf(listener);
+      if (index > -1) this.keyListeners.splice(index, 1);
+    } else if (event === "resize") {
+      const index = this.resizeListeners.indexOf(listener);
+      if (index > -1) this.resizeListeners.splice(index, 1);
+    }
+  }
+
+  moveTo(x: number, y: number) {
+    process.stdout.write(ansiEscapes.cursorTo(x, y));
+  }
+
+  clear() {
+    process.stdout.write(ansiEscapes.clearScreen);
+  }
+
+  eraseLine() {
+    process.stdout.write(ansiEscapes.eraseLine);
+  }
+
+  eraseLineAfter() {
+    process.stdout.write(ansiEscapes.eraseLine);
+  }
+
+  hideCursor() {
+    process.stdout.write(cursor.hide);
+  }
+
+  restoreCursor() {
+    process.stdout.write(cursor.show);
+  }
+
+  styleReset() {
+    process.stdout.write(ansiEscapes.cursorShow + "\u001B[0m"); // Reset colors
+  }
+
+  bgColor(color: string) {
+    const colorMap: Record<string, string> = {
+      black: "\u001B[40m",
+      white: "\u001B[47m",
+      red: "\u001B[41m",
+      green: "\u001B[42m",
+      yellow: "\u001B[43m",
+      blue: "\u001B[44m",
+      magenta: "\u001B[45m",
+      cyan: "\u001B[46m",
+      brown: "\u001B[43m",
+    };
+    process.stdout.write(colorMap[color] || "");
+    return this;
+  }
+
+  color(color: string) {
+    const colorMap: Record<string, string> = {
+      black: "\u001B[30m",
+      white: "\u001B[37m",
+      red: "\u001B[31m",
+      green: "\u001B[32m",
+      yellow: "\u001B[33m",
+      blue: "\u001B[34m",
+      magenta: "\u001B[35m",
+      cyan: "\u001B[36m",
+      gray: "\u001B[90m",
+    };
+    process.stdout.write(colorMap[color] || "");
+    return this;
+  }
+
+  inputField(options: { echo: boolean }): { promise: Promise<string> } {
+    return {
+      promise: new Promise((resolve) => {
+        const prompt = "> ";
+        process.stdout.write(prompt);
+
+        let input = "";
+        const onData = (data: Buffer) => {
+          const char = data.toString();
+
+          if (char === "\n" || char === "\r") {
+            process.stdout.write("\n");
+            process.stdin.removeListener("data", onData);
+            resolve(input);
+            return;
+          }
+
+          if (char === "\u0003") {
+            // Ctrl+C
+            process.stdout.write("\n");
+            process.stdin.removeListener("data", onData);
+            resolve("");
+            return;
+          }
+
+          if (char === "\u007F" || char === "\b") {
+            // Backspace
+            if (input.length > 0) {
+              input = input.slice(0, -1);
+              process.stdout.write("\b \b");
+            }
+          } else if (options.echo) {
+            input += char;
+            process.stdout.write(char);
+          } else {
+            input += char;
+            process.stdout.write("*");
+          }
+        };
+
+        process.stdin.on("data", onData);
+      }),
+    };
+  }
+
+  yesOrNo(options: { yes: string[]; no: string[] }): { promise: Promise<boolean | null> } {
+    return {
+      promise: new Promise((resolve) => {
+        const prompt = "(y/N) ";
+        process.stdout.write(prompt);
+
+        const onData = (data: Buffer) => {
+          const char = data.toString().toLowerCase();
+
+          if (char === "\n" || char === "\r") {
+            process.stdout.write("\n");
+            process.stdin.removeListener("data", onData);
+            resolve(false); // Default to no
+            return;
+          }
+
+          if (char === "\u0003") {
+            // Ctrl+C
+            process.stdout.write("\n");
+            process.stdin.removeListener("data", onData);
+            resolve(null);
+            return;
+          }
+
+          if (options.yes.includes(char)) {
+            process.stdout.write(char + "\n");
+            process.stdin.removeListener("data", onData);
+            resolve(true);
+            return;
+          }
+
+          if (options.no.includes(char)) {
+            process.stdout.write(char + "\n");
+            process.stdin.removeListener("data", onData);
+            resolve(false);
+            return;
+          }
+        };
+
+        process.stdin.on("data", onData);
+      }),
+    };
+  }
+
+  // Callable interface for writing text
+  write(text: string) {
+    process.stdout.write(text);
+  }
+
+  red(text: string) {
+    process.stdout.write("\u001B[31m" + text + "\u001B[0m");
+  }
+
+  destroy() {
+    this.rl.close();
+    process.stdin.setRawMode(false);
+    process.stdin.pause();
+  }
+}
+
+const term = new TerminalInterface();
 
 // --- Interfaces ---
 interface EditorTheme {
@@ -123,27 +445,27 @@ let state: EditorState = {
 };
 
 // --- Configuration Loading ---
-async function loadEditorConfig(
-  cwd: string = process.cwd(),
-  overrides: Partial<EditorConfig> = {},
-): Promise<EditorConfig> {
-  const { config } = await loadConfig<EditorConfig>({
-    name: "minedit",
-    cwd,
-    defaults: {
-      // Low priority defaults
-      syntaxHighlighting: false,
-      theme: "auto",
-      defaultAllowSaveAs: true,
-      defaultAllowOpen: true,
-      defaultAutoCloseOnSave: false,
-      defaultReturnContentOnSave: false,
-    },
-    // user provided overrides during programmatic call have higher priority
-    overrides: overrides,
-  });
-  return config || {}; // Ensure we return an object
-}
+// async function loadEditorConfig(
+//   cwd: string = process.cwd(),
+//   overrides: Partial<EditorConfig> = {},
+// ): Promise<EditorConfig> {
+//   const { config } = await loadConfig<EditorConfig>({
+//     name: "minedit",
+//     cwd,
+//     defaults: {
+//       // Low priority defaults
+//       syntaxHighlighting: false,
+//       theme: "auto",
+//       defaultAllowSaveAs: true,
+//       defaultAllowOpen: true,
+//       defaultAutoCloseOnSave: false,
+//       defaultReturnContentOnSave: false,
+//     },
+//     // user provided overrides during programmatic call have higher priority
+//     overrides: overrides,
+//   });
+//   return config || {}; // Ensure we return an object
+// }
 
 // --- Theme Setup ---
 function setupTheme(configTheme: EditorConfig["theme"]) {
@@ -219,14 +541,14 @@ function renderStatusBar() {
 
   const statusBar = leftPart + middlePart + rightPart;
   term.moveTo(1, term.height - 1);
-  term(state.theme.statusBarBg(state.theme.statusBarText(statusBar.padEnd(width))));
+  term.write(state.theme.statusBarBg(state.theme.statusBarText(statusBar.padEnd(width))));
 }
 
 function renderMessageBar() {
   term.moveTo(1, term.height);
   term.eraseLine();
   if (state.statusMessage) {
-    term(state.theme.highlight(state.statusMessage.slice(0, term.width)));
+    term.write(state.theme.highlight(state.statusMessage.slice(0, term.width)));
     // Clear message after a delay
     setTimeout(() => {
       if (state.isRunning) {
@@ -283,7 +605,7 @@ function renderEditor() {
     if (fileLineIndex < state.lines.length) {
       const lineNum = String(fileLineIndex + 1).padStart(3);
       // Use template literal here
-      term(state.theme.lineNumber(`${lineNum} `)); // Line number
+      term.write(state.theme.lineNumber(`${lineNum} `)); // Line number
 
       const line = state.lines[fileLineIndex];
       const displayLine = line?.substring(state.leftCol, state.leftCol + displayWidth);
@@ -291,7 +613,7 @@ function renderEditor() {
       // Apply syntax highlighting here before printing
       const highlightedDisplayLine = applySyntaxHighlighting(displayLine ?? "");
 
-      term(highlightedDisplayLine);
+      term.write(highlightedDisplayLine);
       term.eraseLineAfter(); // Clear rest of the terminal line
     } else {
       term.eraseLine(); // Clear empty terminal lines below content
@@ -465,14 +787,16 @@ async function promptForFilename(promptMessage = "File path: "): Promise<string 
   term.moveTo(1, term.height); // Move to message bar line for input
   term.eraseLine();
   // Use template literal
-  term(promptMessage);
+  term.write(promptMessage);
   try {
     const input = await term.inputField({ echo: true }).promise;
-    term.moveTo(1, term.height).eraseLine(); // Clean up prompt line
+    term.moveTo(1, term.height); // Clean up prompt line
+    term.eraseLine();
     return input ? input.trim() : null;
   } catch (_error) {
     // Use _error as it's intentionally unused
-    term.moveTo(1, term.height).eraseLine(); // Clean up on error/cancel
+    term.moveTo(1, term.height); // Clean up on error/cancel
+    term.eraseLine();
     state.statusMessage = "Cancelled";
     render(); // Re-render to show cancellation message
     return null;
@@ -484,17 +808,19 @@ async function confirmAction(promptMessage = "Are you sure? (y/N)"): Promise<boo
   renderMessageBar();
   term.moveTo(1, term.height);
   term.eraseLine();
-  term(`${promptMessage} `); // Use template literal
+  term.write(`${promptMessage} `); // Use template literal
   try {
     const confirm = await term.yesOrNo({
       yes: ["y", "Y"],
       no: ["n", "N", "ENTER"],
     }).promise;
-    term.moveTo(1, term.height).eraseLine();
+    term.moveTo(1, term.height);
+    term.eraseLine();
     return confirm ?? false;
   } catch (_error) {
     // Use _error as it's intentionally unused
-    term.moveTo(1, term.height).eraseLine();
+    term.moveTo(1, term.height);
+    term.eraseLine();
     state.statusMessage = "Cancelled";
     render(); // Re-render to show cancellation message
     return false;
@@ -554,7 +880,7 @@ async function saveFile(): Promise<boolean> {
 
   // --- Actual File Write ---
   try {
-    await fs.writeFile(state.filename, contentToSave);
+    await writeFile(state.filename, contentToSave);
     state.originalContent = contentToSave; // Update original content marker
     state.modified = false;
     state.statusMessage = `Saved to ${state.filename}`;
@@ -633,7 +959,7 @@ async function loadFile(filePath: string): Promise<void> {
     const absolutePath = path.resolve(cwd, filePath);
     let content = "";
     try {
-      content = await fs.readFile(absolutePath, "utf-8");
+      content = await readFile(absolutePath, "utf-8");
       state.statusMessage = `Opened ${absolutePath}`;
     } catch (error: any) {
       // Catch specific error types
@@ -745,7 +1071,6 @@ async function findText(): Promise<void> {
 }
 
 // --- Input Handling ---
-// Parameters are typed based on terminal-kit's 'key' event
 async function handleInput(
   key: string,
   _matches: string[],
@@ -915,7 +1240,7 @@ async function cleanupAndExit(saved = false, content: string | null = null): Pro
   // Clean up terminal
   term.off("key", handleInputWrapper);
   term.off("resize", handleResize);
-  term.hideCursor(false);
+  term.hideCursor();
   term.grabInput(false);
   term.fullscreen(false);
   term.styleReset();
@@ -944,7 +1269,6 @@ function handleResize(_width: number, _height: number): void {
   }
 }
 
-// Wrapper to handle async input handler correctly with terminal-kit's sync event
 let isHandlingInput = false;
 async function handleInputWrapper(key: string, matches: string[], data: any): Promise<void> {
   if (isHandlingInput || !state.isRunning) return; // Prevent re-entrancy and handling after exit called
@@ -1005,8 +1329,16 @@ async function initializeEditorState(options: EditorOptions): Promise<void> {
 
   // --- Load Configuration ---
   try {
-    const loadedConfig = await loadEditorConfig(state.options.cwd, options.configOverrides);
-    state.editorConfig = loadedConfig; // Store loaded config
+    // const loadedConfig = await loadEditorConfig(state.options.cwd, options.configOverrides);
+    state.editorConfig = {
+      defaultAllowSaveAs: true,
+      defaultAllowOpen: true,
+      defaultAutoCloseOnSave: false,
+      defaultReturnContentOnSave: false,
+      syntaxHighlighting: false,
+      theme: "light",
+      ...options.configOverrides,
+    }; // Store loaded config
 
     // Determine final behavior based on options > config > defaults
     state.options.allowSaveAs =
@@ -1114,8 +1446,8 @@ export async function startEditor(options: EditorOptions = {}): Promise<EditorEx
 const isDirectRun = (() => {
   try {
     // Resolve potential symlinks for robust comparison
-    const scriptPath = fs.realpathSync(process.argv[1] || "");
-    const modulePath = fs.realpathSync(import.meta.filename);
+    const scriptPath = realpathSync(process.argv[1] || "");
+    const modulePath = realpathSync(import.meta.filename);
     return scriptPath === modulePath;
   } catch (_e) {
     // Handle cases where process.argv[1] or import.meta.filename might be invalid/undefined

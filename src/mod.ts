@@ -32,21 +32,13 @@ export { input, password, text } from "./libs/input/input-alias";
 export { inputPrompt } from "./libs/input/input-mod";
 export { intro, startPrompt } from "./libs/intro/intro-alias";
 export { introPrompt } from "./libs/intro/intro-mod";
-export { loadCommand } from "./libs/launcher/command-runner";
-export {
-  argsToStringArray,
-  callCmdImpl,
-  createCallCmd,
-  createGetTypedCmd,
-  getTypedCmdImpl,
-} from "./libs/launcher/command-typed";
+export type { CallCmdOptions } from "./libs/launcher/command-runner";
+export { callCmd } from "./libs/launcher/command-runner";
 export { runMain } from "./libs/launcher/launcher-alias";
 export {
   createCli,
   defineArgs,
   defineCommand,
-  runCmd,
-  runCmdWithSubcommands,
   showUsage,
 } from "./libs/launcher/launcher-mod";
 export type {
@@ -71,99 +63,6 @@ export type {
   PositionalArgDefinition,
   StringArgDefinition,
 } from "./libs/launcher/launcher-types";
-export { addCompletions } from "./libs/launcher/trpc-orpc-support/completions";
-export {
-  CliValidationError,
-  FailedToExitError,
-} from "./libs/launcher/trpc-orpc-support/errors";
-export {
-  createRpcCli,
-  parseRouter,
-  TrpcCommand,
-  trpcServer,
-  z,
-  zod,
-} from "./libs/launcher/trpc-orpc-support/index";
-export type { CommandJSON } from "./libs/launcher/trpc-orpc-support/json";
-export { commandToJSON } from "./libs/launcher/trpc-orpc-support/json";
-export {
-  flattenedProperties,
-  getDescription,
-  getEnumChoices,
-  getSchemaTypes,
-  incompatiblePropertyPairs,
-} from "./libs/launcher/trpc-orpc-support/json-schema";
-export {
-  lineByLineConsoleLogger,
-  lineByLineLogger,
-} from "./libs/launcher/trpc-orpc-support/logging";
-export { parseProcedureInputs } from "./libs/launcher/trpc-orpc-support/parse-procedure";
-export {
-  createShadowCommand,
-  promptify,
-} from "./libs/launcher/trpc-orpc-support/prompts";
-export type {
-  StandardSchemaV1,
-  StandardSchemaV1FailureResult,
-  StandardSchemaV1InferInput,
-  StandardSchemaV1InferOutput,
-  StandardSchemaV1Issue,
-  StandardSchemaV1PathSegment,
-  StandardSchemaV1Props,
-  StandardSchemaV1Result,
-  StandardSchemaV1SuccessResult,
-  StandardSchemaV1Types,
-} from "./libs/launcher/trpc-orpc-support/standard-schema/contract";
-export {
-  prettifyStandardSchemaError,
-  StandardSchemaV1Error,
-  toDotPath,
-} from "./libs/launcher/trpc-orpc-support/standard-schema/errors";
-export {
-  looksLikeStandardSchema,
-  looksLikeStandardSchemaFailure,
-} from "./libs/launcher/trpc-orpc-support/standard-schema/utils";
-export type {
-  AnyProcedure,
-  AnyRouter,
-  CreateCallerFactoryLike,
-  inferRouterContext,
-  OrpcProcedureLike,
-  OrpcRouterLike,
-  Trpc10ProcedureLike,
-  Trpc10RouterLike,
-  Trpc11ProcedureLike,
-  Trpc11ProcedureRecordLike,
-  Trpc11RouterLike,
-} from "./libs/launcher/trpc-orpc-support/trpc-compat";
-export {
-  isOrpcRouter,
-  isTrpc11Procedure,
-  isTrpc11Router,
-} from "./libs/launcher/trpc-orpc-support/trpc-compat";
-export type {
-  ClackPromptsLike,
-  CommanderProgramLike,
-  Dependencies,
-  EnquirerLike,
-  InquirerPromptOptions,
-  InquirerPromptsLike,
-  Log,
-  Logger,
-  OmeletteInstanceLike,
-  ParsedProcedure,
-  Promptable,
-  PromptContext,
-  Prompter,
-  PromptsLike,
-  Result,
-  TrpcCli,
-  TrpcCliMeta,
-  TrpcCliParams,
-  TrpcCliRunParams,
-  TrpcServerModuleLike,
-} from "./libs/launcher/trpc-orpc-support/types";
-export { looksLikeInstanceof } from "./libs/launcher/trpc-orpc-support/util";
 export { log } from "./libs/log/log-alias";
 export { toBaseColor, toSolidColor } from "./libs/msg-fmt/colors";
 export {

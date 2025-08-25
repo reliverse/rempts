@@ -28,11 +28,11 @@
     "noPropertyAccessFromIndexSignature": false,
     "forceConsistentCasingInFileNames": true
   },
-  "include": ["src/**/*.ts", "src/**/*.js", "build.config.ts"],
-  "exclude": [
-    "node_modules",
-    "dist*",
-    ".tests/trpc-orpc-cli/**/*.ts",
-    ".tests/figures.test.ts"
-  ]
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.js",
+    "build.config.ts",
+    "example/**/*.ts"
+  ],
+  "exclude": ["node_modules", "dist*"]
 }

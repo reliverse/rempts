@@ -1,5 +1,5 @@
 {
-  "$schema": "https://biomejs.dev/schemas/2.2.0/schema.json",
+  "$schema": "https://biomejs.dev/schemas/2.2.2/schema.json",
   "extends": ["ultracite"],
   "vcs": {
     "enabled": false,
@@ -100,6 +100,7 @@
         "useKeyWithClickEvents": "off"
       },
       "style": {
+        "useReadonlyClassProperties": "off",
         "noNamespace": "off",
         "useGraphqlNamingConvention": "off",
         "useFilenamingConvention": "off",
@@ -180,6 +181,7 @@
         "noNamespaceImport": "off"
       },
       "nursery": {
+        "noMisusedPromises": "off",
         "useAnchorHref": "off",
         "useMaxParams": "off",
         "useImageSize": "off",

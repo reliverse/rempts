@@ -1,413 +1,378 @@
 import process from "node:process";
-import { dirname, resolve } from "@reliverse/pathkit";
-import fs from "@reliverse/relifso";
 import { relinka } from "@reliverse/relinka";
-import { createJiti } from "jiti";
+import type { ReliArgParserOptions } from "../reliarg/reliarg-mod";
+import { reliArgParser } from "../reliarg/reliarg-mod";
 
-import type { Command } from "./launcher-types";
+import type {
+  ArgDefinition,
+  ArgDefinitions,
+  Command,
+  CommandContext,
+  EmptyArgs,
+  InferArgTypes,
+} from "./launcher-types";
 
-const jiti = createJiti(import.meta.url, {
-  debug: process.env.NODE_ENV === "development",
-  fsCache: true,
-  sourceMaps: true,
-});
+// -------------------------
+//   Call Command Options
+// -------------------------
 
-const COMMAND_EXTENSIONS = [".ts", ".js"] as const;
-const COMMAND_FILENAMES = ["cmd.ts", "cmd.js"] as const;
+export interface CallCmdOptions {
+  /** Whether to automatically exit process on errors (default: false for programmatic usage) */
+  autoExit?: boolean;
+  /** Whether to show debug output */
+  debug?: boolean;
+  /** Whether to call lifecycle hooks (onCmdInit/onCmdExit) */
+  useLifecycleHooks?: boolean;
+  /** Custom parser options for argv processing */
+  parserOptions?: ReliArgParserOptions;
+}
 
-const getCallerDirectory = async (): Promise<string> => {
-  const stack = new Error().stack?.split("\n") ?? [];
-  const cwd = process.cwd();
-
-  // Debug: log the stack trace in development
-  if (process.env.NODE_ENV === "development") {
-    relinka("log", "Stack trace for getCallerDirectory:");
-    stack.forEach((line, index) => {
-      relinka("log", `  [${index}]: ${line.trim()}`);
-    });
-  }
-
-  // Look for the first stack frame that's not from the library
-  for (const line of stack) {
-    const match = /\((.*):(\d+):(\d+)\)/.exec(line) || /at (.*):(\d+):(\d+)/.exec(line);
-    if (match?.[1]) {
-      const filePath = match[1];
-      
-      if (process.env.NODE_ENV === "development") {
-        relinka("log", `Checking file path: ${filePath}`);
-      }
-      
-      // Skip internal launcher files and node_modules, but be more specific
-      if (
-        !filePath.includes("node_modules") &&
-        !filePath.includes("command-runner") &&
-        !filePath.includes("command-typed") &&
-        !filePath.includes("launcher-mod") &&
-        !filePath.includes("launcher-types") &&
-        !filePath.endsWith("mod.mjs") && // Skip compiled output
-        !filePath.endsWith("mod.js") &&  // Skip compiled output
-        !filePath.endsWith("mod.ts")     // Skip source files
-      ) {
-        try {
-          const fileDir = dirname(filePath);
-          
-          // First, try to find the package root for this file
-          let currentDir = fileDir;
-          let packageRoot = null;
-          
-          while (currentDir !== dirname(currentDir)) {
-            try {
-              const packageJsonPath = resolve(currentDir, "package.json");
-              if (await fs.pathExists(packageJsonPath)) {
-                packageRoot = currentDir;
-                
-                if (process.env.NODE_ENV === "development") {
-                  relinka("log", `Found package.json at: ${packageRoot}`);
-                }
-                
-                // Check if this package is different from the CWD package
-                const cwdPackageJsonPath = resolve(cwd, "package.json");
-                if (await fs.pathExists(cwdPackageJsonPath)) {
-                  try {
-                    const callerPackage = JSON.parse(await fs.readFile(packageJsonPath, "utf-8"));
-                    const cwdPackage = JSON.parse(await fs.readFile(cwdPackageJsonPath, "utf-8"));
-                    
-                    // If packages are different (different name or version), use the caller's package root
-                    if (callerPackage.name !== cwdPackage.name || callerPackage.version !== cwdPackage.version) {
-                      if (process.env.NODE_ENV === "development") {
-                        relinka("log", `Using caller package root: ${packageRoot} (${callerPackage.name}@${callerPackage.version})`);
-                      }
-                      return packageRoot;
-                    }
-                  } catch {
-                    // If we can't parse package.json, still use the package root if it's different from cwd
-                    if (resolve(packageRoot) !== resolve(cwd)) {
-                      if (process.env.NODE_ENV === "development") {
-                        relinka("log", `Using caller package root (different path): ${packageRoot}`);
-                      }
-                      return packageRoot;
-                    }
-                  }
-                } else {
-                  // If there's no package.json in CWD, use the caller's package root
-                  if (process.env.NODE_ENV === "development") {
-                    relinka("log", `Using caller package root (no CWD package.json): ${packageRoot}`);
-                  }
-                  return packageRoot;
-                }
-                break;
-              }
-            } catch {
-              // Continue to parent directory
-            }
-            currentDir = dirname(currentDir);
-          }
-          
-          // If we found a package root but it's the same as CWD, still check if the file is in a different location
-          const resolvedFileDir = resolve(fileDir);
-          const resolvedCwd = resolve(cwd);
-          
-          if (resolvedFileDir !== resolvedCwd && !resolvedFileDir.startsWith(resolvedCwd)) {
-            if (process.env.NODE_ENV === "development") {
-              relinka("log", `Using caller directory (different from CWD): ${fileDir}`);
-            }
-            return packageRoot || fileDir;
-          }
-        } catch {
-          // If path resolution fails, continue to next stack frame
-          continue;
-        }
-      }
-    }
-  }
-
-  // Look for package.json in node_modules to find packages that might contain commands
-  // This handles the case where the command is called from a CLI tool installed as a dependency
-  for (const line of stack) {
-    const match = /\((.*):(\d+):(\d+)\)/.exec(line) || /at (.*):(\d+):(\d+)/.exec(line);
-    if (match?.[1]) {
-      const filePath = match[1];
-      
-      // Check if this is from a node_modules package
-      if (filePath.includes("node_modules")) {
-        try {
-          // Extract the package path from node_modules
-          const nodeModulesMatch = filePath.match(/(.+\/node_modules\/[^\/]+)/);
-          if (nodeModulesMatch?.[1]) {
-            const packageDir = nodeModulesMatch[1];
-            const packageJsonPath = resolve(packageDir, "package.json");
-            
-            if (await fs.pathExists(packageJsonPath)) {
-              if (process.env.NODE_ENV === "development") {
-                relinka("log", `Found command package in node_modules: ${packageDir}`);
-              }
-              return packageDir;
-            }
-          }
-        } catch {
-          continue;
-        }
-      }
-    }
-  }
-
-  // Fallback: try to find package.json in the current directory or parent directories
-  let currentDir = cwd;
-  while (currentDir !== dirname(currentDir)) {
-    try {
-      const packageJsonPath = resolve(currentDir, "package.json");
-      if (await fs.pathExists(packageJsonPath)) {
-        if (process.env.NODE_ENV === "development") {
-          relinka("log", `Found package.json at: ${currentDir}`);
-        }
-        return currentDir;
-      }
-    } catch {
-      // Continue to parent directory
-    }
-    currentDir = dirname(currentDir);
-  }
-
-  if (process.env.NODE_ENV === "development") {
-    relinka("log", `No suitable caller found, using cwd: ${cwd}`);
-  }
-  // Final fallback to process.cwd()
-  return process.cwd();
-};
-
-// Collect all package directories referenced in the current call stack that
-// originate from node_modules. This helps us locate the actual CLI package
-// that invoked the command (e.g. @reliverse/dler), so we can search its
-// conventional command locations like bin/app/<cmd>/cmd.js.
-const getNodeModulesPackageDirsFromStack = async (): Promise<string[]> => {
-  const stack = new Error().stack?.split("\n") ?? [];
-  const packageDirs = new Set<string>();
-
-  for (const line of stack) {
-    const match = /\((.*):(\d+):(\d+)\)/.exec(line) || /at (.*):(\d+):(\d+)/.exec(line);
-    if (!match?.[1]) continue;
-    const filePath = match[1];
-    if (!filePath.includes("node_modules")) continue;
-
-    try {
-      // Capture the package root inside node_modules, including scoped packages
-      // Example: .../node_modules/@reliverse/dler/...
-      const nodeModulesMatch = filePath.match(/(.+\\node_modules\\(?:@[^\\/]+\\)?[^\\/]+)|(.+\/node_modules\/(?:@[^\/]+\/)?[^\/]+)/);
-      const packageDir = (nodeModulesMatch?.[1] || nodeModulesMatch?.[2])?.trim();
-      if (!packageDir) continue;
-      const packageJsonPath = resolve(packageDir, "package.json");
-      if (await fs.pathExists(packageJsonPath)) {
-        packageDirs.add(packageDir);
-      }
-    } catch {
-      // ignore
-    }
-  }
-
-  return Array.from(packageDirs);
-};
-
-const tryLoadCommand = async (path: string): Promise<Command | null> => {
-  if (!(await fs.pathExists(path))) return null;
-
-  try {
-    // relinka("log", `Attempting to load command from: ${path}`);
-    const cmd: Command = await jiti.import(path, { default: true });
-    // relinka("log", `Successfully loaded command from: ${path}`);
-    return cmd;
-  } catch {
-    relinka("log", `Failed to load ${path} as a command file`);
-    return null;
-  }
-};
-
-const generateCandidatePaths = async (resolvedPath: string): Promise<string[]> => {
-  if (!(await fs.pathExists(resolvedPath))) {
-    return COMMAND_EXTENSIONS.map((ext) => `${resolvedPath}${ext}`);
-  }
-
-  if (await fs.isDirectory(resolvedPath)) {
-    return COMMAND_FILENAMES.map((filename) => resolve(resolvedPath, filename));
-  }
-
-  return [resolvedPath];
-};
-
-const generateAlternativePaths = async (cmdPath: string, callerDir: string): Promise<string[]> => {
-  const normalizedCmdPath = cmdPath.replace(/^\.\//, "");
-  const paths: string[] = [];
-
-  // Check if the command is in the package's common command locations
-  const commonCommandLocations = [
-    // Direct command file
-    resolve(callerDir, `${normalizedCmdPath}.ts`),
-    resolve(callerDir, `${normalizedCmdPath}.js`),
-    // Command in cmd subdirectory
-    resolve(callerDir, normalizedCmdPath, "cmd.ts"),
-    resolve(callerDir, normalizedCmdPath, "cmd.js"),
-    // Command in app subdirectory
-    resolve(callerDir, "app", normalizedCmdPath, "cmd.ts"),
-    resolve(callerDir, "app", normalizedCmdPath, "cmd.js"),
-    // Command in src subdirectory
-    resolve(callerDir, "src", normalizedCmdPath, "cmd.ts"),
-    resolve(callerDir, "src", normalizedCmdPath, "cmd.js"),
-    // Command in src/app subdirectory
-    resolve(callerDir, "src", "app", normalizedCmdPath, "cmd.ts"),
-    resolve(callerDir, "src", "app", normalizedCmdPath, "cmd.js"),
-    // Command in src-ts subdirectory
-    resolve(callerDir, "src-ts", normalizedCmdPath, "cmd.ts"),
-    resolve(callerDir, "src-ts", normalizedCmdPath, "cmd.js"),
-    // Command in src-ts/app subdirectory (for dler-like structures)
-    resolve(callerDir, "src-ts", "app", normalizedCmdPath, "cmd.ts"),
-    resolve(callerDir, "src-ts", "app", normalizedCmdPath, "cmd.js"),
-    // Command in lib subdirectory
-    resolve(callerDir, "lib", normalizedCmdPath, "cmd.ts"),
-    resolve(callerDir, "lib", normalizedCmdPath, "cmd.js"),
-    // Command in lib/app subdirectory
-    resolve(callerDir, "lib", "app", normalizedCmdPath, "cmd.ts"),
-    resolve(callerDir, "lib", "app", normalizedCmdPath, "cmd.js"),
-    // Command in dist subdirectory (compiled)
-    resolve(callerDir, "dist", normalizedCmdPath, "cmd.js"),
-    resolve(callerDir, "dist", "app", normalizedCmdPath, "cmd.js"),
-    // Command in bin subdirectory
-    resolve(callerDir, "bin", normalizedCmdPath, "cmd.ts"),
-    resolve(callerDir, "bin", normalizedCmdPath, "cmd.js"),
-    // Command in bin/app subdirectory (common for CLI tools)
-    resolve(callerDir, "bin", "app", normalizedCmdPath, "cmd.ts"),
-    resolve(callerDir, "bin", "app", normalizedCmdPath, "cmd.js"),
-    // Command in commands subdirectory
-    resolve(callerDir, "commands", normalizedCmdPath, "cmd.ts"),
-    resolve(callerDir, "commands", normalizedCmdPath, "cmd.js"),
-    // Command in cli subdirectory
-    resolve(callerDir, "cli", normalizedCmdPath, "cmd.ts"),
-    resolve(callerDir, "cli", normalizedCmdPath, "cmd.js"),
-    // Command in cli/commands subdirectory
-    resolve(callerDir, "cli", "commands", normalizedCmdPath, "cmd.ts"),
-    resolve(callerDir, "cli", "commands", normalizedCmdPath, "cmd.js"),
-    // Command in tools subdirectory
-    resolve(callerDir, "tools", normalizedCmdPath, "cmd.ts"),
-    resolve(callerDir, "tools", normalizedCmdPath, "cmd.js"),
-    // Command in scripts subdirectory
-    resolve(callerDir, "scripts", normalizedCmdPath, "cmd.ts"),
-    resolve(callerDir, "scripts", normalizedCmdPath, "cmd.js"),
-  ];
-
-  // Check which paths actually exist
-  for (const path of commonCommandLocations) {
-    if (await fs.pathExists(path)) {
-      paths.push(path);
-    }
-  }
-
-  return paths;
-};
-
-const createCommandNotFoundError = (cmdPath: string, searchedPaths: string[]): Error =>
-  new Error(
-    `No command file found for "${cmdPath}". Expected to find either:
-  - A valid command file at the specified path
-  - A directory containing cmd.ts or cmd.js  
-  - A file path that can be resolved with .ts or .js extension
-  
-Searched paths: ${searchedPaths.join(", ")}
-Please ensure one of these exists and exports a default command.`,
-  );
-
-const createLoadError = (cmdPath: string, originalError: unknown): Error =>
-  new Error(
-    `Failed to load command from "${cmdPath}"
-  
-For developers: Ensure the command file:
-  - Exists and is accessible
-  - Exports a default command (e.g., export default defineCommand({...}))
-  - Is a valid TypeScript/JavaScript module
-  
-Original error: ${originalError instanceof Error ? originalError.message : String(originalError)}`,
-  );
+// -------------------------
+//   Main callCmd Function
+// -------------------------
 
 /**
- * Load a command from the filesystem.
+ * Programmatically call a defineCommand command with arguments.
+ * Fully compatible with launcher-mod.ts execution logic.
  *
- * @param cmdPath - Path to the command file or directory containing cmd.ts/cmd.js
- * @returns Promise<Command> - The loaded command
+ * @param command - The command definition created with defineCommand()
+ * @param input - Either argv array (CLI-style) or args object (programmatic style)
+ * @param options - Optional configuration for execution
+ * @returns Promise resolving to the command context
  *
  * @example
  * ```ts
- * // Load a command
- * const cmd = await loadCommand("./web/cmd");
+ * // CLI-style with argv array
+ * const result = await callCmd(myCommand, ['--flag', 'value', 'positional']);
  *
- * // Use with runCmd - pass args as separate array elements
- * await runCmd(cmd, ["--dev", "true"]); // ✅ Correct
- * await runCmd(cmd, [`--dev ${isDev}`]); // ❌ Wrong - creates single string
+ * // Programmatic style with object
+ * const result = await callCmd(myCommand, { flag: true, name: 'value' });
  * ```
  */
-export async function loadCommand(cmdPath: string): Promise<Command> {
+export async function callCmd<A extends ArgDefinitions = EmptyArgs>(
+  command: Command<A>,
+  input: string[] | Partial<InferArgTypes<A>>,
+  options: CallCmdOptions = {},
+): Promise<CommandContext<InferArgTypes<A>>> {
+  const { autoExit = false, debug = false, useLifecycleHooks = true, parserOptions = {} } = options;
+
+  // Debug logging helper
+  const debugLog = (...args: any[]) => {
+    if (debug) {
+      relinka("log", "[callCmd DEBUG]", ...args);
+    }
+  };
+
+  debugLog("Calling command with input:", input);
+  debugLog("Command meta:", command.meta);
+
   try {
-    const callerDir = await getCallerDirectory();
-    const normalizedPath = cmdPath.replace(/^\.\//, "");
-    const resolvedPath = resolve(callerDir, normalizedPath);
+    let ctx: CommandContext<InferArgTypes<A>>;
 
-    if (process.env.NODE_ENV === "development") {
-      relinka("log", `Loading command: ${cmdPath}`);
-      relinka("log", `Caller directory: ${callerDir}`);
-      relinka("log", `Normalized path: ${normalizedPath}`);
-      relinka("log", `Resolved path: ${resolvedPath}`);
+    // Handle input - either argv array or args object
+    if (Array.isArray(input)) {
+      // CLI-style: parse argv array
+      debugLog("Processing argv input:", input);
+      ctx = await parseArgsFromArgv(command, input, parserOptions);
+    } else {
+      // Programmatic style: validate and use args object directly
+      debugLog("Processing object input:", input);
+      ctx = await createContextFromArgs(command, input as Partial<InferArgTypes<A>>);
     }
 
-    // Prefer searching conventional structured locations first, both in the
-    // caller package and in any node_modules packages visible in the stack.
-    const searchedPaths: string[] = [];
+    debugLog("Created context:", ctx);
 
-    const baseDirs: string[] = [callerDir];
-    const stackPackageDirs = await getNodeModulesPackageDirsFromStack();
-    for (const dir of stackPackageDirs) {
-      if (!baseDirs.includes(dir)) baseDirs.push(dir);
+    // Call onCmdInit hook if enabled
+    if (useLifecycleHooks && command.onCmdInit) {
+      debugLog("Calling onCmdInit hook");
+      await command.onCmdInit(ctx);
     }
 
-    for (const baseDir of baseDirs) {
-      const alternativePaths = await generateAlternativePaths(cmdPath, baseDir);
-      if (process.env.NODE_ENV === "development") {
-        relinka("log", `Trying alternative paths in base ${baseDir}: ${alternativePaths.join(", ")}`);
+    // Execute the command's run function
+    if (command.run) {
+      debugLog("Executing command run function");
+      await command.run(ctx);
+    } else {
+      const error = "Command has no run function defined";
+      debugLog(error);
+      if (autoExit) {
+        relinka("error", error);
+        process.exit(1);
       }
-      searchedPaths.push(...alternativePaths);
-      for (const path of alternativePaths) {
-        const command = await tryLoadCommand(path);
-        if (command) {
-          if (process.env.NODE_ENV === "development") {
-            relinka("log", `Successfully loaded command from alternative path: ${path}`);
-          }
-          return command;
-        }
-      }
+      throw new Error(error);
     }
 
-    // As a last resort, try direct candidate paths when an explicit path is provided
-    // (contains a path separator or file extension). Avoid bare-name root lookups.
-    const looksLikeExplicitPath = /[\\\/]|\.ts$|\.js$/.test(normalizedPath);
-    if (looksLikeExplicitPath) {
-      const candidatePaths = await generateCandidatePaths(resolvedPath);
-      if (process.env.NODE_ENV === "development") {
-        relinka("log", `Candidate paths: ${candidatePaths.join(", ")}`);
-      }
-      searchedPaths.push(...candidatePaths);
-      for (const path of candidatePaths) {
-        const command = await tryLoadCommand(path);
-        if (command) {
-          if (process.env.NODE_ENV === "development") {
-            relinka("log", `Successfully loaded command from: ${path}`);
-          }
-          return command;
-        }
-      }
+    // Call onCmdExit hook if enabled
+    if (useLifecycleHooks && command.onCmdExit) {
+      debugLog("Calling onCmdExit hook");
+      await command.onCmdExit(ctx);
     }
 
-    throw createCommandNotFoundError(cmdPath, searchedPaths);
+    debugLog("Command execution completed successfully");
+    return ctx;
   } catch (error) {
-    if (error instanceof Error && error.message.includes("No command file found")) {
-      throw error;
+    debugLog("Error during command execution:", error);
+
+    if (autoExit) {
+      relinka("error", `Error while executing command: ${String(error)}`);
+      process.exit(1);
     }
 
-    relinka("error", `Failed to load command from ${cmdPath}:`, error);
-    throw createLoadError(cmdPath, error);
+    throw error;
+  }
+}
+
+// -------------------------
+//   Internal Helper Functions
+// -------------------------
+
+/**
+ * Parse command arguments from argv array using the same logic as launcher-mod.ts
+ */
+async function parseArgsFromArgv<A extends ArgDefinitions>(
+  command: Command<A>,
+  argv: string[],
+  parserOptions: ReliArgParserOptions,
+): Promise<CommandContext<InferArgTypes<A>>> {
+  // Prepare boolean keys and default values from command argument definitions
+  const booleanKeys = Object.keys(command.args || {}).filter(
+    (k) => command.args?.[k]?.type === "boolean",
+  );
+
+  const defaultMap: Record<string, any> = {};
+  for (const [argKey, def] of Object.entries(command.args || {})) {
+    if (def.type === "boolean") {
+      // Always default to false if not specified
+      defaultMap[argKey] = def.default !== undefined ? def.default : false;
+    } else if (def.default !== undefined) {
+      defaultMap[argKey] =
+        def.type === "array" && typeof def.default === "string" ? [def.default] : def.default;
+    }
+  }
+
+  const mergedParserOptions: ReliArgParserOptions = {
+    ...parserOptions,
+    boolean: [...(parserOptions.boolean || []), ...booleanKeys],
+    defaults: { ...defaultMap, ...(parserOptions.defaults || {}) },
+  };
+
+  const parsed = reliArgParser(argv, mergedParserOptions);
+  const finalArgs: Record<string, any> = {};
+
+  // Process positional arguments
+  const positionalKeys = Object.keys(command.args || {}).filter(
+    (k) => command.args?.[k]?.type === "positional",
+  );
+  const leftoverPositionals = [...(parsed._ || [])];
+
+  for (let i = 0; i < positionalKeys.length; i++) {
+    const key = positionalKeys[i];
+    if (!key || !command.args) continue;
+
+    const def = command.args[key] as any;
+    const val = leftoverPositionals[i];
+    finalArgs[key] = val != null && def ? castArgValue(def, val, key) : def?.default;
+  }
+
+  // Process non-positional arguments
+  const otherKeys = Object.keys(command.args || {}).filter(
+    (k) => command.args?.[k]?.type !== "positional",
+  );
+
+  for (const key of otherKeys) {
+    const def = command.args?.[key];
+    if (!def) continue;
+
+    let rawVal = (parsed as Record<string, any>)[key];
+
+    if (def.type === "array" && rawVal !== undefined && !Array.isArray(rawVal)) {
+      rawVal = [rawVal];
+    }
+
+    const casted = rawVal !== undefined ? castArgValue(def, rawVal, key) : def.default;
+    const argUsed = rawVal !== undefined && (def.type === "boolean" ? casted === true : true);
+
+    // Validate required arguments
+    if (casted == null && def.required) {
+      throw new Error(`Missing required argument: --${key}`);
+    }
+
+    // Validate dependencies
+    if (argUsed && def.dependencies?.length) {
+      const missingDeps = def.dependencies.filter((d) => {
+        const depVal = (parsed as Record<string, any>)[d] ?? defaultMap[d];
+        return !depVal;
+      });
+      if (missingDeps.length > 0) {
+        const depsList = missingDeps.map((d) => `--${d}`).join(", ");
+        throw new Error(
+          `Argument --${key} can only be used when ${depsList} ${
+            missingDeps.length === 1 ? "is" : "are"
+          } set`,
+        );
+      }
+    }
+
+    finalArgs[key] = def.type === "boolean" ? Boolean(casted) : casted;
+  }
+
+  return {
+    args: finalArgs as InferArgTypes<A>,
+    raw: argv,
+  };
+}
+
+/**
+ * Create command context from args object (programmatic style)
+ */
+async function createContextFromArgs<A extends ArgDefinitions>(
+  command: Command<A>,
+  inputArgs: Partial<InferArgTypes<A>>,
+): Promise<CommandContext<InferArgTypes<A>>> {
+  const finalArgs: Record<string, any> = {};
+
+  // Process all defined arguments
+  for (const [key, def] of Object.entries(command.args || {})) {
+    const inputValue = (inputArgs as any)[key];
+
+    // Use input value if provided, otherwise use default
+    let value: any;
+    if (inputValue !== undefined) {
+      // Validate and cast the provided value
+      value = castArgValue(def, inputValue, key);
+    } else if (def.default !== undefined) {
+      value = def.type === "array" && typeof def.default === "string" ? [def.default] : def.default;
+    } else if (def.type === "boolean") {
+      // Boolean defaults to false if not specified
+      value = false;
+    } else {
+      value = undefined;
+    }
+
+    // Validate required arguments
+    if (value == null && def.required) {
+      throw new Error(`Missing required argument: ${key}`);
+    }
+
+    // Validate dependencies
+    if (value != null && def.dependencies?.length) {
+      const missingDeps = def.dependencies.filter((d) => {
+        const depVal = (inputArgs as any)[d];
+        return !depVal;
+      });
+      if (missingDeps.length > 0) {
+        const depsList = missingDeps.join(", ");
+        throw new Error(
+          `Argument '${key}' can only be used when ${depsList} ${
+            missingDeps.length === 1 ? "is" : "are"
+          } provided`,
+        );
+      }
+    }
+
+    finalArgs[key] = value;
+  }
+
+  return {
+    args: finalArgs as InferArgTypes<A>,
+    raw: [], // No raw argv for object input
+  };
+}
+
+/**
+ * Cast a raw argument value to the correct type based on its definition.
+ * This is the same logic used in launcher-mod.ts
+ */
+function castArgValue(def: ArgDefinition, rawVal: any, argName: string): any {
+  if (rawVal == null) {
+    if (def.type === "array" && typeof def.default === "string") {
+      return [def.default];
+    }
+    return def.default ?? undefined;
+  }
+
+  let castedValue: any;
+
+  switch (def.type) {
+    case "boolean":
+      if (typeof rawVal === "string") {
+        const lower = rawVal.toLowerCase();
+        if (lower === "true") castedValue = true;
+        else if (lower === "false") castedValue = false;
+        else castedValue = Boolean(rawVal);
+      } else {
+        castedValue = Boolean(rawVal);
+      }
+      // Validate against allowed boolean values if specified
+      if (def.allowed && !def.allowed.includes(castedValue)) {
+        throw new Error(
+          `Invalid value for ${argName}: ${rawVal}. Allowed values are: ${def.allowed.join(", ")}`,
+        );
+      }
+      return castedValue;
+
+    case "string":
+      castedValue = typeof rawVal === "string" ? rawVal : String(rawVal);
+      // Validate against allowed string values if specified
+      if (def.allowed && !def.allowed.includes(castedValue)) {
+        throw new Error(
+          `Invalid value for ${argName}: ${rawVal}. Allowed values are: ${def.allowed.join(", ")}`,
+        );
+      }
+      return castedValue;
+
+    case "number": {
+      const n = Number(rawVal);
+      if (Number.isNaN(n)) {
+        throw new Error(`Invalid number provided for ${argName}: ${rawVal}`);
+      }
+      // Validate against allowed number values if specified
+      if (def.allowed && !def.allowed.includes(n)) {
+        throw new Error(
+          `Invalid value for ${argName}: ${rawVal}. Allowed values are: ${def.allowed.join(", ")}`,
+        );
+      }
+      return n;
+    }
+
+    case "positional":
+      castedValue = String(rawVal);
+      // Validate against allowed positional values if specified
+      if (def.allowed && !def.allowed.includes(castedValue)) {
+        throw new Error(
+          `Invalid value for ${argName}: ${rawVal}. Allowed values are: ${def.allowed.join(", ")}`,
+        );
+      }
+      return castedValue;
+
+    case "array": {
+      // Handle array inputs - accept both arrays and strings
+      const arrVal = Array.isArray(rawVal) ? rawVal : [String(rawVal)];
+      const result: string[] = [];
+
+      for (let v of arrVal.map(String)) {
+        // Remove brackets if present
+        if (v.startsWith("[") && v.endsWith("]")) {
+          v = v.slice(1, -1);
+        }
+        // Split by comma (with or without spaces)
+        const parts = v.split(/\s*,\s*/).filter(Boolean);
+
+        // Validate each array element against allowed values if specified
+        for (const p of parts) {
+          if (def.allowed && !def.allowed.includes(p)) {
+            throw new Error(
+              `Invalid value in array ${argName}: ${p}. Allowed values are: ${def.allowed.join(", ")}`,
+            );
+          }
+        }
+
+        result.push(...parts);
+      }
+      return result;
+    }
+
+    default:
+      return rawVal;
   }
 }

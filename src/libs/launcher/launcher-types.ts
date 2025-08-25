@@ -2,14 +2,12 @@
 //   Type Definitions
 // -------------------------
 
-import type { AnyRouter } from "./trpc-orpc-support/trpc-compat";
-
 export type EmptyArgs = Record<string, never>;
 
 export interface BaseArgProps {
   description?: string;
   required?: boolean;
-  allowed?: string[];
+  allowed?: readonly string[];
 }
 
 export interface BaseArgDefinition {
@@ -17,38 +15,41 @@ export interface BaseArgDefinition {
   description?: string;
   required?: boolean;
   default?: any;
-  allowed?: any[];
+  allowed?: readonly any[];
   dependencies?: string[];
 }
 
 export type PositionalArgDefinition = BaseArgDefinition & {
   type: "positional";
   default?: string;
+  allowed?: readonly string[];
 };
 
 export type BooleanArgDefinition = BaseArgDefinition & {
   type: "boolean";
   default?: boolean;
-  allowed?: boolean[];
+  allowed?: readonly boolean[];
   alias?: string;
 };
 
 export type StringArgDefinition = BaseArgDefinition & {
   type: "string";
   default?: string;
+  allowed?: readonly string[];
   alias?: string;
 };
 
 export type NumberArgDefinition = BaseArgDefinition & {
   type: "number";
   default?: number;
-  allowed?: number[];
+  allowed?: readonly number[];
   alias?: string;
 };
 
 export type ArrayArgDefinition = BaseArgDefinition & {
   type: "array";
   default?: string | readonly string[];
+  allowed?: readonly string[];
   alias?: string;
 };
 
@@ -124,11 +125,6 @@ export interface DefineCommandOptions<A extends ArgDefinitions = EmptyArgs> {
    * Called once per CLI process, after all command/run() logic is finished
    */
   onLauncherExit?: () => void | Promise<void>;
-  /**
-   * tRPC/oRPC router for RPC mode. When provided, the command will automatically
-   * switch to RPC mode and use the router's procedures as CLI commands.
-   */
-  router?: AnyRouter;
 }
 
 export interface Command<A extends ArgDefinitions = EmptyArgs> {
@@ -167,25 +163,36 @@ export interface Command<A extends ArgDefinitions = EmptyArgs> {
    * Called once per CLI process, after all command/run() logic is finished
    */
   onLauncherExit?: () => void | Promise<void>;
-  /**
-   * tRPC/oRPC router for RPC mode. When provided, the command will automatically
-   * switch to RPC mode and use the router's procedures as CLI commands.
-   */
-  router?: AnyRouter;
 }
 
-export type InferArgTypes<A extends ArgDefinitions> = {
-  [K in keyof A]: A[K] extends PositionalArgDefinition
+// Utility type to extract allowed values as literal types
+type ExtractAllowed<T extends ArgDefinition> = T extends {
+  type: "positional";
+  allowed: readonly (infer U)[];
+}
+  ? U
+  : T extends { type: "positional" }
     ? string
-    : A[K] extends BooleanArgDefinition
-      ? boolean
-      : A[K] extends StringArgDefinition
-        ? string
-        : A[K] extends NumberArgDefinition
-          ? number
-          : A[K] extends { type: "array" }
-            ? string[]
-            : never;
+    : T extends { type: "boolean"; allowed: readonly (infer U)[] }
+      ? U
+      : T extends { type: "boolean" }
+        ? boolean
+        : T extends { type: "string"; allowed: readonly (infer U)[] }
+          ? U
+          : T extends { type: "string" }
+            ? string
+            : T extends { type: "number"; allowed: readonly (infer U)[] }
+              ? U
+              : T extends { type: "number" }
+                ? number
+                : T extends { type: "array"; allowed: readonly (infer U)[] }
+                  ? U[]
+                  : T extends { type: "array" }
+                    ? string[]
+                    : never;
+
+export type InferArgTypes<A extends ArgDefinitions> = {
+  [K in keyof A]: ExtractAllowed<A[K]>;
 };
 
 export interface FileBasedOptions {

@@ -28,7 +28,6 @@
 - 🏞️ no more hacking together `inquirer`/`citty`/`commander`/`chalk`
 - 🆕 automatic command creation (`bun dler rempts --init cmd1 cmd2`)
 - 🐦‍🔥 automatic creation of `src/app/cmds.ts` file (`bun dler rempts`)
-- 🔌 tRPC/ORPC router integration - automatically generate CLI commands from your RPC procedures
 
 ## Installation
 
@@ -367,48 +366,6 @@ See [example/launcher/app/nested](./example/launcher/app/nested/) and [example/l
 
 When playing with the example, you can run e.g. `bun dev:modern nested foo bar baz` to see the result in action.
 
-## RPC Integration
-
-Rempts now supports seamless integration with tRPC and ORPC routers, allowing you to automatically generate CLI commands from your RPC procedures. This provides a powerful way to expose your API endpoints as command-line tools.
-
-```typescript
-import { z } from "zod";
-import { initTRPC } from "@trpc/server";
-import { createCli } from "@reliverse/rempts";
-
-const t = initTRPC.create();
-
-const appRouter = t.router({
-  hello: t.procedure
-    .input(z.object({ name: z.string().optional() }))
-    .query(({ input }) => `Hello ${input.name ?? "World"}!`),
-  
-  add: t.procedure
-    .input(z.object({ a: z.number(), b: z.number() }))
-    .mutation(({ input }) => input.a + input.b)
-});
-
-// Automatically generates CLI commands from your tRPC procedures
-await createCli({
-  name: "my-cli",
-  rpc: { router: appRouter }
-});
-```
-
-**Features:**
-
-- 🚀 Automatic CLI generation from tRPC procedures
-- 🔄 Support for both tRPC v10 and v11
-- 🏗️ Nested command structures from sub-routers
-- ✅ Input validation from Zod schemas
-- 📖 Automatic help generation from procedure metadata
-- 🎯 Full TypeScript support with type inference
-- 🎨 Interactive prompts for missing arguments
-- ⌨️ Shell completion support
-- 🔧 Customizable logging and error handling
-
-See [RPC Integration Guide](./docs/launcher-rpc.md) for detailed documentation and examples.
-
 ### Playground
 
 ```bash
@@ -421,12 +378,6 @@ bun dev
 - `bun dev:prompts`: This example will show you a `multiselectPrompt()` where you can choose which CLI prompts you want to play with.
 - `bun dev:modern`: This example will show you a modern CLI launcher usage with file-based commands.
 - `bun dev:classic`: This example will show you a classic CLI launcher usage with programmatic commands.
-
-### tRPC/oRPC Integration Example Commands
-
-```bash
-bun example/trpc-orpc/rempts/effect-primary.ts create-profile --name 'Jane Smith' --age 28 --bio 'Software Engineer' --tags 'developer,typescript'
-```
 
 ### Launcher Usage Examples
 
@@ -1458,9 +1409,7 @@ All APIs are fully typed. See [`src/types.ts`](./src/types.ts) for advanced cust
 
 ## Related
 
-- [`@reliverse/cli`](https://npmjs.com/package/@reliverse/cli) – CLI-first toolkit for fullstack workflows
-- [`@reliverse/reliarg`](https://npmjs.com/package/@reliverse/reliarg) – Tiny, strict, zero-dep argument parser with value validation support (`allowed` property for restricting argument values)
-- [`@reliverse/reglob`](https://npmjs.com/package/@reliverse/reglob) – Fast, minimal file matcher
+- [`@reliverse/rse`](https://npmjs.com/package/@reliverse/rse) – CLI-first toolkit for fullstack workflows
 - [`@reliverse/relinka`](https://npmjs.com/package/@reliverse/relinka) – Styled CLI logs, steps, and symbols
 
 ## Shoutouts
