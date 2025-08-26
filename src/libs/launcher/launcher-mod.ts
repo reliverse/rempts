@@ -110,17 +110,17 @@ export function defineCommand<A extends ArgDefinitions = EmptyArgs>(
     commands = options.subCommands;
   }
   const cmdObj = {
-    meta: options.meta,
+    ...(options.meta !== undefined && { meta: options.meta }),
     args: options.args || ({} as A),
-    run: options.run,
-    commands,
-    onCmdInit,
-    onCmdExit,
-    onLauncherInit,
-    onLauncherExit,
+    ...(options.run !== undefined && { run: options.run }),
+    ...(commands !== undefined && { commands }),
+    ...(onCmdInit !== undefined && { onCmdInit }),
+    ...(onCmdExit !== undefined && { onCmdExit }),
+    ...(onLauncherInit !== undefined && { onLauncherInit }),
+    ...(onLauncherExit !== undefined && { onLauncherExit }),
     // Backward-compatible aliases
-    setup: onCmdInit,
-    cleanup: onCmdExit,
+    ...(onCmdInit !== undefined && { setup: onCmdInit }),
+    ...(onCmdExit !== undefined && { cleanup: onCmdExit }),
   };
   // Deprecated subCommands getter
   Object.defineProperty(cmdObj, "subCommands", {
@@ -514,15 +514,15 @@ export function createCli<A extends ArgDefinitions = EmptyArgs>(
     // New object format with mainCommand
     command = options.mainCommand!;
     parserOptions = {
-      fileBased: options.fileBased,
-      autoExit: options.autoExit,
-      metaSettings: options.metaSettings,
+      ...(options.fileBased !== undefined && { fileBased: options.fileBased }),
+      ...(options.autoExit !== undefined && { autoExit: options.autoExit }),
+      ...(options.metaSettings !== undefined && { metaSettings: options.metaSettings }),
     };
     // Extract global CLI metadata
     globalCliMeta = {
-      name: options.name,
-      version: options.version,
-      description: options.description,
+      ...(options.name !== undefined && { name: options.name }),
+      ...(options.version !== undefined && { version: options.version }),
+      ...(options.description !== undefined && { description: options.description }),
     };
   } else {
     // New object format with inline command definition
@@ -558,24 +558,32 @@ export function createCli<A extends ArgDefinitions = EmptyArgs>(
     } = inlineOptions;
 
     command = {
-      meta: commandOptions.meta,
-      args: commandOptions.args,
-      run: commandOptions.run,
-      commands: commandOptions.commands,
-      onCmdInit: commandOptions.onCmdInit,
-      onCmdExit: commandOptions.onCmdExit,
-      onLauncherInit: commandOptions.onLauncherInit,
-      onLauncherExit: commandOptions.onLauncherExit,
+      ...(commandOptions.meta !== undefined && { meta: commandOptions.meta }),
+      ...(commandOptions.args !== undefined && { args: commandOptions.args }),
+      ...(commandOptions.run !== undefined && { run: commandOptions.run }),
+      ...(commandOptions.commands !== undefined && { commands: commandOptions.commands }),
+      ...(commandOptions.onCmdInit !== undefined && { onCmdInit: commandOptions.onCmdInit }),
+      ...(commandOptions.onCmdExit !== undefined && { onCmdExit: commandOptions.onCmdExit }),
+      ...(commandOptions.onLauncherInit !== undefined && {
+        onLauncherInit: commandOptions.onLauncherInit,
+      }),
+      ...(commandOptions.onLauncherExit !== undefined && {
+        onLauncherExit: commandOptions.onLauncherExit,
+      }),
     } as Command<A>;
 
     parserOptions = {
-      fileBased,
-      autoExit,
-      metaSettings,
+      ...(fileBased !== undefined && { fileBased }),
+      ...(autoExit !== undefined && { autoExit }),
+      ...(metaSettings !== undefined && { metaSettings }),
     };
 
     // Extract global CLI metadata
-    globalCliMeta = { name, version, description };
+    globalCliMeta = {
+      ...(name !== undefined && { name }),
+      ...(version !== undefined && { version }),
+      ...(description !== undefined && { description }),
+    };
   }
 
   // If command has a run() handler, merge global CLI metadata with command metadata

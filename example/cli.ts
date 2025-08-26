@@ -134,7 +134,9 @@ const helloLifecycle = defineCommand({
     hooksCalled.exit = true;
   },
   run: ({ args }) => {
-    relinka("log", `Hello, ${args.name}!`);
+    const { name } = args;
+    const strName = String(name);
+    relinka("log", `Hello, ${strName}!`);
   },
 });
 

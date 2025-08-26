@@ -32,7 +32,7 @@ export async function outroPrompt(optionsOrTitle: EndPromptOptions | string): Pr
   if (variant === "ascii-art") {
     await createAsciiArt({
       message: title || " ",
-      font: asciiArtFont,
+      ...(asciiArtFont !== undefined && { font: asciiArtFont }),
     });
     return;
   }
@@ -45,7 +45,7 @@ export async function outroPrompt(optionsOrTitle: EndPromptOptions | string): Pr
     await animateText({
       title: title ? title : " ",
       anim: titleAnimation,
-      delay: titleAnimationDelay,
+      ...(titleAnimationDelay !== undefined && { delay: titleAnimationDelay }),
       type: "M_END",
       titleColor,
       titleTypography,
@@ -59,7 +59,7 @@ export async function outroPrompt(optionsOrTitle: EndPromptOptions | string): Pr
       title: title ? title : " ",
       titleColor,
       titleTypography,
-      titleVariant,
+      ...(titleVariant !== undefined && { titleVariant }),
       border,
       borderColor,
       horizontalLineLength,

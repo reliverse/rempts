@@ -43,6 +43,9 @@ export default defineCommand({
     relinka("log", "Build");
     relinka("null", "Parsed args:", args);
 
-    relinka("log", "Bundling inputs:", args.entry);
+    const { entry } = args;
+
+    const strEntry = Array.isArray(entry) ? entry.join(", ") : "";
+    relinka("log", "Bundling inputs:", strEntry);
   },
 });

@@ -25,18 +25,21 @@ export default defineCommand({
     adj: {
       type: "array",
       description: "Adjective to use in greeting",
-      options: ["awesome", "cool", "nice"],
+      allowed: ["awesome", "cool", "nice"],
       default: ["awesome", "cool"],
     },
   }),
   run({ args }) {
     relinka("log", "", args);
-    const msg = [
-      args.friendly ? "Hi" : "Greetings",
-      args.adj || "",
-      args.name,
-      args.age ? `You are ${args.age} years old.` : "",
-    ]
+
+    const { friendly, adj, name, age } = args;
+    const strFriendly = String(friendly);
+    const intAge = Number(age);
+    const strAdj = Array.isArray(adj) ? adj.join(", ") : "";
+    const strName = String(name);
+    const strAge = intAge ? `You are ${intAge} years old.` : "";
+
+    const msg = [strFriendly ? "Hi" : "Greetings", strAdj, strName, strAge]
       .filter(Boolean)
       .join(" ");
 

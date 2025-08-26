@@ -14,8 +14,10 @@ export default defineCommand({
     },
   }),
   async run({ args }) {
+    const { name } = args;
+    const strName = String(name);
     // const username = args.name ?? "Alice";
-    const username = args.name; // intentionally missing fallback
+    const username = strName; // intentionally missing fallback
     relinka("info", `Running the 'minimal' command using runCmd() with name='${username}'`);
 
     // ✅ Correct way - each argument as separate array element

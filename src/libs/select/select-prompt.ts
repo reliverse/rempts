@@ -81,8 +81,8 @@ async function renderPromptUI<T extends string>(params: {
         type: "M_GENERAL",
         title,
         titleColor,
-        titleVariant,
-        titleTypography,
+        ...(titleVariant !== undefined && { titleVariant }),
+        ...(titleTypography !== undefined && { titleTypography }),
       });
       if (content) {
         msg({
@@ -190,12 +190,12 @@ export async function selectPrompt<T extends string>(params: SelectPromptParams<
   const finalDefaultValue = defaultValue ?? initialValue;
 
   // Convert optionsArray to standard options format if provided
-  const finalOptions =
+  const finalOptions: (SelectOption<T> | SeparatorOption)[] =
     options ??
     optionsArray?.map((opt) => ({
       value: opt.value,
       label: opt.label ?? opt.value,
-      hint: opt.hint,
+      ...(opt.hint !== undefined && { hint: opt.hint }),
       disabled: false,
     })) ??
     [];
@@ -243,8 +243,8 @@ export async function selectPrompt<T extends string>(params: SelectPromptParams<
       contentColor,
       contentTypography,
       debug,
-      titleVariant,
-      titleTypography,
+      ...(titleVariant !== undefined && { titleVariant }),
+      ...(titleTypography !== undefined && { titleTypography }),
       terminalWidth: customTerminalWidth,
       isRerender: true,
       shouldStream,
@@ -268,8 +268,8 @@ export async function selectPrompt<T extends string>(params: SelectPromptParams<
     contentColor,
     contentTypography,
     debug,
-    titleVariant,
-    titleTypography,
+    ...(titleVariant !== undefined && { titleVariant }),
+    ...(titleTypography !== undefined && { titleTypography }),
     terminalWidth: customTerminalWidth,
     isRerender: false,
     shouldStream,

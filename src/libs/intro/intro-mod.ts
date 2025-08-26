@@ -80,7 +80,7 @@ export async function introPrompt(optionsOrTitle: StartPromptOptions | string): 
   if (variant === "ascii-art") {
     await createAsciiArt({
       message: formattedTitle,
-      font: asciiArtFont,
+      ...(asciiArtFont !== undefined && { font: asciiArtFont }),
       clearConsole,
     });
     return;

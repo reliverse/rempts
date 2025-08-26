@@ -28,8 +28,10 @@ const main = defineCommand({
     debug: () => import("./app/debug/cmd.js").then((r) => r.default),
   },
   run({ args }) {
-    if (args.name) {
-      relinka("success", `Hello ${args.name}`);
+    const { name } = args;
+    const strName = String(name);
+    if (strName) {
+      relinka("success", `Hello ${strName}`);
     } else {
       relinka("error", "Hello, Reliverse :)");
     }

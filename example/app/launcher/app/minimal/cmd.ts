@@ -16,6 +16,8 @@ export default defineCommand({
     },
   }),
   run({ args }) {
-    relinka("success", `👋 Hello, ${args.name}!`);
+    const { name } = args;
+    const strName = String(name);
+    relinka("success", `👋 Hello, ${strName}!`);
   },
 });

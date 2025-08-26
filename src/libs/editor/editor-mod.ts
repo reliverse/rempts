@@ -471,7 +471,7 @@ let state: EditorState = {
 function setupTheme(configTheme: EditorConfig["theme"]) {
   let mode = configTheme;
   if (mode === "auto") {
-    const termBg = process.env.COLORFGBG;
+    const termBg = process.env["COLORFGBG"];
     mode = termBg && termBg.split(";")[1] === "0" ? "dark" : "light";
     if (!termBg) mode = "light"; // Default to light if detection fails
   }
@@ -1310,9 +1310,9 @@ async function initializeEditorState(options: EditorOptions): Promise<void> {
     },
     options: {
       // Will be resolved below
-      filename: options.filename,
-      initialContent: options.initialContent,
-      configOverrides: options.configOverrides || {},
+      ...(options.filename !== undefined && { filename: options.filename }),
+      ...(options.initialContent !== undefined && { initialContent: options.initialContent }),
+      ...(options.configOverrides !== undefined && { configOverrides: options.configOverrides }),
       allowSaveAs: true, // Default, will be overridden
       allowOpen: true, // Default, will be overridden
       autoCloseOnSave: false, // Default, will be overridden
@@ -1458,7 +1458,7 @@ const isDirectRun = (() => {
 
 if (isDirectRun) {
   const fileArg = process.argv[2];
-  startEditor({ filename: fileArg })
+  startEditor({ ...(fileArg !== undefined && { filename: fileArg }) })
     .then((_result: EditorExitResult) => {
       // Use _result or destructure with _ if unused
       // Optional: Log status after editor exits when run directly

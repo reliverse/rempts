@@ -106,15 +106,15 @@ export async function datePrompt(opts: DatePromptOptions): Promise<string> {
         title: `${title} [${dateFormat}]`,
         titleColor,
         titleTypography,
-        titleVariant,
+        ...(titleVariant !== undefined && { titleVariant }),
         content,
         contentColor,
         contentTypography,
-        contentVariant,
+        ...(contentVariant !== undefined && { contentVariant }),
         borderColor,
         hint: `${hint ? `${hint} ` : ""}${defaultValue ? `Default: ${defaultValue}` : ""}`,
         hintPlaceholderColor,
-        variantOptions,
+        ...(variantOptions !== undefined && { variantOptions }),
         errorMessage,
       });
 

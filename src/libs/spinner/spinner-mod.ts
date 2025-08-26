@@ -56,7 +56,7 @@ interface SpinnerState {
   indicatorTimer: number;
 }
 
-const unicode = process.platform !== "win32" || process.env.TERM_PROGRAM === "vscode";
+const unicode = process.platform !== "win32" || process.env["TERM_PROGRAM"] === "vscode";
 const defaultFrames = unicode ? ["◒", "◐", "◓", "◑"] : ["•", "o", "O", "0"];
 const defaultDelay = unicode ? 80 : 120;
 
@@ -66,11 +66,11 @@ const defaultDelay = unicode ? 80 : 120;
 function isInteractive(): boolean {
   return (
     process.stdout.isTTY &&
-    !process.env.CI &&
-    !process.env.GITHUB_ACTIONS &&
-    !process.env.GITLAB_CI &&
-    !process.env.BUILDKITE &&
-    process.env.TERM !== "dumb"
+    !process.env["CI"] &&
+    !process.env["GITHUB_ACTIONS"] &&
+    !process.env["GITLAB_CI"] &&
+    !process.env["BUILDKITE"] &&
+    process.env["TERM"] !== "dumb"
   );
 }
 
@@ -220,7 +220,7 @@ export function useSpinner(options: SpinnerOptions): SpinnerControls {
 
   const clearPrevMessage = () => {
     if (state.prevMessage === undefined) return;
-    if (process.env.CI) process.stdout.write("\n");
+    if (process.env["CI"]) process.stdout.write("\n");
     const prevLines = state.prevMessage.split("\n");
     process.stdout.write(`\x1b[${prevLines.length}A`);
     process.stdout.write("\x1b[0J");
@@ -249,7 +249,7 @@ export function useSpinner(options: SpinnerOptions): SpinnerControls {
       registerHooks();
 
       loop = setInterval(() => {
-        if (process.env.CI && state.text === state.prevMessage) {
+        if (process.env["CI"] && state.text === state.prevMessage) {
           return;
         }
 
@@ -257,7 +257,7 @@ export function useSpinner(options: SpinnerOptions): SpinnerControls {
         state.prevMessage = state.text;
         const frame = re.magenta((options.frames ?? defaultFrames)[frameIndex] ?? "");
 
-        if (process.env.CI) {
+        if (process.env["CI"]) {
           process.stdout.write(`${frame}  ${state.text}...`);
         } else if (options.indicator === "timer") {
           process.stdout.write(`${frame}  ${state.text} ${formatTimer(state.origin)}`);

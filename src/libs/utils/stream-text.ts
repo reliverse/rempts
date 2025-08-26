@@ -157,7 +157,7 @@ export async function streamTextBox({
     text,
     delay,
     showCursor: false,
-    color,
+    ...(color !== undefined && { color }),
     newline: false,
     clearLine: false,
   });
@@ -184,13 +184,14 @@ export async function streamTextWithSpinner({
   spinnerDelay?: number;
 }): Promise<void> {
   let currentText = "";
+  const baseColor = toBaseColor(color);
   const spinner = ora({
     text: currentText,
-    color: toBaseColor(color),
+    ...(baseColor !== undefined && { color: baseColor }),
     spinner: spinnerFrames
       ? {
           frames: spinnerFrames,
-          interval: spinnerDelay,
+          ...(spinnerDelay !== undefined && { interval: spinnerDelay }),
         }
       : "dots",
   }).start();

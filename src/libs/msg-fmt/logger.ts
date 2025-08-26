@@ -105,15 +105,15 @@ export const relinkaAsyncByRemptsDeprecated = async (
     await streamTextWithSpinner({
       text: titleText,
       color: toSolidColor(config.titleColor),
-      delay: streamOpts.delay,
-      spinnerFrames: streamOpts.spinnerFrames,
-      spinnerDelay: streamOpts.spinnerDelay,
+      ...(streamOpts.delay !== undefined && { delay: streamOpts.delay }),
+      ...(streamOpts.spinnerFrames !== undefined && { spinnerFrames: streamOpts.spinnerFrames }),
+      ...(streamOpts.spinnerDelay !== undefined && { spinnerDelay: streamOpts.spinnerDelay }),
     });
   } else {
     await streamText({
       text: titleText,
       color: toSolidColor(config.titleColor),
-      delay: streamOpts.delay,
+      ...(streamOpts.delay !== undefined && { delay: streamOpts.delay }),
     });
   }
 
@@ -122,7 +122,7 @@ export const relinkaAsyncByRemptsDeprecated = async (
     await streamText({
       text: content,
       color: toSolidColor(config.contentColor) ?? "dim",
-      delay: streamOpts.delay,
+      ...(streamOpts.delay !== undefined && { delay: streamOpts.delay }),
     });
   }
 
@@ -131,7 +131,7 @@ export const relinkaAsyncByRemptsDeprecated = async (
     await streamText({
       text: hint,
       color: "dim",
-      delay: streamOpts.delay,
+      ...(streamOpts.delay !== undefined && { delay: streamOpts.delay }),
     });
   }
 };

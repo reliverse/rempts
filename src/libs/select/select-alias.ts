@@ -11,9 +11,9 @@ export const selectSimple = <T extends string>(
     options: { value: T; label?: string; hint?: string }[];
   },
 ): Promise<T> => {
+  const { options, ...restParams } = params;
   return selectPrompt({
-    ...params,
-    optionsArray: params.options,
-    options: undefined,
+    ...restParams,
+    optionsArray: options,
   });
 };

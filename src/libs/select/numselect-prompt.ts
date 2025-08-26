@@ -53,14 +53,14 @@ export async function numSelectPrompt(opts: NumSelectPromptOptions) {
       title,
       titleColor,
       titleTypography,
-      titleVariant,
+      ...(titleVariant !== undefined && { titleVariant }),
       content,
       contentColor,
       contentTypography,
-      contentVariant,
+      ...(contentVariant !== undefined && { contentVariant }),
       borderColor,
-      hint,
-      variantOptions,
+      ...(hint !== undefined && { hint }),
+      ...(variantOptions !== undefined && { variantOptions }),
       errorMessage,
     });
 

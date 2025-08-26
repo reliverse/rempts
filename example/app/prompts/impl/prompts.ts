@@ -1,6 +1,5 @@
 import { relinka } from "@reliverse/relinka";
 import { isBunRuntime } from "@reliverse/runtime";
-import { detect } from "detect-package-manager";
 import packageJson from "~/../package.json" with { type: "json" };
 import {
   animateText,
@@ -50,7 +49,7 @@ export async function showStartPrompt() {
 }
 
 export async function showAnykeyPrompt(kind: "pm" | "privacy", username?: string) {
-  const pm = await detect();
+  const pm = "bun";
   let notification = "[anykeyPrompt] Press any key to continue...";
   if (kind === "privacy") {
     notification = `Before you continue, please note that you are only testing an example CLI app. None of your responses will be sent anywhere. No actions, such as installing dependencies, will actually take place; this is simply a simulation with a sleep timer and spinner. You can always review the source code to learn more.\n============================\n${notification}`;
