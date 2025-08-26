@@ -3,7 +3,7 @@
 
 import { re } from "@reliverse/relico";
 import { relinka } from "@reliverse/relinka";
-import { isBunRuntime } from "@reliverse/runtime";
+import { isBunRuntime } from "@reliverse/reltime";
 
 import { defineCommand, multiselectPrompt, runMain, selectPrompt } from "~/mod";
 import {

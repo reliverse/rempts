@@ -1,5 +1,5 @@
 import { relinka } from "@reliverse/relinka";
-import { isBunRuntime } from "@reliverse/runtime";
+import { isBunRuntime } from "@reliverse/reltime";
 import packageJson from "~/../package.json" with { type: "json" };
 import {
   animateText,

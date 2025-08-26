@@ -1,4 +1,4 @@
-import { getUserPkgManager } from "@reliverse/runtime";
+import { getUserPkgManager } from "@reliverse/reltime";
 
 export const pm = await getUserPkgManager();
 

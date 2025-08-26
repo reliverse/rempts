@@ -1,7 +1,7 @@
 {
   "name": "@reliverse/rempts",
   "author": "reliverse",
-  "version": "1.7.54",
+  "version": "1.7.57",
   "type": "module",
   "license": "MIT",
   "keywords": [
@@ -17,21 +17,20 @@
   ],
   "description": "@reliverse/rempts is a modern, type-safe toolkit for building delightful cli experiences. it's fast, flexible, and made for developer happiness. file-based commands keep things simple.",
   "scripts": {
-    "pub": "bun dler pub",
-    "build": "bun dler build",
+    "pub": "bun rse publish",
     "dev": "bun example/cli.ts",
     "dev:prompts": "bun example/prompts/mod.ts",
     "dev:modern": "bun example/launcher/modern.ts",
     "dev:classic": "bun example/launcher/classic.ts",
-    "check": "tsc --noEmit && biome check --fix --unsafe",
-    "latest": "bun update --latest && bun check",
+    "check": "bun tsc --noEmit && bun biome check --fix --unsafe",
+    "latest": "bun rse update && bun install",
     "tests": "bun test ./.tests"
   },
   "dependencies": {
     "@figliolia/chalk-animation": "^1.0.4",
-    "@reliverse/relico": "^1.3.7",
-    "@reliverse/relinka": "^1.5.9",
-    "@reliverse/runtime": "^1.0.3",
+    "@reliverse/relico": "^1.3.9",
+    "@reliverse/relinka": "^1.6.0",
+    "@reliverse/reltime": "^1.1.1",
     "ansi-escapes": "^7.0.0",
     "cli-spinners": "^3.2.0",
     "figlet": "^1.8.2",
@@ -46,9 +45,9 @@
   },
   "devDependencies": {
     "@biomejs/biome": "^2.2.2",
-    "@reliverse/dler": "^1.7.114",
+    "@reliverse/rse": "^1.7.18",
     "@total-typescript/ts-reset": "^0.6.1",
-    "@types/bun": "^1.2.20",
+    "@types/bun": "^1.2.21",
     "@types/node": "^24.3.0",
     "@types/wrap-ansi": "^8.1.0",
     "typescript": "^5.9.2",

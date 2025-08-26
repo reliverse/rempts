@@ -1,5 +1,5 @@
 import { relinka } from "@reliverse/relinka";
-import { getCurrentTerminalName } from "@reliverse/runtime";
+import { getCurrentTerminalName } from "@reliverse/reltime";
 import type { Fonts } from "figlet";
 import type { PreventWrongTerminalSizeOptions, PromptOptions } from "../../types";
 import { msg } from "../msg-fmt/messages";

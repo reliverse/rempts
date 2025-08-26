@@ -1,7 +1,7 @@
 import type { Interface } from "node:readline/promises";
 import readline from "node:readline/promises";
 import { re } from "@reliverse/relico";
-import { isUnicodeSupported } from "@reliverse/runtime";
+import { isUnicodeSupported } from "@reliverse/reltime";
 import type { InputPromptOptions, MsgType, RenderParams } from "../../types";
 import { bar, msg, msgUndoAll } from "../msg-fmt/messages";
 import { deleteLastLine } from "../msg-fmt/terminal";

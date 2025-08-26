@@ -1,6 +1,6 @@
 import { re } from "@reliverse/relico";
 import { relinka } from "@reliverse/relinka";
-import { isUnicodeSupported } from "@reliverse/runtime";
+import { isUnicodeSupported } from "@reliverse/reltime";
 import wrapAnsi from "wrap-ansi";
 
 import type {
