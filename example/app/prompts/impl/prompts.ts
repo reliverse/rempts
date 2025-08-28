@@ -1,3 +1,4 @@
+import { re } from "@reliverse/relico";
 import { relinka } from "@reliverse/relinka";
 import { isBunRuntime } from "@reliverse/reltime";
 import packageJson from "~/../package.json" with { type: "json" };
@@ -17,12 +18,10 @@ import {
   resultPrompt,
   selectPrompt,
   startPrompt,
-  taskProgressPrompt,
-  taskSpinPrompt,
   togglePrompt,
+  withSpinnerPromise,
 } from "~/mod";
 import type { ColorName } from "~/types";
-
 import { basicConfig, extendedConfig } from "./cfg";
 import {
   calculateAge,
@@ -364,31 +363,45 @@ export async function showConfirmPrompt(username: string) {
 }
 
 async function showSpinner() {
-  await taskSpinPrompt({
-    initialMessage: "Some long-running task is in progress...",
-    successMessage: "Hooray! The long-running task was a success!",
-    errorMessage: "An error occurred while the long-running task!",
-    spinnerSolution: "ora",
-    spinnerType: "arc",
-    action: async (updateMessage) => {
+  await withSpinnerPromise(
+    async () => {
       await new Promise((resolve) => setTimeout(resolve, 2000));
-      updateMessage("This is just an example, nothing really happens...");
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      return "This is just an example, nothing really happens...";
     },
-  });
+    {
+      text: "Some long-running task is in progress...",
+      color: "cyan",
+      spinner: "dots",
+      successColor: "green",
+      failColor: "red",
+      theme: {
+        info: re.cyan,
+        success: re.green,
+        error: re.red,
+      },
+    },
+  );
 }
 
 async function showProgressbar() {
-  await taskProgressPrompt({
-    total: 100,
-    width: 10,
-    format: "[progressbar] [:bar] :percent% | Elapsed: :elapsed s | ETA: :eta s",
-    completeChar: "#",
-    incompleteChar: "-",
-    colorize: true,
-    increment: 5,
-    desiredTotalTime: 2000,
-  });
+  await withSpinnerPromise(
+    async () => {
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+      return "This is just an example, nothing really happens...";
+    },
+    {
+      text: "Some long-running task is in progress...",
+      color: "cyan",
+      spinner: "dots",
+      successColor: "green",
+      failColor: "red",
+      theme: {
+        info: re.cyan,
+        success: re.green,
+        error: re.red,
+      },
+    },
+  );
 }
 
 export async function showResults(userInput: any) {

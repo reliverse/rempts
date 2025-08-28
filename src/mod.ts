@@ -65,11 +65,6 @@ export type {
 } from "./libs/launcher/launcher-types";
 export { log } from "./libs/log/log-alias";
 export { toBaseColor, toSolidColor } from "./libs/msg-fmt/colors";
-export {
-  relinkaAsyncByRemptsDeprecated,
-  relinkaByRemptsDeprecated,
-  throwError,
-} from "./libs/msg-fmt/logger";
 export { colorMap, typographyMap } from "./libs/msg-fmt/mapping";
 export {
   bar,
@@ -109,10 +104,37 @@ export { numSelectPrompt } from "./libs/select/numselect-prompt";
 export { select, selectSimple } from "./libs/select/select-alias";
 export { selectPrompt } from "./libs/select/select-prompt";
 export { togglePrompt } from "./libs/select/toggle-prompt";
-export { spinner } from "./libs/spinner/spinner-alias";
-export { useSpinner } from "./libs/spinner/spinner-mod";
-export { taskProgressPrompt } from "./libs/task/progress";
-export { taskSpinPrompt } from "./libs/task/task-spin";
+export type {
+  FileProgressOptions,
+  SimpleSpinner,
+  SpinnerGroupOptions,
+  SpinnerOptions,
+} from "./libs/spinner/spinner-mod";
+export {
+  createBuildSpinner,
+  createFileProgressSpinner,
+  createMultiStepSpinner,
+  createSpinner,
+  createSpinnerGroup,
+  createTimedSpinner,
+  createTransferSpinner,
+  defaultSpinnerOptions,
+  formatSpinnerBytes,
+  formatSpinnerElapsed,
+  formatSpinnerTiming,
+  isSpinnerEnabled,
+  isSpinnerRunning,
+  prettyBytes,
+  prettyMilliseconds,
+  randomSpinner,
+  safeStopSpinner,
+  spinners,
+  stopAndPersist,
+  updateSpinnerText,
+  withEnhancedSpinner,
+  withSpinner,
+  withSpinnerPromise,
+} from "./libs/spinner/spinner-mod";
 export { colorize } from "./libs/utils/colorize";
 export { errorHandler } from "./libs/utils/errors";
 export {

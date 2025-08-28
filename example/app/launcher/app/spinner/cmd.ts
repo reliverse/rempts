@@ -1,3 +1,4 @@
+import { re } from "@reliverse/relico";
 import { relinka } from "@reliverse/relinka";
 
 import {
@@ -9,7 +10,7 @@ import {
   msg,
   selectPrompt,
   startPrompt,
-  taskSpinPrompt,
+  withSpinnerPromise,
 } from "~/mod";
 
 export default defineCommand({
@@ -59,21 +60,27 @@ export default defineCommand({
       ],
     });
 
-    await taskSpinPrompt({
-      initialMessage: "Checking your answer...",
-      successMessage: `Nice work ${playerName}. That's a legit answer!`,
-      errorMessage: `🫠  Game over, ${playerName}! You lose!`,
-      delay: 100,
-      spinnerSolution: "ora",
-      spinnerType: "arc",
-      action: async (updateMessage) => {
+    await withSpinnerPromise(
+      async () => {
+        await new Promise((resolve) => setTimeout(resolve, 1000));
         const isCorrect = answer === "Dec 4th, 1995";
         if (!isCorrect) {
-          updateMessage(`🫠  Game over, ${playerName}! You lose!`);
-          process.exit(1);
+          throw new Error(`🫠  Game over, ${playerName}! You lose!`);
         }
       },
-    });
+      {
+        text: `Checking your answer, ${playerName}...`,
+        color: "cyan",
+        spinner: "dots",
+        successColor: "green",
+        failColor: "red",
+        theme: {
+          info: re.cyan,
+          success: re.green,
+          error: re.red,
+        },
+      },
+    );
 
     const companyAnswer = await selectPrompt({
       title: "Which company created JavaScript?",
@@ -85,21 +92,27 @@ export default defineCommand({
       ],
     });
 
-    await taskSpinPrompt({
-      initialMessage: "Which company created JavaScript?",
-      successMessage: "Correct! Netscape created JavaScript.",
-      errorMessage: "Wrong! Netscape created JavaScript.",
-      delay: 100,
-      spinnerSolution: "ora",
-      spinnerType: "arc",
-      action: async (updateMessage) => {
+    await withSpinnerPromise(
+      async () => {
+        await new Promise((resolve) => setTimeout(resolve, 1000));
         const isCorrect = companyAnswer === "Netscape";
         if (!isCorrect) {
-          updateMessage("Wrong answer!");
-          process.exit(1);
+          throw new Error("Wrong answer!");
         }
       },
-    });
+      {
+        text: "Which company created JavaScript?",
+        color: "cyan",
+        spinner: "dots",
+        successColor: "green",
+        failColor: "red",
+        theme: {
+          info: re.cyan,
+          success: re.green,
+          error: re.red,
+        },
+      },
+    );
 
     const message = "Congrats !\n $ 2 , 0 0 0 , 0 0 0";
 

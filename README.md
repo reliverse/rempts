@@ -52,10 +52,10 @@ All main prompts APIs are available from the package root:
 import {
   // ...prompts
   inputPrompt, selectPrompt, multiselectPrompt, numberPrompt,
-  confirmPrompt, togglePrompt, taskSpinPrompt, taskProgressPrompt,
+  confirmPrompt, togglePrompt,
   startPrompt, endPrompt, resultPrompt, nextStepsPrompt,
   // ...hooks
-  useSpinner,
+  createSpinner,
   // ...launcher
   createCli, defineCommand, defineArgs,
   // ...types
@@ -71,18 +71,16 @@ import {
 
 | Prompt                    | Description                                               |
 |---------------------------|-----------------------------------------------------------|
-| `useSpinner`              | Start/stop spinner |
+| `createSpinner`           | Start/stop spinner |
 | `inputPrompt`             | Single-line input (with mask support, e.g. for passwords) |
 | `selectPrompt`            | Single-choice radio menu                                  |
 | `multiselectPrompt`       | Multi-choice checkbox menu                                |
 | `numberPrompt`            | Type-safe number input                                    |
 | `confirmPrompt`           | Yes/No toggle                                             |
 | `togglePrompt`            | Custom on/off toggles                                     |
-| `taskProgressPrompt`      | Progress bar for async tasks                              |
 | `resultPrompt`            | Show results in a styled box                              |
 | `nextStepsPrompt`         | Show next steps in a styled list                          |
 | `startPrompt`/`endPrompt` | Makes CLI start/end flows look nice                       |
-| `taskSpinPrompt`       | Async loader with spinner (possibly will be deprecated)   |
 | `datePrompt`              | Date input with format validation                         |
 | `anykeyPrompt`            | Wait for any keypress                                     |
 
@@ -95,7 +93,7 @@ To help you migrate from the different CLI frameworks, `@reliverse/rempts` has s
 | `createCli`           | `runMain`        |
 | `onCmdInit`           | `setup`          |
 | `onCmdExit`           | `cleanup`        |
-| `useSpinner`          | `spinner`        |
+| `createSpinner`       | `spinner`        |
 | `selectPrompt`        | `select`         |
 | `multiselectPrompt`   | `multiselect`    |
 | `inputPrompt`         | `text`, `input`  |
@@ -125,7 +123,7 @@ async function main() {
     defaultValue: "my-cool-project",
   });
 
-  const spinner = useSpinner({
+  const spinner = createSpinner({
     text: "Loading...",
     indicator: "timer", // or "dots"
     frames: ["◒", "◐", "◓", "◑"], // custom frames

@@ -293,6 +293,8 @@ export async function selectPrompt<T extends string>(params: SelectPromptParams<
         void confirmSelection();
       } else if (key.name === "c" && key.ctrl) {
         void endPrompt(true);
+      } else {
+        void endPrompt(true);
       }
     }
     function moveSelectionUp() {
@@ -347,6 +349,7 @@ export async function selectPrompt<T extends string>(params: SelectPromptParams<
       );
     }
     async function endPrompt(isCtrlC = false) {
+      deleteLastLine();
       await completePrompt(
         "select",
         isCtrlC,

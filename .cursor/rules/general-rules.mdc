@@ -5,7 +5,8 @@ alwaysApply: true
 ---
 
 ## General Rules
+
 - You are a code agent. Always make changes without asking if the user wants you to make them. Unless the user explicitly asks you not to make changes.
-- To check linter issues (or run formatiing) the following command are available (prepend `bun` before each of required command (without prepending terminal will try to run command globally)): `tsc --noEmit`; `eslint --cache --fix .`; `biome check --fix --unsafe .`; `knip`
-- When it's really needed, you can read/edit [eslint.config.js](mdc:eslint.config.js) [biome.json](mdc:biome.json) [tsconfig.json](mdc:tsconfig.json)
+- To check linter issues (or run formatiing) the following command are available (prepend `bun` before each of required command (without prepending terminal will try to run command globally)): `tsc --noEmit`; `biome check --fix --unsafe .`; `knip`
+- When it's really needed, you can read/edit [biome.json](mdc:biome.json) and/or [tsconfig.json](mdc:tsconfig.json)
 - [reset.d.ts](mdc:reset.d.ts) makes typescript stricter, if you failed to fix 'undefined' ts errors, just use `// @ts-expect-error TODO: fix <optional-reason>`

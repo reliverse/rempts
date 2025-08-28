@@ -358,19 +358,19 @@ export interface ReliverseConfig {
    * @default "js"
    */
   distNpmOutFilesExt: NpmOutExt;
-    // ==========================================================================
+  // ==========================================================================
   // Binary Build Configuration
   // ==========================================================================
   /**
    * When `true`, enables binary build functionality to create standalone executables.
-   * 
+   *
    * @default false
    */
   binaryBuildEnabled: boolean;
   /**
    * Input TypeScript file to bundle for binary builds.
    * If not specified, will use the coreEntryFile from the coreEntrySrcDir.
-   * 
+   *
    * @default undefined (uses coreEntryFile)
    */
   binaryBuildInputFile?: string;
@@ -381,74 +381,74 @@ export interface ReliverseConfig {
    * Platforms: linux, windows, darwin (macOS)
    * Architectures: x64, arm64
    * Examples: dler-linux-x64, dler-windows-arm64, dler-darwin-x64
-   * 
+   *
    * @default "all"
    */
   binaryBuildTargets: string;
   /**
    * Output directory for built binary executables.
-   * 
+   *
    * @default "dist"
    */
   binaryBuildOutDir: string;
   /**
    * When `true`, minifies the binary output.
-   * 
+   *
    * @default true
    */
   binaryBuildMinify: boolean;
   /**
    * When `true`, generates source maps for binary builds.
-   * 
+   *
    * @default true
    */
   binaryBuildSourcemap: boolean;
   /**
    * When `true`, enables bytecode compilation for faster startup (Bun v1.1.30+).
-   * 
+   *
    * @default false
    */
   binaryBuildBytecode: boolean;
   /**
    * When `true`, cleans output directory before building binaries.
-   * 
+   *
    * @default true
    */
   binaryBuildClean: boolean;
   /**
    * Path to Windows .ico file for executable icon.
-   * 
+   *
    * @default undefined
    */
   binaryBuildWindowsIcon?: string;
   /**
    * When `true`, hides console window on Windows.
-   * 
+   *
    * @default false
    */
   binaryBuildWindowsHideConsole: boolean;
   /**
    * Asset naming pattern for binary builds.
-   * 
+   *
    * @default "[name]-[hash].[ext]"
    */
   binaryBuildAssetNaming: string;
   /**
    * When `true`, builds binary targets in parallel.
-   * 
+   *
    * @default true
    */
   binaryBuildParallel: boolean;
   /**
    * External dependencies to exclude from binary bundle.
-   * 
+   *
    * @default ["c12", "terminal-kit"]
    */
   binaryBuildExternal: string[];
   /**
    * When `true`, creates a bundled script instead of standalone executable.
    * Useful for debugging terminal issues.
-   * 
+   *
    * @default false
    */
   binaryBuildNoCompile: boolean;

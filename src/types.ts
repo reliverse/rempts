@@ -160,9 +160,10 @@ export interface MessageConfig {
 
 export interface StreamOptions {
   delay?: number;
-  useSpinner?: boolean;
-  spinnerFrames?: string[];
-  spinnerDelay?: number;
+  spinner?: {
+    frames?: string[];
+    delay?: number;
+  };
 }
 
 // --- Progress ---

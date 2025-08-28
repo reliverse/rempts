@@ -1,13 +1,15 @@
+import { re } from "@reliverse/relico";
 import {
   colorize,
   createAsciiArt,
+  createSpinner,
   defineCommand,
   endPrompt,
   inputPrompt,
   msg,
   selectPrompt,
   startPrompt,
-  useSpinner,
+  withSpinnerPromise,
 } from "~/mod";
 
 export default defineCommand({
@@ -56,12 +58,17 @@ export default defineCommand({
     });
 
     // Example 1: Basic spinner with success/fail states
-    const spinner = useSpinner({
-      text: "Checking your answer...",
+    const spinner = createSpinner({
+      text: `Checking your answer, ${playerName}...`,
       color: "cyan",
       spinner: "dots",
-      successText: `Nice work ${playerName}. That's a legit answer!`,
-      failText: `🫠  Game over, ${playerName}! You lose!`,
+      successColor: "green",
+      failColor: "red",
+      theme: {
+        info: re.cyan,
+        success: re.green,
+        error: re.red,
+      },
     }).start();
 
     await new Promise((resolve) => setTimeout(resolve, 1000));
@@ -86,7 +93,7 @@ export default defineCommand({
 
     // Example 2: Using the promise wrapper
     try {
-      await useSpinner.promise(
+      await withSpinnerPromise(
         async () => {
           await new Promise((resolve) => setTimeout(resolve, 1000));
           const isCompanyCorrect = companyAnswer === "Netscape";
@@ -98,8 +105,6 @@ export default defineCommand({
           text: "Verifying your answer...",
           color: "yellow",
           spinner: "arc",
-          successText: "Correct! Netscape created JavaScript.",
-          failText: "Wrong! Netscape created JavaScript.",
         },
       );
     } catch {
@@ -107,7 +112,7 @@ export default defineCommand({
     }
 
     // Example 3: Demonstrating different states
-    const demoSpinner = useSpinner({
+    const demoSpinner = createSpinner({
       text: "Preparing your prize...",
       color: "magenta",
       spinner: "bouncingBar",
