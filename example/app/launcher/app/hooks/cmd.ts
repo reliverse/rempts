@@ -1,7 +1,6 @@
 import { re } from "@reliverse/relico";
 import {
   colorize,
-  createAsciiArt,
   createSpinner,
   defineCommand,
   endPrompt,
@@ -126,11 +125,11 @@ export default defineCommand({
     demoSpinner.succeed("Done!");
 
     const message = "Congrats !\n $ 2 , 0 0 0 , 0 0 0";
-
-    await createAsciiArt({
-      message,
-      font: "Standard",
-    });
+    console.log(message);
+    // await createAsciiArt({
+    //   message,
+    //   font: "Standard",
+    // });
 
     await endPrompt({
       title: `

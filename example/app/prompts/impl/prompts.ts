@@ -3,7 +3,6 @@ import { relinka } from "@reliverse/relinka";
 import { isBunRuntime } from "@reliverse/reltime";
 import packageJson from "~/../package.json" with { type: "json" };
 import {
-  animateText,
   anykeyPrompt,
   confirmPrompt,
   datePrompt,
@@ -428,16 +427,16 @@ export async function showNextStepsPrompt() {
   });
 }
 
-export async function showAnimatedText() {
-  await animateText({
-    title: "Our library even supports animated messages!",
-    anim: "neon",
-    delay: 1000,
-    ...basicConfig,
-    titleColor: "cyan",
-    titleTypography: "bold",
-  });
-}
+// export async function showAnimatedText() {
+//   await animateText({
+//     title: "Our library even supports animated messages!",
+//     anim: "neon",
+//     delay: 1000,
+//     ...basicConfig,
+//     titleColor: "cyan",
+//     titleTypography: "bold",
+//   });
+// }
 
 export async function showEndPrompt() {
   await endPrompt({

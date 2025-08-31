@@ -1,6 +1,5 @@
 import { relinka } from "@reliverse/relinka";
 import { getCurrentTerminalName } from "@reliverse/reltime";
-import type { Fonts } from "figlet";
 import type { PreventWrongTerminalSizeOptions, PromptOptions } from "../../types";
 import { msg } from "../msg-fmt/messages";
 import { getExactTerminalWidth, getTerminalHeight, getTerminalWidth } from "../msg-fmt/terminal";
@@ -10,7 +9,8 @@ import {
   preventWrongTerminalSize,
 } from "../utils/prevent";
 import { pm, reliversePrompts } from "../utils/system";
-import { createAsciiArt } from "../visual/visual-mod";
+
+// import { createAsciiArt } from "../visual/visual-mod";
 
 type StartPromptOptions = PromptOptions & {
   clearConsole?: boolean;
@@ -26,7 +26,7 @@ type StartPromptOptions = PromptOptions & {
     windowsHomeDirRoot?: boolean;
   };
   variant?: "header" | "ascii-art";
-  asciiArtFont?: Fonts;
+  asciiArtFont?: any;
 };
 
 export async function introPrompt(optionsOrTitle: StartPromptOptions | string): Promise<void> {
@@ -51,7 +51,7 @@ export async function introPrompt(optionsOrTitle: StartPromptOptions | string): 
       windowsHomeDirRoot: true,
     },
     variant = "header",
-    asciiArtFont,
+    // asciiArtFont,
   } = options;
 
   let horizontalLineLength = initialHorizontalLineLength;
@@ -78,11 +78,11 @@ export async function introPrompt(optionsOrTitle: StartPromptOptions | string): 
         }`;
 
   if (variant === "ascii-art") {
-    await createAsciiArt({
-      message: formattedTitle,
-      ...(asciiArtFont !== undefined && { font: asciiArtFont }),
-      clearConsole,
-    });
+    // await createAsciiArt({
+    //   message: formattedTitle,
+    //   ...(asciiArtFont !== undefined && { font: asciiArtFont }),
+    //   clearConsole,
+    // });
     return;
   }
 

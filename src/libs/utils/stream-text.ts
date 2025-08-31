@@ -1,6 +1,5 @@
 import { stdout } from "node:process";
 import { re } from "@reliverse/relico";
-import ora from "ora";
 import { cursor } from "sisteransi";
 import terminalSize from "terminal-size";
 import wrapAnsi from "wrap-ansi";
@@ -8,6 +7,7 @@ import type { BorderColorName, ColorName, StreamTextOptions } from "../../types"
 import { toBaseColor } from "../msg-fmt/colors";
 import { colorMap } from "../msg-fmt/mapping";
 import { msg } from "../msg-fmt/messages";
+import { ora } from "../spinner/spinner-impl.js";
 
 function getTerminalWidth(): number {
   return terminalSize().columns;
@@ -191,7 +191,7 @@ export async function streamTextWithSpinner({
     spinner: spinnerFrames
       ? {
           frames: spinnerFrames,
-          ...(spinnerDelay !== undefined && { interval: spinnerDelay }),
+          interval: spinnerDelay ?? 80,
         }
       : "dots",
   }).start();

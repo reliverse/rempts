@@ -1,5 +1,3 @@
-// AUTO-GENERATED AGGREGATOR START (via `dler agg`)
-export { animateText, animationMap } from "./libs/animate/animate-mod";
 export { anykeyPrompt } from "./libs/anykey/anykey-mod";
 export type { CancelValue } from "./libs/cancel/cancel";
 export {
@@ -105,6 +103,22 @@ export { select, selectSimple } from "./libs/select/select-alias";
 export { selectPrompt } from "./libs/select/select-prompt";
 export { togglePrompt } from "./libs/select/toggle-prompt";
 export type {
+  Ora,
+  OraOptions,
+  OraPromiseOptions,
+  StopAndPersistOptions,
+} from "./libs/spinner/spinner-impl";
+export {
+  error,
+  info,
+  ora,
+  oraPromise,
+  randomSpinner,
+  spinners,
+  success,
+  warning,
+} from "./libs/spinner/spinner-impl";
+export type {
   FileProgressOptions,
   SimpleSpinner,
   SpinnerGroupOptions,
@@ -124,11 +138,7 @@ export {
   formatSpinnerTiming,
   isSpinnerEnabled,
   isSpinnerRunning,
-  prettyBytes,
-  prettyMilliseconds,
-  randomSpinner,
   safeStopSpinner,
-  spinners,
   stopAndPersist,
   updateSpinnerText,
   withEnhancedSpinner,
@@ -158,7 +168,6 @@ export {
   isValidName,
   normalizeName,
 } from "./libs/utils/validate";
-export { createAsciiArt } from "./libs/visual/visual-mod";
 export type {
   AllKinds,
   BorderColorName,
@@ -193,4 +202,3 @@ export type {
   TypographyName,
   VariantName,
 } from "./types";
-// AUTO-GENERATED AGGREGATOR END

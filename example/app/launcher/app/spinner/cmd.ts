@@ -3,7 +3,6 @@ import { relinka } from "@reliverse/relinka";
 
 import {
   colorize,
-  createAsciiArt,
   defineCommand,
   endPrompt,
   inputPrompt,
@@ -115,11 +114,11 @@ export default defineCommand({
     );
 
     const message = "Congrats !\n $ 2 , 0 0 0 , 0 0 0";
-
-    await createAsciiArt({
-      message,
-      font: "Standard",
-    });
+    console.log(message);
+    // await createAsciiArt({
+    //   message,
+    //   font: "Standard",
+    // });
 
     await endPrompt({
       title: `

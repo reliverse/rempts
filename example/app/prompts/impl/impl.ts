@@ -4,7 +4,6 @@ import type { PromptType } from "~/types";
 import {
   askDir,
   doSomeFunStuff,
-  showAnimatedText,
   showConfirmPrompt,
   showDatePrompt,
   showEndPrompt,
@@ -113,12 +112,12 @@ export const EXAMPLE_OPTIONS: ExampleOption[] = [
     hint: "nextSteps",
     description: "Shows guidance on next actions",
   },
-  {
-    label: "Animated Text",
-    value: "animatedtext",
-    hint: "animatedText",
-    description: "Text with animation effects",
-  },
+  // {
+  //   label: "Animated Text",
+  //   value: "animatedtext",
+  //   hint: "animatedText",
+  //   description: "Text with animation effects",
+  // },
   {
     label: "End",
     value: "end",
@@ -274,9 +273,9 @@ export async function processOutputExamples(
     await showNextStepsPrompt();
   }
 
-  if (selectedExamples.includes("animatedtext")) {
-    await showAnimatedText();
-  }
+  // if (selectedExamples.includes("animatedtext")) {
+  //   await showAnimatedText();
+  // }
 
   if (selectedExamples.includes("end") || selectedExamples.length === 0) {
     await showEndPrompt();

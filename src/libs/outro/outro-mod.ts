@@ -1,13 +1,12 @@
-import type { Fonts } from "figlet";
 import type { PromptOptions } from "../../types";
-import { animateText } from "../animate/animate-mod";
 import { msg } from "../msg-fmt/messages";
 import { getExactTerminalWidth } from "../msg-fmt/terminal";
-import { createAsciiArt } from "../visual/visual-mod";
+
+// import { createAsciiArt } from "../visual/visual-mod";
 
 type EndPromptOptions = PromptOptions & {
   variant?: "footer" | "ascii-art";
-  asciiArtFont?: Fonts;
+  asciiArtFont?: any;
 };
 
 export async function outroPrompt(optionsOrTitle: EndPromptOptions | string): Promise<void> {
@@ -24,16 +23,16 @@ export async function outroPrompt(optionsOrTitle: EndPromptOptions | string): Pr
     borderColor = "dim",
     horizontalLineLength: initialHorizontalLineLength = 0,
     variant = "footer",
-    asciiArtFont,
+    // asciiArtFont,
   } = options;
 
   let horizontalLineLength = initialHorizontalLineLength;
 
   if (variant === "ascii-art") {
-    await createAsciiArt({
-      message: title || " ",
-      ...(asciiArtFont !== undefined && { font: asciiArtFont }),
-    });
+    // await createAsciiArt({
+    //   message: title || " ",
+    //   ...(asciiArtFont !== undefined && { font: asciiArtFont }),
+    // });
     return;
   }
 
@@ -42,9 +41,9 @@ export async function outroPrompt(optionsOrTitle: EndPromptOptions | string): Pr
   }
 
   if (titleAnimation) {
-    await animateText({
+    await msg({
       title: title ? title : " ",
-      anim: titleAnimation,
+      // anim: titleAnimation,
       ...(titleAnimationDelay !== undefined && { delay: titleAnimationDelay }),
       type: "M_END",
       titleColor,

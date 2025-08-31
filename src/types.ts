@@ -203,9 +203,10 @@ export type PromptType =
   | "progressbar"
   | "results"
   | "nextsteps"
-  | "animatedtext"
   | "date"
   | "end";
+
+// | "animatedtext"
 
 // --- Confirm Prompt ---
 

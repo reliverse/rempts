@@ -8,17 +8,12 @@
  */
 
 import { re } from "@reliverse/relico";
-import cliSpinners, { randomSpinner } from "cli-spinners";
-import ora, {
-  type Ora,
-  type Options as OraOptions,
-  type PromiseOptions as OraPromiseOptions,
-  oraPromise,
-} from "ora";
 import prettyBytes from "pretty-bytes";
 import prettyMilliseconds from "pretty-ms";
+import { ora } from "./spinner-impl";
+import { type Ora, type OraOptions, type OraPromiseOptions, oraPromise } from "./spinner-impl.js";
 
-export interface SpinnerOptions extends OraOptions {
+export interface SpinnerOptions extends Omit<OraOptions, "text"> {
   // Allow opting-out via env while still letting explicit isEnabled override
   readonly respectEnv?: boolean;
   // Auto-append timing information to success messages
@@ -27,6 +22,8 @@ export interface SpinnerOptions extends OraOptions {
   readonly defaultSuccess?: string;
   readonly defaultFail?: string;
   // Optional color enhancers via re (string method name or function)
+  // Override base OraOptions properties to include our options
+  text?: string;
   readonly textColor?: string | ((text: string) => string);
   readonly prefixColor?: string | ((text: string) => string);
   readonly suffixColor?: string | ((text: string) => string);
@@ -191,10 +188,7 @@ export async function withSpinnerPromise<T>(
   action: Promise<T> | ((spinner: Ora) => Promise<T>),
   options?: string | (OraPromiseOptions<T> & SpinnerOptions),
 ): Promise<T> {
-  return oraPromise<T>(
-    action as Promise<T> | ((spinner: Ora) => Promise<T>),
-    options as OraPromiseOptions<T> | string,
-  );
+  return oraPromise<T>(action, options);
 }
 
 export async function withSpinner<T>(
@@ -774,6 +768,3 @@ export function createTransferSpinner(
     },
   };
 }
-
-export const spinners = cliSpinners;
-export { randomSpinner, prettyBytes, prettyMilliseconds };
