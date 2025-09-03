@@ -1,5 +1,5 @@
 import process from "node:process";
-import { relinka } from "@reliverse/relinka";
+import { relinka, relinkaConfig } from "@reliverse/relinka";
 import type { ReliArgParserOptions } from "../reliarg/reliarg-mod";
 import { reliArgParser } from "../reliarg/reliarg-mod";
 
@@ -59,7 +59,8 @@ export async function callCmd<A extends ArgDefinitions = EmptyArgs>(
   // Debug logging helper
   const debugLog = (...args: any[]) => {
     if (debug) {
-      relinka("log", "[callCmd DEBUG]", ...args);
+      // Initialize logger on first debug
+      void relinkaConfig().then(() => relinka("log", "[callCmd DEBUG]", ...args));
     }
   };
 

@@ -18,13 +18,64 @@ import type {
   InferArgTypes,
 } from "./launcher-types";
 
-async function pathExists(path: string) {
+const isBunRuntime: boolean = Boolean(
+  // Prefer versions flag to avoid TS type needs
+  (process as any)?.versions?.bun || typeof (globalThis as any).Bun !== "undefined",
+);
+
+// Lightweight existence cache to avoid repeated fs lookups during a single CLI execution
+const _pathExistsCache = new Map<string, boolean>();
+async function pathExists(p: string) {
+  const cached = _pathExistsCache.get(p);
+  if (cached !== undefined) return cached;
   try {
-    await stat(path);
+    if (isBunRuntime) {
+      // Bun's fast existence check via globalThis
+      const bun = (globalThis as any).Bun;
+      if (bun?.file) {
+        const exists = await bun.file(p).exists();
+        _pathExistsCache.set(p, exists);
+        return exists;
+      }
+    }
+    await stat(p);
+    _pathExistsCache.set(p, true);
     return true;
-  } catch (error) {
+  } catch (_error) {
+    _pathExistsCache.set(p, false);
     return false;
   }
+}
+
+// Single stat helper to check directory nature (avoids extra pathExists + stat round trips)
+async function isDirectory(p: string): Promise<boolean> {
+  try {
+    const s = await stat(p);
+    return s.isDirectory();
+  } catch {
+    return false;
+  }
+}
+
+// Cached read of package.json using Bun fast-path when available
+let _cachedPkgJson: any | undefined;
+async function readPkgJsonCached(): Promise<any | undefined> {
+  if (_cachedPkgJson) return _cachedPkgJson;
+  try {
+    if (isBunRuntime) {
+      const bun = (globalThis as any).Bun;
+      if (bun?.file) {
+        _cachedPkgJson = await bun.file("package.json").json();
+      } else {
+        _cachedPkgJson = await readPackageJSON();
+      }
+    } else {
+      _cachedPkgJson = await readPackageJSON();
+    }
+  } catch (_e) {
+    _cachedPkgJson = undefined;
+  }
+  return _cachedPkgJson;
 }
 
 // Helper to build a plausible example CLI argument string from ArgDefinitions
@@ -73,9 +124,17 @@ function buildExampleArgs(args: ArgDefinitions): string {
 
 const isDebugMode = process.argv.includes("--debug");
 
+let _relinkaConfigured = false;
+async function ensureRelinkaConfigured(): Promise<void> {
+  if (_relinkaConfigured) return;
+  await relinkaConfig();
+  _relinkaConfigured = true;
+}
+
 function debugLog(...args: any[]) {
   if (isDebugMode) {
-    relinka("log", "[DEBUG]", ...args);
+    // Best-effort: do not await to keep debug lightweight
+    void ensureRelinkaConfigured().then(() => relinka("log", "[DEBUG]", ...args));
   }
 }
 
@@ -136,6 +195,7 @@ export function defineCommand<A extends ArgDefinitions = EmptyArgs>(
 // Helper to get the default CLI name and version from package.json (without org scope)
 let _cachedDefaultCliName: string | undefined;
 let _cachedDefaultCliVersion: string | undefined;
+let _cachedDefaultCliDescription: string | undefined;
 async function getDefaultCliNameAndVersion(): Promise<{
   name: string;
   version: string | undefined;
@@ -143,7 +203,7 @@ async function getDefaultCliNameAndVersion(): Promise<{
   if (_cachedDefaultCliName)
     return { name: _cachedDefaultCliName, version: _cachedDefaultCliVersion };
   try {
-    const pkg = await readPackageJSON();
+    const pkg = (await readPkgJsonCached()) ?? {};
     let name = pkg.name || "cli";
     if (name.startsWith("@")) {
       // Remove org scope
@@ -151,6 +211,9 @@ async function getDefaultCliNameAndVersion(): Promise<{
     }
     _cachedDefaultCliName = name;
     _cachedDefaultCliVersion = pkg.version;
+    if (pkg.description && !_cachedDefaultCliDescription) {
+      _cachedDefaultCliDescription = pkg.description;
+    }
     return { name, version: pkg.version };
   } catch (_e) {
     return { name: "cli", version: undefined };
@@ -244,12 +307,9 @@ export async function showUsage<A extends ArgDefinitions>(
   if (parserOptions.metaSettings?.showDescriptionOnMain) {
     let description = globalCliMeta?.description || command.meta?.description;
     if (!description) {
-      try {
-        const pkg = await readPackageJSON();
-        if (pkg.description) description = pkg.description;
-      } catch (_e) {
-        /* empty */
-      }
+      // Use cached package description if available (avoids extra fs reads)
+      await getDefaultCliNameAndVersion();
+      if (_cachedDefaultCliDescription) description = _cachedDefaultCliDescription;
     }
     if (description) {
       relinka("log", description);
@@ -651,6 +711,7 @@ export function createCli<A extends ArgDefinitions = EmptyArgs>(
           command.run
         )
       ) {
+        await ensureRelinkaConfigured();
         relinka(
           "error",
           "Invalid CLI configuration: No file-based commands, subCommands, or run() handler are defined. This CLI will not do anything.\n" +
@@ -712,6 +773,7 @@ export function createCli<A extends ArgDefinitions = EmptyArgs>(
           if (autoExit) process.exit(0);
           return;
         } catch (err: any) {
+          await ensureRelinkaConfigured();
           relinka("error", "Error loading file-based subcommand:", err.message);
           if (autoExit) process.exit(1);
           throw err;
@@ -779,6 +841,7 @@ export function createCli<A extends ArgDefinitions = EmptyArgs>(
             if (autoExit) process.exit(0);
             return;
           } catch (err: any) {
+            await ensureRelinkaConfigured();
             relinka("error", "Error running subcommand:", err.message);
             if (autoExit) process.exit(1);
             throw err;
@@ -786,8 +849,8 @@ export function createCli<A extends ArgDefinitions = EmptyArgs>(
         }
       }
 
-      // @reliverse/relinka [1/2]
-      await relinkaConfig();
+      // @reliverse/relinka [1/2] — configure only when we are about to log/output beyond errors
+      await ensureRelinkaConfigured();
 
       // Only handle global help if no command was found
       if (rawArgv[0] === "help" || checkHelp(rawArgv)) {
@@ -815,7 +878,7 @@ export function createCli<A extends ArgDefinitions = EmptyArgs>(
       }
 
       // @reliverse/relinka [2/2]
-      await relinkaShutdown();
+      if (_relinkaConfigured) await relinkaShutdown();
     } finally {
       if (typeof command.onLauncherExit === "function") await command.onLauncherExit();
     }
@@ -914,7 +977,7 @@ async function runFileBasedSubCmd(
     }
     // Check if next arg is a subfolder
     const nextDir = path.join(baseDir, args[0] || "");
-    if ((await pathExists(nextDir)) && (await stat(nextDir)).isDirectory()) {
+    if (await isDirectory(nextDir)) {
       // Recurse into subfolder
       return resolveCmdPath(nextDir, args.slice(1));
     }
@@ -932,7 +995,7 @@ async function runFileBasedSubCmd(
 
   // Start recursive resolution from cmdsRootPath/subName
   const startDir = path.join(fileCmdOpts.cmdsRootPath, subName);
-  if (!(await pathExists(startDir)) || !(await stat(startDir)).isDirectory()) {
+  if (!(await isDirectory(startDir))) {
     const attempted = [subName, ...argv].join(" ");
     const expectedPath = path.relative(
       process.cwd(),
@@ -1391,7 +1454,7 @@ async function resolveFileBasedCommandPath(
   let leftover = [...argv];
   while (leftover.length > 0 && leftover[0] && !isFlag(leftover[0])) {
     const nextDir = path.join(currentDir, leftover[0]);
-    if ((await pathExists(nextDir)) && (await stat(nextDir)).isDirectory()) {
+    if (await isDirectory(nextDir)) {
       currentDir = nextDir;
       pathSegments.push(leftover[0]);
       leftover = leftover.slice(1);
