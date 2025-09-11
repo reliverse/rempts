@@ -1,7 +1,7 @@
 {
   "name": "@reliverse/rempts",
   "author": "reliverse",
-  "version": "1.7.64",
+  "version": "1.7.66",
   "type": "module",
   "license": "MIT",
   "keywords": [
@@ -19,9 +19,9 @@
   "scripts": {
     "pub": "bun rse publish",
     "dev": "bun example/cli.ts",
-    "dev:prompts": "bun example/prompts/mod.ts",
-    "dev:modern": "bun example/launcher/modern.ts",
-    "dev:classic": "bun example/launcher/classic.ts",
+    "dev:prompts": "bun example/app/prompts/mod.ts",
+    "dev:modern": "bun example/app/launcher/modern.ts",
+    "dev:classic": "bun example/app/launcher/classic.ts",
     "check": "bun tsc --noEmit && bun biome check --fix --unsafe",
     "latest": "bun rse update && bun install",
     "tests": "bun test ./.tests"
@@ -30,7 +30,7 @@
     "@reliverse/relico": "^1.4.0",
     "@reliverse/relinka": "^1.6.1",
     "@reliverse/reltime": "^1.1.1",
-    "ansi-escapes": "^7.0.0",
+    "ansi-escapes": "^7.1.0",
     "cli-cursor": "^5.0.0",
     "cli-spinners": "^3.2.0",
     "gradient-string": "^3.0.0",
@@ -43,19 +43,20 @@
     "sisteransi": "^1.0.5",
     "stdin-discarder": "^0.2.2",
     "string-width": "^8.1.0",
-    "strip-ansi": "^7.1.0",
+    "strip-ansi": "^7.1.2",
     "terminal-size": "^4.0.0",
     "ts-regex-builder": "^1.8.2",
-    "wrap-ansi": "^9.0.0"
+    "wrap-ansi": "^9.0.2"
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.2.2",
-    "@reliverse/rse": "^1.7.28",
+    "@biomejs/biome": "2.2.2",
+    "@reliverse/rse": "^1.7.29",
     "@total-typescript/ts-reset": "^0.6.1",
     "@types/bun": "^1.2.21",
-    "@types/node": "^24.3.0",
+    "@types/node": "^24.3.1",
     "@types/wrap-ansi": "^8.1.0",
+    "execa": "^9.6.0",
     "typescript": "^5.9.2",
-    "ultracite": "^5.3.3"
+    "ultracite": "^5.3.4"
   }
 }

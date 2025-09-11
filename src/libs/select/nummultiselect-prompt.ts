@@ -9,6 +9,77 @@ type NumMultiSelectPromptOptions = PromptOptions & {
   defaultValue?: string[];
 };
 
+/**
+ * askForInput()
+ *
+ * Handles character-by-character input to avoid issues with formatted prompts.
+ * @param prompt The text to display before user input.
+ * @returns The user input string, or null if canceled (Ctrl+C).
+ */
+async function askForInput(prompt: string): Promise<string | null> {
+  return new Promise((resolve) => {
+    let buffer = "";
+
+    // Print the prompt manually:
+    process.stdout.write(prompt);
+
+    const onData = (data: Buffer) => {
+      const str = data.toString("utf-8");
+
+      for (const char of str) {
+        // If user presses Enter or Return, we're done
+        if (char === "\n" || char === "\r") {
+          process.stdout.write("\n");
+          cleanup();
+          resolve(buffer);
+          return;
+        }
+
+        // If user presses Ctrl+C
+        if (char === "\u0003") {
+          cleanup();
+          resolve(null);
+          return;
+        }
+
+        // If user presses backspace (ASCII DEL or BS)
+        if (char === "\u007F" || char === "\b") {
+          if (buffer.length > 0) {
+            buffer = buffer.slice(0, -1);
+          }
+          redrawPrompt(buffer, prompt);
+          continue;
+        }
+
+        // Otherwise, inject this char to the buffer
+        buffer += char;
+        redrawPrompt(buffer, prompt);
+      }
+    };
+
+    // Attach our listener
+    process.stdin.on("data", onData);
+
+    /**
+     * cleanup()
+     * Removes event listener once we're finished.
+     */
+    const cleanup = () => {
+      process.stdin.removeListener("data", onData);
+    };
+
+    /**
+     * redrawPrompt()
+     * Clears line and re-renders the prompt with input.
+     */
+    const redrawPrompt = (inputBuffer: string, textPrompt: string) => {
+      process.stdout.clearLine(0);
+      process.stdout.cursorTo(0);
+      process.stdout.write(textPrompt + inputBuffer);
+    };
+  });
+}
+
 export async function numMultiSelectPrompt(opts: NumMultiSelectPromptOptions) {
   const {
     title = "",
@@ -83,7 +154,7 @@ export async function numMultiSelectPrompt(opts: NumMultiSelectPromptOptions) {
       const questionLines = countLines(formattedPrompt);
       linesToDelete = questionLines + 1; // +1 for the user's input line
 
-      const answer = (await rl.question(`${formattedPrompt}  `)).trim();
+      const answer = (await askForInput(`${formattedPrompt}  `))?.trim() || "";
 
       // Use defaultValue if no input is provided
       if (!answer && defaultValue !== undefined) {

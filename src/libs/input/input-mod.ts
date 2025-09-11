@@ -1,4 +1,3 @@
-import type { Interface } from "node:readline/promises";
 import readline from "node:readline/promises";
 import { re } from "@reliverse/relico";
 import { isUnicodeSupported } from "@reliverse/reltime";
@@ -28,86 +27,81 @@ function getMaskChar(customMask?: string): string {
  * - If 'mode' is 'password', handle character-by-character masking.
  * - Otherwise, use readline's .question().
  *
- * @param terminal The readline interface.
  * @param prompt   The text to display before user input.
  * @param mode     The type of input prompt ("plain" or "password").
  * @param endPrompt Callback to handle Ctrl+C or closing the prompt.
  * @returns The user input in plain text, or null if canceled (Ctrl+C).
  */
 async function ask(
-  terminal: Interface,
   prompt: string,
   mode: "plain" | "password",
   mask?: string,
 ): Promise<string | null> {
-  if (mode === "password") {
-    // Manual character-by-character reading for masking:
-    return new Promise((resolve) => {
-      let buffer = "";
-      const maskChar = getMaskChar(mask);
+  // Use character-by-character reading for both modes to handle formatted prompts properly
+  return new Promise((resolve) => {
+    let buffer = "";
+    const maskChar = getMaskChar(mask);
 
-      // Print the prompt manually:
-      process.stdout.write(prompt);
+    // Print the prompt manually:
+    process.stdout.write(prompt);
 
-      const onData = (data: Buffer) => {
-        const str = data.toString("utf-8");
+    const onData = (data: Buffer) => {
+      const str = data.toString("utf-8");
 
-        for (const char of str) {
-          // If user presses Enter or Return, we're done
-          if (char === "\n" || char === "\r") {
-            process.stdout.write("\n");
-            cleanup();
-            resolve(buffer);
-            return;
-          }
-
-          // If user presses Ctrl+C
-          if (char === "\u0003") {
-            cleanup();
-            resolve(null);
-            return;
-          }
-
-          // If user presses backspace (ASCII DEL or BS)
-          if (char === "\u007F" || char === "\b") {
-            if (buffer.length > 0) {
-              buffer = buffer.slice(0, -1);
-            }
-            redrawPrompt(buffer, prompt);
-            continue;
-          }
-
-          // Otherwise, inject this char to the buffer
-          buffer += char;
-          redrawPrompt(buffer, prompt);
+      for (const char of str) {
+        // If user presses Enter or Return, we're done
+        if (char === "\n" || char === "\r") {
+          process.stdout.write("\n");
+          cleanup();
+          resolve(buffer);
+          return;
         }
-      };
 
-      // Attach our listener
-      process.stdin.on("data", onData);
+        // If user presses Ctrl+C
+        if (char === "\u0003") {
+          cleanup();
+          resolve(null);
+          return;
+        }
 
-      /**
-       * cleanup()
-       * Removes event listener once we're finished.
-       */
-      const cleanup = () => {
-        process.stdin.removeListener("data", onData);
-      };
+        // If user presses backspace (ASCII DEL or BS)
+        if (char === "\u007F" || char === "\b") {
+          if (buffer.length > 0) {
+            buffer = buffer.slice(0, -1);
+          }
+          redrawPrompt(buffer, prompt);
+          continue;
+        }
 
-      /**
-       * redrawPrompt()
-       * Clears line and re-renders the prompt with masked input.
-       */
-      const redrawPrompt = (maskedBuffer: string, textPrompt: string) => {
-        process.stdout.clearLine(0);
-        process.stdout.cursorTo(0);
-        process.stdout.write(textPrompt + maskChar.repeat(maskedBuffer.length));
-      };
-    });
-  }
+        // Otherwise, inject this char to the buffer
+        buffer += char;
+        redrawPrompt(buffer, prompt);
+      }
+    };
 
-  // "plain" mode uses the normal question flow:
-  return terminal.question(prompt);
+    // Attach our listener
+    process.stdin.on("data", onData);
+
+    /**
+     * cleanup()
+     * Removes event listener once we're finished.
+     */
+    const cleanup = () => {
+      process.stdin.removeListener("data", onData);
+    };
+
+    /**
+     * redrawPrompt()
+     * Clears line and re-renders the prompt with input.
+     * For password mode, mask the input; for plain mode, show the actual input.
+     */
+    const redrawPrompt = (inputBuffer: string, textPrompt: string) => {
+      process.stdout.clearLine(0);
+      process.stdout.cursorTo(0);
+      const displayText = mode === "password" ? maskChar.repeat(inputBuffer.length) : inputBuffer;
+      process.stdout.write(textPrompt + displayText);
+    };
+  });
 }
 
 /**
@@ -493,7 +487,7 @@ export async function inputPrompt(options: InputPromptOptions): Promise<string> 
     const formattedBar = bar({ borderColor });
 
     // Use our custom ask() helper
-    const userInputRaw = await ask(terminal, `${formattedBar}  `, mode, mask);
+    const userInputRaw = await ask(`${formattedBar}  `, mode, mask);
     isRerender = true;
 
     // If ask() returns null, the user pressed Ctrl+C (endPrompt called).
